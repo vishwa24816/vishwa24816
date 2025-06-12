@@ -1,6 +1,7 @@
+
 "use client";
 
-import React, { useState, useTransition } from 'react';
+import React, { useState, useTransition, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -11,18 +12,33 @@ import { summarizeNewsAction } from '@/app/actions';
 import { Newspaper, Lightbulb, ExternalLink, Loader2 } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
+interface NewsSectionProps {
+  articles?: NewsArticle[];
+}
 
-export function NewsSection() {
-  const [headlinesToSummarize, setHeadlinesToSummarize] = useState(
-    mockNewsArticles.slice(0, 5).map(article => article.headline).join('\n')
-  );
+export function NewsSection({ articles }: NewsSectionProps) {
+  const effectiveArticles = articles ?? mockNewsArticles;
+  
+  const [headlinesToSummarize, setHeadlinesToSummarize] = useState('');
   const [summary, setSummary] = useState('');
   const [error, setError] = useState('');
   const [isPending, startTransition] = useTransition();
 
+  useEffect(() => {
+    setHeadlinesToSummarize(
+      effectiveArticles.slice(0, 5).map(article => article.headline).join('\n')
+    );
+    setSummary(''); // Clear previous summary when articles change
+    setError(''); // Clear previous error
+  }, [effectiveArticles]);
+
   const handleSummarize = () => {
     setError('');
     setSummary('');
+    if (!headlinesToSummarize.trim()) {
+        setError("Please provide some headlines to summarize.");
+        return;
+    }
     startTransition(async () => {
       const result = await summarizeNewsAction(headlinesToSummarize);
       if (result.summary) {
@@ -42,23 +58,31 @@ export function NewsSection() {
               <Newspaper className="h-6 w-6 mr-2" /> Top Market News
             </CardTitle>
           </div>
-          <CardDescription>Latest headlines and AI-powered summaries.</CardDescription>
+          <CardDescription>
+            {articles ? "Latest headlines relevant to your view and AI-powered summaries." : "Latest headlines and AI-powered summaries."}
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <div>
             <h3 className="text-lg font-medium mb-2">Recent Headlines</h3>
             <ScrollArea className="h-48 w-full rounded-md border p-4 bg-muted/50">
-              <ul className="space-y-3">
-                {mockNewsArticles.map((article: NewsArticle) => (
-                  <li key={article.id} className="text-sm">
-                    <a href={article.url || '#'} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors group">
-                      {article.headline}
-                      <ExternalLink className="inline-block h-3 w-3 ml-1 opacity-0 group-hover:opacity-100 transition-opacity" />
-                    </a>
-                    <p className="text-xs text-muted-foreground">{article.source} - {new Date(article.timestamp).toLocaleDateString()}</p>
-                  </li>
-                ))}
-              </ul>
+              {effectiveArticles.length > 0 ? (
+                <ul className="space-y-3">
+                  {effectiveArticles.map((article: NewsArticle) => (
+                    <li key={article.id} className="text-sm">
+                      <a href={article.url || '#'} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors group">
+                        {article.headline}
+                        <ExternalLink className="inline-block h-3 w-3 ml-1 opacity-0 group-hover:opacity-100 transition-opacity" />
+                      </a>
+                      <p className="text-xs text-muted-foreground">{article.source} - {new Date(article.timestamp).toLocaleDateString()}</p>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-muted-foreground text-center py-4">
+                  {articles ? "No news relevant to your current view." : "No news articles available at the moment."}
+                </p>
+              )}
             </ScrollArea>
           </div>
 
@@ -67,13 +91,14 @@ export function NewsSection() {
               <Lightbulb className="h-5 w-5 mr-2 text-accent" /> AI News Summary
             </h3>
             <Textarea
-              placeholder="Enter news headlines here, one per line..."
+              placeholder={effectiveArticles.length > 0 ? "Relevant headlines loaded. Edit or add more to summarize..." : "Enter news headlines here, one per line..."}
               value={headlinesToSummarize}
               onChange={(e) => setHeadlinesToSummarize(e.target.value)}
               rows={5}
               className="mb-2"
+              disabled={effectiveArticles.length === 0 && !headlinesToSummarize}
             />
-            <Button onClick={handleSummarize} disabled={isPending} className="w-full sm:w-auto">
+            <Button onClick={handleSummarize} disabled={isPending || !headlinesToSummarize.trim()} className="w-full sm:w-auto">
               {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Lightbulb className="mr-2 h-4 w-4" />}
               {isPending ? 'Summarizing...' : 'Generate Summary'}
             </Button>

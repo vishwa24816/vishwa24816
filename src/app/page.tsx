@@ -10,6 +10,30 @@ import { WatchlistSection } from '@/components/dashboard/WatchlistSection';
 import { PortfolioHoldingsTable } from '@/components/dashboard/PortfolioHoldingsTable';
 import { CryptoHoldingsSection } from '@/components/dashboard/CryptoHoldingsSection';
 import React, { useState } from 'react';
+import type { PortfolioHolding, NewsArticle } from '@/types';
+import { mockPortfolioHoldings, mockNewsArticles } from '@/lib/mockData';
+
+function getRelevantNewsForHoldings(holdings: PortfolioHolding[], allNews: NewsArticle[]): NewsArticle[] {
+  if (!holdings.length || !allNews.length) {
+    return [];
+  }
+  const relevantNews: NewsArticle[] = [];
+  const holdingKeywords = holdings.flatMap(h => {
+    const keywords = [h.name.toLowerCase()];
+    if (h.symbol) {
+      keywords.push(h.symbol.toLowerCase());
+    }
+    return keywords;
+  }).filter(Boolean);
+
+  allNews.forEach(news => {
+    const headlineLower = news.headline.toLowerCase();
+    if (holdingKeywords.some(keyword => keyword && headlineLower.includes(keyword))) {
+      relevantNews.push(news);
+    }
+  });
+  return relevantNews;
+}
 
 export default function DashboardPage() {
   const secondaryNavTriggerCategories: Record<string, string[]> = {
@@ -39,6 +63,12 @@ export default function DashboardPage() {
     setActiveSecondaryItem(item);
   };
 
+  let newsToDisplay: NewsArticle[] = mockNewsArticles; // Default for non-portfolio views
+  if (activePrimaryItem === "Portfolio" && activeSecondaryItem === "Holdings") {
+    newsToDisplay = getRelevantNewsForHoldings(mockPortfolioHoldings, mockNewsArticles);
+  }
+
+
   return (
     <ProtectedRoute>
       <div className="flex flex-col min-h-screen">
@@ -57,10 +87,13 @@ export default function DashboardPage() {
             <>
               <PortfolioHoldingsTable />
               <CryptoHoldingsSection />
+              <div className="mt-8">
+                <NewsSection articles={newsToDisplay} />
+              </div>
             </>
           ) : (
             <div className="grid lg:grid-cols-2 gap-8 items-start">
-              <NewsSection />
+              <NewsSection /> {/* Uses default mockNewsArticles */}
               <WatchlistSection />
             </div>
           )}
