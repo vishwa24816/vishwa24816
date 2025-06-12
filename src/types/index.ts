@@ -6,8 +6,8 @@ export interface Stock {
   price: number;
   change: number;
   changePercent: number;
-  marketCap?: string;
-  volume?: number; // Changed to number
+  marketCap?: string; // e.g., "29,377Cr"
+  volume?: number;
   exchange?: string;
   todayLow?: number;
   todayHigh?: number;
@@ -16,6 +16,26 @@ export interface Stock {
   openPrice?: number;
   prevClosePrice?: number;
   sector?: string;
+  lowerCircuit?: number;
+  upperCircuit?: number;
+  fundamentals?: {
+    marketCap: string; // e.g., "29,377Cr"
+    peRatioTTM?: number;
+    pbRatio?: number;
+    industryPe?: number;
+    debtToEquity?: number;
+    roe?: number; // percentage
+    epsTTM?: number;
+    divYield?: number; // percentage
+    bookValue?: number;
+    faceValue?: number;
+  };
+  financials?: {
+    // Simplified for placeholder bar chart
+    revenue: Array<{ period: string; value: number }>;
+    profit: Array<{ period: string; value: number }>;
+    netWorth: Array<{ period: string; value: number }>;
+  };
 }
 
 export interface MarketIndex {
@@ -131,4 +151,3 @@ export interface Underlying {
   name: string;
   symbol: string;
 }
-
