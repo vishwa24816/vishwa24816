@@ -8,13 +8,13 @@ export const mockMarketIndices: MarketIndex[] = [
 ];
 
 export const mockStocks: Stock[] = [
-  { id: 'reliance', symbol: 'RELIANCE', name: 'Reliance Industries Ltd.', price: 2450.50, change: 12.75, changePercent: 0.52 },
-  { id: 'tcs', symbol: 'TCS', name: 'Tata Consultancy Services Ltd.', price: 3280.10, change: -5.20, changePercent: -0.16 },
-  { id: 'hdfcbank', symbol: 'HDFCBANK', name: 'HDFC Bank Ltd.', price: 1610.70, change: 8.15, changePercent: 0.51 },
-  { id: 'infosys', symbol: 'INFY', name: 'Infosys Ltd.', price: 1350.00, change: 22.50, changePercent: 1.69 },
-  { id: 'icicibank', symbol: 'ICICIBANK', name: 'ICICI Bank Ltd.', price: 925.30, change: -1.05, changePercent: -0.11 },
-  { id: 'sbin', symbol: 'SBIN', name: 'State Bank of India', price: 570.80, change: 3.40, changePercent: 0.60 },
-  { id: 'bajfinance', symbol: 'BAJFINANCE', name: 'Bajaj Finance Ltd.', price: 7100.20, change: 50.90, changePercent: 0.72 },
+  { id: 'reliance', symbol: 'RELIANCE', name: 'Reliance Industries Ltd.', price: 2450.50, change: 12.75, changePercent: 0.52, exchange: 'NSE' },
+  { id: 'tcs', symbol: 'TCS', name: 'Tata Consultancy Services Ltd.', price: 3280.10, change: -5.20, changePercent: -0.16, exchange: 'BSE' },
+  { id: 'hdfcbank', symbol: 'HDFCBANK', name: 'HDFC Bank Ltd.', price: 1610.70, change: 8.15, changePercent: 0.51, exchange: 'NSE' },
+  { id: 'infosys', symbol: 'INFY', name: 'Infosys Ltd.', price: 1350.00, change: 22.50, changePercent: 1.69, exchange: 'NSE' },
+  { id: 'icicibank', symbol: 'ICICIBANK', name: 'ICICI Bank Ltd.', price: 925.30, change: -1.05, changePercent: -0.11, exchange: 'BSE' },
+  { id: 'sbin', symbol: 'SBIN', name: 'State Bank of India', price: 570.80, change: 3.40, changePercent: 0.60, exchange: 'NSE' },
+  { id: 'bajfinance', symbol: 'BAJFINANCE', name: 'Bajaj Finance Ltd.', price: 7100.20, change: 50.90, changePercent: 0.72, exchange: 'NSE' },
 ];
 
 export const mockNewsArticles: NewsArticle[] = [
@@ -24,6 +24,9 @@ export const mockNewsArticles: NewsArticle[] = [
   { id: 'news4', headline: 'Tech stocks rally on strong Q2 earnings expectations for INFY and TCS', source: 'Reuters India', timestamp: '2023-10-05T15:00:00Z', url: '#' },
   { id: 'news5', headline: 'Government announces new PLI scheme for electronics manufacturing, Reliance to benefit', source: 'PIB India', timestamp: '2023-10-05T12:00:00Z', url: '#' },
   { id: 'news6', headline: 'Bitcoin price surges past $43,000, ETH follows', source: 'Crypto News Daily', timestamp: '2023-10-07T11:00:00Z', url: '#' },
+  { id: 'news7', headline: 'HDFC Bank Q3 results: Net profit rises 20% YoY, asset quality stable', source: 'Moneycontrol', timestamp: '2024-01-15T14:00:00Z', url: '#'},
+  { id: 'news8', headline: 'ICICI Bank posts strong credit growth, cautious on unsecured loans', source: 'Bloomberg Quint', timestamp: '2024-01-18T10:30:00Z', url: '#'},
+  { id: 'news9', headline: 'State Bank of India (SBIN) plans to raise $1 billion via bonds', source: 'The Hindu Business Line', timestamp: '2024-01-20T11:00:00Z', url: '#'},
 ];
 
 export const mockPortfolioHoldings: PortfolioHolding[] = [

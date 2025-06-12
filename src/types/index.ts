@@ -8,6 +8,7 @@ export interface Stock {
   changePercent: number;
   marketCap?: string;
   volume?: string;
+  exchange?: string; // Added exchange
 }
 
 export interface MarketIndex {

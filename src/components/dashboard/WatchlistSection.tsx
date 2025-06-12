@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect, FormEvent } from 'react';
@@ -7,38 +8,54 @@ import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { mockStocks } from '@/lib/mockData';
 import type { Stock } from '@/types';
-import { Star, PlusCircle, Trash2, TrendingUp, TrendingDown, Eye } from 'lucide-react';
-import { useToast } from "@/hooks/use-toast"
+import { Eye, PlusCircle, Trash2, TrendingUp, TrendingDown } from 'lucide-react';
+import { useToast } from "@/hooks/use-toast";
+import { cn } from '@/lib/utils';
 
 const WATCHLIST_LS_KEY = 'simUserWatchlist';
 
-export function WatchlistSection() {
+interface WatchlistSectionProps {
+  displayItems?: Stock[];
+  isPredefinedList?: boolean;
+  title?: string;
+}
+
+export function WatchlistSection({ 
+  displayItems, 
+  isPredefinedList = false,
+  title 
+}: WatchlistSectionProps) {
   const [watchlist, setWatchlist] = useState<Stock[]>([]);
   const [newStockSymbol, setNewStockSymbol] = useState('');
   const { toast } = useToast();
 
   useEffect(() => {
-    try {
-      const storedWatchlist = localStorage.getItem(WATCHLIST_LS_KEY);
-      if (storedWatchlist) {
-        setWatchlist(JSON.parse(storedWatchlist));
-      } else {
-        // Add a few default stocks to watchlist if it's empty
-        setWatchlist(mockStocks.slice(0,2));
-      }
-    } catch (error) {
+    if (isPredefinedList) {
+      setWatchlist(displayItems || []);
+    } else {
+      try {
+        const storedWatchlist = localStorage.getItem(WATCHLIST_LS_KEY);
+        if (storedWatchlist) {
+          setWatchlist(JSON.parse(storedWatchlist));
+        } else {
+          setWatchlist(mockStocks.slice(0, 2)); // Default for editable watchlist
+        }
+      } catch (error) {
         console.error("Failed to load watchlist from localStorage", error);
-        setWatchlist(mockStocks.slice(0,2)); // Fallback to default
+        setWatchlist(mockStocks.slice(0, 2));
+      }
     }
-  }, []);
+  }, [displayItems, isPredefinedList]);
 
   useEffect(() => {
-    localStorage.setItem(WATCHLIST_LS_KEY, JSON.stringify(watchlist));
-  }, [watchlist]);
+    if (!isPredefinedList) {
+      localStorage.setItem(WATCHLIST_LS_KEY, JSON.stringify(watchlist));
+    }
+  }, [watchlist, isPredefinedList]);
   
   const handleAddStock = (e: FormEvent) => {
     e.preventDefault();
-    if (!newStockSymbol.trim()) return;
+    if (isPredefinedList || !newStockSymbol.trim()) return;
 
     const stockToAdd = mockStocks.find(stock => stock.symbol.toUpperCase() === newStockSymbol.toUpperCase());
 
@@ -56,63 +73,76 @@ export function WatchlistSection() {
   };
 
   const handleRemoveStock = (stockId: string) => {
+    if (isPredefinedList) return;
     const stock = watchlist.find(s => s.id === stockId);
     setWatchlist(prev => prev.filter(s => s.id !== stockId));
     if (stock) {
       toast({ title: "Stock Removed", description: `${stock.name} removed from your watchlist.` });
     }
   };
+  
+  const itemsToRender = isPredefinedList ? (displayItems || []) : watchlist;
+  const cardTitle = title || "My Watchlist";
 
   return (
     <section aria-labelledby="watchlist-section-title">
       <Card className="shadow-lg h-full flex flex-col">
         <CardHeader>
-          <CardTitle className="text-xl font-semibold font-headline text-primary flex items-center">
-            <Eye className="h-6 w-6 mr-2" /> My Watchlist
+          <CardTitle id="watchlist-section-title" className="text-xl font-semibold font-headline text-primary flex items-center">
+            <Eye className="h-6 w-6 mr-2" /> {cardTitle}
           </CardTitle>
-          <CardDescription>Track your favorite stocks.</CardDescription>
+          {!isPredefinedList && <CardDescription>Track your favorite stocks.</CardDescription>}
         </CardHeader>
         <CardContent className="flex-grow space-y-4">
-          <form onSubmit={handleAddStock} className="flex space-x-2">
-            <Input
-              type="text"
-              placeholder="Enter stock symbol (e.g., RELIANCE)"
-              value={newStockSymbol}
-              onChange={(e) => setNewStockSymbol(e.target.value.toUpperCase())}
-              className="flex-grow"
-            />
-            <Button type="submit" size="icon" aria-label="Add stock to watchlist">
-              <PlusCircle className="h-5 w-5" />
-            </Button>
-          </form>
-          <ScrollArea className="h-72 pr-3"> {/* Adjust height as needed */}
-            {watchlist.length === 0 ? (
-              <p className="text-muted-foreground text-center py-4">Your watchlist is empty. Add stocks to track them.</p>
+          {!isPredefinedList && (
+            <form onSubmit={handleAddStock} className="flex space-x-2">
+              <Input
+                type="text"
+                placeholder="Enter stock symbol (e.g., RELIANCE)"
+                value={newStockSymbol}
+                onChange={(e) => setNewStockSymbol(e.target.value.toUpperCase())}
+                className="flex-grow"
+              />
+              <Button type="submit" size="icon" aria-label="Add stock to watchlist">
+                <PlusCircle className="h-5 w-5" />
+              </Button>
+            </form>
+          )}
+          <ScrollArea className="h-72 pr-3">
+            {itemsToRender.length === 0 ? (
+              <p className="text-muted-foreground text-center py-4">
+                {isPredefinedList ? "No items in this watchlist." : "Your watchlist is empty. Add stocks to track them."}
+              </p>
             ) : (
-              <ul className="space-y-3">
-                {watchlist.map((stock) => {
+              <ul className="space-y-1">
+                {itemsToRender.map((stock) => {
                   const isPositive = stock.change >= 0;
                   return (
-                    <li key={stock.id} className="flex items-center justify-between p-3 rounded-md bg-muted/30 hover:bg-muted/60 transition-colors group">
+                    <li key={stock.id} className="flex items-center justify-between p-3 rounded-md hover:bg-muted/30 transition-colors group">
                       <div>
-                        <p className="font-semibold">{stock.symbol} <span className="text-xs text-muted-foreground hidden sm:inline">({stock.name})</span></p>
-                        <p className="text-sm">{stock.price.toFixed(2)}</p>
+                        <p className="font-semibold text-sm">{stock.symbol}</p>
+                        <p className="text-xs text-muted-foreground">{stock.exchange || stock.name.substring(0,15)}</p>
                       </div>
                       <div className="text-right">
-                         <p className={`text-sm font-medium ${isPositive ? 'text-green-600' : 'text-red-600'} flex items-center justify-end`}>
-                          {isPositive ? <TrendingUp className="h-4 w-4 mr-1" /> : <TrendingDown className="h-4 w-4 mr-1" />}
+                         <p className={`text-sm font-medium ${isPositive ? 'text-green-600' : 'text-red-600'}`}>
+                          {stock.price.toFixed(2)}
+                        </p>
+                        <p className={`text-xs ${isPositive ? 'text-green-500' : 'text-red-500'} flex items-center justify-end`}>
+                          {isPositive ? <TrendingUp className="h-3 w-3 mr-0.5" /> : <TrendingDown className="h-3 w-3 mr-0.5" />}
                           {stock.change.toFixed(2)} ({stock.changePercent.toFixed(2)}%)
                         </p>
+                      </div>
+                      {!isPredefinedList && (
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="text-muted-foreground hover:text-destructive h-7 w-7 opacity-50 group-hover:opacity-100 transition-opacity"
+                          className="text-muted-foreground hover:text-destructive h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity ml-2"
                           onClick={() => handleRemoveStock(stock.id)}
                           aria-label={`Remove ${stock.symbol} from watchlist`}
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
-                      </div>
+                      )}
                     </li>
                   );
                 })}
@@ -120,9 +150,9 @@ export function WatchlistSection() {
             )}
           </ScrollArea>
         </CardContent>
-        {watchlist.length > 0 && (
+        {!isPredefinedList && itemsToRender.length > 0 && (
           <CardFooter className="text-sm text-muted-foreground">
-            <p>You are tracking {watchlist.length} stock(s).</p>
+            <p>You are tracking {itemsToRender.length} stock(s).</p>
           </CardFooter>
         )}
       </Card>
