@@ -12,7 +12,7 @@ import { CryptoHoldingsSection } from '@/components/dashboard/CryptoHoldingsSect
 import { IntradayPositionsSection } from '@/components/dashboard/IntradayPositionsSection';
 import { FoPositionsSection } from '@/components/dashboard/FoPositionsSection';
 import { CryptoFuturesSection } from '@/components/dashboard/CryptoFuturesSection';
-import { StockTicker } from '@/components/dashboard/StockTicker';
+
 import React, { useState } from 'react';
 import type { PortfolioHolding, NewsArticle, IntradayPosition, FoPosition, CryptoFuturePosition } from '@/types';
 import { mockPortfolioHoldings, mockNewsArticles, mockIntradayPositions, mockFoPositions, mockCryptoFutures } from '@/lib/mockData';
@@ -153,7 +153,7 @@ export default function DashboardPage() {
             </div>
           ) : (
             <>
-              <StockTicker />
+              {/* StockTicker was here */}
               <div className="grid lg:grid-cols-2 gap-8 items-start">
                 <NewsSection /> {/* Uses default mockNewsArticles */}
                 <WatchlistSection />
