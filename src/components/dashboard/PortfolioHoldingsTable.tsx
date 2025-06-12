@@ -1,7 +1,7 @@
 
 "use client";
 
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Table,
   TableBody,
@@ -11,12 +11,17 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { mockPortfolioHoldings } from '@/lib/mockData';
+import type { PortfolioHolding } from '@/types';
 import { cn } from '@/lib/utils';
 import { Briefcase } from 'lucide-react';
 
+type HoldingFilterType = 'All' | 'Stock' | 'Mutual Fund';
+
 export function PortfolioHoldingsTable() {
   const holdings = mockPortfolioHoldings;
+  const [activeFilter, setActiveFilter] = useState<HoldingFilterType>('All');
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
@@ -30,6 +35,19 @@ export function PortfolioHoldingsTable() {
   const totalDayChangeAbsolute = holdings.reduce((acc, holding) => acc + holding.dayChangeAbsolute, 0);
   const totalPreviousDayValue = totalCurrentValue - totalDayChangeAbsolute;
   const totalDayChangePercent = totalPreviousDayValue !== 0 ? (totalDayChangeAbsolute / totalPreviousDayValue) * 100 : 0;
+
+  const filterOptions: { label: string; value: HoldingFilterType }[] = [
+    { label: "All", value: "All" },
+    { label: "Stocks", value: "Stock" },
+    { label: "Mutual Funds", value: "Mutual Fund" },
+  ];
+
+  const filteredHoldings = holdings.filter(holding => {
+    if (activeFilter === 'All') return true;
+    if (activeFilter === 'Stock') return holding.type === 'Stock' || holding.type === 'ETF';
+    if (activeFilter === 'Mutual Fund') return holding.type === 'Mutual Fund';
+    return false; // Should not happen if filter value is one of the above
+  });
 
   return (
     <Card className="shadow-lg">
@@ -63,6 +81,28 @@ export function PortfolioHoldingsTable() {
         </div>
       </CardHeader>
       <CardContent>
+        <div className="border-b border-border mb-4">
+          <div className="flex space-x-1 overflow-x-auto whitespace-nowrap pb-0 no-scrollbar">
+            {filterOptions.map((option) => (
+              <Button
+                key={option.value}
+                variant="ghost"
+                size="sm"
+                className={cn(
+                  "px-3 py-1.5 h-auto text-xs font-medium rounded-t-md rounded-b-none focus-visible:ring-0 focus-visible:ring-offset-0",
+                  "border-b-2 hover:bg-transparent",
+                  activeFilter === option.value
+                    ? "text-primary border-primary font-semibold"
+                    : "text-muted-foreground border-transparent hover:text-primary hover:border-primary/30"
+                )}
+                onClick={() => setActiveFilter(option.value)}
+              >
+                {option.label}
+              </Button>
+            ))}
+          </div>
+        </div>
+
         <Table>
           <TableHeader>
             <TableRow>
@@ -77,29 +117,36 @@ export function PortfolioHoldingsTable() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {holdings.map((holding) => (
-              <TableRow key={holding.id}>
-                <TableCell className="font-medium">
-                  <div>{holding.name}</div>
-                  {holding.symbol && <div className="text-xs text-muted-foreground">{holding.symbol}</div>}
-                </TableCell>
-                <TableCell>{holding.type}</TableCell>
-                <TableCell className="text-right">{holding.quantity.toLocaleString()}</TableCell>
-                <TableCell className="text-right">{formatCurrency(holding.avgCostPrice)}</TableCell>
-                <TableCell className="text-right">{formatCurrency(holding.ltp)}</TableCell>
-                <TableCell className="text-right">{formatCurrency(holding.currentValue)}</TableCell>
-                <TableCell className={cn("text-right whitespace-nowrap", holding.profitAndLoss >= 0 ? 'text-green-600' : 'text-red-600')}>
-                  {formatCurrency(holding.profitAndLoss)}<br/>({holding.profitAndLossPercent.toFixed(2)}%)
-                </TableCell>
-                <TableCell className={cn("text-right whitespace-nowrap", holding.dayChangeAbsolute >= 0 ? 'text-green-600' : 'text-red-600')}>
-                  {formatCurrency(holding.dayChangeAbsolute)}<br/>({holding.dayChangePercent.toFixed(2)}%)
+            {filteredHoldings.length > 0 ? (
+              filteredHoldings.map((holding) => (
+                <TableRow key={holding.id}>
+                  <TableCell className="font-medium">
+                    <div>{holding.name}</div>
+                    {holding.symbol && <div className="text-xs text-muted-foreground">{holding.symbol}</div>}
+                  </TableCell>
+                  <TableCell>{holding.type}</TableCell>
+                  <TableCell className="text-right">{holding.quantity.toLocaleString()}</TableCell>
+                  <TableCell className="text-right">{formatCurrency(holding.avgCostPrice)}</TableCell>
+                  <TableCell className="text-right">{formatCurrency(holding.ltp)}</TableCell>
+                  <TableCell className="text-right">{formatCurrency(holding.currentValue)}</TableCell>
+                  <TableCell className={cn("text-right whitespace-nowrap", holding.profitAndLoss >= 0 ? 'text-green-600' : 'text-red-600')}>
+                    {formatCurrency(holding.profitAndLoss)}<br/>({holding.profitAndLossPercent.toFixed(2)}%)
+                  </TableCell>
+                  <TableCell className={cn("text-right whitespace-nowrap", holding.dayChangeAbsolute >= 0 ? 'text-green-600' : 'text-red-600')}>
+                    {formatCurrency(holding.dayChangeAbsolute)}<br/>({holding.dayChangePercent.toFixed(2)}%)
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={8} className="text-center text-muted-foreground py-8">
+                  No holdings match the selected filter.
                 </TableCell>
               </TableRow>
-            ))}
+            )}
           </TableBody>
         </Table>
       </CardContent>
     </Card>
   );
 }
-
