@@ -13,8 +13,8 @@ import { IntradayPositionsSection } from '@/components/dashboard/IntradayPositio
 import { FoPositionsSection } from '@/components/dashboard/FoPositionsSection';
 import { CryptoFuturesSection } from '@/components/dashboard/CryptoFuturesSection';
 import React, { useState } from 'react';
-import type { PortfolioHolding, NewsArticle } from '@/types';
-import { mockPortfolioHoldings, mockNewsArticles } from '@/lib/mockData';
+import type { PortfolioHolding, NewsArticle, IntradayPosition, FoPosition, CryptoFuturePosition } from '@/types';
+import { mockPortfolioHoldings, mockNewsArticles, mockIntradayPositions, mockFoPositions, mockCryptoFutures } from '@/lib/mockData';
 
 function getRelevantNewsForHoldings(holdings: PortfolioHolding[], allNews: NewsArticle[]): NewsArticle[] {
   if (!holdings.length || !allNews.length) {
@@ -37,6 +37,54 @@ function getRelevantNewsForHoldings(holdings: PortfolioHolding[], allNews: NewsA
   });
   return relevantNews;
 }
+
+function getRelevantNewsForPositions(
+  intraday: IntradayPosition[],
+  fo: FoPosition[],
+  cryptoFutures: CryptoFuturePosition[],
+  allNews: NewsArticle[]
+): NewsArticle[] {
+  if ((!intraday.length && !fo.length && !cryptoFutures.length) || !allNews.length) {
+    return [];
+  }
+
+  const positionKeywords = new Set<string>();
+
+  intraday.forEach(p => {
+    positionKeywords.add(p.name.toLowerCase());
+    if (p.symbol) positionKeywords.add(p.symbol.toLowerCase());
+  });
+
+  fo.forEach(p => {
+    // Extract common keywords from instrument names
+    const nameLower = p.instrumentName.toLowerCase();
+    if (nameLower.includes("nifty")) positionKeywords.add("nifty");
+    if (nameLower.includes("banknifty")) positionKeywords.add("banknifty");
+    if (nameLower.includes("reliance")) positionKeywords.add("reliance");
+    // Add more specific stock/index keywords if needed based on your F&O data
+    const parts = p.instrumentName.split(" ");
+    if (parts.length > 0) positionKeywords.add(parts[0].toLowerCase());
+
+  });
+
+  cryptoFutures.forEach(p => {
+    if (p.symbol.includes("USDT")) {
+      positionKeywords.add(p.symbol.replace("USDT", "").toLowerCase());
+    } else {
+      positionKeywords.add(p.symbol.toLowerCase());
+    }
+  });
+
+  const relevantNews: NewsArticle[] = [];
+  allNews.forEach(news => {
+    const headlineLower = news.headline.toLowerCase();
+    if (Array.from(positionKeywords).some(keyword => keyword && headlineLower.includes(keyword))) {
+      relevantNews.push(news);
+    }
+  });
+  return relevantNews;
+}
+
 
 export default function DashboardPage() {
   const secondaryNavTriggerCategories: Record<string, string[]> = {
@@ -69,6 +117,8 @@ export default function DashboardPage() {
   let newsToDisplay: NewsArticle[] = mockNewsArticles; 
   if (activePrimaryItem === "Portfolio" && activeSecondaryItem === "Holdings") {
     newsToDisplay = getRelevantNewsForHoldings(mockPortfolioHoldings, mockNewsArticles);
+  } else if (activePrimaryItem === "Portfolio" && activeSecondaryItem === "Positions") {
+    newsToDisplay = getRelevantNewsForPositions(mockIntradayPositions, mockFoPositions, mockCryptoFutures, mockNewsArticles);
   }
 
 
@@ -99,7 +149,7 @@ export default function DashboardPage() {
               <IntradayPositionsSection />
               <FoPositionsSection />
               <CryptoFuturesSection />
-              <NewsSection /> {/* Default news */}
+              <NewsSection articles={newsToDisplay} />
             </div>
           ) : (
             <div className="grid lg:grid-cols-2 gap-8 items-start">
