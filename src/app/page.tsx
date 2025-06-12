@@ -47,9 +47,9 @@ export default function DashboardPage() {
     "Mutual funds": ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
   };
   
-  const [activePrimaryItem, setActivePrimaryItem] = useState("Stocks");
+  const [activePrimaryItem, setActivePrimaryItem] = useState("Portfolio");
   const [activeSecondaryItem, setActiveSecondaryItem] = useState(
-    secondaryNavTriggerCategories["Stocks"]?.[0] || "" 
+    secondaryNavTriggerCategories["Portfolio"]?.[0] || "" 
   );
   
   const handlePrimaryNavClick = (item: string) => {
@@ -95,12 +95,12 @@ export default function DashboardPage() {
               </div>
             </>
           ) : activePrimaryItem === "Portfolio" && activeSecondaryItem === "Positions" ? (
-            <>
+            <div className="space-y-8">
               <IntradayPositionsSection />
               <FoPositionsSection />
               <CryptoFuturesSection />
               <NewsSection /> {/* Default news */}
-            </>
+            </div>
           ) : (
             <div className="grid lg:grid-cols-2 gap-8 items-start">
               <NewsSection /> {/* Uses default mockNewsArticles */}
