@@ -153,10 +153,9 @@ export default function DashboardPage() {
             </div>
           ) : (
             <>
-              {/* StockTicker was here */}
               <div className="grid lg:grid-cols-2 gap-8 items-start">
-                <NewsSection /> {/* Uses default mockNewsArticles */}
                 <WatchlistSection />
+                <NewsSection /> {/* Uses default mockNewsArticles */}
               </div>
             </>
           )}
