@@ -9,7 +9,7 @@ import { useRouter } from 'next/navigation';
 import {
   LogOut,
   UserCircle,
-  Briefcase,
+  Briefcase, // Still needed for dropdown menu
   Menu,
   Search,
   Sun,
@@ -73,13 +73,8 @@ export function AppHeader() {
     // to avoid hydration mismatches related to theme.
     return (
       <header className="bg-primary text-primary-foreground shadow-md sticky top-0 z-50">
-        <div className="container mx-auto flex h-20 items-center justify-between px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center">
-            <Briefcase className="h-8 w-8 mr-3 text-accent" />
-            <h1 className="text-2xl sm:text-3xl font-headline font-semibold tracking-tight">
-              SIM Dashboard
-            </h1>
-          </div>
+        <div className="container mx-auto flex h-20 items-center justify-end px-4 sm:px-6 lg:px-8">
+          {/* Removed logo/title div */}
           <div className="flex items-center space-x-2 sm:space-x-4">
             <div className="h-9 w-9 bg-primary-foreground/10 rounded-md animate-pulse"></div>
             <div className="h-9 w-9 bg-primary-foreground/10 rounded-md animate-pulse"></div>
@@ -93,14 +88,8 @@ export function AppHeader() {
 
   return (
     <header className="bg-primary text-primary-foreground shadow-md sticky top-0 z-50">
-      <div className="container mx-auto flex h-20 items-center justify-between px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center">
-          <Briefcase className="h-8 w-8 mr-3 text-accent" />
-          <h1 className="text-2xl sm:text-3xl font-headline font-semibold tracking-tight">
-            SIM Dashboard
-          </h1>
-        </div>
-
+      <div className="container mx-auto flex h-20 items-center justify-end px-4 sm:px-6 lg:px-8">
+        {/* Removed logo/title div */}
         <div className="flex items-center space-x-1 sm:space-x-2">
           <form onSubmit={handleSearchSubmit} className="hidden sm:flex items-center relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-accent pointer-events-none" />
