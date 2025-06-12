@@ -10,7 +10,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Search, SlidersHorizontal } from 'lucide-react';
 
 const orderTabs = [
-  { value: "executed", label: "Executed" },
+  { value: "open", label: "Open" },
+  { value: "executed", label: "Open" }, // Changed "Executed" to "Open"
   { value: "gtt", label: "GTT" },
   { value: "bids", label: "Bids" },
   { value: "baskets", label: "Baskets" },
@@ -19,23 +20,23 @@ const orderTabs = [
 ];
 
 export default function OrdersPage() {
-  const [activeTab, setActiveTab] = useState("executed");
+  const [activeTab, setActiveTab] = useState("open");
 
-  const NoOrdersContent = () => (
+  const NoOrdersContent = ({ currentTabValue, tabDisplayLabel }: { currentTabValue: string, tabDisplayLabel: string }) => (
     <div className="flex flex-col items-center justify-center text-center py-16 flex-grow">
       <Image
         src="https://placehold.co/200x150.png"
-        alt="No orders"
+        alt={`No ${tabDisplayLabel.toLowerCase()} orders`}
         width={200}
         height={150}
         data-ai-hint="documents order papers"
         className="mb-8 opacity-75"
       />
       <h2 className="text-xl font-semibold text-foreground mb-2">
-        No orders here
+        {currentTabValue === 'open' ? 'No pending orders' : `No ${tabDisplayLabel.toLowerCase()} orders here`}
       </h2>
       <p className="text-muted-foreground">
-        Orders placed or executed will appear here.
+        {currentTabValue === 'open' ? 'Place an order from your watchlist' : `Orders ${tabDisplayLabel.toLowerCase()} will appear here.`}
       </p>
     </div>
   );
@@ -45,7 +46,7 @@ export default function OrdersPage() {
       <div className="flex flex-col min-h-screen">
         <AppHeader />
         <main className="flex-grow flex flex-col">
-          <Tabs defaultValue="executed" value={activeTab} onValueChange={setActiveTab} className="flex flex-col flex-grow">
+          <Tabs defaultValue="open" value={activeTab} onValueChange={setActiveTab} className="flex flex-col flex-grow">
             <div className="bg-background border-b">
               <TabsList className="container mx-auto px-4 sm:px-6 lg:px-8 flex overflow-x-auto whitespace-nowrap no-scrollbar rounded-none h-auto p-0 border-none bg-transparent">
                 {orderTabs.map((tab) => (
@@ -78,7 +79,7 @@ export default function OrdersPage() {
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 flex-grow flex flex-col">
               {orderTabs.map((tab) => (
                 <TabsContent key={tab.value} value={tab.value} className="flex-grow flex flex-col mt-0 data-[state=inactive]:hidden">
-                  <NoOrdersContent />
+                  <NoOrdersContent currentTabValue={tab.value} tabDisplayLabel={tab.label} />
                 </TabsContent>
               ))}
             </div>
@@ -88,3 +89,5 @@ export default function OrdersPage() {
     </ProtectedRoute>
   );
 }
+
+    
