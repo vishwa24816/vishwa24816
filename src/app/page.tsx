@@ -8,6 +8,7 @@ import { MarketOverview } from '@/components/dashboard/MarketOverview';
 import { NewsSection } from '@/components/dashboard/NewsSection';
 import { WatchlistSection } from '@/components/dashboard/WatchlistSection';
 import { PortfolioHoldingsTable } from '@/components/dashboard/PortfolioHoldingsTable';
+import { CryptoHoldingsSection } from '@/components/dashboard/CryptoHoldingsSection';
 import React, { useState } from 'react';
 
 export default function DashboardPage() {
@@ -53,7 +54,10 @@ export default function DashboardPage() {
           />
           
           {activePrimaryItem === "Portfolio" && activeSecondaryItem === "Holdings" ? (
-            <PortfolioHoldingsTable />
+            <>
+              <PortfolioHoldingsTable />
+              <CryptoHoldingsSection />
+            </>
           ) : (
             <div className="grid lg:grid-cols-2 gap-8 items-start">
               <NewsSection />
