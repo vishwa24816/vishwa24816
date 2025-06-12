@@ -87,14 +87,14 @@ export default function SimbotPage() {
       <div className="flex flex-col h-screen">
         <AppHeader />
         <main className="flex-grow flex flex-col container mx-auto p-0 sm:p-2 md:p-4 overflow-hidden">
-          <div className="bg-card border rounded-lg shadow-xl flex flex-col flex-grow h-[calc(100vh-theme(spacing.20)-theme(spacing.16)-theme(spacing.8))] sm:h-[calc(100vh-theme(spacing.20)-theme(spacing.16)-theme(spacing.4))]">
+          <div className="bg-card border rounded-lg shadow-xl flex flex-col flex-grow relative h-[calc(100vh-theme(spacing.20)-theme(spacing.16)-theme(spacing.8))] sm:h-[calc(100vh-theme(spacing.20)-theme(spacing.16)-theme(spacing.4))]">
             <div className="p-4 border-b">
               <h1 className="text-xl font-semibold text-primary flex items-center">
                 <Bot className="h-6 w-6 mr-2" /> Simbot - AI Assistant
               </h1>
             </div>
 
-            <ScrollArea className="flex-grow p-4 space-y-4" ref={scrollAreaRef}>
+            <ScrollArea className="flex-grow p-4 space-y-6" ref={scrollAreaRef}> {/* Increased space-y */}
               {messages.map((msg) => (
                 <div
                   key={msg.id}
@@ -154,16 +154,25 @@ export default function SimbotPage() {
                   disabled={isLoading}
                   autoFocus
                 />
-                <Button type="button" variant="ghost" size="icon" className="text-primary hover:bg-primary/10" disabled={isLoading} onClick={() => alert("Voice input coming soon!")}>
-                  <Mic className="h-5 w-5" />
-                  <span className="sr-only">Use Microphone</span>
-                </Button>
                 <Button type="submit" size="icon" disabled={isLoading || !inputValue.trim()}>
                   {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
                   <span className="sr-only">Send message</span>
                 </Button>
               </form>
             </div>
+            
+            <Button
+              type="button"
+              variant="default" 
+              size="icon"
+              className="absolute bottom-20 right-4 sm:right-6 md:right-8 rounded-full shadow-lg z-10 h-14 w-14 flex items-center justify-center"
+              disabled={isLoading}
+              onClick={() => alert("Voice input coming soon!")}
+            >
+              <Mic className="h-7 w-7" />
+              <span className="sr-only">Use Microphone</span>
+            </Button>
+
           </div>
         </main>
       </div>
