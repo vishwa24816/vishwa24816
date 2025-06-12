@@ -128,7 +128,7 @@ export function WatchlistSection({
               </Button>
             </form>
           )}
-          <ScrollArea className="max-h-72 pr-3">
+          <ScrollArea className="max-h-[480px] pr-3">
             {itemsToRender.length === 0 ? (
               <p className="text-muted-foreground text-center py-4">
                 {isPredefinedList ? "No items in this watchlist." : "Your watchlist is empty. Add stocks to track them."}
