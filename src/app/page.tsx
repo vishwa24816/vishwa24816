@@ -15,7 +15,7 @@ import { CryptoFuturesSection } from '@/components/dashboard/CryptoFuturesSectio
 import { PackageOpen } from 'lucide-react';
 
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import type { PortfolioHolding, NewsArticle, IntradayPosition, FoPosition, CryptoFuturePosition, Stock } from '@/types';
 import { mockPortfolioHoldings, mockNewsArticles, mockIntradayPositions, mockFoPositions, mockCryptoFutures, mockStocks, mockCryptoAssets } from '@/lib/mockData';
 
@@ -85,8 +85,8 @@ function getRelevantNewsForPositions(
   return relevantNews;
 }
 
-function getRelevantNewsForWatchlistItems(items: Stock[], allNews: NewsArticle[]): NewsArticle[] {
-  if (!items.length || !allNews.length) {
+function getRelevantNewsForWatchlistItems(items: Stock[] | undefined, allNews: NewsArticle[]): NewsArticle[] {
+  if (!items || !items.length || !allNews.length) {
     return [];
   }
   const relevantNews: NewsArticle[] = [];
@@ -95,7 +95,6 @@ function getRelevantNewsForWatchlistItems(items: Stock[], allNews: NewsArticle[]
     if (item.symbol) {
       keywords.push(item.symbol.toLowerCase());
     }
-    // For crypto like BTC, ETH, also check for their names in headlines
     if (item.exchange === 'Crypto') {
         keywords.push(item.name.toLowerCase());
     }
@@ -122,34 +121,40 @@ export default function DashboardPage() {
     "Mutual funds": ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
     Bonds: ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
   };
-  
+
   const [activePrimaryItem, setActivePrimaryItem] = useState("Portfolio");
   const [activeSecondaryItem, setActiveSecondaryItem] = useState(
-    secondaryNavTriggerCategories["Portfolio"]?.[0] || "" 
+    secondaryNavTriggerCategories["Portfolio"]?.[0] || ""
   );
-  
+
   const handlePrimaryNavClick = (item: string) => {
     setActivePrimaryItem(item);
     const newSecondaryItems = secondaryNavTriggerCategories[item] || [];
     if (newSecondaryItems.length > 0) {
-      setActiveSecondaryItem(newSecondaryItems[0]); 
+      setActiveSecondaryItem(newSecondaryItems[0]);
     } else {
-      setActiveSecondaryItem(""); 
+      setActiveSecondaryItem("");
     }
   };
 
   const handleSecondaryNavClick = (item: string) => {
     setActiveSecondaryItem(item);
   };
-  
+
   const isPortfolioHoldingsView = activePrimaryItem === "Portfolio" && activeSecondaryItem === "Holdings";
   const isPortfolioPositionsView = activePrimaryItem === "Portfolio" && activeSecondaryItem === "Positions";
   const isUserPortfolioWatchlistView = activePrimaryItem === "Portfolio" && activeSecondaryItem === "Portfolio Watchlist";
-  const isCategoryPredefinedWatchlistView =
-    ["Stocks", "Futures", "Options", "Crypto", "Mutual funds", "Bonds"].includes(activePrimaryItem) &&
-    (activeSecondaryItem.startsWith("Top watchlist") || !!activeSecondaryItem.match(/^Watchlist \d+$/));
 
-  let newsForView: NewsArticle[] = mockNewsArticles;
+  const isCategoryTopWatchlistView = // For predefined lists like "Stocks - Top watchlist"
+    ["Stocks", "Futures", "Options", "Crypto", "Mutual funds", "Bonds"].includes(activePrimaryItem) &&
+    activeSecondaryItem.startsWith("Top watchlist");
+
+  const isCategoryNumberedWatchlistView = // For user-editable numbered watchlists like "Stocks - Watchlist 1"
+    ["Stocks", "Futures", "Options", "Crypto", "Mutual funds", "Bonds"].includes(activePrimaryItem) &&
+    !!activeSecondaryItem.match(/^Watchlist \d+$/);
+
+
+  let newsForView: NewsArticle[] = mockNewsArticles; // Default to all news
   let itemsForCategoryWatchlist: Stock[] | undefined = undefined;
   let categoryWatchlistTitle: string = "";
 
@@ -157,22 +162,24 @@ export default function DashboardPage() {
     newsForView = getRelevantNewsForHoldings(mockPortfolioHoldings, mockNewsArticles);
   } else if (isPortfolioPositionsView) {
     newsForView = getRelevantNewsForPositions(mockIntradayPositions, mockFoPositions, mockCryptoFutures, mockNewsArticles);
-  } else if (isCategoryPredefinedWatchlistView) {
+  } else if (isCategoryTopWatchlistView) {
     categoryWatchlistTitle = `${activePrimaryItem} - ${activeSecondaryItem}`;
     if (activePrimaryItem === "Stocks") {
       itemsForCategoryWatchlist = mockStocks.map(s => ({...s, exchange: s.exchange || (Math.random() > 0.5 ? "NSE" : "BSE")}));
     } else if (activePrimaryItem === "Crypto") {
       itemsForCategoryWatchlist = mockCryptoAssets;
+    } else {
+      itemsForCategoryWatchlist = []; // Placeholder for other categories
     }
-     else {
-      // Placeholder for other categories like Futures, Crypto, MF, Bonds
-      // For now, they will show an empty list. Mock data can be added later.
-      itemsForCategoryWatchlist = [];
-    }
-    newsForView = getRelevantNewsForWatchlistItems(itemsForCategoryWatchlist || [], mockNewsArticles);
+    newsForView = getRelevantNewsForWatchlistItems(itemsForCategoryWatchlist, mockNewsArticles);
   } else if (isUserPortfolioWatchlistView) {
-    // For user's own editable watchlist, news is general for now
-    // newsForView = getRelevantNewsForWatchlistItems(localStorageWatchlistItems, mockNewsArticles); // More complex
+    // For user's own editable portfolio watchlist, news is general for now or could be based on its items
+    // For simplicity, using general news, but could fetch its items from localStorage to filter news.
+    newsForView = mockNewsArticles;
+  } else if (isCategoryNumberedWatchlistView) {
+    categoryWatchlistTitle = `${activePrimaryItem} - ${activeSecondaryItem}`;
+    // News for numbered watchlists is general for now, as filtering based on their dynamic content is more complex here.
+    newsForView = mockNewsArticles;
   }
 
 
@@ -182,14 +189,14 @@ export default function DashboardPage() {
         <AppHeader />
         <main className="flex-grow container mx-auto p-4 sm:p-6 lg:p-8 space-y-8">
           <MarketOverview />
-          <SubNav 
+          <SubNav
             activePrimaryItem={activePrimaryItem}
             activeSecondaryItem={activeSecondaryItem}
             onPrimaryNavClick={handlePrimaryNavClick}
             onSecondaryNavClick={handleSecondaryNavClick}
             secondaryNavTriggerCategories={secondaryNavTriggerCategories}
           />
-          
+
           {isPortfolioHoldingsView ? (
             <>
               <PortfolioHoldingsTable />
@@ -207,24 +214,34 @@ export default function DashboardPage() {
             </div>
           ) : isUserPortfolioWatchlistView ? (
             <div className="space-y-8">
-              <WatchlistSection title="My Portfolio Watchlist" /> {/* Uses localStorage */}
-              <NewsSection articles={newsForView} /> {/* General news */}
+              <WatchlistSection title="My Portfolio Watchlist" /> {/* Uses default localStorage key and initial items */}
+              <NewsSection articles={newsForView} />
             </div>
-          ) : isCategoryPredefinedWatchlistView ? (
+          ) : isCategoryTopWatchlistView ? (
             <div className="space-y-8">
-              <WatchlistSection 
+              <WatchlistSection
                 title={categoryWatchlistTitle}
-                displayItems={itemsForCategoryWatchlist} 
-                isPredefinedList={true} 
+                displayItems={itemsForCategoryWatchlist}
+                isPredefinedList={true}
               />
               <NewsSection articles={newsForView} />
+            </div>
+          ) : isCategoryNumberedWatchlistView ? (
+            <div className="space-y-8">
+              <WatchlistSection
+                title={categoryWatchlistTitle}
+                isPredefinedList={false} // Editable
+                localStorageKeyOverride={`simAppWatchlist_${activePrimaryItem.replace(/\s+/g, '_')}_${activeSecondaryItem.replace(/\s+/g, '_')}`}
+                defaultInitialItems={[]} // Starts empty
+              />
+              <NewsSection articles={newsForView} /> {/* General news for these editable lists for now */}
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center text-center py-12 text-muted-foreground">
               <PackageOpen className="h-16 w-16 mb-4" />
               <h2 className="text-2xl font-semibold mb-2 text-foreground">No specific view selected</h2>
               <p className="max-w-md">
-                Select an item from the navigation above to see details. 
+                Select an item from the navigation above to see details.
                 For categories like "Options", "IPO", or unconfigured watchlists, content might not be available yet.
               </p>
             </div>
@@ -237,5 +254,3 @@ export default function DashboardPage() {
     </ProtectedRoute>
   );
 }
-
-    

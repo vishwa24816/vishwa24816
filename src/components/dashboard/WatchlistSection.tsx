@@ -12,47 +12,67 @@ import { Eye, PlusCircle, Trash2, TrendingUp, TrendingDown } from 'lucide-react'
 import { useToast } from "@/hooks/use-toast";
 import { cn } from '@/lib/utils';
 
-const WATCHLIST_LS_KEY = 'simUserWatchlist';
+const WATCHLIST_LS_KEY = 'simUserWatchlist'; // Default key for the main user portfolio watchlist
 
 interface WatchlistSectionProps {
   displayItems?: Stock[];
   isPredefinedList?: boolean;
   title?: string;
+  localStorageKeyOverride?: string; // To allow multiple independent editable watchlists
+  defaultInitialItems?: Stock[]; // To control initial items for new editable watchlists
 }
 
-export function WatchlistSection({ 
-  displayItems, 
+export function WatchlistSection({
+  displayItems,
   isPredefinedList = false,
-  title 
+  title,
+  localStorageKeyOverride,
+  defaultInitialItems,
 }: WatchlistSectionProps) {
   const [watchlist, setWatchlist] = useState<Stock[]>([]);
   const [newStockSymbol, setNewStockSymbol] = useState('');
   const { toast } = useToast();
+
+  const effectiveLocalStorageKey = localStorageKeyOverride || WATCHLIST_LS_KEY;
 
   useEffect(() => {
     if (isPredefinedList) {
       setWatchlist(displayItems || []);
     } else {
       try {
-        const storedWatchlist = localStorage.getItem(WATCHLIST_LS_KEY);
+        const storedWatchlist = localStorage.getItem(effectiveLocalStorageKey);
         if (storedWatchlist) {
           setWatchlist(JSON.parse(storedWatchlist));
         } else {
-          setWatchlist(mockStocks.slice(0, 2)); // Default for editable watchlist
+          // Use defaultInitialItems if provided (e.g., [] for new empty watchlists).
+          // Fallback to mockStocks only for the very default user watchlist if defaultInitialItems is not set.
+          if (typeof defaultInitialItems !== 'undefined') {
+            setWatchlist(defaultInitialItems);
+          } else if (effectiveLocalStorageKey === WATCHLIST_LS_KEY) {
+            setWatchlist(mockStocks.slice(0, 2));
+          } else {
+            setWatchlist([]); // Other editable watchlists start empty by default
+          }
         }
       } catch (error) {
-        console.error("Failed to load watchlist from localStorage", error);
-        setWatchlist(mockStocks.slice(0, 2));
+        console.error(`Failed to load watchlist from localStorage (key: ${effectiveLocalStorageKey}):`, error);
+        if (typeof defaultInitialItems !== 'undefined') {
+          setWatchlist(defaultInitialItems);
+        } else if (effectiveLocalStorageKey === WATCHLIST_LS_KEY) {
+          setWatchlist(mockStocks.slice(0, 2));
+        } else {
+          setWatchlist([]);
+        }
       }
     }
-  }, [displayItems, isPredefinedList]);
+  }, [displayItems, isPredefinedList, effectiveLocalStorageKey, defaultInitialItems]);
 
   useEffect(() => {
     if (!isPredefinedList) {
-      localStorage.setItem(WATCHLIST_LS_KEY, JSON.stringify(watchlist));
+      localStorage.setItem(effectiveLocalStorageKey, JSON.stringify(watchlist));
     }
-  }, [watchlist, isPredefinedList]);
-  
+  }, [watchlist, isPredefinedList, effectiveLocalStorageKey]);
+
   const handleAddStock = (e: FormEvent) => {
     e.preventDefault();
     if (isPredefinedList || !newStockSymbol.trim()) return;
@@ -62,9 +82,9 @@ export function WatchlistSection({
     if (stockToAdd) {
       if (!watchlist.find(s => s.id === stockToAdd.id)) {
         setWatchlist(prev => [...prev, stockToAdd]);
-        toast({ title: "Stock Added", description: `${stockToAdd.name} added to your watchlist.` });
+        toast({ title: "Stock Added", description: `${stockToAdd.name} added to ${cardTitle}.` });
       } else {
-        toast({ title: "Already Added", description: `${stockToAdd.name} is already in your watchlist.`, variant: "destructive" });
+        toast({ title: "Already Added", description: `${stockToAdd.name} is already in ${cardTitle}.`, variant: "destructive" });
       }
     } else {
       toast({ title: "Stock Not Found", description: `Could not find stock with symbol: ${newStockSymbol}. Please use symbols like RELIANCE, TCS etc.`, variant: "destructive" });
@@ -77,10 +97,10 @@ export function WatchlistSection({
     const stock = watchlist.find(s => s.id === stockId);
     setWatchlist(prev => prev.filter(s => s.id !== stockId));
     if (stock) {
-      toast({ title: "Stock Removed", description: `${stock.name} removed from your watchlist.` });
+      toast({ title: "Stock Removed", description: `${stock.name} removed from ${cardTitle}.` });
     }
   };
-  
+
   const itemsToRender = isPredefinedList ? (displayItems || []) : watchlist;
   const cardTitle = title || "My Watchlist";
 
@@ -152,7 +172,7 @@ export function WatchlistSection({
         </CardContent>
         {!isPredefinedList && itemsToRender.length > 0 && (
           <CardFooter className="text-sm text-muted-foreground">
-            <p>You are tracking {itemsToRender.length} stock(s).</p>
+            <p>You are tracking {itemsToRender.length} stock(s) in {cardTitle}.</p>
           </CardFooter>
         )}
       </Card>
