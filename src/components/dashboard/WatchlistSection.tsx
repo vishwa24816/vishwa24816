@@ -86,7 +86,7 @@ export function WatchlistSection({
 
   return (
     <section aria-labelledby="watchlist-section-title">
-      <Card className="shadow-lg h-full flex flex-col">
+      <Card className="shadow-lg flex flex-col">
         <CardHeader>
           <CardTitle id="watchlist-section-title" className="text-xl font-semibold font-headline text-primary flex items-center">
             <Eye className="h-6 w-6 mr-2" /> {cardTitle}
@@ -108,7 +108,7 @@ export function WatchlistSection({
               </Button>
             </form>
           )}
-          <ScrollArea className="h-72 pr-3">
+          <ScrollArea className="max-h-72 pr-3">
             {itemsToRender.length === 0 ? (
               <p className="text-muted-foreground text-center py-4">
                 {isPredefinedList ? "No items in this watchlist." : "Your watchlist is empty. Add stocks to track them."}
