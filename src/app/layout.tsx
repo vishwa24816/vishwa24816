@@ -1,7 +1,9 @@
+
 import type {Metadata} from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from '@/contexts/AuthContext';
+import { AppFooter } from '@/components/shared/AppFooter';
 
 export const metadata: Metadata = {
   title: 'SIM - Stock Information & Management',
@@ -22,8 +24,11 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased min-h-screen bg-background text-foreground">
         <AuthProvider>
-          {children}
+          <div className="pb-16"> {/* Add padding for the fixed footer */}
+            {children}
+          </div>
           <Toaster />
+          <AppFooter />
         </AuthProvider>
       </body>
     </html>
