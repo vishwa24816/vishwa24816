@@ -45,7 +45,7 @@ export default function OrdersPage() {
     <ProtectedRoute>
       <div className="flex flex-col min-h-screen">
         <AppHeader />
-        <main className="flex-grow container mx-auto px-0 sm:px-4 md:px-6 lg:px-8 py-4 flex flex-col">
+        <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col">
           <Tabs defaultValue="open" value={activeTab} onValueChange={setActiveTab} className="flex flex-col flex-grow">
             <TabsList className="flex overflow-x-auto whitespace-nowrap no-scrollbar rounded-none bg-background border-b h-auto p-0">
               {orderTabs.map((tab) => (
