@@ -20,4 +20,3 @@ export const mockStocks: Stock[] = [
   { id: 'wipro', symbol: 'WIPRO', name: 'Wipro Ltd.', price: 410.80, change: 3.10, changePercent: 0.76, exchange: 'NSE' },
   { id: 'sunpharma', symbol: 'SUNPHARMA', name: 'Sun Pharmaceutical Industries Ltd.', price: 1150.20, change: -8.60, changePercent: -0.74, exchange: 'NSE' },
 ];
-
