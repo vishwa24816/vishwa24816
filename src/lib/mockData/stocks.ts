@@ -16,14 +16,66 @@ export const mockStocks: Stock[] = [
     todayLow: 2430.00, todayHigh: 2460.00, fiftyTwoWeekLow: 2000.00, fiftyTwoWeekHigh: 2800.00, openPrice: 2435.00, prevClosePrice: 2437.75, volume: 5000000,
     lowerCircuit: 2200.50, upperCircuit: 2700.50,
     fundamentals: { marketCap: '16,50,000Cr', peRatioTTM: 25.5, pbRatio: 3.1, industryPe: 20.1, debtToEquity: 0.4, roe: 12.5, epsTTM: 96.0, divYield: 0.5, bookValue: 790, faceValue: 10 },
-    financials: { revenue: generateFinancialData(50000), profit: generateFinancialData(8000), netWorth: generateFinancialData(200000) }
+    financials: { revenue: generateFinancialData(50000), profit: generateFinancialData(8000), netWorth: generateFinancialData(200000) },
+    aboutCompany: "Reliance Industries Limited is an Indian multinational conglomerate company, headquartered in Mumbai. It has diverse businesses including energy, petrochemicals, natural gas, retail, telecommunications, mass media, and textiles. Reliance is one of the most profitable companies in India, the largest publicly traded company in India by market capitalisation, and the largest company in India as measured by revenue.",
+    shareholdingPattern: [
+      {
+        period: "Mar '24",
+        data: [
+          { category: "Promoters", percentage: 50.37 },
+          { category: "FIIs", percentage: 22.85 },
+          { category: "DIIs", percentage: 16.03 },
+          { category: "Public", percentage: 10.75 },
+        ],
+      },
+       {
+        period: "Dec '23",
+        data: [
+          { category: "Promoters", percentage: 50.30 },
+          { category: "FIIs", percentage: 23.00 },
+          { category: "DIIs", percentage: 15.90 },
+          { category: "Public", percentage: 10.80 },
+        ],
+      }
+    ],
+    topMutualFundsInvested: [
+      { id: 'mf_rel_1', name: "SBI Nifty 50 ETF", assetValue: "₹1,50,000 Cr", schemeType: "Index Fund" },
+      { id: 'mf_rel_2', name: "UTI Nifty 50 Index Fund", assetValue: "₹80,000 Cr", schemeType: "Index Fund" },
+      { id: 'mf_rel_3', name: "ICICI Prudential Bluechip Fund", assetValue: "₹50,000 Cr", schemeType: "Large Cap" },
+    ],
+    similarStocks: [
+      { id: 'ongc', symbol: 'ONGC', name: 'Oil & Natural Gas Corporation', price: 270.10, changePercent: 1.5, marketCap: "3,40,000Cr" },
+      { id: 'ioc', symbol: 'IOC', name: 'Indian Oil Corporation Ltd.', price: 170.50, changePercent: -0.5, marketCap: "2,40,000Cr" },
+      { id: 'bpcl', symbol: 'BPCL', name: 'Bharat Petroleum Corporation Ltd.', price: 600.70, changePercent: 0.8, marketCap: "1,30,000Cr" },
+    ]
   },
   { 
     id: 'tcs', symbol: 'TCS', name: 'Tata Consultancy Services Ltd.', price: 3280.10, change: -5.20, changePercent: -0.16, exchange: 'BSE', sector: 'IT Services', 
     todayLow: 3270.00, todayHigh: 3290.00, fiftyTwoWeekLow: 2800.00, fiftyTwoWeekHigh: 3600.00, openPrice: 3285.00, prevClosePrice: 3285.30, volume: 1200000,
     lowerCircuit: 3000.00, upperCircuit: 3500.00,
     fundamentals: { marketCap: '12,00,000Cr', peRatioTTM: 30.2, pbRatio: 10.5, industryPe: 28.5, debtToEquity: 0.1, roe: 35.2, epsTTM: 108.5, divYield: 1.2, bookValue: 310, faceValue: 1 },
-    financials: { revenue: generateFinancialData(20000), profit: generateFinancialData(4000), netWorth: generateFinancialData(50000) }
+    financials: { revenue: generateFinancialData(20000), profit: generateFinancialData(4000), netWorth: generateFinancialData(50000) },
+    aboutCompany: "Tata Consultancy Services is an Indian multinational information technology services and consulting company headquartered in Mumbai. It is a part of the Tata Group and operates in 150 locations across 46 countries.",
+    shareholdingPattern: [
+        {
+            period: "Mar '24",
+            data: [
+                { category: "Promoters", percentage: 72.30 },
+                { category: "FIIs", percentage: 12.80 },
+                { category: "DIIs", percentage: 8.50 },
+                { category: "Public", percentage: 6.40 },
+            ],
+        },
+    ],
+    topMutualFundsInvested: [
+      { id: 'mf_tcs_1', name: "ICICI Prudential Technology Fund", assetValue: "₹8,000 Cr", schemeType: "Sectoral" },
+      { id: 'mf_tcs_2', name: "Aditya Birla SL Digital India Fund", assetValue: "₹3,500 Cr", schemeType: "Sectoral" },
+    ],
+    similarStocks: [
+      { id: 'infosys_sim', symbol: 'INFY', name: 'Infosys Ltd.', price: 1350.00, changePercent: 1.69, marketCap: "5,60,000Cr" },
+      { id: 'wipro_sim', symbol: 'WIPRO', name: 'Wipro Ltd.', price: 410.80, changePercent: 0.76, marketCap: "2,25,000Cr" },
+      { id: 'hcltech_sim', symbol: 'HCLTECH', name: 'HCL Technologies Ltd.', price: 1450.00, changePercent: -0.2, marketCap: "3,90,000Cr" },
+    ]
   },
   { 
     id: 'hdfcbank', symbol: 'HDFCBANK', name: 'HDFC Bank Ltd.', price: 1610.70, change: 8.15, changePercent: 0.51, exchange: 'NSE', sector: 'Banking', 

@@ -8,13 +8,14 @@ import { AppHeader } from '@/components/shared/AppHeader'; // Assuming you might
 import { ProtectedRoute } from '@/components/shared/ProtectedRoute';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { mockStocks, mockCryptoAssets, mockMutualFunds, mockBonds, mockIndexFuturesForWatchlist, mockStockFuturesForWatchlist, mockOptionsForWatchlist } from '@/lib/mockData';
 import type { Stock } from '@/types';
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, TrendingUp, TrendingDown, Info, CalendarDays, Maximize2, BarChart2, ChevronUp, ChevronDown, ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
+import { ArrowLeft, TrendingUp, TrendingDown, Info, CalendarDays, Maximize2, BarChart2, ChevronUp, ChevronDown, ChevronLeftIcon, ChevronRightIcon, ExternalLink, Briefcase, Users, Landmark, SearchIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Separator } from '@/components/ui/separator';
 
 // Combine all mock asset lists for easier lookup
 const allMockAssets: Stock[] = [
@@ -63,6 +64,26 @@ const FinancialBar: React.FC<{ value: number; maxValue: number; label: string }>
   );
 };
 
+const CollapsibleSection: React.FC<{ title: string; children: React.ReactNode; defaultOpen?: boolean; icon?: React.ElementType }> = ({ title, children, defaultOpen = false, icon: Icon }) => {
+  const [isOpen, setIsOpen] = useState(defaultOpen);
+  return (
+    <div className="mt-6">
+      <button
+        className="flex justify-between items-center w-full mb-2 text-left"
+        onClick={() => setIsOpen(!isOpen)}
+        aria-expanded={isOpen}
+      >
+        <h3 className="text-md font-semibold flex items-center">
+          {Icon && <Icon className="h-5 w-5 mr-2 text-primary" />}
+          {title}
+        </h3>
+        {isOpen ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
+      </button>
+      {isOpen && <div className="mt-2 text-sm text-muted-foreground animate-accordion-down">{children}</div>}
+    </div>
+  );
+};
+
 
 export default function StockDetailPage() {
   const params = useParams();
@@ -73,12 +94,17 @@ export default function StockDetailPage() {
   const [stock, setStock] = useState<Stock | null>(null);
   const [activeTimescale, setActiveTimescale] = useState('1D');
   const [activeFinancialsCategory, setActiveFinancialsCategory] = useState<'revenue' | 'profit' | 'netWorth'>('revenue');
+  const [activeShareholdingPeriod, setActiveShareholdingPeriod] = useState<string>('');
+
 
   useEffect(() => {
     if (symbol) {
       const foundStock = allMockAssets.find(s => s.symbol.toUpperCase() === symbol.toUpperCase());
       if (foundStock) {
         setStock(foundStock);
+        if (foundStock.shareholdingPattern && foundStock.shareholdingPattern.length > 0) {
+          setActiveShareholdingPeriod(foundStock.shareholdingPattern[0].period);
+        }
       } else {
         toast({
           title: "Error",
@@ -92,12 +118,10 @@ export default function StockDetailPage() {
 
   const handleBuy = () => {
     toast({ title: "Buy Action (Mock)", description: `Initiating BUY for ${stock?.symbol}` });
-    // router.push(`/place-order/${stock?.symbol}?action=BUY`); // Future: navigate to actual order form
   };
 
   const handleSell = () => {
     toast({ title: "Sell Action (Mock)", description: `Initiating SELL for ${stock?.symbol}` });
-    // router.push(`/place-order/${stock?.symbol}?action=SELL`); // Future: navigate to actual order form
   };
 
   if (!stock) {
@@ -117,6 +141,8 @@ export default function StockDetailPage() {
   
   const currentFinancialsData = stock.financials?.[activeFinancialsCategory] || [];
   const maxFinancialValue = Math.max(...currentFinancialsData.map(d => d.value), 0);
+  const currentShareholdingData = stock.shareholdingPattern?.find(p => p.period === activeShareholdingPeriod)?.data || [];
+
 
   return (
     <ProtectedRoute>
@@ -237,14 +263,7 @@ export default function StockDetailPage() {
                 </div>
 
                 {stock.fundamentals && (
-                  <div className="mt-6">
-                    <div className="flex justify-between items-center mb-2">
-                      <h3 className="text-md font-semibold flex items-center">
-                        Fundamentals
-                        <Info className="h-3 w-3 ml-1.5 text-muted-foreground cursor-pointer" onClick={() => toast({title: "Fundamentals Info Clicked"})} />
-                      </h3>
-                       <ChevronUp className="h-4 w-4 text-muted-foreground" />
-                    </div>
+                  <CollapsibleSection title="Fundamentals" icon={SearchIcon} defaultOpen>
                     <div className="grid grid-cols-2 gap-x-6 gap-y-3 text-sm">
                       <div><span className="text-muted-foreground">Mkt Cap</span><p className="font-semibold text-foreground">{stock.fundamentals.marketCap || 'N/A'}</p></div>
                       <div><span className="text-muted-foreground">ROE</span><p className="font-semibold text-foreground">{stock.fundamentals.roe?.toFixed(2) || 'N/A'}%</p></div>
@@ -257,15 +276,11 @@ export default function StockDetailPage() {
                       <div><span className="text-muted-foreground">Debt to Equity</span><p className="font-semibold text-foreground">{stock.fundamentals.debtToEquity?.toFixed(2) || 'N/A'}</p></div>
                       <div><span className="text-muted-foreground">Face Value</span><p className="font-semibold text-foreground">{stock.fundamentals.faceValue?.toFixed(2) || 'N/A'}</p></div>
                     </div>
-                  </div>
+                  </CollapsibleSection>
                 )}
 
                 {stock.financials && (
-                  <div className="mt-6">
-                    <div className="flex justify-between items-center mb-3">
-                      <h3 className="text-md font-semibold">Financials</h3>
-                       <ChevronUp className="h-4 w-4 text-muted-foreground" />
-                    </div>
+                  <CollapsibleSection title="Financials" icon={BarChart2} defaultOpen>
                     <div className="flex items-center justify-between mb-4">
                       <div className="flex space-x-1 sm:space-x-2 overflow-x-auto no-scrollbar">
                         {(['revenue', 'profit', 'netWorth'] as const).map(cat => (
@@ -292,15 +307,95 @@ export default function StockDetailPage() {
                           <FinancialBar key={data.period} value={data.value} maxValue={maxFinancialValue} label={data.period} />
                         ))
                       ) : (
-                        <p className="absolute inset-0 flex items-center justify-center text-muted-foreground text-sm">No financial data available.</p>
+                        <p className="absolute inset-0 flex items-center justify-center text-muted-foreground text-sm">No financial data available for {activeFinancialsCategory}.</p>
                       )}
                     </div>
                     <div className="flex justify-between items-center mt-3 text-xs">
                       <Link href="#" className="text-primary hover:underline">View details</Link>
                       <p className="text-muted-foreground">*All values are in crore</p>
                     </div>
-                  </div>
+                  </CollapsibleSection>
                 )}
+                
+                <Separator className="my-6" />
+
+                {stock.aboutCompany && (
+                   <CollapsibleSection title="About Company" icon={Info}>
+                    <p className="text-sm leading-relaxed">{stock.aboutCompany}</p>
+                  </CollapsibleSection>
+                )}
+
+                {stock.shareholdingPattern && stock.shareholdingPattern.length > 0 && (
+                  <CollapsibleSection title="Shareholding Pattern" icon={Users} defaultOpen>
+                    <div className="flex space-x-1 overflow-x-auto no-scrollbar py-2 mb-3">
+                      {stock.shareholdingPattern.map(sp => (
+                        <Button
+                          key={sp.period}
+                          variant={activeShareholdingPeriod === sp.period ? 'secondary' : 'ghost'}
+                          size="sm"
+                          onClick={() => setActiveShareholdingPeriod(sp.period)}
+                          className="rounded-full px-3 text-xs shrink-0"
+                        >
+                          {sp.period}
+                        </Button>
+                      ))}
+                    </div>
+                    <div className="space-y-3">
+                      {currentShareholdingData.map(item => (
+                        <div key={item.category}>
+                          <div className="flex justify-between text-xs mb-0.5">
+                            <span className="text-foreground">{item.category}</span>
+                            <span className="font-semibold text-foreground">{item.percentage.toFixed(2)}%</span>
+                          </div>
+                          <div className="relative h-2 w-full rounded-full bg-muted">
+                            <div className="absolute h-2 rounded-full bg-primary/70" style={{ width: `${item.percentage}%` }}></div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CollapsibleSection>
+                )}
+
+                {stock.topMutualFundsInvested && stock.topMutualFundsInvested.length > 0 && (
+                  <CollapsibleSection title="Top Mutual Funds Invested" icon={Briefcase}>
+                    <ul className="space-y-3">
+                      {stock.topMutualFundsInvested.map(fund => (
+                        <li key={fund.id} className="p-3 bg-muted/30 rounded-md">
+                          <p className="font-semibold text-foreground text-sm">{fund.name}</p>
+                          {fund.schemeType && <p className="text-xs text-muted-foreground">{fund.schemeType}</p>}
+                          {fund.assetValue && <p className="text-xs text-muted-foreground">AUM: {fund.assetValue}</p>}
+                        </li>
+                      ))}
+                    </ul>
+                  </CollapsibleSection>
+                )}
+                
+                {stock.similarStocks && stock.similarStocks.length > 0 && (
+                  <CollapsibleSection title="Similar Stocks" icon={Landmark} defaultOpen>
+                     <div className="space-y-3">
+                      {stock.similarStocks.map(simStock => {
+                        const isSimPositive = simStock.changePercent >= 0;
+                        return (
+                          <Link href={`/order/${simStock.symbol}`} key={simStock.id} className="block p-3 bg-muted/30 rounded-md hover:bg-muted/50 transition-colors">
+                            <div className="flex justify-between items-center">
+                              <div>
+                                <p className="font-semibold text-foreground text-sm">{simStock.name} <span className="text-xs text-muted-foreground">({simStock.symbol})</span></p>
+                                {simStock.marketCap && <p className="text-xs text-muted-foreground">Mkt Cap: {simStock.marketCap}</p>}
+                              </div>
+                              <div className="text-right">
+                                <p className={`font-medium ${isSimPositive ? 'text-green-500' : 'text-red-500'}`}>₹{simStock.price.toFixed(2)}</p>
+                                <p className={`text-xs ${isSimPositive ? 'text-green-500' : 'text-red-500'}`}>
+                                  {isSimPositive ? '+' : ''}{simStock.changePercent.toFixed(2)}%
+                                </p>
+                              </div>
+                            </div>
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  </CollapsibleSection>
+                )}
+
 
               </TabsContent>
               <TabsContent value="news" className="mt-4">
@@ -327,3 +422,4 @@ export default function StockDetailPage() {
     </ProtectedRoute>
   );
 }
+

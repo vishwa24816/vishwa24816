@@ -31,11 +31,33 @@ export interface Stock {
     faceValue?: number;
   };
   financials?: {
-    // Simplified for placeholder bar chart
     revenue: Array<{ period: string; value: number }>;
     profit: Array<{ period: string; value: number }>;
     netWorth: Array<{ period: string; value: number }>;
   };
+  aboutCompany?: string;
+  shareholdingPattern?: Array<{
+    period: string; // e.g., "May '25"
+    data: Array<{
+      category: string; // e.g., "Retail", "Promoters"
+      percentage: number;
+    }>;
+  }>;
+  topMutualFundsInvested?: Array<{
+    id: string;
+    name: string;
+    schemeType?: string; // e.g., "Equity ELSS"
+    nav?: number;
+    assetValue?: string; // e.g., "₹10,000 Cr"
+  }>;
+  similarStocks?: Array<{
+    id: string;
+    symbol: string;
+    name: string;
+    price: number;
+    changePercent: number;
+    marketCap?: string;
+  }>;
 }
 
 export interface MarketIndex {
