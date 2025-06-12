@@ -9,6 +9,9 @@ import { NewsSection } from '@/components/dashboard/NewsSection';
 import { WatchlistSection } from '@/components/dashboard/WatchlistSection';
 import { PortfolioHoldingsTable } from '@/components/dashboard/PortfolioHoldingsTable';
 import { CryptoHoldingsSection } from '@/components/dashboard/CryptoHoldingsSection';
+import { IntradayPositionsSection } from '@/components/dashboard/IntradayPositionsSection';
+import { FoPositionsSection } from '@/components/dashboard/FoPositionsSection';
+import { CryptoFuturesSection } from '@/components/dashboard/CryptoFuturesSection';
 import React, { useState } from 'react';
 import type { PortfolioHolding, NewsArticle } from '@/types';
 import { mockPortfolioHoldings, mockNewsArticles } from '@/lib/mockData';
@@ -63,7 +66,7 @@ export default function DashboardPage() {
     setActiveSecondaryItem(item);
   };
 
-  let newsToDisplay: NewsArticle[] = mockNewsArticles; // Default for non-portfolio views
+  let newsToDisplay: NewsArticle[] = mockNewsArticles; 
   if (activePrimaryItem === "Portfolio" && activeSecondaryItem === "Holdings") {
     newsToDisplay = getRelevantNewsForHoldings(mockPortfolioHoldings, mockNewsArticles);
   }
@@ -90,6 +93,13 @@ export default function DashboardPage() {
               <div className="mt-8">
                 <NewsSection articles={newsToDisplay} />
               </div>
+            </>
+          ) : activePrimaryItem === "Portfolio" && activeSecondaryItem === "Positions" ? (
+            <>
+              <IntradayPositionsSection />
+              <FoPositionsSection />
+              <CryptoFuturesSection />
+              <NewsSection /> {/* Default news */}
             </>
           ) : (
             <div className="grid lg:grid-cols-2 gap-8 items-start">
