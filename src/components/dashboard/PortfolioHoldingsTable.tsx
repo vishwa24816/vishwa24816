@@ -46,37 +46,41 @@ export function PortfolioHoldingsTable() {
     if (activeFilter === 'All') return true;
     if (activeFilter === 'Stock') return holding.type === 'Stock' || holding.type === 'ETF';
     if (activeFilter === 'Mutual Fund') return holding.type === 'Mutual Fund';
-    return false; // Should not happen if filter value is one of the above
+    return false;
   });
 
   return (
     <Card className="shadow-lg">
       <CardHeader>
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <CardTitle className="text-xl font-semibold font-headline text-primary flex items-center">
-                <Briefcase className="h-6 w-6 mr-2" /> Portfolio Holdings
-            </CardTitle>
-            <div className="text-right flex-shrink-0">
-                <p className="text-sm text-muted-foreground">Total Investment</p>
-                <p className="font-semibold text-lg">{formatCurrency(totalInvestmentValue)}</p>
-            </div>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4 pt-4 border-t">
-            <div>
-                <p className="text-sm text-muted-foreground">Current Value</p>
-                <p className="text-2xl font-bold">{formatCurrency(totalCurrentValue)}</p>
-            </div>
-            <div className="text-left sm:text-right">
+        <CardTitle className="text-xl font-semibold font-headline text-primary flex items-center">
+            <Briefcase className="h-6 w-6 mr-2" /> Portfolio Holdings
+        </CardTitle>
+
+        {/* Row 1: P&L Figures */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t">
+            <div> {/* Overall P&L */}
                 <p className="text-sm text-muted-foreground">Overall P&L</p>
                 <p className={cn("text-lg font-semibold", overallPandL >= 0 ? 'text-green-600' : 'text-red-600')}>
                     {formatCurrency(overallPandL)} ({overallPandLPercent.toFixed(2)}%)
                 </p>
             </div>
-             <div className="text-left sm:text-right">
+            <div className="text-left sm:text-right"> {/* Day's P&L */}
                 <p className="text-sm text-muted-foreground">Day's P&L</p>
                 <p className={cn("text-lg font-semibold", totalDayChangeAbsolute >= 0 ? 'text-green-600' : 'text-red-600')}>
                     {formatCurrency(totalDayChangeAbsolute)} ({totalDayChangePercent.toFixed(2)}%)
                 </p>
+            </div>
+        </div>
+
+        {/* Row 2: Investment & Current Value */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4"> {/* Removed mt from CardHeader's space-y */}
+            <div> {/* Total Investment */}
+                <p className="text-sm text-muted-foreground">Total Investment</p>
+                <p className="font-semibold text-lg">{formatCurrency(totalInvestmentValue)}</p>
+            </div>
+            <div className="text-left sm:text-right"> {/* Current Value */}
+                <p className="text-sm text-muted-foreground">Current Value</p>
+                <p className="text-2xl font-bold">{formatCurrency(totalCurrentValue)}</p>
             </div>
         </div>
       </CardHeader>
