@@ -9,21 +9,28 @@ const primaryNavItems = [
   "Portfolio", "Stocks", "Futures", "Options", "Crypto", "Mutual funds", "Bonds", "IPO"
 ];
 
-const secondaryNavTriggerCategories = ["Stocks", "Futures", "Crypto", "Mutual funds"];
-const secondaryNavBaseItems = ["Top watchlist"];
-const watchlistItems = Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`);
-const allSecondaryNavItems = [...secondaryNavBaseItems, ...watchlistItems];
+const secondaryNavTriggerCategories: Record<string, string[]> = {
+  Stocks: ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
+  Futures: ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
+  Crypto: ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
+  "Mutual funds": ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
+  Portfolio: ["Holdings", "Positions", "Portfolio Watchlist"],
+};
 
 export function SubNav() {
   const [activePrimaryItem, setActivePrimaryItem] = useState("Stocks");
   const [activeSecondaryItem, setActiveSecondaryItem] = useState("Top watchlist");
 
-  const showSecondaryNav = secondaryNavTriggerCategories.includes(activePrimaryItem);
+  const currentSecondaryNavItems = secondaryNavTriggerCategories[activePrimaryItem] || [];
+  const showSecondaryNav = currentSecondaryNavItems.length > 0;
 
   const handlePrimaryNavClick = (item: string) => {
     setActivePrimaryItem(item);
-    if (secondaryNavTriggerCategories.includes(item)) {
-      setActiveSecondaryItem("Top watchlist"); // Default for secondary nav
+    const newSecondaryItems = secondaryNavTriggerCategories[item] || [];
+    if (newSecondaryItems.length > 0) {
+      setActiveSecondaryItem(newSecondaryItems[0]); // Default to the first item of the new secondary nav
+    } else {
+      setActiveSecondaryItem(""); // No secondary nav
     }
     // Placeholder for actual navigation logic
     console.log(`Navigating to ${item}`);
@@ -61,7 +68,7 @@ export function SubNav() {
       {showSecondaryNav && (
         <div className="border-b border-border mt-1"> {/* Container for secondary nav */}
           <div className="flex space-x-0 overflow-x-auto whitespace-nowrap pb-0 no-scrollbar">
-            {allSecondaryNavItems.map((item) => (
+            {currentSecondaryNavItems.map((item) => (
               <Button
                 key={item}
                 variant="ghost"
@@ -83,4 +90,3 @@ export function SubNav() {
     </div>
   );
 }
-
