@@ -13,6 +13,7 @@ const orderTabs = [
   { value: "open", label: "Open" },
   { value: "executed", label: "Executed" },
   { value: "gtt", label: "GTT" },
+  { value: "bids", label: "Bids" },
   { value: "baskets", label: "Baskets" },
   { value: "sips", label: "SIPs" },
   { value: "alerts", label: "Alerts" },
@@ -46,12 +47,12 @@ export default function OrdersPage() {
         <AppHeader />
         <main className="flex-grow container mx-auto px-0 sm:px-4 md:px-6 lg:px-8 py-4 flex flex-col">
           <Tabs defaultValue="open" value={activeTab} onValueChange={setActiveTab} className="flex flex-col flex-grow">
-            <TabsList className="grid w-full grid-cols-3 sm:grid-cols-4 md:grid-cols-6 rounded-none bg-background border-b h-auto p-0">
+            <TabsList className="flex overflow-x-auto whitespace-nowrap no-scrollbar rounded-none bg-background border-b h-auto p-0">
               {orderTabs.map((tab) => (
                 <TabsTrigger
                   key={tab.value}
                   value={tab.value}
-                  className="py-3 data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:shadow-none rounded-none text-muted-foreground hover:text-primary transition-colors text-sm"
+                  className="py-3 px-4 data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:shadow-none rounded-none text-muted-foreground hover:text-primary transition-colors text-sm flex-shrink-0"
                 >
                   {tab.label}
                 </TabsTrigger>
