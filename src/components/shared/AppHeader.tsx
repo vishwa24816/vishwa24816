@@ -9,7 +9,7 @@ import { useRouter } from 'next/navigation';
 import {
   LogOut,
   UserCircle,
-  Briefcase, // Still needed for dropdown menu
+  Briefcase,
   Menu,
   Search,
   Sun,
@@ -42,7 +42,7 @@ export function AppHeader() {
   }, []);
 
   useEffect(() => {
-    if (!isMounted) return; // Prevent applying theme on server or before hydration
+    if (!isMounted) return; 
     if (theme === 'dark') {
       document.documentElement.classList.add('dark');
     } else {
@@ -69,12 +69,9 @@ export function AppHeader() {
   };
 
   if (!isMounted) {
-    // Render a placeholder or simplified header during server render / pre-hydration
-    // to avoid hydration mismatches related to theme.
     return (
       <header className="bg-primary text-primary-foreground shadow-md sticky top-0 z-50">
         <div className="container mx-auto flex h-20 items-center justify-end px-4 sm:px-6 lg:px-8">
-          {/* Removed logo/title div */}
           <div className="flex items-center space-x-2 sm:space-x-4">
             <div className="h-9 w-9 bg-primary-foreground/10 rounded-md animate-pulse"></div>
             <div className="h-9 w-9 bg-primary-foreground/10 rounded-md animate-pulse"></div>
@@ -89,20 +86,7 @@ export function AppHeader() {
   return (
     <header className="bg-primary text-primary-foreground shadow-md sticky top-0 z-50">
       <div className="container mx-auto flex h-20 items-center justify-end px-4 sm:px-6 lg:px-8">
-        {/* Removed logo/title div */}
         <div className="flex items-center space-x-1 sm:space-x-2">
-          <form onSubmit={handleSearchSubmit} className="hidden sm:flex items-center relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-accent pointer-events-none" />
-            <Input
-              type="search"
-              placeholder="Search stocks..."
-              className="bg-primary-foreground/10 border-none focus-visible:ring-1 focus-visible:ring-accent focus-visible:ring-offset-0 text-primary-foreground placeholder:text-primary-foreground/70 h-9 pl-10 pr-3 rounded-md w-40 md:w-64 transition-all duration-300 focus:w-48 md:focus:w-72"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              aria-label="Search stocks"
-            />
-          </form>
-
           <Button variant="ghost" size="icon" onClick={toggleTheme} className="hover:bg-primary-foreground/10 text-accent shrink-0">
             {theme === 'light' ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
             <span className="sr-only">Toggle theme</span>
@@ -113,6 +97,18 @@ export function AppHeader() {
             <span className="sr-only">UPI Scanner</span>
           </Button>
 
+          <form onSubmit={handleSearchSubmit} className="hidden sm:flex items-center relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-accent pointer-events-none" />
+            <Input
+              type="search"
+              placeholder="Search stocks, mutual funds, crypto..."
+              className="bg-primary-foreground/10 border-none focus-visible:ring-1 focus-visible:ring-accent focus-visible:ring-offset-0 text-primary-foreground placeholder:text-primary-foreground/70 h-9 pl-10 pr-3 rounded-md w-40 md:w-64 transition-all duration-300 focus:w-48 md:focus:w-72"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              aria-label="Search stocks, mutual funds, crypto"
+            />
+          </form>
+          
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon" className="hover:bg-primary-foreground/10 text-accent shrink-0">
