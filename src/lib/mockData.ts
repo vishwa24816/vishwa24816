@@ -17,16 +17,33 @@ export const mockStocks: Stock[] = [
   { id: 'bajfinance', symbol: 'BAJFINANCE', name: 'Bajaj Finance Ltd.', price: 7100.20, change: 50.90, changePercent: 0.72, exchange: 'NSE' },
 ];
 
+export const mockCryptoAssets: Stock[] = [
+  { id: 'btc', symbol: 'BTC', name: 'Bitcoin', price: 30000.00, change: 500.00, changePercent: 1.69, exchange: 'Crypto' },
+  { id: 'eth', symbol: 'ETH', name: 'Ethereum', price: 1800.00, change: -20.50, changePercent: -1.12, exchange: 'Crypto' },
+  { id: 'usdt', symbol: 'USDT', name: 'Tether', price: 1.00, change: 0.00, changePercent: 0.00, exchange: 'Crypto' },
+  { id: 'bnb', symbol: 'BNB', name: 'BNB', price: 240.00, change: 2.10, changePercent: 0.88, exchange: 'Crypto' },
+  { id: 'xrp', symbol: 'XRP', name: 'XRP', price: 0.47, change: 0.01, changePercent: 2.17, exchange: 'Crypto' },
+  { id: 'usdc', symbol: 'USDC', name: 'USD Coin', price: 1.00, change: 0.00, changePercent: 0.00, exchange: 'Crypto' },
+  { id: 'ada', symbol: 'ADA', name: 'Cardano', price: 0.26, change: -0.005, changePercent: -1.88, exchange: 'Crypto' },
+  { id: 'doge', symbol: 'DOGE', name: 'Dogecoin', price: 0.062, change: 0.001, changePercent: 1.64, exchange: 'Crypto' },
+  { id: 'sol', symbol: 'SOL', name: 'Solana', price: 20.00, change: 0.75, changePercent: 3.90, exchange: 'Crypto' },
+  { id: 'trx', symbol: 'TRX', name: 'TRON', price: 0.076, change: 0.002, changePercent: 2.70, exchange: 'Crypto' },
+];
+
+
 export const mockNewsArticles: NewsArticle[] = [
   { id: 'news1', headline: 'RBI keeps repo rate unchanged, GDP growth projected at 7%', source: 'Business Standard', timestamp: '2023-10-06T10:00:00Z', url: '#' },
   { id: 'news2', headline: 'Indian markets hit record highs amid global cues', source: 'The Economic Times', timestamp: '2023-10-06T09:30:00Z', url: '#' },
   { id: 'news3', headline: 'FIIs turn net buyers in October, infuse Rs 5,000 crore', source: 'Livemint', timestamp: '2023-10-06T08:00:00Z', url: '#' },
   { id: 'news4', headline: 'Tech stocks rally on strong Q2 earnings expectations for INFY and TCS', source: 'Reuters India', timestamp: '2023-10-05T15:00:00Z', url: '#' },
   { id: 'news5', headline: 'Government announces new PLI scheme for electronics manufacturing, Reliance to benefit', source: 'PIB India', timestamp: '2023-10-05T12:00:00Z', url: '#' },
-  { id: 'news6', headline: 'Bitcoin price surges past $43,000, ETH follows', source: 'Crypto News Daily', timestamp: '2023-10-07T11:00:00Z', url: '#' },
+  { id: 'news6', headline: 'Bitcoin price surges past $43,000, ETH follows. Solana (SOL) also sees gains.', source: 'Crypto News Daily', timestamp: '2023-10-07T11:00:00Z', url: '#' },
   { id: 'news7', headline: 'HDFC Bank Q3 results: Net profit rises 20% YoY, asset quality stable', source: 'Moneycontrol', timestamp: '2024-01-15T14:00:00Z', url: '#'},
   { id: 'news8', headline: 'ICICI Bank posts strong credit growth, cautious on unsecured loans', source: 'Bloomberg Quint', timestamp: '2024-01-18T10:30:00Z', url: '#'},
   { id: 'news9', headline: 'State Bank of India (SBIN) plans to raise $1 billion via bonds', source: 'The Hindu Business Line', timestamp: '2024-01-20T11:00:00Z', url: '#'},
+  { id: 'news10', headline: 'BNB Chain announces new DeFi initiatives. TRX network activity up.', source: 'DeFi Pulse', timestamp: '2024-01-22T09:00:00Z', url: '#'},
+  { id: 'news11', headline: 'XRP lawsuit developments continue to impact price. Dogecoin sees social media buzz.', source: 'CoinTelegraph', timestamp: '2024-01-23T14:00:00Z', url: '#'},
+  { id: 'news12', headline: 'Cardano (ADA) prepares for next major network upgrade.', source: 'Cardano Journal', timestamp: '2024-01-24T10:00:00Z', url: '#'},
 ];
 
 export const mockPortfolioHoldings: PortfolioHolding[] = [
@@ -63,12 +80,12 @@ export const mockPortfolioHoldings: PortfolioHolding[] = [
     symbol: 'BTC',
     type: 'Crypto',
     quantity: 0.05,
-    avgCostPrice: 2200000.00,
-    ltp: 2350000.00,
+    avgCostPrice: 2200000.00, // INR based price for consistency in portfolio summary
+    ltp: 2350000.00, // INR based price for consistency
     currentValue: 117500.00,
     profitAndLoss: 7500.00,
     profitAndLossPercent: 6.82,
-    dayChangeAbsolute: 750.00, // 0.05 BTC * 15000 price change per BTC
+    dayChangeAbsolute: 750.00, 
     dayChangePercent: 0.64,
   },
   {
@@ -230,3 +247,5 @@ export const mockCryptoFutures: CryptoFuturePosition[] = [
     leverage: 10,
   },
 ];
+
+    

@@ -17,7 +17,7 @@ import { PackageOpen } from 'lucide-react';
 
 import React, { useState } from 'react';
 import type { PortfolioHolding, NewsArticle, IntradayPosition, FoPosition, CryptoFuturePosition, Stock } from '@/types';
-import { mockPortfolioHoldings, mockNewsArticles, mockIntradayPositions, mockFoPositions, mockCryptoFutures, mockStocks } from '@/lib/mockData';
+import { mockPortfolioHoldings, mockNewsArticles, mockIntradayPositions, mockFoPositions, mockCryptoFutures, mockStocks, mockCryptoAssets } from '@/lib/mockData';
 
 function getRelevantNewsForHoldings(holdings: PortfolioHolding[], allNews: NewsArticle[]): NewsArticle[] {
   if (!holdings.length || !allNews.length) {
@@ -95,6 +95,10 @@ function getRelevantNewsForWatchlistItems(items: Stock[], allNews: NewsArticle[]
     if (item.symbol) {
       keywords.push(item.symbol.toLowerCase());
     }
+    // For crypto like BTC, ETH, also check for their names in headlines
+    if (item.exchange === 'Crypto') {
+        keywords.push(item.name.toLowerCase());
+    }
     return keywords;
   }).filter(Boolean);
 
@@ -157,7 +161,10 @@ export default function DashboardPage() {
     categoryWatchlistTitle = `${activePrimaryItem} - ${activeSecondaryItem}`;
     if (activePrimaryItem === "Stocks") {
       itemsForCategoryWatchlist = mockStocks.map(s => ({...s, exchange: s.exchange || (Math.random() > 0.5 ? "NSE" : "BSE")}));
-    } else {
+    } else if (activePrimaryItem === "Crypto") {
+      itemsForCategoryWatchlist = mockCryptoAssets;
+    }
+     else {
       // Placeholder for other categories like Futures, Crypto, MF, Bonds
       // For now, they will show an empty list. Mock data can be added later.
       itemsForCategoryWatchlist = [];
@@ -230,3 +237,5 @@ export default function DashboardPage() {
     </ProtectedRoute>
   );
 }
+
+    
