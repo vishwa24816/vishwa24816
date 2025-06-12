@@ -86,3 +86,11 @@ export interface CryptoFuturePosition {
   margin: number; // In quote currency (e.g., USDT)
   leverage: number; // e.g., 10x
 }
+
+export interface ChatMessage {
+  id: string;
+  text: string;
+  sender: 'user' | 'bot';
+  timestamp: Date;
+}
+
