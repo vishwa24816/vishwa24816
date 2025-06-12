@@ -7,8 +7,15 @@ export interface Stock {
   change: number;
   changePercent: number;
   marketCap?: string;
-  volume?: string;
-  exchange?: string; // Added exchange
+  volume?: number; // Changed to number
+  exchange?: string;
+  todayLow?: number;
+  todayHigh?: number;
+  fiftyTwoWeekLow?: number;
+  fiftyTwoWeekHigh?: number;
+  openPrice?: number;
+  prevClosePrice?: number;
+  sector?: string;
 }
 
 export interface MarketIndex {
