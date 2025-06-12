@@ -14,3 +14,4 @@ export * from './mockData/mutualFunds';
 export * from './mockData/bonds';
 export * from './mockData/futuresWatchlistData';
 export * from './mockData/optionsWatchlistData';
+export * from './mockData/optionChainData'; // Added export for option chain data

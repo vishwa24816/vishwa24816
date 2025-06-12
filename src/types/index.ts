@@ -94,3 +94,34 @@ export interface ChatMessage {
   timestamp: Date;
 }
 
+export interface OptionData {
+  oi: number;
+  chngInOI: number;
+  volume: number;
+  iv?: number; // Implied Volatility - can be optional
+  ltp: number;
+  netChng: number;
+  bidQty?: number;
+  bidPrice?: number;
+  askPrice?: number;
+  askQty?: number;
+}
+
+export interface OptionChainEntry {
+  strikePrice: number;
+  call?: OptionData;
+  put?: OptionData;
+}
+
+export interface OptionChainData {
+  underlyingValue?: number;
+  expiryDate: string;
+  data: OptionChainEntry[];
+}
+
+export interface Underlying {
+  id: string;
+  name: string;
+  symbol: string;
+}
+

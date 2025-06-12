@@ -12,6 +12,7 @@ import { CryptoHoldingsSection } from '@/components/dashboard/CryptoHoldingsSect
 import { IntradayPositionsSection } from '@/components/dashboard/IntradayPositionsSection';
 import { FoPositionsSection } from '@/components/dashboard/FoPositionsSection';
 import { CryptoFuturesSection } from '@/components/dashboard/CryptoFuturesSection';
+import { OptionChain } from '@/components/dashboard/OptionChain'; // Import OptionChain
 import { PackageOpen } from 'lucide-react';
 
 
@@ -27,8 +28,8 @@ import {
   mockCryptoAssets,
   mockMutualFunds,
   mockBonds,
-  mockFuturesForWatchlist,
-  mockOptionsForWatchlist
+  mockFuturesForWatchlist
+  // mockOptionsForWatchlist is no longer needed directly here
 } from '@/lib/mockData';
 
 function getRelevantNewsForHoldings(holdings: PortfolioHolding[], allNews: NewsArticle[]): NewsArticle[] {
@@ -148,7 +149,7 @@ export default function DashboardPage() {
     Portfolio: ["Holdings", "Positions", "Portfolio Watchlist"],
     Stocks: ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
     Futures: ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)], // Includes Equity & Index Futures
-    Options: ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)], // Includes Equity & Index Options
+    Options: ["Top watchlist"], // Options now shows Option Chain for "Top watchlist"
     Crypto: ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)], // For Crypto Assets
     "Mutual funds": ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
     Bonds: ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
@@ -179,8 +180,11 @@ export default function DashboardPage() {
   const isUserPortfolioWatchlistView = activePrimaryItem === "Portfolio" && activeSecondaryItem === "Portfolio Watchlist";
 
   const isCategoryTopWatchlistView = 
-    ["Stocks", "Futures", "Options", "Crypto", "Mutual funds", "Bonds"].includes(activePrimaryItem) &&
+    ["Stocks", "Futures", "Crypto", "Mutual funds", "Bonds"].includes(activePrimaryItem) && // Options removed from here
     activeSecondaryItem.startsWith("Top watchlist");
+
+  const isOptionsTopWatchlistView = activePrimaryItem === "Options" && activeSecondaryItem.startsWith("Top watchlist");
+
 
   const isCategoryNumberedWatchlistView = 
     ["Stocks", "Futures", "Options", "Crypto", "Mutual funds", "Bonds"].includes(activePrimaryItem) &&
@@ -195,7 +199,7 @@ export default function DashboardPage() {
     newsForView = getRelevantNewsForHoldings(mockPortfolioHoldings, mockNewsArticles);
   } else if (isPortfolioPositionsView) {
     newsForView = getRelevantNewsForPositions(mockIntradayPositions, mockFoPositions, mockCryptoFutures, mockNewsArticles);
-  } else if (isCategoryTopWatchlistView) {
+  } else if (isCategoryTopWatchlistView) { // Handles Stocks, Futures, Crypto, MF, Bonds "Top watchlist"
     categoryWatchlistTitle = `${activePrimaryItem} - ${activeSecondaryItem}`;
     if (activePrimaryItem === "Stocks") {
       itemsForCategoryWatchlist = mockStocks.map(s => ({...s, exchange: s.exchange || (Math.random() > 0.5 ? "NSE" : "BSE")}));
@@ -207,15 +211,17 @@ export default function DashboardPage() {
       itemsForCategoryWatchlist = mockBonds;
     } else if (activePrimaryItem === "Futures") {
       itemsForCategoryWatchlist = mockFuturesForWatchlist;
-    } else if (activePrimaryItem === "Options") {
-      itemsForCategoryWatchlist = mockOptionsForWatchlist;
     } else {
       itemsForCategoryWatchlist = []; 
     }
     newsForView = getRelevantNewsForWatchlistItems(itemsForCategoryWatchlist, mockNewsArticles);
+  } else if (isOptionsTopWatchlistView) {
+    newsForView = mockNewsArticles; // General news for option chain view, or could be NIFTY/BANKNIFTY specific
   } else if (isUserPortfolioWatchlistView) {
     newsForView = mockNewsArticles; // General news, or could filter by items in this specific watchlist
   } else if (isCategoryNumberedWatchlistView) {
+    // Note: If activePrimaryItem is "Options", these numbered watchlists are not currently accessible via UI due to SubNav change.
+    // If they were, they would behave like other numbered watchlists.
     categoryWatchlistTitle = `${activePrimaryItem} - ${activeSecondaryItem}`;
     newsForView = mockNewsArticles; // General news for these editable lists for now
   }
@@ -255,7 +261,12 @@ export default function DashboardPage() {
               <WatchlistSection title="My Portfolio Watchlist" />
               <NewsSection articles={newsForView} />
             </div>
-          ) : isCategoryTopWatchlistView ? (
+          ) : isOptionsTopWatchlistView ? ( // Render OptionChain for "Options - Top watchlist"
+            <div className="space-y-8">
+              <OptionChain />
+              <NewsSection articles={newsForView} />
+            </div>
+          ): isCategoryTopWatchlistView ? ( // For other "Top watchlist" (Stocks, Futures, etc.)
             <div className="space-y-8">
               <WatchlistSection
                 title={categoryWatchlistTitle}
