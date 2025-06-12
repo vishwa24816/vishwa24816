@@ -17,7 +17,19 @@ import { PackageOpen } from 'lucide-react';
 
 import React, { useState, useEffect } from 'react';
 import type { PortfolioHolding, NewsArticle, IntradayPosition, FoPosition, CryptoFuturePosition, Stock } from '@/types';
-import { mockPortfolioHoldings, mockNewsArticles, mockIntradayPositions, mockFoPositions, mockCryptoFutures, mockStocks, mockCryptoAssets } from '@/lib/mockData';
+import { 
+  mockPortfolioHoldings, 
+  mockNewsArticles, 
+  mockIntradayPositions, 
+  mockFoPositions, 
+  mockCryptoFutures, 
+  mockStocks, 
+  mockCryptoAssets,
+  mockMutualFunds,
+  mockBonds,
+  mockFuturesForWatchlist,
+  mockOptionsForWatchlist
+} from '@/lib/mockData';
 
 function getRelevantNewsForHoldings(holdings: PortfolioHolding[], allNews: NewsArticle[]): NewsArticle[] {
   if (!holdings.length || !allNews.length) {
@@ -29,12 +41,21 @@ function getRelevantNewsForHoldings(holdings: PortfolioHolding[], allNews: NewsA
     if (h.symbol) {
       keywords.push(h.symbol.toLowerCase());
     }
+    // Add specific keywords for fund names or bond identifiers if needed
+    if (h.type === 'Mutual Fund' || h.type === 'Bond') {
+        const nameParts = h.name.split(' ');
+        keywords.push(...nameParts.map(part => part.toLowerCase()));
+    }
     return keywords;
-  }).filter(Boolean);
+  }).filter(Boolean).reduce((acc, keyword) => { // Use Set for unique keywords
+    acc.add(keyword);
+    return acc;
+  }, new Set<string>());
+
 
   allNews.forEach(news => {
     const headlineLower = news.headline.toLowerCase();
-    if (holdingKeywords.some(keyword => keyword && headlineLower.includes(keyword))) {
+    if (Array.from(holdingKeywords).some(keyword => keyword && headlineLower.includes(keyword))) {
       relevantNews.push(news);
     }
   });
@@ -60,9 +81,11 @@ function getRelevantNewsForPositions(
 
   fo.forEach(p => {
     const nameLower = p.instrumentName.toLowerCase();
+    // Add common index names
     if (nameLower.includes("nifty")) positionKeywords.add("nifty");
     if (nameLower.includes("banknifty")) positionKeywords.add("banknifty");
-    if (nameLower.includes("reliance")) positionKeywords.add("reliance");
+    if (nameLower.includes("finnifty")) positionKeywords.add("finnifty");
+    // Add underlying stock symbol if identifiable (simple extraction)
     const parts = p.instrumentName.split(" ");
     if (parts.length > 0) positionKeywords.add(parts[0].toLowerCase());
   });
@@ -95,15 +118,24 @@ function getRelevantNewsForWatchlistItems(items: Stock[] | undefined, allNews: N
     if (item.symbol) {
       keywords.push(item.symbol.toLowerCase());
     }
-    if (item.exchange === 'Crypto') {
-        keywords.push(item.name.toLowerCase());
+    if (item.exchange === 'Crypto' || item.exchange === 'MF' || item.exchange === 'BOND' || item.exchange === 'NFO') {
+        const nameParts = item.name.split(/[\s-]+/); // Split by space or hyphen
+        keywords.push(...nameParts.map(part => part.toLowerCase()));
+        if (item.symbol) { // for NFO, symbol can be like NIFTYJANFUT
+            const symbolParts = item.symbol.match(/[A-Z]+|[0-9]+/g) || [];
+            keywords.push(...symbolParts.map(part => part.toLowerCase()));
+        }
     }
     return keywords;
-  }).filter(Boolean);
+  }).filter(Boolean).reduce((acc, keyword) => {
+    acc.add(keyword);
+    return acc;
+  }, new Set<string>());
+
 
   allNews.forEach(news => {
     const headlineLower = news.headline.toLowerCase();
-    if (itemKeywords.some(keyword => keyword && headlineLower.includes(keyword))) {
+    if (Array.from(itemKeywords).some(keyword => keyword && headlineLower.includes(keyword))) {
       relevantNews.push(news);
     }
   });
@@ -115,11 +147,12 @@ export default function DashboardPage() {
   const secondaryNavTriggerCategories: Record<string, string[]> = {
     Portfolio: ["Holdings", "Positions", "Portfolio Watchlist"],
     Stocks: ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
-    Futures: ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
-    Options: ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
-    Crypto: ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
+    Futures: ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)], // Includes Equity & Index Futures
+    Options: ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)], // Includes Equity & Index Options
+    Crypto: ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)], // For Crypto Assets
     "Mutual funds": ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
     Bonds: ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
+    IPO: [], // No secondary nav for IPO for now
   };
 
   const [activePrimaryItem, setActivePrimaryItem] = useState("Portfolio");
@@ -145,16 +178,16 @@ export default function DashboardPage() {
   const isPortfolioPositionsView = activePrimaryItem === "Portfolio" && activeSecondaryItem === "Positions";
   const isUserPortfolioWatchlistView = activePrimaryItem === "Portfolio" && activeSecondaryItem === "Portfolio Watchlist";
 
-  const isCategoryTopWatchlistView = // For predefined lists like "Stocks - Top watchlist"
+  const isCategoryTopWatchlistView = 
     ["Stocks", "Futures", "Options", "Crypto", "Mutual funds", "Bonds"].includes(activePrimaryItem) &&
     activeSecondaryItem.startsWith("Top watchlist");
 
-  const isCategoryNumberedWatchlistView = // For user-editable numbered watchlists like "Stocks - Watchlist 1"
+  const isCategoryNumberedWatchlistView = 
     ["Stocks", "Futures", "Options", "Crypto", "Mutual funds", "Bonds"].includes(activePrimaryItem) &&
     !!activeSecondaryItem.match(/^Watchlist \d+$/);
 
 
-  let newsForView: NewsArticle[] = mockNewsArticles; // Default to all news
+  let newsForView: NewsArticle[] = mockNewsArticles; 
   let itemsForCategoryWatchlist: Stock[] | undefined = undefined;
   let categoryWatchlistTitle: string = "";
 
@@ -168,18 +201,23 @@ export default function DashboardPage() {
       itemsForCategoryWatchlist = mockStocks.map(s => ({...s, exchange: s.exchange || (Math.random() > 0.5 ? "NSE" : "BSE")}));
     } else if (activePrimaryItem === "Crypto") {
       itemsForCategoryWatchlist = mockCryptoAssets;
+    } else if (activePrimaryItem === "Mutual funds") {
+      itemsForCategoryWatchlist = mockMutualFunds;
+    } else if (activePrimaryItem === "Bonds") {
+      itemsForCategoryWatchlist = mockBonds;
+    } else if (activePrimaryItem === "Futures") {
+      itemsForCategoryWatchlist = mockFuturesForWatchlist;
+    } else if (activePrimaryItem === "Options") {
+      itemsForCategoryWatchlist = mockOptionsForWatchlist;
     } else {
-      itemsForCategoryWatchlist = []; // Placeholder for other categories
+      itemsForCategoryWatchlist = []; 
     }
     newsForView = getRelevantNewsForWatchlistItems(itemsForCategoryWatchlist, mockNewsArticles);
   } else if (isUserPortfolioWatchlistView) {
-    // For user's own editable portfolio watchlist, news is general for now or could be based on its items
-    // For simplicity, using general news, but could fetch its items from localStorage to filter news.
-    newsForView = mockNewsArticles;
+    newsForView = mockNewsArticles; // General news, or could filter by items in this specific watchlist
   } else if (isCategoryNumberedWatchlistView) {
     categoryWatchlistTitle = `${activePrimaryItem} - ${activeSecondaryItem}`;
-    // News for numbered watchlists is general for now, as filtering based on their dynamic content is more complex here.
-    newsForView = mockNewsArticles;
+    newsForView = mockNewsArticles; // General news for these editable lists for now
   }
 
 
@@ -214,7 +252,7 @@ export default function DashboardPage() {
             </div>
           ) : isUserPortfolioWatchlistView ? (
             <div className="space-y-8">
-              <WatchlistSection title="My Portfolio Watchlist" /> {/* Uses default localStorage key and initial items */}
+              <WatchlistSection title="My Portfolio Watchlist" />
               <NewsSection articles={newsForView} />
             </div>
           ) : isCategoryTopWatchlistView ? (
@@ -230,11 +268,19 @@ export default function DashboardPage() {
             <div className="space-y-8">
               <WatchlistSection
                 title={categoryWatchlistTitle}
-                isPredefinedList={false} // Editable
+                isPredefinedList={false} 
                 localStorageKeyOverride={`simAppWatchlist_${activePrimaryItem.replace(/\s+/g, '_')}_${activeSecondaryItem.replace(/\s+/g, '_')}`}
-                defaultInitialItems={[]} // Starts empty
+                defaultInitialItems={[]} 
               />
-              <NewsSection articles={newsForView} /> {/* General news for these editable lists for now */}
+              <NewsSection articles={newsForView} />
+            </div>
+          ) : activePrimaryItem === "IPO" ? (
+             <div className="flex flex-col items-center justify-center text-center py-12 text-muted-foreground">
+                <PackageOpen className="h-16 w-16 mb-4" />
+                <h2 className="text-2xl font-semibold mb-2 text-foreground">IPO Section</h2>
+                <p className="max-w-md">
+                    Information about upcoming and recent Initial Public Offerings will be displayed here.
+                </p>
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center text-center py-12 text-muted-foreground">
@@ -242,7 +288,7 @@ export default function DashboardPage() {
               <h2 className="text-2xl font-semibold mb-2 text-foreground">No specific view selected</h2>
               <p className="max-w-md">
                 Select an item from the navigation above to see details.
-                For categories like "Options", "IPO", or unconfigured watchlists, content might not be available yet.
+                Content for the selected view might not be available yet.
               </p>
             </div>
           )}
