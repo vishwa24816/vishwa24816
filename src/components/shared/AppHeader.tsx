@@ -13,18 +13,17 @@ import {
   QrCode,
   Menu,
   LogOut,
-  User as UserIcon,
-  Settings,
-  LayoutDashboard
+  Home as HomeIcon,
+  Info as InfoIcon
 } from 'lucide-react';
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+  SheetClose,
+} from "@/components/ui/sheet";
 
 export function AppHeader() {
   const { user, logout } = useAuth();
@@ -38,6 +37,14 @@ export function AppHeader() {
     const storedTheme = localStorage.getItem('sim-theme') as 'light' | 'dark' | null;
     if (storedTheme) {
       setTheme(storedTheme);
+      if (storedTheme === 'dark') {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    } else {
+        // Set default theme if nothing is stored
+        document.documentElement.classList.remove('dark'); // Default to light
     }
   }, []);
 
@@ -72,11 +79,11 @@ export function AppHeader() {
     return (
       <header className="bg-primary text-primary-foreground shadow-md sticky top-0 z-50">
         <div className="container mx-auto flex h-20 items-center justify-between px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center space-x-2">
-            <div className="h-9 w-9 bg-primary-foreground/10 rounded-md animate-pulse"></div> {/* Placeholder for menu */}
-            <div className="h-9 w-64 bg-primary-foreground/10 rounded-md animate-pulse sm:block hidden"></div> {/* Placeholder for search */}
-          </div>
           <div className="flex items-center space-x-2 sm:space-x-4">
+            <div className="h-9 w-9 bg-primary-foreground/10 rounded-md animate-pulse"></div>
+            <div className="h-9 w-40 md:w-64 bg-primary-foreground/10 rounded-md animate-pulse"></div>
+          </div>
+          <div className="flex items-center space-x-1 sm:space-x-2">
             <div className="h-9 w-9 bg-primary-foreground/10 rounded-md animate-pulse"></div>
             <div className="h-9 w-9 bg-primary-foreground/10 rounded-md animate-pulse"></div>
           </div>
@@ -90,37 +97,60 @@ export function AppHeader() {
       <div className="container mx-auto flex h-20 items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Left Section: Menu and Search */}
         <div className="flex items-center space-x-2 sm:space-x-4">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
+          <Sheet>
+            <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="hover:bg-primary-foreground/10 text-accent shrink-0">
                 <Menu className="h-6 w-6" />
                 <span className="sr-only">Open menu</span>
               </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start">
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
-              {user && (
-                <DropdownMenuItem className="flex items-center gap-2" disabled>
-                  <UserIcon className="h-4 w-4" />
-                  <span>{user.email}</span>
-                </DropdownMenuItem>
-              )}
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => router.push('/')} className="cursor-pointer">
-                <LayoutDashboard className="mr-2 h-4 w-4" />
-                <span>Dashboard</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem disabled className="cursor-not-allowed">
-                <Settings className="mr-2 h-4 w-4" />
-                <span>Settings</span>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-destructive focus:text-destructive focus:bg-destructive/10">
-                <LogOut className="mr-2 h-4 w-4" />
-                <span>Logout</span>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+            </SheetTrigger>
+            <SheetContent side="left" className="w-[250px] sm:w-[300px] p-0 flex flex-col">
+              <SheetHeader className="p-6 pb-4 border-b">
+                <SheetTitle className="text-xl font-headline text-primary flex items-center">
+                  SIM Menu
+                </SheetTitle>
+              </SheetHeader>
+              <nav className="flex flex-col space-y-1 p-4 flex-grow">
+                <SheetClose asChild>
+                  <Button
+                    variant="ghost"
+                    className="justify-start text-base p-3 hover:bg-accent/10"
+                    onClick={() => router.push('/')}
+                  >
+                    <HomeIcon className="mr-3 h-5 w-5 text-primary" />
+                    Home
+                  </Button>
+                </SheetClose>
+                <SheetClose asChild>
+                  <Button
+                    variant="ghost"
+                    className="justify-start text-base p-3 hover:bg-accent/10"
+                    onClick={() => alert('About page coming soon!')}
+                  >
+                    <InfoIcon className="mr-3 h-5 w-5 text-primary" />
+                    About
+                  </Button>
+                </SheetClose>
+              </nav>
+              <div className="p-4 border-t">
+                {user && (
+                    <div className="mb-4 text-sm text-muted-foreground">
+                        Logged in as: <span className="font-medium text-foreground">{user.email}</span>
+                    </div>
+                )}
+                <SheetClose asChild>
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start text-base p-3 text-destructive border-destructive hover:text-destructive hover:bg-destructive/10"
+                    onClick={handleLogout}
+                  >
+                    <LogOut className="mr-3 h-5 w-5" />
+                    Logout
+                  </Button>
+                </SheetClose>
+              </div>
+            </SheetContent>
+          </Sheet>
 
           <form onSubmit={handleSearchSubmit} className="flex items-center relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-accent pointer-events-none" />
