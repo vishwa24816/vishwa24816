@@ -1,3 +1,4 @@
+
 // @ts-nocheck
 "use client";
 
@@ -20,7 +21,7 @@ const IndexCard: React.FC<{ indexData: MarketIndex }> = ({ indexData }) => {
           <svg viewBox="0 0 100 35" className="w-full h-auto max-h-[45px]">
             <polyline
               fill="none"
-              stroke={isPositive ? 'hsl(var(--primary))' : 'hsl(var(--destructive))'} /* Using primary for positive, destructive for negative */
+              stroke={isPositive ? 'hsl(var(--positive))' : 'hsl(var(--destructive))'}
               strokeWidth="2.5"
               points={isPositive ? "5,30 15,20 25,25 35,15 45,18 55,10 65,13 75,20 85,15 95,22" : "5,12 15,22 25,18 35,28 45,25 55,32 65,29 75,22 85,28 95,20"}
             />
@@ -29,7 +30,7 @@ const IndexCard: React.FC<{ indexData: MarketIndex }> = ({ indexData }) => {
         
         <div>
           <div className="text-xl font-bold">{indexData.value.toLocaleString()}</div>
-          <p className={`text-xs ${isPositive ? 'text-[hsl(var(--primary))]' : 'text-destructive'} flex items-center`}>
+          <p className={`text-xs ${isPositive ? 'text-[hsl(var(--positive))]' : 'text-destructive'} flex items-center`}>
             {isPositive ? <TrendingUp className="h-3 w-3 mr-1" /> : <TrendingDown className="h-3 w-3 mr-1" />}
             {isPositive ? '+' : ''}{indexData.change.toFixed(2)} ({isPositive ? '+' : ''}{indexData.changePercent.toFixed(2)}%)
           </p>

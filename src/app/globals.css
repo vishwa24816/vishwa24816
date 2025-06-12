@@ -32,6 +32,8 @@
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
 
+    --positive: 140 65% 40%; /* Green for positive changes */
+
     --ring: 217.2 91.2% 59.8%; /* Blue for focus rings */
 
     --radius: 0.5rem;
@@ -70,6 +72,8 @@
 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
+
+    --positive: 140 60% 50%; /* Green for positive changes in dark mode */
 
     --ring: 217.2 91.2% 59.8%; /* Blue */
 
