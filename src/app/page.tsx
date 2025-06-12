@@ -12,6 +12,7 @@ import { CryptoHoldingsSection } from '@/components/dashboard/CryptoHoldingsSect
 import { IntradayPositionsSection } from '@/components/dashboard/IntradayPositionsSection';
 import { FoPositionsSection } from '@/components/dashboard/FoPositionsSection';
 import { CryptoFuturesSection } from '@/components/dashboard/CryptoFuturesSection';
+import { StockTicker } from '@/components/dashboard/StockTicker';
 import React, { useState } from 'react';
 import type { PortfolioHolding, NewsArticle, IntradayPosition, FoPosition, CryptoFuturePosition } from '@/types';
 import { mockPortfolioHoldings, mockNewsArticles, mockIntradayPositions, mockFoPositions, mockCryptoFutures } from '@/lib/mockData';
@@ -56,12 +57,10 @@ function getRelevantNewsForPositions(
   });
 
   fo.forEach(p => {
-    // Extract common keywords from instrument names
     const nameLower = p.instrumentName.toLowerCase();
     if (nameLower.includes("nifty")) positionKeywords.add("nifty");
     if (nameLower.includes("banknifty")) positionKeywords.add("banknifty");
     if (nameLower.includes("reliance")) positionKeywords.add("reliance");
-    // Add more specific stock/index keywords if needed based on your F&O data
     const parts = p.instrumentName.split(" ");
     if (parts.length > 0) positionKeywords.add(parts[0].toLowerCase());
 
@@ -121,6 +120,7 @@ export default function DashboardPage() {
     newsToDisplay = getRelevantNewsForPositions(mockIntradayPositions, mockFoPositions, mockCryptoFutures, mockNewsArticles);
   }
 
+  const showGenericView = !(activePrimaryItem === "Portfolio" && (activeSecondaryItem === "Holdings" || activeSecondaryItem === "Positions"));
 
   return (
     <ProtectedRoute>
@@ -152,10 +152,13 @@ export default function DashboardPage() {
               <NewsSection articles={newsToDisplay} />
             </div>
           ) : (
-            <div className="grid lg:grid-cols-2 gap-8 items-start">
-              <NewsSection /> {/* Uses default mockNewsArticles */}
-              <WatchlistSection />
-            </div>
+            <>
+              <StockTicker />
+              <div className="grid lg:grid-cols-2 gap-8 items-start">
+                <NewsSection /> {/* Uses default mockNewsArticles */}
+                <WatchlistSection />
+              </div>
+            </>
           )}
         </main>
         <footer className="py-6 text-center text-sm text-muted-foreground border-t">

@@ -52,6 +52,7 @@ export default {
           DEFAULT: 'hsl(var(--destructive))',
           foreground: 'hsl(var(--destructive-foreground))',
         },
+        positive: 'hsl(var(--positive))',
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
@@ -94,7 +95,7 @@ export default {
             "100%": { transform: "translateX(-100%)" }
         },
         "marquee-reverse": {
-          "0%": { transform: "translateX(-100%)" },
+          "0%": { transform: "translateX(100%)" },
           "100%": { transform: "translateX(0%)" }
       }
       },
