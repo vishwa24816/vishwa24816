@@ -1,5 +1,5 @@
 
-import type { Stock, MarketIndex, NewsArticle, PortfolioHolding } from '@/types';
+import type { Stock, MarketIndex, NewsArticle, PortfolioHolding, IntradayPosition, FoPosition, CryptoFuturePosition } from '@/types';
 
 export const mockMarketIndices: MarketIndex[] = [
   { id: 'nifty50', name: 'NIFTY 50', value: 18250.75, change: 75.20, changePercent: 0.41 },
@@ -21,8 +21,9 @@ export const mockNewsArticles: NewsArticle[] = [
   { id: 'news1', headline: 'RBI keeps repo rate unchanged, GDP growth projected at 7%', source: 'Business Standard', timestamp: '2023-10-06T10:00:00Z', url: '#' },
   { id: 'news2', headline: 'Indian markets hit record highs amid global cues', source: 'The Economic Times', timestamp: '2023-10-06T09:30:00Z', url: '#' },
   { id: 'news3', headline: 'FIIs turn net buyers in October, infuse Rs 5,000 crore', source: 'Livemint', timestamp: '2023-10-06T08:00:00Z', url: '#' },
-  { id: 'news4', headline: 'Tech stocks rally on strong Q2 earnings expectations', source: 'Reuters India', timestamp: '2023-10-05T15:00:00Z', url: '#' },
-  { id: 'news5', headline: 'Government announces new PLI scheme for electronics manufacturing', source: 'PIB India', timestamp: '2023-10-05T12:00:00Z', url: '#' },
+  { id: 'news4', headline: 'Tech stocks rally on strong Q2 earnings expectations for INFY and TCS', source: 'Reuters India', timestamp: '2023-10-05T15:00:00Z', url: '#' },
+  { id: 'news5', headline: 'Government announces new PLI scheme for electronics manufacturing, Reliance to benefit', source: 'PIB India', timestamp: '2023-10-05T12:00:00Z', url: '#' },
+  { id: 'news6', headline: 'Bitcoin price surges past $43,000, ETH follows', source: 'Crypto News Daily', timestamp: '2023-10-07T11:00:00Z', url: '#' },
 ];
 
 export const mockPortfolioHoldings: PortfolioHolding[] = [
@@ -94,5 +95,135 @@ export const mockPortfolioHoldings: PortfolioHolding[] = [
     profitAndLossPercent: 7.65,
     dayChangeAbsolute: 110.00, // 100 units * 1.10 price change per unit
     dayChangePercent: 0.51,
+  },
+   {
+    id: 'holding6',
+    name: 'Infosys Ltd.',
+    symbol: 'INFY',
+    type: 'Stock',
+    quantity: 20,
+    avgCostPrice: 1300.00,
+    ltp: 1350.00,
+    currentValue: 27000.00,
+    profitAndLoss: 1000.00,
+    profitAndLossPercent: 3.85,
+    dayChangeAbsolute: 450.00, // 20 shares * 22.50
+    dayChangePercent: 1.69,
+  },
+];
+
+export const mockIntradayPositions: IntradayPosition[] = [
+  {
+    id: 'intra1',
+    name: 'Tata Motors Ltd.',
+    symbol: 'TATAMOTORS',
+    transactionType: 'BUY',
+    quantity: 100,
+    avgPrice: 650.25,
+    ltp: 655.75,
+    pAndL: 550.00,
+    pAndLPercent: 0.85,
+  },
+  {
+    id: 'intra2',
+    name: 'Infosys Ltd.',
+    symbol: 'INFY',
+    transactionType: 'SELL',
+    quantity: 50,
+    avgPrice: 1355.00,
+    ltp: 1350.50,
+    pAndL: 225.00,
+    pAndLPercent: 0.33,
+  },
+  {
+    id: 'intra3',
+    name: 'Reliance Industries Ltd.',
+    symbol: 'RELIANCE',
+    transactionType: 'BUY',
+    quantity: 25,
+    avgPrice: 2440.00,
+    ltp: 2450.50,
+    pAndL: 262.50,
+    pAndLPercent: 0.43,
+  },
+];
+
+export const mockFoPositions: FoPosition[] = [
+  {
+    id: 'fo1',
+    instrumentName: 'NIFTY 28DEC23 20000 CE',
+    optionType: 'CE',
+    transactionType: 'BUY',
+    lots: 2,
+    quantityPerLot: 50,
+    avgPrice: 120.50,
+    ltp: 135.25,
+    pAndL: (135.25 - 120.50) * 2 * 50,
+    pAndLPercent: (((135.25 - 120.50) * 2 * 50) / (120.50 * 2 * 50)) * 100,
+    expiryDate: '2023-12-28',
+  },
+  {
+    id: 'fo2',
+    instrumentName: 'BANKNIFTY 28DEC23 45000 PE',
+    optionType: 'PE',
+    transactionType: 'BUY',
+    lots: 1,
+    quantityPerLot: 15,
+    avgPrice: 250.75,
+    ltp: 230.10,
+    pAndL: (230.10 - 250.75) * 1 * 15,
+    pAndLPercent: (((230.10 - 250.75) * 1 * 15) / (250.75 * 1 * 15)) * 100,
+    expiryDate: '2023-12-28',
+  },
+   {
+    id: 'fo3',
+    instrumentName: 'RELIANCE JAN24 FUT',
+    optionType: 'FUT',
+    transactionType: 'SELL',
+    lots: 1,
+    quantityPerLot: 250,
+    avgPrice: 2480.00,
+    ltp: 2450.50,
+    pAndL: (2480.00 - 2450.50) * 1 * 250,
+    pAndLPercent: (((2480.00 - 2450.50) * 1 * 250) / (2480.00 * 1 * 250)) * 100,
+    expiryDate: '2024-01-25',
+  },
+];
+
+
+export const mockCryptoFutures: CryptoFuturePosition[] = [
+  {
+    id: 'cf1',
+    symbol: 'BTCUSDT',
+    positionSide: 'LONG',
+    quantity: 0.1,
+    entryPrice: 42500.00,
+    markPrice: 43100.50,
+    liquidationPrice: 38000.00,
+    unrealizedPnL: (43100.50 - 42500.00) * 0.1,
+    margin: 425.00,
+    leverage: 10,
+  },
+  {
+    id: 'cf2',
+    symbol: 'ETHUSDT',
+    positionSide: 'SHORT',
+    quantity: 2,
+    entryPrice: 2200.00,
+    markPrice: 2150.75,
+    unrealizedPnL: (2200.00 - 2150.75) * 2,
+    margin: 440.00,
+    leverage: 10,
+  },
+  {
+    id: 'cf3',
+    symbol: 'SOLUSDT',
+    positionSide: 'LONG',
+    quantity: 10,
+    entryPrice: 60.00,
+    markPrice: 65.50,
+    unrealizedPnL: (65.50 - 60.00) * 10,
+    margin: 60.00,
+    leverage: 10,
   },
 ];
