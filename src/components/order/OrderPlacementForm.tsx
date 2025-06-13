@@ -27,10 +27,8 @@ export function OrderPlacementForm({ stock, productType, onProductTypeChange }: 
 
   const [selectedExchange, setSelectedExchange] = useState<'BSE' | 'NSE'>('NSE');
   const [orderMode, setOrderMode] = useState('Regular'); 
-  // productType is now a prop
   const [orderType, setOrderType] = useState('Limit'); // Market, Limit, SL, SL-M
 
-  // State for "More Options"
   const [showMoreOptions, setShowMoreOptions] = useState(false);
   const [enableStopLoss, setEnableStopLoss] = useState(false);
   const [stopLossInputValue, setStopLossInputValue] = useState('');
@@ -40,15 +38,35 @@ export function OrderPlacementForm({ stock, productType, onProductTypeChange }: 
   const [takeProfitType, setTakeProfitType] = useState<'price' | 'percentage'>('price');
   
   const [mtfLeverage, setMtfLeverage] = useState('1x');
+  const [displayedMargin, setDisplayedMargin] = useState(0);
 
 
   useEffect(() => {
     setPrice(stock.price);
   }, [stock.price]);
 
-  const calculatedMargin = quantity * price; // This might need adjustment for MTF leverage later
+  useEffect(() => {
+    let priceForCalc = 0;
+    if (orderType === 'Market') {
+      priceForCalc = selectedExchange === 'NSE' ? stock.price : (stock.price * 0.995); // Using exchange specific price for market
+    } else { // Limit, SL, SL-M
+      priceForCalc = price; 
+    }
 
-  const handleOrderAction = (action: 'BUY' | 'SELL') => { // General handler for toast
+    let baseMargin = quantity * priceForCalc;
+
+    if (orderMode === 'MTF') { 
+      const leverageFactor = parseInt(mtfLeverage.replace('x', ''), 10) || 1;
+      if (leverageFactor > 0) {
+        baseMargin = baseMargin / leverageFactor;
+      }
+    }
+    
+    setDisplayedMargin(baseMargin);
+  }, [quantity, price, orderType, stock.price, orderMode, mtfLeverage, productType, selectedExchange]);
+
+
+  const handleOrderAction = (action: 'BUY' | 'SELL') => { 
     let slInfo = '';
     if (enableStopLoss && stopLossInputValue) {
       slInfo = `SL: ${stopLossInputValue}${stopLossType === 'percentage' ? '%' : ''}`;
@@ -64,7 +82,7 @@ export function OrderPlacementForm({ stock, productType, onProductTypeChange }: 
     }
 
     toast({
-      title: `Order Placed (Mock - ${orderMode})`,
+      title: `Order Action (Mock - ${orderMode})`,
       description: `${action} ${quantity} x ${stock.symbol} @ ${orderType === 'Market' ? 'Market' : `₹${price}`} (${productType}) ${advancedOptions ? `(${advancedOptions})` : ''} ${leverageInfo}`,
     });
   };
@@ -77,7 +95,7 @@ export function OrderPlacementForm({ stock, productType, onProductTypeChange }: 
     <>
       <RadioGroup
         value={productType}
-        onValueChange={onProductTypeChange} // Use prop setter
+        onValueChange={onProductTypeChange} 
         className="flex space-x-6"
       >
         <div className="flex items-center space-x-2">
@@ -165,8 +183,8 @@ export function OrderPlacementForm({ stock, productType, onProductTypeChange }: 
             >
             {['1x', '2x', '3x', '4x'].map(val => (
                 <div key={val} className="flex items-center space-x-2">
-                <RadioGroupItem value={val} id={`leverage-${val}-mtf`} />
-                <Label htmlFor={`leverage-${val}-mtf`} className="font-normal">{val}</Label>
+                <RadioGroupItem value={val} id={`leverage-${val}-${currentOrderMode}`} />
+                <Label htmlFor={`leverage-${val}-${currentOrderMode}`} className="font-normal">{val}</Label>
                 </div>
             ))}
             </RadioGroup>
@@ -256,6 +274,16 @@ export function OrderPlacementForm({ stock, productType, onProductTypeChange }: 
           </div>
         </div>
       )}
+       <div className="mt-4 pt-4 border-t">
+          <p className="text-sm text-muted-foreground">
+            Margin required: <span className="font-semibold text-foreground">₹{displayedMargin.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+          </p>
+          {(currentOrderMode === 'MTF' && parseInt(mtfLeverage.replace('x','')) > 1) && (
+              <p className="text-xs text-muted-foreground mt-1">
+                  (Leverage of {mtfLeverage} applied)
+              </p>
+          )}
+        </div>
     </>
   );
 
@@ -263,10 +291,9 @@ export function OrderPlacementForm({ stock, productType, onProductTypeChange }: 
     <div className="bg-card shadow-md rounded-lg mt-4">
       <div className="bg-card text-card-foreground p-3 rounded-t-lg border-b">
         <div className="flex justify-between items-center mb-2">
-          {/* h2 title removed */}
+          {/* h2 title removed in previous step */}
         </div>
         <RadioGroup
-          defaultValue="NSE"
           value={selectedExchange}
           onValueChange={(value) => setSelectedExchange(value as 'BSE' | 'NSE')}
           className="flex space-x-4"
@@ -311,10 +338,10 @@ export function OrderPlacementForm({ stock, productType, onProductTypeChange }: 
 
         <TabsContent value="SIP" className="p-4 mt-0 text-center text-muted-foreground">
             <p className="mb-4 pt-4">SIP order options will be shown here.</p>
-            {/* Margin and buttons removed from here */}
         </TabsContent>
 
       </Tabs>
     </div>
   );
 }
+
