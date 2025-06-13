@@ -10,7 +10,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { mockPortfolioHoldings } from '@/lib/mockData';
 import type { PortfolioHolding } from '@/types';
@@ -50,107 +49,104 @@ export function PortfolioHoldingsTable() {
   });
 
   return (
-    <Card className="shadow-lg">
-      <CardHeader>
-        <CardTitle className="text-xl font-semibold font-headline text-primary flex items-center">
-            <Briefcase className="h-6 w-6 mr-2" /> Portfolio Holdings
-        </CardTitle>
+    <section className="space-y-4">
+      <h2 className="text-xl font-semibold font-headline text-primary flex items-center">
+          <Briefcase className="h-6 w-6 mr-2" /> Portfolio Holdings
+      </h2>
 
-        {/* Row 1: P&L Figures */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t">
-            <div> {/* Overall P&L */}
-                <p className="text-sm text-muted-foreground">Overall P&L</p>
-                <p className={cn("text-lg font-semibold", overallPandL >= 0 ? 'text-green-600' : 'text-red-600')}>
-                    {formatCurrency(overallPandL)} ({overallPandLPercent.toFixed(2)}%)
-                </p>
-            </div>
-            <div className="text-left sm:text-right"> {/* Day's P&L */}
-                <p className="text-sm text-muted-foreground">Day's P&L</p>
-                <p className={cn("text-lg font-semibold", totalDayChangeAbsolute >= 0 ? 'text-green-600' : 'text-red-600')}>
-                    {formatCurrency(totalDayChangeAbsolute)} ({totalDayChangePercent.toFixed(2)}%)
-                </p>
-            </div>
-        </div>
-
-        {/* Row 2: Investment & Current Value */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4"> {/* Removed mt from CardHeader's space-y */}
-            <div> {/* Total Investment */}
-                <p className="text-sm text-muted-foreground">Total Investment</p>
-                <p className="font-semibold text-lg">{formatCurrency(totalInvestmentValue)}</p>
-            </div>
-            <div className="text-left sm:text-right"> {/* Current Value */}
-                <p className="text-sm text-muted-foreground">Current Value</p>
-                <p className="text-2xl font-bold">{formatCurrency(totalCurrentValue)}</p>
-            </div>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <div className="border-b border-border mb-4">
-          <div className="flex space-x-1 overflow-x-auto whitespace-nowrap pb-0 no-scrollbar">
-            {filterOptions.map((option) => (
-              <Button
-                key={option.value}
-                variant="ghost"
-                size="sm"
-                className={cn(
-                  "px-3 py-1.5 h-auto text-xs font-medium rounded-t-md rounded-b-none focus-visible:ring-0 focus-visible:ring-offset-0",
-                  "border-b-2 hover:bg-transparent",
-                  activeFilter === option.value
-                    ? "text-primary border-primary font-semibold"
-                    : "text-muted-foreground border-transparent hover:text-primary hover:border-primary/30"
-                )}
-                onClick={() => setActiveFilter(option.value)}
-              >
-                {option.label}
-              </Button>
-            ))}
+      {/* Row 1: P&L Figures */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+          <div> {/* Overall P&L */}
+              <p className="text-sm text-muted-foreground">Overall P&L</p>
+              <p className={cn("text-lg font-semibold", overallPandL >= 0 ? 'text-green-600' : 'text-red-600')}>
+                  {formatCurrency(overallPandL)} ({overallPandLPercent.toFixed(2)}%)
+              </p>
           </div>
-        </div>
+          <div className="text-left sm:text-right"> {/* Day's P&L */}
+              <p className="text-sm text-muted-foreground">Day's P&L</p>
+              <p className={cn("text-lg font-semibold", totalDayChangeAbsolute >= 0 ? 'text-green-600' : 'text-red-600')}>
+                  {formatCurrency(totalDayChangeAbsolute)} ({totalDayChangePercent.toFixed(2)}%)
+              </p>
+          </div>
+      </div>
 
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-[200px] min-w-[150px]">Instrument</TableHead>
-              <TableHead>Type</TableHead>
-              <TableHead className="text-right">Qty.</TableHead>
-              <TableHead className="text-right">Avg. Cost</TableHead>
-              <TableHead className="text-right">LTP</TableHead>
-              <TableHead className="text-right">Current Val.</TableHead>
-              <TableHead className="text-right">P&L (%)</TableHead>
-              <TableHead className="text-right">Day's Chg (%)</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredHoldings.length > 0 ? (
-              filteredHoldings.map((holding) => (
-                <TableRow key={holding.id}>
-                  <TableCell className="font-medium">
-                    <div>{holding.name}</div>
-                    {holding.symbol && <div className="text-xs text-muted-foreground">{holding.symbol}</div>}
-                  </TableCell>
-                  <TableCell>{holding.type}</TableCell>
-                  <TableCell className="text-right">{holding.quantity.toLocaleString()}</TableCell>
-                  <TableCell className="text-right">{formatCurrency(holding.avgCostPrice)}</TableCell>
-                  <TableCell className="text-right">{formatCurrency(holding.ltp)}</TableCell>
-                  <TableCell className="text-right">{formatCurrency(holding.currentValue)}</TableCell>
-                  <TableCell className={cn("text-right whitespace-nowrap", holding.profitAndLoss >= 0 ? 'text-green-600' : 'text-red-600')}>
-                    {formatCurrency(holding.profitAndLoss)}<br/>({holding.profitAndLossPercent.toFixed(2)}%)
-                  </TableCell>
-                  <TableCell className={cn("text-right whitespace-nowrap", holding.dayChangeAbsolute >= 0 ? 'text-green-600' : 'text-red-600')}>
-                    {formatCurrency(holding.dayChangeAbsolute)}<br/>({holding.dayChangePercent.toFixed(2)}%)
-                  </TableCell>
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={8} className="text-center text-muted-foreground py-8">
-                  No holdings match the selected filter.
+      {/* Row 2: Investment & Current Value */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div> {/* Total Investment */}
+              <p className="text-sm text-muted-foreground">Total Investment</p>
+              <p className="font-semibold text-lg">{formatCurrency(totalInvestmentValue)}</p>
+          </div>
+          <div className="text-left sm:text-right"> {/* Current Value */}
+              <p className="text-sm text-muted-foreground">Current Value</p>
+              <p className="text-2xl font-bold">{formatCurrency(totalCurrentValue)}</p>
+          </div>
+      </div>
+      
+      <div className="border-b border-border">
+        <div className="flex space-x-1 overflow-x-auto whitespace-nowrap pb-0 no-scrollbar">
+          {filterOptions.map((option) => (
+            <Button
+              key={option.value}
+              variant="ghost"
+              size="sm"
+              className={cn(
+                "px-3 py-1.5 h-auto text-xs font-medium rounded-t-md rounded-b-none focus-visible:ring-0 focus-visible:ring-offset-0",
+                "border-b-2 hover:bg-transparent",
+                activeFilter === option.value
+                  ? "text-primary border-primary font-semibold"
+                  : "text-muted-foreground border-transparent hover:text-primary hover:border-primary/30"
+              )}
+              onClick={() => setActiveFilter(option.value)}
+            >
+              {option.label}
+            </Button>
+          ))}
+        </div>
+      </div>
+
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead className="w-[200px] min-w-[150px]">Instrument</TableHead>
+            <TableHead>Type</TableHead>
+            <TableHead className="text-right">Qty.</TableHead>
+            <TableHead className="text-right">Avg. Cost</TableHead>
+            <TableHead className="text-right">LTP</TableHead>
+            <TableHead className="text-right">Current Val.</TableHead>
+            <TableHead className="text-right">P&L (%)</TableHead>
+            <TableHead className="text-right">Day's Chg (%)</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {filteredHoldings.length > 0 ? (
+            filteredHoldings.map((holding) => (
+              <TableRow key={holding.id}>
+                <TableCell className="font-medium">
+                  <div>{holding.name}</div>
+                  {holding.symbol && <div className="text-xs text-muted-foreground">{holding.symbol}</div>}
+                </TableCell>
+                <TableCell>{holding.type}</TableCell>
+                <TableCell className="text-right">{holding.quantity.toLocaleString()}</TableCell>
+                <TableCell className="text-right">{formatCurrency(holding.avgCostPrice)}</TableCell>
+                <TableCell className="text-right">{formatCurrency(holding.ltp)}</TableCell>
+                <TableCell className="text-right">{formatCurrency(holding.currentValue)}</TableCell>
+                <TableCell className={cn("text-right whitespace-nowrap", holding.profitAndLoss >= 0 ? 'text-green-600' : 'text-red-600')}>
+                  {formatCurrency(holding.profitAndLoss)}<br/>({holding.profitAndLossPercent.toFixed(2)}%)
+                </TableCell>
+                <TableCell className={cn("text-right whitespace-nowrap", holding.dayChangeAbsolute >= 0 ? 'text-green-600' : 'text-red-600')}>
+                  {formatCurrency(holding.dayChangeAbsolute)}<br/>({holding.dayChangePercent.toFixed(2)}%)
                 </TableCell>
               </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </CardContent>
-    </Card>
+            ))
+          ) : (
+            <TableRow>
+              <TableCell colSpan={8} className="text-center text-muted-foreground py-8">
+                No holdings match the selected filter.
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+    </section>
   );
 }
