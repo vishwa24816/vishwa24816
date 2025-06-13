@@ -11,9 +11,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { mockStocks, mockCryptoAssets, mockMutualFunds, mockBonds, mockIndexFuturesForWatchlist, mockStockFuturesForWatchlist, mockOptionsForWatchlist, mockNewsArticles } from '@/lib/mockData';
 import type { Stock, NewsArticle } from '@/types';
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, TrendingUp, TrendingDown, Info, Maximize2, BarChart2, ChevronUp, ChevronDown, ChevronLeftIcon, ChevronRightIcon, Landmark, SearchIcon } from 'lucide-react';
+import { ArrowLeft, TrendingUp, TrendingDown, Info, Maximize2, BarChart2, ChevronUp, ChevronDown, ChevronLeftIcon, ChevronRightIcon, Landmark, SearchIcon, LineChart, FileText } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Separator } from '@/components/ui/separator';
 import { NewsSection } from '@/components/dashboard/NewsSection';
 import { OrderPlacementForm } from '@/components/order/OrderPlacementForm';
 
@@ -224,9 +223,12 @@ export default function StockDetailPage() {
             <OrderPlacementForm stock={stock} />
 
             <Tabs defaultValue="overview" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 bg-muted/30">
-                <TabsTrigger value="overview">Overview</TabsTrigger>
-                <TabsTrigger value="news">News</TabsTrigger>
+              <TabsList className="bg-muted/30 flex overflow-x-auto whitespace-nowrap no-scrollbar rounded-none p-0 h-auto border-b">
+                <TabsTrigger value="overview" className="flex-shrink-0 px-4 py-3 text-sm rounded-t-md rounded-b-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=inactive]:border-b-2 data-[state=inactive]:border-transparent data-[state=active]:shadow-none hover:text-primary">Overview</TabsTrigger>
+                <TabsTrigger value="fundamentals" className="flex-shrink-0 px-4 py-3 text-sm rounded-t-md rounded-b-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=inactive]:border-b-2 data-[state=inactive]:border-transparent data-[state=active]:shadow-none hover:text-primary">Fundamentals</TabsTrigger>
+                <TabsTrigger value="financials" className="flex-shrink-0 px-4 py-3 text-sm rounded-t-md rounded-b-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=inactive]:border-b-2 data-[state=inactive]:border-transparent data-[state=active]:shadow-none hover:text-primary">Financials</TabsTrigger>
+                <TabsTrigger value="technicals" className="flex-shrink-0 px-4 py-3 text-sm rounded-t-md rounded-b-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=inactive]:border-b-2 data-[state=inactive]:border-transparent data-[state=active]:shadow-none hover:text-primary">Technicals</TabsTrigger>
+                <TabsTrigger value="news" className="flex-shrink-0 px-4 py-3 text-sm rounded-t-md rounded-b-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=inactive]:border-b-2 data-[state=inactive]:border-transparent data-[state=active]:shadow-none hover:text-primary">News</TabsTrigger>
               </TabsList>
               <TabsContent value="overview" className="mt-4 space-y-6">
                 <div>
@@ -270,8 +272,35 @@ export default function StockDetailPage() {
                     <p className="font-semibold text-foreground">{stock.volume?.toLocaleString() || 'N/A'}</p>
                   </div>
                 </div>
-
-                {stock.fundamentals && (
+                
+                {stock.similarStocks && stock.similarStocks.length > 0 && (
+                  <CollapsibleSection title="Similar Stocks" icon={Landmark} defaultOpen>
+                     <div className="space-y-3">
+                      {stock.similarStocks.map(simStock => {
+                        const isSimPositive = simStock.changePercent >= 0;
+                        return (
+                          <Link href={`/order/${simStock.symbol}`} key={simStock.id} className="block p-3 bg-muted/30 rounded-md hover:bg-muted/50 transition-colors">
+                            <div className="flex justify-between items-center">
+                              <div>
+                                <p className="font-semibold text-foreground text-sm">{simStock.name} <span className="text-xs text-muted-foreground">({simStock.symbol})</span></p>
+                                {simStock.marketCap && <p className="text-xs text-muted-foreground">Mkt Cap: {simStock.marketCap}</p>}
+                              </div>
+                              <div className="text-right">
+                                <p className={`font-medium ${isSimPositive ? 'text-green-500' : 'text-red-500'}`}>₹{simStock.price.toFixed(2)}</p>
+                                <p className={`text-xs ${isSimPositive ? 'text-green-500' : 'text-red-500'}`}>
+                                  {isSimPositive ? '+' : ''}{simStock.changePercent.toFixed(2)}%
+                                </p>
+                              </div>
+                            </div>
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  </CollapsibleSection>
+                )}
+              </TabsContent>
+              <TabsContent value="fundamentals" className="mt-4 space-y-6">
+                 {stock.fundamentals && (
                   <CollapsibleSection title="Fundamentals" icon={SearchIcon} defaultOpen>
                     <div className="grid grid-cols-2 gap-x-6 gap-y-3 text-sm">
                       <div><span className="text-muted-foreground">Mkt Cap</span><p className="font-semibold text-foreground">{stock.fundamentals.marketCap || 'N/A'}</p></div>
@@ -287,7 +316,8 @@ export default function StockDetailPage() {
                     </div>
                   </CollapsibleSection>
                 )}
-
+              </TabsContent>
+              <TabsContent value="financials" className="mt-4 space-y-6">
                 {stock.financials && (
                   <CollapsibleSection title="Financials" icon={BarChart2} defaultOpen>
                     <div className="flex items-center justify-between mb-4">
@@ -325,34 +355,15 @@ export default function StockDetailPage() {
                     </div>
                   </CollapsibleSection>
                 )}
-                
-                {stock.similarStocks && stock.similarStocks.length > 0 && (
-                  <CollapsibleSection title="Similar Stocks" icon={Landmark} defaultOpen>
-                     <div className="space-y-3">
-                      {stock.similarStocks.map(simStock => {
-                        const isSimPositive = simStock.changePercent >= 0;
-                        return (
-                          <Link href={`/order/${simStock.symbol}`} key={simStock.id} className="block p-3 bg-muted/30 rounded-md hover:bg-muted/50 transition-colors">
-                            <div className="flex justify-between items-center">
-                              <div>
-                                <p className="font-semibold text-foreground text-sm">{simStock.name} <span className="text-xs text-muted-foreground">({simStock.symbol})</span></p>
-                                {simStock.marketCap && <p className="text-xs text-muted-foreground">Mkt Cap: {simStock.marketCap}</p>}
-                              </div>
-                              <div className="text-right">
-                                <p className={`font-medium ${isSimPositive ? 'text-green-500' : 'text-red-500'}`}>₹{simStock.price.toFixed(2)}</p>
-                                <p className={`text-xs ${isSimPositive ? 'text-green-500' : 'text-red-500'}`}>
-                                  {isSimPositive ? '+' : ''}{simStock.changePercent.toFixed(2)}%
-                                </p>
-                              </div>
-                            </div>
-                          </Link>
-                        );
-                      })}
-                    </div>
-                  </CollapsibleSection>
-                )}
-
-
+              </TabsContent>
+              <TabsContent value="technicals" className="mt-4 space-y-6">
+                <div className="flex flex-col items-center justify-center text-center py-12 text-muted-foreground">
+                  <LineChart className="h-16 w-16 mb-4 text-primary" />
+                  <h2 className="text-xl font-semibold mb-2 text-foreground">Technical Analysis</h2>
+                  <p className="max-w-md">
+                    Detailed technical charts, indicators, and analysis tools will be available here soon.
+                  </p>
+                </div>
               </TabsContent>
               <TabsContent value="news" className="mt-4">
                  <NewsSection
