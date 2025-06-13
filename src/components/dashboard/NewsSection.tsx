@@ -13,9 +13,11 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 interface NewsSectionProps {
   articles?: NewsArticle[];
+  title?: string;
+  customDescription?: string;
 }
 
-export function NewsSection({ articles }: NewsSectionProps) {
+export function NewsSection({ articles, title, customDescription }: NewsSectionProps) {
   const effectiveArticles = articles ?? mockNewsArticles;
   
   const [headlinesToSummarize, setHeadlinesToSummarize] = useState('');
@@ -48,16 +50,20 @@ export function NewsSection({ articles }: NewsSectionProps) {
     });
   };
 
+  const sectionTitle = title || "Top Market News";
+  const sectionDescription = customDescription || (articles ? "Latest headlines relevant to your view and AI-powered summaries." : "Latest headlines and AI-powered summaries.");
+
+
   return (
     <section aria-labelledby="news-section-title" className="space-y-6">
       <div>
         <div className="flex items-center justify-between mb-1">
           <h2 id="news-section-title" className="text-xl font-semibold font-headline text-primary flex items-center">
-            <Newspaper className="h-6 w-6 mr-2" /> Top Market News
+            <Newspaper className="h-6 w-6 mr-2" /> {sectionTitle}
           </h2>
         </div>
         <p className="text-sm text-muted-foreground mb-4">
-          {articles ? "Latest headlines relevant to your view and AI-powered summaries." : "Latest headlines and AI-powered summaries."}
+          {sectionDescription}
         </p>
       </div>
       
@@ -78,7 +84,7 @@ export function NewsSection({ articles }: NewsSectionProps) {
             </ul>
           ) : (
             <p className="text-muted-foreground text-center py-4">
-              {articles ? "No news relevant to your current view." : "No news articles available at the moment."}
+              {articles && articles.length === 0 ? "No news relevant to this stock found." : "No news articles available at the moment."}
             </p>
           )}
         </ScrollArea>

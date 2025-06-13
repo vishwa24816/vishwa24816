@@ -9,12 +9,14 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { mockStocks, mockCryptoAssets, mockMutualFunds, mockBonds, mockIndexFuturesForWatchlist, mockStockFuturesForWatchlist, mockOptionsForWatchlist } from '@/lib/mockData';
-import type { Stock } from '@/types';
+import { mockStocks, mockCryptoAssets, mockMutualFunds, mockBonds, mockIndexFuturesForWatchlist, mockStockFuturesForWatchlist, mockOptionsForWatchlist, mockNewsArticles } from '@/lib/mockData';
+import type { Stock, NewsArticle } from '@/types';
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, TrendingUp, TrendingDown, Info, CalendarDays, Maximize2, BarChart2, ChevronUp, ChevronDown, ChevronLeftIcon, ChevronRightIcon, ExternalLink, Briefcase, Users, Landmark, SearchIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
+import { NewsSection } from '@/components/dashboard/NewsSection';
+
 
 // Combine all mock asset lists for easier lookup
 const allMockAssets: Stock[] = [
@@ -83,6 +85,24 @@ const CollapsibleSection: React.FC<{ title: string; children: React.ReactNode; d
   );
 };
 
+function getRelevantNewsForStock(stock: Stock | null, allNews: NewsArticle[]): NewsArticle[] {
+    if (!stock || !allNews.length) {
+        return [];
+    }
+    const relevantNews: NewsArticle[] = [];
+    const stockKeywords = [stock.name.toLowerCase(), stock.symbol.toLowerCase()];
+    if(stock.sector) stockKeywords.push(stock.sector.toLowerCase());
+
+
+    allNews.forEach(news => {
+        const headlineLower = news.headline.toLowerCase();
+        if (stockKeywords.some(keyword => keyword && headlineLower.includes(keyword))) {
+        relevantNews.push(news);
+        }
+    });
+    return relevantNews; 
+}
+
 
 export default function StockDetailPage() {
   const params = useParams();
@@ -91,6 +111,7 @@ export default function StockDetailPage() {
   const symbol = typeof params.symbol === 'string' ? decodeURIComponent(params.symbol) : undefined;
 
   const [stock, setStock] = useState<Stock | null>(null);
+  const [stockSpecificNews, setStockSpecificNews] = useState<NewsArticle[]>([]);
   const [activeTimescale, setActiveTimescale] = useState('1D');
   const [activeFinancialsCategory, setActiveFinancialsCategory] = useState<'revenue' | 'profit' | 'netWorth'>('revenue');
   const [activeShareholdingPeriod, setActiveShareholdingPeriod] = useState<string>('');
@@ -101,6 +122,9 @@ export default function StockDetailPage() {
       const foundStock = allMockAssets.find(s => s.symbol.toUpperCase() === symbol.toUpperCase());
       if (foundStock) {
         setStock(foundStock);
+        const relevantNews = getRelevantNewsForStock(foundStock, mockNewsArticles);
+        setStockSpecificNews(relevantNews);
+
         if (foundStock.shareholdingPattern && foundStock.shareholdingPattern.length > 0) {
           setActiveShareholdingPeriod(foundStock.shareholdingPattern[0].period);
         }
@@ -305,6 +329,12 @@ export default function StockDetailPage() {
                 )}
                 
                 <Separator className="my-6" />
+
+                <NewsSection
+                    articles={stockSpecificNews}
+                    title={`Latest News for ${stock.name}`}
+                    customDescription={`Recent headlines and AI summary for ${stock.symbol}.`}
+                />
                 
                 {stock.similarStocks && stock.similarStocks.length > 0 && (
                   <CollapsibleSection title="Similar Stocks" icon={Landmark} defaultOpen>
@@ -335,7 +365,11 @@ export default function StockDetailPage() {
 
               </TabsContent>
               <TabsContent value="news" className="mt-4">
-                <p className="text-muted-foreground text-center py-8">News section coming soon.</p>
+                 <NewsSection
+                    articles={stockSpecificNews} // Re-use the same filtered news or fetch broader news if desired
+                    title={`All News related to ${stock.name}`}
+                    customDescription={`Browse all recent news articles for ${stock.symbol}.`}
+                />
               </TabsContent>
               <TabsContent value="events" className="mt-4">
                 <p className="text-muted-foreground text-center py-8">Events section coming soon.</p>
@@ -358,3 +392,4 @@ export default function StockDetailPage() {
     </ProtectedRoute>
   );
 }
+
