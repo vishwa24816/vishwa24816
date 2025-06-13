@@ -14,6 +14,14 @@ import { FoPositionsSection } from '@/components/dashboard/FoPositionsSection';
 import { CryptoFuturesSection } from '@/components/dashboard/CryptoFuturesSection';
 import { OptionChain } from '@/components/dashboard/OptionChain';
 import { PackageOpen } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 
 import React, { useState, useEffect } from 'react';
@@ -30,7 +38,8 @@ import {
   mockBonds,
   mockIndexFuturesForWatchlist,
   mockStockFuturesForWatchlist,
-  mockMarketIndices, // Import mockMarketIndices
+  mockMarketIndices, 
+  mockCryptoFuturesForWatchlist, // Import new mock data
 } from '@/lib/mockData';
 
 function getRelevantNewsForHoldings(holdings: PortfolioHolding[], allNews: NewsArticle[]): NewsArticle[] {
@@ -114,15 +123,15 @@ function getRelevantNewsForWatchlistItems(items: Stock[] | MarketIndex[] | undef
   const relevantNews: NewsArticle[] = [];
   const itemKeywords = items.flatMap(item => {
     const keywords = [item.name.toLowerCase()];
-    if ('symbol' in item && item.symbol) { // Check if symbol exists (for Stock type)
+    if ('symbol' in item && item.symbol) { 
       keywords.push(item.symbol.toLowerCase());
     }
-    // Added specific handling for different exchange types for better keyword generation
-    if ('exchange' in item && (item.exchange === 'Crypto' || item.exchange === 'MF' || item.exchange === 'BOND' || item.exchange === 'NFO')) {
+    
+    if ('exchange' in item && (item.exchange === 'Crypto' || item.exchange === 'MF' || item.exchange === 'BOND' || item.exchange === 'NFO' || item.exchange === 'Crypto Futures')) {
         const nameParts = item.name.split(/[\s-]+/); 
         keywords.push(...nameParts.map(part => part.toLowerCase()));
         if ('symbol' in item && item.symbol) { 
-            const symbolParts = item.symbol.match(/[A-Z]+|[0-9]+/g) || [];
+            const symbolParts = item.symbol.match(/[A-Z]+|[0-9.]+/g) || []; // Added '.' to regex for symbols like BTCUSDT.P
             keywords.push(...symbolParts.map(part => part.toLowerCase()));
         }
     }
@@ -159,6 +168,10 @@ export default function DashboardPage() {
   const [activeSecondaryItem, setActiveSecondaryItem] = useState(
     secondaryNavTriggerCategories["Portfolio"]?.[0] || ""
   );
+  const [cryptoMarketView, setCryptoMarketView] = useState<'spot' | 'futures'>('spot');
+  const [cryptoFuturesLeverage, setCryptoFuturesLeverage] = useState<string>('1x');
+  const leverageOptions = ['1x', '2x', '3x', '4x', '5x', '10x', '20x', '25x', '50x', '100x', '200x'];
+
 
   const handlePrimaryNavClick = (item: string) => {
     setActivePrimaryItem(item);
@@ -181,7 +194,7 @@ export default function DashboardPage() {
   const isFuturesTopWatchlistView = activePrimaryItem === "Futures" && activeSecondaryItem.startsWith("Top watchlist");
 
   const isCategoryTopWatchlistView = 
-    ["Stocks", "Mutual funds", "Bonds"].includes(activePrimaryItem) && // Removed "Crypto"
+    ["Stocks", "Mutual funds", "Bonds"].includes(activePrimaryItem) && 
     activeSecondaryItem.startsWith("Top watchlist");
   
   const isCryptoTopWatchlistView = activePrimaryItem === "Crypto" && activeSecondaryItem.startsWith("Top watchlist");
@@ -218,9 +231,9 @@ export default function DashboardPage() {
       itemsForCategoryWatchlist = []; 
     }
     newsForView = getRelevantNewsForWatchlistItems(itemsForCategoryWatchlist, mockNewsArticles);
-  } else if (isCryptoTopWatchlistView) { // Handle Crypto Top Watchlist separately for news
-    categoryWatchlistTitle = `${activePrimaryItem} - ${activeSecondaryItem}`;
-    itemsForCategoryWatchlist = mockCryptoAssets;
+  } else if (isCryptoTopWatchlistView) { 
+    categoryWatchlistTitle = `${activePrimaryItem} ${cryptoMarketView === 'futures' ? 'Futures' : 'Spot'} - ${activeSecondaryItem}`;
+    itemsForCategoryWatchlist = cryptoMarketView === 'spot' ? mockCryptoAssets : mockCryptoFuturesForWatchlist;
     newsForView = getRelevantNewsForWatchlistItems(itemsForCategoryWatchlist, mockNewsArticles);
   } else if (isOptionsTopWatchlistView) {
     newsForView = mockNewsArticles; 
@@ -247,7 +260,7 @@ export default function DashboardPage() {
           {activePrimaryItem === "Crypto" ? (
             <MarketOverview 
               title="Top Cryptocurrencies" 
-              items={mockCryptoAssets.slice(0, 3)}
+              items={mockCryptoAssets.slice(0, 3)} 
             />
           ) : (
             <MarketOverview 
@@ -304,8 +317,41 @@ export default function DashboardPage() {
               />
               <NewsSection articles={newsForView} />
             </div>
-          ) : isCryptoTopWatchlistView ? ( // View for Crypto Top Watchlist
+          ) : isCryptoTopWatchlistView ? ( 
              <div className="space-y-8">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-0 -mt-4"> {/* Adjusted margin */}
+                    <div className="flex space-x-2">
+                        <Button
+                        variant={cryptoMarketView === 'spot' ? 'secondary' : 'outline'}
+                        onClick={() => setCryptoMarketView('spot')}
+                        size="sm"
+                        >
+                        Spot
+                        </Button>
+                        <Button
+                        variant={cryptoMarketView === 'futures' ? 'secondary' : 'outline'}
+                        onClick={() => setCryptoMarketView('futures')}
+                        size="sm"
+                        >
+                        Futures
+                        </Button>
+                    </div>
+                    {cryptoMarketView === 'futures' && (
+                        <div className="flex items-center space-x-2">
+                            <span className="text-sm text-muted-foreground">Leverage:</span>
+                            <Select value={cryptoFuturesLeverage} onValueChange={setCryptoFuturesLeverage}>
+                            <SelectTrigger className="w-[90px] h-9 text-xs">
+                                <SelectValue placeholder="Leverage" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {leverageOptions.map(lev => (
+                                <SelectItem key={lev} value={lev} className="text-xs">{lev}</SelectItem>
+                                ))}
+                            </SelectContent>
+                            </Select>
+                        </div>
+                    )}
+                </div>
               <WatchlistSection
                 title={categoryWatchlistTitle}
                 displayItems={itemsForCategoryWatchlist} 
