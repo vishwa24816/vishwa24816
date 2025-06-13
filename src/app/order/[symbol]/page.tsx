@@ -142,8 +142,8 @@ export default function StockDetailPage() {
   };
 
   const handleSellAction = () => {
-     if (productTypeForOrder === 'Longterm') {
-      toast({ title: "Action Denied", description: "Cannot sell Longterm (CNC) holdings from here. Please use portfolio.", variant: "destructive" });
+     if (productTypeForOrder === 'Intraday') {
+      toast({ title: "Action Denied", description: "Cannot short Intraday (MIS) from here. Please use order form options or portfolio for existing positions.", variant: "destructive" });
       return;
     }
     toast({ title: "Sell Action (Mock)", description: `Initiating SELL for ${stock?.symbol} with product type: ${productTypeForOrder}` });
@@ -231,12 +231,32 @@ export default function StockDetailPage() {
 
             <Tabs defaultValue="overview" className="w-full">
               <TabsList className="bg-muted/30 flex overflow-x-auto whitespace-nowrap no-scrollbar rounded-none p-0 h-auto border-b">
-                <TabsTrigger value="overview" className="flex-shrink-0 px-4 py-3 text-sm rounded-t-md rounded-b-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=inactive]:border-b-2 data-[state=inactive]:border-transparent data-[state=active]:shadow-none hover:text-primary">Overview</TabsTrigger>
                 <TabsTrigger value="fundamentals" className="flex-shrink-0 px-4 py-3 text-sm rounded-t-md rounded-b-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=inactive]:border-b-2 data-[state=inactive]:border-transparent data-[state=active]:shadow-none hover:text-primary">Fundamentals</TabsTrigger>
+                <TabsTrigger value="overview" className="flex-shrink-0 px-4 py-3 text-sm rounded-t-md rounded-b-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=inactive]:border-b-2 data-[state=inactive]:border-transparent data-[state=active]:shadow-none hover:text-primary">Overview</TabsTrigger>
                 <TabsTrigger value="financials" className="flex-shrink-0 px-4 py-3 text-sm rounded-t-md rounded-b-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=inactive]:border-b-2 data-[state=inactive]:border-transparent data-[state=active]:shadow-none hover:text-primary">Financials</TabsTrigger>
                 <TabsTrigger value="technicals" className="flex-shrink-0 px-4 py-3 text-sm rounded-t-md rounded-b-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=inactive]:border-b-2 data-[state=inactive]:border-transparent data-[state=active]:shadow-none hover:text-primary">Technicals</TabsTrigger>
                 <TabsTrigger value="news" className="flex-shrink-0 px-4 py-3 text-sm rounded-t-md rounded-b-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=inactive]:border-b-2 data-[state=inactive]:border-transparent data-[state=active]:shadow-none hover:text-primary">News</TabsTrigger>
               </TabsList>
+              
+              <TabsContent value="fundamentals" className="mt-4 space-y-6">
+                 {stock.fundamentals && (
+                  <CollapsibleSection title="Fundamentals" icon={SearchIcon} defaultOpen>
+                    <div className="grid grid-cols-2 gap-x-6 gap-y-3 text-sm">
+                      <div><span className="text-muted-foreground">Mkt Cap</span><p className="font-semibold text-foreground">{stock.fundamentals.marketCap || 'N/A'}</p></div>
+                      <div><span className="text-muted-foreground">ROE</span><p className="font-semibold text-foreground">{stock.fundamentals.roe?.toFixed(2) || 'N/A'}%</p></div>
+                      <div><span className="text-muted-foreground">P/E Ratio (TTM)</span><p className="font-semibold text-foreground">{stock.fundamentals.peRatioTTM?.toFixed(2) || 'N/A'}</p></div>
+                      <div><span className="text-muted-foreground">EPS (TTM)</span><p className="font-semibold text-foreground">{stock.fundamentals.epsTTM?.toFixed(2) || 'N/A'}</p></div>
+                      <div><span className="text-muted-foreground">P/B Ratio</span><p className="font-semibold text-foreground">{stock.fundamentals.pbRatio?.toFixed(2) || 'N/A'}</p></div>
+                      <div><span className="text-muted-foreground">Div Yield</span><p className="font-semibold text-foreground">{stock.fundamentals.divYield?.toFixed(2) || 'N/A'}%</p></div>
+                      <div><span className="text-muted-foreground">Industry P/E</span><p className="font-semibold text-foreground">{stock.fundamentals.industryPe?.toFixed(2) || 'N/A'}</p></div>
+                      <div><span className="text-muted-foreground">Book Value</span><p className="font-semibold text-foreground">{stock.fundamentals.bookValue?.toFixed(2) || 'N/A'}</p></div>
+                      <div><span className="text-muted-foreground">Debt to Equity</span><p className="font-semibold text-foreground">{stock.fundamentals.debtToEquity?.toFixed(2) || 'N/A'}</p></div>
+                      <div><span className="text-muted-foreground">Face Value</span><p className="font-semibold text-foreground">{stock.fundamentals.faceValue?.toFixed(2) || 'N/A'}</p></div>
+                    </div>
+                  </CollapsibleSection>
+                )}
+              </TabsContent>
+
               <TabsContent value="overview" className="mt-4 space-y-6">
                 <div>
                   <h3 className="text-md font-semibold flex items-center mb-2">
@@ -306,24 +326,7 @@ export default function StockDetailPage() {
                   </CollapsibleSection>
                 )}
               </TabsContent>
-              <TabsContent value="fundamentals" className="mt-4 space-y-6">
-                 {stock.fundamentals && (
-                  <CollapsibleSection title="Fundamentals" icon={SearchIcon} defaultOpen>
-                    <div className="grid grid-cols-2 gap-x-6 gap-y-3 text-sm">
-                      <div><span className="text-muted-foreground">Mkt Cap</span><p className="font-semibold text-foreground">{stock.fundamentals.marketCap || 'N/A'}</p></div>
-                      <div><span className="text-muted-foreground">ROE</span><p className="font-semibold text-foreground">{stock.fundamentals.roe?.toFixed(2) || 'N/A'}%</p></div>
-                      <div><span className="text-muted-foreground">P/E Ratio (TTM)</span><p className="font-semibold text-foreground">{stock.fundamentals.peRatioTTM?.toFixed(2) || 'N/A'}</p></div>
-                      <div><span className="text-muted-foreground">EPS (TTM)</span><p className="font-semibold text-foreground">{stock.fundamentals.epsTTM?.toFixed(2) || 'N/A'}</p></div>
-                      <div><span className="text-muted-foreground">P/B Ratio</span><p className="font-semibold text-foreground">{stock.fundamentals.pbRatio?.toFixed(2) || 'N/A'}</p></div>
-                      <div><span className="text-muted-foreground">Div Yield</span><p className="font-semibold text-foreground">{stock.fundamentals.divYield?.toFixed(2) || 'N/A'}%</p></div>
-                      <div><span className="text-muted-foreground">Industry P/E</span><p className="font-semibold text-foreground">{stock.fundamentals.industryPe?.toFixed(2) || 'N/A'}</p></div>
-                      <div><span className="text-muted-foreground">Book Value</span><p className="font-semibold text-foreground">{stock.fundamentals.bookValue?.toFixed(2) || 'N/A'}</p></div>
-                      <div><span className="text-muted-foreground">Debt to Equity</span><p className="font-semibold text-foreground">{stock.fundamentals.debtToEquity?.toFixed(2) || 'N/A'}</p></div>
-                      <div><span className="text-muted-foreground">Face Value</span><p className="font-semibold text-foreground">{stock.fundamentals.faceValue?.toFixed(2) || 'N/A'}</p></div>
-                    </div>
-                  </CollapsibleSection>
-                )}
-              </TabsContent>
+              
               <TabsContent value="financials" className="mt-4 space-y-6">
                 {stock.financials && (
                   <CollapsibleSection title="Financials" icon={BarChart2} defaultOpen>
@@ -389,7 +392,7 @@ export default function StockDetailPage() {
               onClick={handleSellAction} 
               variant="destructive" 
               className="flex-1 text-base py-3 bg-red-600 hover:bg-red-700 disabled:opacity-60 disabled:bg-red-800"
-              disabled={productTypeForOrder === 'Longterm'}
+              disabled={productTypeForOrder === 'Intraday'}
             >
               Sell
             </Button>
