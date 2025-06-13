@@ -17,7 +17,7 @@ import { PackageOpen } from 'lucide-react';
 
 
 import React, { useState, useEffect } from 'react';
-import type { PortfolioHolding, NewsArticle, IntradayPosition, FoPosition, CryptoFuturePosition, Stock } from '@/types';
+import type { PortfolioHolding, NewsArticle, IntradayPosition, FoPosition, CryptoFuturePosition, Stock, MarketIndex } from '@/types';
 import { 
   mockPortfolioHoldings, 
   mockNewsArticles, 
@@ -30,6 +30,7 @@ import {
   mockBonds,
   mockIndexFuturesForWatchlist,
   mockStockFuturesForWatchlist,
+  mockMarketIndices, // Import mockMarketIndices
 } from '@/lib/mockData';
 
 function getRelevantNewsForHoldings(holdings: PortfolioHolding[], allNews: NewsArticle[]): NewsArticle[] {
@@ -106,20 +107,21 @@ function getRelevantNewsForPositions(
   return relevantNews;
 }
 
-function getRelevantNewsForWatchlistItems(items: Stock[] | undefined, allNews: NewsArticle[]): NewsArticle[] {
+function getRelevantNewsForWatchlistItems(items: Stock[] | MarketIndex[] | undefined, allNews: NewsArticle[]): NewsArticle[] {
   if (!items || !items.length || !allNews.length) {
     return [];
   }
   const relevantNews: NewsArticle[] = [];
   const itemKeywords = items.flatMap(item => {
     const keywords = [item.name.toLowerCase()];
-    if (item.symbol) {
+    if ('symbol' in item && item.symbol) { // Check if symbol exists (for Stock type)
       keywords.push(item.symbol.toLowerCase());
     }
-    if (item.exchange === 'Crypto' || item.exchange === 'MF' || item.exchange === 'BOND' || item.exchange === 'NFO') {
+    // Added specific handling for different exchange types for better keyword generation
+    if ('exchange' in item && (item.exchange === 'Crypto' || item.exchange === 'MF' || item.exchange === 'BOND' || item.exchange === 'NFO')) {
         const nameParts = item.name.split(/[\s-]+/); 
         keywords.push(...nameParts.map(part => part.toLowerCase()));
-        if (item.symbol) { 
+        if ('symbol' in item && item.symbol) { 
             const symbolParts = item.symbol.match(/[A-Z]+|[0-9]+/g) || [];
             keywords.push(...symbolParts.map(part => part.toLowerCase()));
         }
@@ -179,8 +181,11 @@ export default function DashboardPage() {
   const isFuturesTopWatchlistView = activePrimaryItem === "Futures" && activeSecondaryItem.startsWith("Top watchlist");
 
   const isCategoryTopWatchlistView = 
-    ["Stocks", "Crypto", "Mutual funds", "Bonds"].includes(activePrimaryItem) &&
+    ["Stocks", "Mutual funds", "Bonds"].includes(activePrimaryItem) && // Removed "Crypto"
     activeSecondaryItem.startsWith("Top watchlist");
+  
+  const isCryptoTopWatchlistView = activePrimaryItem === "Crypto" && activeSecondaryItem.startsWith("Top watchlist");
+
 
   const isOptionsTopWatchlistView = activePrimaryItem === "Options" && activeSecondaryItem.startsWith("Top watchlist");
 
@@ -205,8 +210,6 @@ export default function DashboardPage() {
     categoryWatchlistTitle = `${activePrimaryItem} - ${activeSecondaryItem}`;
     if (activePrimaryItem === "Stocks") {
       itemsForCategoryWatchlist = mockStocks.map(s => ({...s, exchange: s.exchange || (Math.random() > 0.5 ? "NSE" : "BSE")}));
-    } else if (activePrimaryItem === "Crypto") {
-      itemsForCategoryWatchlist = mockCryptoAssets;
     } else if (activePrimaryItem === "Mutual funds") {
       itemsForCategoryWatchlist = mockMutualFunds;
     } else if (activePrimaryItem === "Bonds") {
@@ -214,6 +217,10 @@ export default function DashboardPage() {
     } else {
       itemsForCategoryWatchlist = []; 
     }
+    newsForView = getRelevantNewsForWatchlistItems(itemsForCategoryWatchlist, mockNewsArticles);
+  } else if (isCryptoTopWatchlistView) { // Handle Crypto Top Watchlist separately for news
+    categoryWatchlistTitle = `${activePrimaryItem} - ${activeSecondaryItem}`;
+    itemsForCategoryWatchlist = mockCryptoAssets;
     newsForView = getRelevantNewsForWatchlistItems(itemsForCategoryWatchlist, mockNewsArticles);
   } else if (isOptionsTopWatchlistView) {
     newsForView = mockNewsArticles; 
@@ -237,7 +244,17 @@ export default function DashboardPage() {
             onSecondaryNavClick={handleSecondaryNavClick}
             secondaryNavTriggerCategories={secondaryNavTriggerCategories}
           />
-          <MarketOverview />
+          {activePrimaryItem === "Crypto" ? (
+            <MarketOverview 
+              title="Top Cryptocurrencies" 
+              items={mockCryptoAssets.slice(0, 3)}
+            />
+          ) : (
+            <MarketOverview 
+              title="Market Overview" 
+              items={mockMarketIndices}
+            />
+          )}
 
           {isPortfolioHoldingsView ? (
             <>
@@ -283,6 +300,15 @@ export default function DashboardPage() {
               <WatchlistSection
                 title={categoryWatchlistTitle}
                 displayItems={itemsForCategoryWatchlist}
+                isPredefinedList={true}
+              />
+              <NewsSection articles={newsForView} />
+            </div>
+          ) : isCryptoTopWatchlistView ? ( // View for Crypto Top Watchlist
+             <div className="space-y-8">
+              <WatchlistSection
+                title={categoryWatchlistTitle}
+                displayItems={itemsForCategoryWatchlist} 
                 isPredefinedList={true}
               />
               <NewsSection articles={newsForView} />

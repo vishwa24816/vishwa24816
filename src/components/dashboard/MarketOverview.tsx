@@ -4,16 +4,29 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { mockMarketIndices } from '@/lib/mockData';
-import type { MarketIndex } from '@/types';
+import type { MarketIndex, Stock } from '@/types'; // Import Stock type
 import { TrendingUp, TrendingDown, Activity } from 'lucide-react';
 
-const IndexCard: React.FC<{ indexData: MarketIndex }> = ({ indexData }) => {
-  const isPositive = indexData.change >= 0;
+// Make IndexCardProps more generic
+interface IndexCardProps {
+  itemData: MarketIndex | Stock;
+}
+
+const IndexCard: React.FC<IndexCardProps> = ({ itemData }) => {
+  // Adapt to use MarketIndex or Stock properties
+  const name = itemData.name;
+  // Use 'price' if 'value' is not available (for Stock type)
+  const value = 'value' in itemData ? itemData.value : itemData.price;
+  const change = itemData.change;
+  const changePercent = itemData.changePercent;
+  // const symbol = 'symbol' in itemData ? itemData.symbol : undefined; // Get symbol if it's a Stock
+
+  const isPositive = change >= 0;
+
   return (
     <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300 w-48 h-48 flex flex-col shrink-0">
       <CardHeader className="p-3 pb-1 flex flex-row items-start justify-between space-y-0">
-        <CardTitle className="text-sm font-medium font-headline">{indexData.name}</CardTitle>
+        <CardTitle className="text-sm font-medium font-headline">{name}</CardTitle>
         <Activity className="h-4 w-4 text-muted-foreground" />
       </CardHeader>
       <CardContent className="p-3 pt-1 flex flex-col flex-grow justify-between">
@@ -29,10 +42,10 @@ const IndexCard: React.FC<{ indexData: MarketIndex }> = ({ indexData }) => {
         </div>
         
         <div>
-          <div className="text-xl font-bold">{indexData.value.toLocaleString()}</div>
+          <div className="text-xl font-bold">{value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
           <p className={`text-xs ${isPositive ? 'text-[hsl(var(--positive))]' : 'text-destructive'} flex items-center`}>
             {isPositive ? <TrendingUp className="h-3 w-3 mr-1" /> : <TrendingDown className="h-3 w-3 mr-1" />}
-            {isPositive ? '+' : ''}{indexData.change.toFixed(2)} ({isPositive ? '+' : ''}{indexData.changePercent.toFixed(2)}%)
+            {isPositive ? '+' : ''}{change.toFixed(2)} ({isPositive ? '+' : ''}{changePercent.toFixed(2)}%)
           </p>
         </div>
       </CardContent>
@@ -40,19 +53,25 @@ const IndexCard: React.FC<{ indexData: MarketIndex }> = ({ indexData }) => {
   );
 };
 
-export function MarketOverview() {
+// Make MarketOverview accept items and title as props
+interface MarketOverviewProps {
+  title: string;
+  items: (MarketIndex | Stock)[];
+}
+
+export function MarketOverview({ title, items }: MarketOverviewProps) {
   return (
     <section aria-labelledby="market-overview-title">
       <h2 id="market-overview-title" className="text-2xl font-semibold font-headline mb-6 text-primary">
-        Market Overview
+        {title} {/* Use prop title */}
       </h2>
       <div className="flex space-x-4 overflow-x-auto pb-4 -mb-4 no-scrollbar">
-        {mockMarketIndices.map((index) => (
-          <IndexCard key={index.id} indexData={index} />
+        {items.map((item) => (
+          <IndexCard key={item.id} itemData={item} />
         ))}
         {/* Add a few more for better scroll visualization if needed */}
-        {mockMarketIndices.length < 5 && mockMarketIndices.map((index) => (
-          <IndexCard key={`${index.id}-clone`} indexData={{...index, id: `${index.id}-clone`}} />
+        {items.length < 5 && items.length > 0 && items.map((item) => (
+          <IndexCard key={`${item.id}-clone`} itemData={{...item, id: `${item.id}-clone`}} />
         ))}
       </div>
     </section>
