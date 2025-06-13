@@ -7,15 +7,15 @@ import Link from 'next/link';
 import { ProtectedRoute } from '@/components/shared/ProtectedRoute';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { mockStocks, mockCryptoAssets, mockMutualFunds, mockBonds, mockIndexFuturesForWatchlist, mockStockFuturesForWatchlist, mockOptionsForWatchlist, mockNewsArticles } from '@/lib/mockData';
 import type { Stock, NewsArticle } from '@/types';
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, TrendingUp, TrendingDown, Info, CalendarDays, Maximize2, BarChart2, ChevronUp, ChevronDown, ChevronLeftIcon, ChevronRightIcon, ExternalLink, Briefcase, Users, Landmark, SearchIcon } from 'lucide-react';
+import { ArrowLeft, TrendingUp, TrendingDown, Info, Maximize2, BarChart2, ChevronUp, ChevronDown, ChevronLeftIcon, ChevronRightIcon, Landmark, SearchIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
 import { NewsSection } from '@/components/dashboard/NewsSection';
+import { OrderPlacementForm } from '@/components/order/OrderPlacementForm';
 
 
 // Combine all mock asset lists for easier lookup
@@ -135,13 +135,6 @@ export default function StockDetailPage() {
     }
   }, [symbol, router, toast]);
 
-  const handleBuy = () => {
-    toast({ title: "Buy Action (Mock)", description: `Initiating BUY for ${stock?.symbol}` });
-  };
-
-  const handleSell = () => {
-    toast({ title: "Sell Action (Mock)", description: `Initiating SELL for ${stock?.symbol}` });
-  };
 
   if (!stock) {
     return (
@@ -171,7 +164,7 @@ export default function StockDetailPage() {
           </Button>
         </header>
 
-        <main className="flex-grow overflow-y-auto pb-20">
+        <main className="flex-grow overflow-y-auto pb-8"> {/* Adjusted padding-bottom */}
           <div className="container mx-auto px-4 py-4 space-y-4">
             <div className="flex justify-between items-start">
               <div>
@@ -202,6 +195,8 @@ export default function StockDetailPage() {
                 <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-primary"> <BarChart2 className="h-4 w-4" /> </Button>
               </div>
             </div>
+            
+            <OrderPlacementForm stock={stock} />
 
             <div className="flex space-x-1 overflow-x-auto no-scrollbar py-2">
               {timescaleButtons.map(ts => (
@@ -361,20 +356,8 @@ export default function StockDetailPage() {
             </Tabs>
           </div>
         </main>
-
-        <div className="fixed bottom-0 left-0 right-0 bg-background border-t border-border p-3 shadow-md_ z-20">
-          <div className="container mx-auto flex space-x-3">
-            <Button onClick={handleSell} variant="destructive" className="flex-1 text-base py-3 bg-red-600 hover:bg-red-700">
-              Sell
-            </Button>
-            <Button onClick={handleBuy} className="flex-1 text-base py-3 bg-green-600 hover:bg-green-700 text-white">
-              Buy
-            </Button>
-          </div>
-        </div>
       </div>
     </ProtectedRoute>
   );
 }
-
     
