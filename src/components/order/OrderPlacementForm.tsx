@@ -10,7 +10,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Switch } from '@/components/ui/switch';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Info, Tag, Gavel, RefreshCcw,ChevronDown } from 'lucide-react';
+import { Info, Gavel, RefreshCcw,ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from "@/hooks/use-toast";
 
@@ -25,14 +25,9 @@ export function OrderPlacementForm({ stock }: OrderPlacementFormProps) {
   const [triggerPrice, setTriggerPrice] = useState(0);
 
   const [selectedExchange, setSelectedExchange] = useState<'BSE' | 'NSE'>('NSE');
-  const [orderMode, setOrderMode] = useState('Regular'); // Regular, Cover, AMO, Iceberg
+  const [orderMode, setOrderMode] = useState('Regular'); 
   const [productType, setProductType] = useState('Longterm'); // Intraday, Longterm
   const [orderType, setOrderType] = useState('Limit'); // Market, Limit, SL, SL-M
-
-  const [isGttStoplossEnabled, setIsGttStoplossEnabled] = useState(false);
-  const [gttStoplossValue, setGttStoplossValue] = useState('');
-  const [isGttTargetEnabled, setIsGttTargetEnabled] = useState(false);
-  const [gttTargetValue, setGttTargetValue] = useState('');
 
   const [isBseNseSwitchOn, setIsBseNseSwitchOn] = useState(false); // For the top right switch
 
@@ -57,16 +52,17 @@ export function OrderPlacementForm({ stock }: OrderPlacementFormProps) {
   };
 
   const exchangePrice = selectedExchange === 'NSE' ? stock.price : (stock.price * 0.995); // Mock BSE price
+  const orderModeTabs = ['Regular', 'GTT', 'AMO', 'MTF', 'SIP'];
 
   return (
     <div className="bg-card shadow-md rounded-lg mt-4">
       {/* Header Section */}
-      <div className="bg-primary text-primary-foreground p-3 rounded-t-lg">
+      <div className="bg-card text-card-foreground p-3 rounded-t-lg border-b">
         <div className="flex justify-between items-center mb-2">
           <h2 className="text-lg font-semibold">Buy {stock.symbol} <span className="text-sm">x {quantity} Qty</span></h2>
           <div className="flex items-center space-x-2">
             <Switch id="bse-nse-toggle-switch" checked={isBseNseSwitchOn} onCheckedChange={setIsBseNseSwitchOn} />
-            <Info className="h-5 w-5 cursor-pointer" onClick={() => toast({title: "Info", description: "Toggle for advanced options or settings."})} />
+            <Info className="h-5 w-5 cursor-pointer text-muted-foreground hover:text-primary" onClick={() => toast({title: "Info", description: "Toggle for advanced options or settings."})} />
           </div>
         </div>
         <RadioGroup
@@ -76,12 +72,12 @@ export function OrderPlacementForm({ stock }: OrderPlacementFormProps) {
           className="flex space-x-4"
         >
           <div className="flex items-center space-x-2">
-            <RadioGroupItem value="BSE" id="BSE" className="border-primary-foreground/50 data-[state=checked]:bg-primary-foreground data-[state=checked]:text-primary" />
-            <Label htmlFor="BSE" className="text-sm">BSE: ₹{(stock.price * 0.995).toFixed(2)}</Label>
+            <RadioGroupItem value="BSE" id="BSE" className="border-input data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground" />
+            <Label htmlFor="BSE" className="text-sm text-card-foreground">BSE: ₹{(stock.price * 0.995).toFixed(2)}</Label>
           </div>
           <div className="flex items-center space-x-2">
-            <RadioGroupItem value="NSE" id="NSE" className="border-primary-foreground/50 data-[state=checked]:bg-primary-foreground data-[state=checked]:text-primary" />
-            <Label htmlFor="NSE" className="text-sm">NSE: ₹{stock.price.toFixed(2)}</Label>
+            <RadioGroupItem value="NSE" id="NSE" className="border-input data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground" />
+            <Label htmlFor="NSE" className="text-sm text-card-foreground">NSE: ₹{stock.price.toFixed(2)}</Label>
           </div>
         </RadioGroup>
       </div>
@@ -90,7 +86,7 @@ export function OrderPlacementForm({ stock }: OrderPlacementFormProps) {
       <Tabs value={orderMode} onValueChange={setOrderMode} className="w-full">
         <div className="flex justify-between items-center border-b px-1">
             <TabsList className="bg-transparent p-0 justify-start">
-            {['Regular', 'Cover', 'AMO', 'Iceberg'].map((mode) => (
+            {orderModeTabs.map((mode) => (
                 <TabsTrigger
                 key={mode}
                 value={mode}
@@ -100,9 +96,6 @@ export function OrderPlacementForm({ stock }: OrderPlacementFormProps) {
                 </TabsTrigger>
             ))}
             </TabsList>
-            <Button variant="link" size="sm" className="text-primary text-xs sm:text-sm pr-3" onClick={() => toast({title: "Tags Clicked", description: "Feature to add tags to your order."})}>
-                <Tag className="h-3 w-3 mr-1" /> Tags
-            </Button>
         </div>
 
         <TabsContent value="Regular" className="p-4 space-y-4 mt-0">
@@ -177,7 +170,7 @@ export function OrderPlacementForm({ stock }: OrderPlacementFormProps) {
             value={orderType}
             onValueChange={(value) => {
               setOrderType(value);
-              if (value === 'Market') setPrice(exchangePrice); // Use selected exchange price
+              if (value === 'Market') setPrice(exchangePrice); 
               if (value !== 'SL' && value !== 'SL-M') setTriggerPrice(0);
             }}
             className="flex flex-wrap gap-x-4 gap-y-2"
@@ -195,50 +188,6 @@ export function OrderPlacementForm({ stock }: OrderPlacementFormProps) {
             </Button>
           
 
-          {/* GTT Section */}
-          <div className="border-t pt-4 space-y-3">
-            <div className="flex items-center space-x-2">
-                <Gavel className="h-5 w-5 text-primary" />
-                <span className="text-sm font-medium">GTT Order</span>
-                <span className="text-xs text-muted-foreground">(Good Till Triggered)</span>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="flex items-center space-x-2">
-                <Checkbox
-                    id="gtt_stoploss"
-                    checked={isGttStoplossEnabled}
-                    onCheckedChange={(checked) => setIsGttStoplossEnabled(!!checked)}
-                />
-                <Label htmlFor="gtt_stoploss" className="font-normal whitespace-nowrap">Stoploss</Label>
-                <Input
-                    type="text"
-                    placeholder="%"
-                    value={gttStoplossValue}
-                    onChange={(e) => setGttStoplossValue(e.target.value)}
-                    disabled={!isGttStoplossEnabled}
-                    className={cn("w-20 h-8 text-xs", !isGttStoplossEnabled && "bg-muted/30 border-dashed")}
-                />
-                </div>
-                <div className="flex items-center space-x-2">
-                <Checkbox
-                    id="gtt_target"
-                    checked={isGttTargetEnabled}
-                    onCheckedChange={(checked) => setIsGttTargetEnabled(!!checked)}
-                />
-                <Label htmlFor="gtt_target" className="font-normal whitespace-nowrap">Target</Label>
-                 <Input
-                    type="text"
-                    placeholder="%"
-                    value={gttTargetValue}
-                    onChange={(e) => setGttTargetValue(e.target.value)}
-                    disabled={!isGttTargetEnabled}
-                    className={cn("w-20 h-8 text-xs", !isGttTargetEnabled && "bg-muted/30 border-dashed")}
-                />
-                </div>
-            </div>
-             <Button variant="link" size="sm" className="p-0 h-auto text-primary text-xs" onClick={() => toast({title: "Learn More GTT Clicked"})}>Learn more</Button>
-          </div>
-
           {/* Footer: Margin & Buttons */}
           <div className="border-t pt-4 flex flex-col sm:flex-row justify-between items-center space-y-3 sm:space-y-0">
             <div className="text-sm">
@@ -251,10 +200,22 @@ export function OrderPlacementForm({ stock }: OrderPlacementFormProps) {
             </div>
           </div>
         </TabsContent>
-        {/* Placeholder content for other tabs */}
-        {['Cover', 'AMO', 'Iceberg'].map(mode => (
+        
+        {/* Placeholder content for other new tabs */}
+        {['GTT', 'AMO', 'MTF', 'SIP'].map(mode => (
             <TabsContent key={mode} value={mode} className="p-4 mt-0 text-center text-muted-foreground">
                 <p>{mode} order options will be shown here.</p>
+                 {/* Basic Buy/Cancel and Margin for consistency in placeholder */}
+                <div className="border-t pt-4 mt-4 flex flex-col sm:flex-row justify-between items-center space-y-3 sm:space-y-0">
+                    <div className="text-sm">
+                    Margin required <span className="font-semibold text-foreground">₹{calculatedMargin.toFixed(2)}</span>
+                    <RefreshCcw className="inline h-3 w-3 ml-1 text-primary cursor-pointer" onClick={() => toast({description: "Margin refreshed (mock)"})} />
+                    </div>
+                    <div className="flex space-x-3 w-full sm:w-auto">
+                    <Button onClick={handleBuy} className="flex-1 bg-green-600 hover:bg-green-700 text-white">Buy</Button>
+                    <Button onClick={handleCancel} variant="outline" className="flex-1">Cancel</Button>
+                    </div>
+                </div>
             </TabsContent>
         ))}
 
