@@ -42,7 +42,7 @@ export function OrderPlacementForm({ stock }: OrderPlacementFormProps) {
 
   const calculatedMargin = quantity * price;
 
-  const handleBuy = ()_> {
+  const handleBuy = () => {
     toast({
       title: "Order Placed (Mock)",
       description: `BUY ${quantity} x ${stock.symbol} @ ${orderType === 'Market' ? 'Market' : `₹${price}`} (${productType})`,
