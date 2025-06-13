@@ -100,7 +100,7 @@ function getRelevantNewsForStock(stock: Stock | null, allNews: NewsArticle[]): N
         relevantNews.push(news);
         }
     });
-    return relevantNews; 
+    return relevantNews;
 }
 
 
@@ -134,7 +134,7 @@ export default function StockDetailPage() {
           description: `Asset with symbol ${symbol} not found.`,
           variant: "destructive",
         });
-        router.push('/'); 
+        router.push('/');
       }
     }
   }, [symbol, router, toast]);
@@ -161,7 +161,7 @@ export default function StockDetailPage() {
 
   const isPositiveChange = stock.change >= 0;
   const timescaleButtons = ['NSE', '1D', '1W', '1M', '1Y', '5Y', 'ALL'];
-  
+
   const currentFinancialsData = stock.financials?.[activeFinancialsCategory] || [];
   const maxFinancialValue = Math.max(...currentFinancialsData.map(d => d.value), 0);
 
@@ -195,9 +195,9 @@ export default function StockDetailPage() {
 
             <div className="h-64 bg-muted rounded-md flex items-center justify-center my-4 relative overflow-hidden" data-ai-hint="stock chart graph">
               <svg width="100%" height="100%" viewBox="0 0 300 150" preserveAspectRatio="none">
-                <path d="M0 100 L30 90 L60 110 L90 80 L120 95 L150 70 L180 85 L210 60 L240 75 L270 50 L300 65" 
-                      fill="none" 
-                      stroke={isPositiveChange ? "hsl(var(--positive))" : "hsl(var(--destructive))"} 
+                <path d="M0 100 L30 90 L60 110 L90 80 L120 95 L150 70 L180 85 L210 60 L240 75 L270 50 L300 65"
+                      fill="none"
+                      stroke={isPositiveChange ? "hsl(var(--positive))" : "hsl(var(--destructive))"}
                       strokeWidth="2"/>
                 <line x1="0" y1="120" x2="300" y2="120" stroke="hsl(var(--border))" strokeDasharray="4 2" />
               </svg>
@@ -225,15 +225,14 @@ export default function StockDetailPage() {
             </div>
 
             <Tabs defaultValue="overview" className="w-full">
-              <TabsList className="grid w-full grid-cols-3 bg-muted/30">
+              <TabsList className="grid w-full grid-cols-2 bg-muted/30">
                 <TabsTrigger value="overview">Overview</TabsTrigger>
                 <TabsTrigger value="news">News</TabsTrigger>
-                <TabsTrigger value="events">Events</TabsTrigger>
               </TabsList>
               <TabsContent value="overview" className="mt-4 space-y-6">
                 <div>
                   <h3 className="text-md font-semibold flex items-center mb-2">
-                    Performance 
+                    Performance
                     <Info className="h-3 w-3 ml-1.5 text-muted-foreground cursor-pointer" onClick={() => toast({title: "Performance Info Clicked"})} />
                   </h3>
                   {stock.todayLow && stock.todayHigh && (
@@ -257,7 +256,7 @@ export default function StockDetailPage() {
                     </div>
                   )}
                 </div>
-                
+
                 <div className="grid grid-cols-2 gap-4 text-sm pt-2">
                   <div>
                     <p className="text-xs text-muted-foreground">Open</p>
@@ -295,10 +294,10 @@ export default function StockDetailPage() {
                     <div className="flex items-center justify-between mb-4">
                       <div className="flex space-x-1 sm:space-x-2 overflow-x-auto no-scrollbar">
                         {(['revenue', 'profit', 'netWorth'] as const).map(cat => (
-                          <Button 
+                          <Button
                             key={cat}
-                            variant={activeFinancialsCategory === cat ? 'secondary' : 'ghost'} 
-                            size="sm" 
+                            variant={activeFinancialsCategory === cat ? 'secondary' : 'ghost'}
+                            size="sm"
                             className="rounded-full text-xs px-3 shrink-0"
                             onClick={() => setActiveFinancialsCategory(cat)}
                           >
@@ -327,7 +326,7 @@ export default function StockDetailPage() {
                     </div>
                   </CollapsibleSection>
                 )}
-                
+
                 <Separator className="my-6" />
 
                 <NewsSection
@@ -335,7 +334,7 @@ export default function StockDetailPage() {
                     title={`Latest News for ${stock.name}`}
                     customDescription={`Recent headlines and AI summary for ${stock.symbol}.`}
                 />
-                
+
                 {stock.similarStocks && stock.similarStocks.length > 0 && (
                   <CollapsibleSection title="Similar Stocks" icon={Landmark} defaultOpen>
                      <div className="space-y-3">
@@ -371,9 +370,6 @@ export default function StockDetailPage() {
                     customDescription={`Browse all recent news articles for ${stock.symbol}.`}
                 />
               </TabsContent>
-              <TabsContent value="events" className="mt-4">
-                <p className="text-muted-foreground text-center py-8">Events section coming soon.</p>
-              </TabsContent>
             </Tabs>
           </div>
         </main>
@@ -392,4 +388,3 @@ export default function StockDetailPage() {
     </ProtectedRoute>
   );
 }
-
