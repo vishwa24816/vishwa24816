@@ -113,6 +113,7 @@ export default function StockDetailPage() {
   const [stockSpecificNews, setStockSpecificNews] = useState<NewsArticle[]>([]);
   const [activeTimescale, setActiveTimescale] = useState('1D');
   const [activeFinancialsCategory, setActiveFinancialsCategory] = useState<'revenue' | 'profit' | 'netWorth'>('revenue');
+  const [productTypeForOrder, setProductTypeForOrder] = useState('Longterm');
 
 
   useEffect(() => {
@@ -135,11 +136,17 @@ export default function StockDetailPage() {
   }, [symbol, router, toast]);
 
   const handleBuyAction = () => {
-    toast({ title: "Buy Action (Mock)", description: `Initiating BUY for ${stock?.symbol}` });
+    // This action would eventually use the state from OrderPlacementForm
+    // For now, it's just a mock toast.
+    toast({ title: "Buy Action (Mock)", description: `Initiating BUY for ${stock?.symbol} with product type: ${productTypeForOrder}` });
   };
 
   const handleSellAction = () => {
-    toast({ title: "Sell Action (Mock)", description: `Initiating SELL for ${stock?.symbol}` });
+     if (productTypeForOrder === 'Longterm') {
+      toast({ title: "Action Denied", description: "Cannot sell Longterm (CNC) holdings from here. Please use portfolio.", variant: "destructive" });
+      return;
+    }
+    toast({ title: "Sell Action (Mock)", description: `Initiating SELL for ${stock?.symbol} with product type: ${productTypeForOrder}` });
   };
 
 
@@ -220,7 +227,7 @@ export default function StockDetailPage() {
               ))}
             </div>
 
-            <OrderPlacementForm stock={stock} />
+            <OrderPlacementForm stock={stock} productType={productTypeForOrder} onProductTypeChange={setProductTypeForOrder} />
 
             <Tabs defaultValue="overview" className="w-full">
               <TabsList className="bg-muted/30 flex overflow-x-auto whitespace-nowrap no-scrollbar rounded-none p-0 h-auto border-b">
@@ -378,10 +385,18 @@ export default function StockDetailPage() {
         
         <div className="fixed bottom-16 left-0 right-0 bg-background border-t border-border p-3 shadow-md_ z-20"> {/* Sits above AppFooter (h-16) */}
           <div className="container mx-auto flex space-x-3">
-            <Button onClick={handleSellAction} variant="destructive" className="flex-1 text-base py-3 bg-red-600 hover:bg-red-700">
+            <Button 
+              onClick={handleSellAction} 
+              variant="destructive" 
+              className="flex-1 text-base py-3 bg-red-600 hover:bg-red-700 disabled:opacity-60 disabled:bg-red-800"
+              disabled={productTypeForOrder === 'Longterm'}
+            >
               Sell
             </Button>
-            <Button onClick={handleBuyAction} className="flex-1 text-base py-3 bg-green-600 hover:bg-green-700 text-white">
+            <Button 
+              onClick={handleBuyAction} 
+              className="flex-1 text-base py-3 bg-green-600 hover:bg-green-700 text-white"
+            >
               Buy
             </Button>
           </div>
