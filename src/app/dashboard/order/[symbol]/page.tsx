@@ -100,7 +100,7 @@ function getRelevantNewsForStock(stock: Stock | null, allNews: NewsArticle[]): N
         relevantNews.push(news);
         }
     });
-    return relevantNews; 
+    return relevantNews;
 }
 
 
@@ -114,7 +114,6 @@ export default function StockDetailPage() {
   const [stockSpecificNews, setStockSpecificNews] = useState<NewsArticle[]>([]);
   const [activeTimescale, setActiveTimescale] = useState('1D');
   const [activeFinancialsCategory, setActiveFinancialsCategory] = useState<'revenue' | 'profit' | 'netWorth'>('revenue');
-  const [activeShareholdingPeriod, setActiveShareholdingPeriod] = useState<string>('');
 
 
   useEffect(() => {
@@ -125,16 +124,13 @@ export default function StockDetailPage() {
         const relevantNews = getRelevantNewsForStock(foundStock, mockNewsArticles);
         setStockSpecificNews(relevantNews);
 
-        if (foundStock.shareholdingPattern && foundStock.shareholdingPattern.length > 0) {
-          setActiveShareholdingPeriod(foundStock.shareholdingPattern[0].period);
-        }
       } else {
         toast({
           title: "Error",
           description: `Asset with symbol ${symbol} not found.`,
           variant: "destructive",
         });
-        router.push('/'); 
+        router.push('/dashboard');
       }
     }
   }, [symbol, router, toast]);
@@ -225,7 +221,7 @@ export default function StockDetailPage() {
             </div>
 
             <Tabs defaultValue="overview" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 bg-muted/30"> {/* Changed grid-cols-3 to grid-cols-2 */}
+              <TabsList className="grid w-full grid-cols-2 bg-muted/30">
                 <TabsTrigger value="overview">Overview</TabsTrigger>
                 <TabsTrigger value="news">News</TabsTrigger>
               </TabsList>
@@ -327,14 +323,6 @@ export default function StockDetailPage() {
                   </CollapsibleSection>
                 )}
                 
-                <Separator className="my-6" />
-
-                <NewsSection
-                    articles={stockSpecificNews}
-                    title={`Latest News for ${stock.name}`}
-                    customDescription={`Recent headlines and AI summary for ${stock.symbol}.`}
-                />
-                
                 {stock.similarStocks && stock.similarStocks.length > 0 && (
                   <CollapsibleSection title="Similar Stocks" icon={Landmark} defaultOpen>
                      <div className="space-y-3">
@@ -365,7 +353,7 @@ export default function StockDetailPage() {
               </TabsContent>
               <TabsContent value="news" className="mt-4">
                  <NewsSection
-                    articles={stockSpecificNews} // Re-use the same filtered news or fetch broader news if desired
+                    articles={stockSpecificNews}
                     title={`All News related to ${stock.name}`}
                     customDescription={`Browse all recent news articles for ${stock.symbol}.`}
                 />
