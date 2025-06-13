@@ -4,7 +4,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { AppHeader } from '@/components/shared/AppHeader'; // Assuming you might want the header
 import { ProtectedRoute } from '@/components/shared/ProtectedRoute';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -141,7 +140,6 @@ export default function StockDetailPage() {
   
   const currentFinancialsData = stock.financials?.[activeFinancialsCategory] || [];
   const maxFinancialValue = Math.max(...currentFinancialsData.map(d => d.value), 0);
-  const currentShareholdingData = stock.shareholdingPattern?.find(p => p.period === activeShareholdingPeriod)?.data || [];
 
 
   return (
@@ -201,17 +199,6 @@ export default function StockDetailPage() {
                 </Button>
               ))}
             </div>
-
-            <Card className="bg-muted/50 hover:bg-muted/70 cursor-pointer" onClick={() => toast({title: "Stock SIP feature coming soon!"})}>
-              <CardContent className="p-4 flex items-center space-x-3">
-                <CalendarDays className="h-8 w-8 text-primary" />
-                <div>
-                  <p className="font-semibold text-sm text-foreground">Create Stock SIP</p>
-                  <p className="text-xs text-muted-foreground">Automate your investments in this stock</p>
-                </div>
-                <ArrowLeft className="h-4 w-4 text-muted-foreground ml-auto transform rotate-180" />
-              </CardContent>
-            </Card>
 
             <Tabs defaultValue="overview" className="w-full">
               <TabsList className="grid w-full grid-cols-3 bg-muted/30">
@@ -318,57 +305,6 @@ export default function StockDetailPage() {
                 )}
                 
                 <Separator className="my-6" />
-
-                {stock.aboutCompany && (
-                   <CollapsibleSection title="About Company" icon={Info}>
-                    <p className="text-sm leading-relaxed">{stock.aboutCompany}</p>
-                  </CollapsibleSection>
-                )}
-
-                {stock.shareholdingPattern && stock.shareholdingPattern.length > 0 && (
-                  <CollapsibleSection title="Shareholding Pattern" icon={Users} defaultOpen>
-                    <div className="flex space-x-1 overflow-x-auto no-scrollbar py-2 mb-3">
-                      {stock.shareholdingPattern.map(sp => (
-                        <Button
-                          key={sp.period}
-                          variant={activeShareholdingPeriod === sp.period ? 'secondary' : 'ghost'}
-                          size="sm"
-                          onClick={() => setActiveShareholdingPeriod(sp.period)}
-                          className="rounded-full px-3 text-xs shrink-0"
-                        >
-                          {sp.period}
-                        </Button>
-                      ))}
-                    </div>
-                    <div className="space-y-3">
-                      {currentShareholdingData.map(item => (
-                        <div key={item.category}>
-                          <div className="flex justify-between text-xs mb-0.5">
-                            <span className="text-foreground">{item.category}</span>
-                            <span className="font-semibold text-foreground">{item.percentage.toFixed(2)}%</span>
-                          </div>
-                          <div className="relative h-2 w-full rounded-full bg-muted">
-                            <div className="absolute h-2 rounded-full bg-primary/70" style={{ width: `${item.percentage}%` }}></div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </CollapsibleSection>
-                )}
-
-                {stock.topMutualFundsInvested && stock.topMutualFundsInvested.length > 0 && (
-                  <CollapsibleSection title="Top Mutual Funds Invested" icon={Briefcase}>
-                    <ul className="space-y-3">
-                      {stock.topMutualFundsInvested.map(fund => (
-                        <li key={fund.id} className="p-3 bg-muted/30 rounded-md">
-                          <p className="font-semibold text-foreground text-sm">{fund.name}</p>
-                          {fund.schemeType && <p className="text-xs text-muted-foreground">{fund.schemeType}</p>}
-                          {fund.assetValue && <p className="text-xs text-muted-foreground">AUM: {fund.assetValue}</p>}
-                        </li>
-                      ))}
-                    </ul>
-                  </CollapsibleSection>
-                )}
                 
                 {stock.similarStocks && stock.similarStocks.length > 0 && (
                   <CollapsibleSection title="Similar Stocks" icon={Landmark} defaultOpen>
@@ -422,4 +358,3 @@ export default function StockDetailPage() {
     </ProtectedRoute>
   );
 }
-
