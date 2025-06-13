@@ -28,8 +28,8 @@ import {
   mockCryptoAssets,
   mockMutualFunds,
   mockBonds,
-  mockIndexFuturesForWatchlist, // New import
-  mockStockFuturesForWatchlist,  // New import
+  mockIndexFuturesForWatchlist,
+  mockStockFuturesForWatchlist,
 } from '@/lib/mockData';
 
 function getRelevantNewsForHoldings(holdings: PortfolioHolding[], allNews: NewsArticle[]): NewsArticle[] {
@@ -179,7 +179,7 @@ export default function DashboardPage() {
   const isFuturesTopWatchlistView = activePrimaryItem === "Futures" && activeSecondaryItem.startsWith("Top watchlist");
 
   const isCategoryTopWatchlistView = 
-    ["Stocks", "Crypto", "Mutual funds", "Bonds"].includes(activePrimaryItem) && // Futures and Options removed from here
+    ["Stocks", "Crypto", "Mutual funds", "Bonds"].includes(activePrimaryItem) &&
     activeSecondaryItem.startsWith("Top watchlist");
 
   const isOptionsTopWatchlistView = activePrimaryItem === "Options" && activeSecondaryItem.startsWith("Top watchlist");
@@ -230,7 +230,6 @@ export default function DashboardPage() {
       <div className="flex flex-col min-h-screen">
         <AppHeader />
         <main className="flex-grow container mx-auto p-4 sm:p-6 lg:p-8 space-y-8">
-          <MarketOverview />
           <SubNav
             activePrimaryItem={activePrimaryItem}
             activeSecondaryItem={activeSecondaryItem}
@@ -238,6 +237,7 @@ export default function DashboardPage() {
             onSecondaryNavClick={handleSecondaryNavClick}
             secondaryNavTriggerCategories={secondaryNavTriggerCategories}
           />
+          <MarketOverview />
 
           {isPortfolioHoldingsView ? (
             <>
