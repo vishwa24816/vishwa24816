@@ -59,7 +59,7 @@ export function SubNav({
                 key={item}
                 variant="ghost"
                 className={cn(
-                  "px-3 py-2 h-auto text-xs font-medium rounded-none focus-visible:ring-0 focus-visible:ring-offset-0",
+                  "px-4 py-3 h-auto text-sm font-medium rounded-none focus-visible:ring-0 focus-visible:ring-offset-0",
                   "border-b-2 hover:bg-transparent",
                   activeSecondaryItem === item
                     ? "text-primary border-primary font-semibold"
