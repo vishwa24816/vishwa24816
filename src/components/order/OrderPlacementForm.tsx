@@ -7,10 +7,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Switch } from '@/components/ui/switch';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Info, Gavel, RefreshCcw,ChevronDown } from 'lucide-react';
+import { RefreshCcw,ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from "@/hooks/use-toast";
 
@@ -29,8 +28,6 @@ export function OrderPlacementForm({ stock }: OrderPlacementFormProps) {
   const [productType, setProductType] = useState('Longterm'); // Intraday, Longterm
   const [orderType, setOrderType] = useState('Limit'); // Market, Limit, SL, SL-M
 
-  const [isBseNseSwitchOn, setIsBseNseSwitchOn] = useState(false); // For the top right switch
-
   // State for "More Options"
   const [showMoreOptions, setShowMoreOptions] = useState(false);
   const [enableStopLoss, setEnableStopLoss] = useState(false);
@@ -48,7 +45,6 @@ export function OrderPlacementForm({ stock }: OrderPlacementFormProps) {
   const calculatedMargin = quantity * price;
 
   const handleBuy = () => {
-    // Collect Stop Loss and Take Profit info if enabled
     let slInfo = '';
     if (enableStopLoss && stopLossInputValue) {
       slInfo = `SL: ${stopLossInputValue}${stopLossType === 'percentage' ? '%' : ''}`;
@@ -81,10 +77,6 @@ export function OrderPlacementForm({ stock }: OrderPlacementFormProps) {
       <div className="bg-card text-card-foreground p-3 rounded-t-lg border-b">
         <div className="flex justify-between items-center mb-2">
           <h2 className="text-lg font-semibold">Buy {stock.symbol} <span className="text-sm">x {quantity} Qty</span></h2>
-          <div className="flex items-center space-x-2">
-            <Switch id="bse-nse-toggle-switch" checked={isBseNseSwitchOn} onCheckedChange={setIsBseNseSwitchOn} />
-            <Info className="h-5 w-5 cursor-pointer text-muted-foreground hover:text-primary" onClick={() => toast({title: "Info", description: "Toggle for advanced options or settings."})} />
-          </div>
         </div>
         <RadioGroup
           defaultValue="NSE"
@@ -290,34 +282,19 @@ export function OrderPlacementForm({ stock }: OrderPlacementFormProps) {
             </div>
           )}
           
-
-          {/* Footer: Margin & Buttons */}
-          <div className="border-t pt-4 flex flex-col sm:flex-row justify-between items-center space-y-3 sm:space-y-0">
-            <div className="text-sm">
+          <div className="text-sm border-t pt-4">
               Margin required <span className="font-semibold text-foreground">₹{calculatedMargin.toFixed(2)}</span>
               <RefreshCcw className="inline h-3 w-3 ml-1 text-primary cursor-pointer" onClick={() => toast({description: "Margin refreshed (mock)"})} />
-            </div>
-            <div className="flex space-x-3 w-full sm:w-auto">
-              <Button onClick={handleBuy} className="flex-1 bg-green-600 hover:bg-green-700 text-white">Buy</Button>
-              <Button onClick={handleCancel} variant="outline" className="flex-1">Cancel</Button>
-            </div>
           </div>
+
         </TabsContent>
         
-        {/* Placeholder content for other new tabs */}
         {['GTT', 'AMO', 'MTF', 'SIP'].map(mode => (
             <TabsContent key={mode} value={mode} className="p-4 mt-0 text-center text-muted-foreground">
                 <p className="mb-4">{mode} order options will be shown here.</p>
-                 {/* Basic Buy/Cancel and Margin for consistency in placeholder */}
-                <div className="border-t pt-4 mt-4 flex flex-col sm:flex-row justify-between items-center space-y-3 sm:space-y-0">
-                    <div className="text-sm">
+                <div className="text-sm border-t pt-4">
                     Margin required <span className="font-semibold text-foreground">₹{calculatedMargin.toFixed(2)}</span>
                     <RefreshCcw className="inline h-3 w-3 ml-1 text-primary cursor-pointer" onClick={() => toast({description: "Margin refreshed (mock)"})} />
-                    </div>
-                    <div className="flex space-x-3 w-full sm:w-auto">
-                    <Button onClick={handleBuy} className="flex-1 bg-green-600 hover:bg-green-700 text-white">Buy</Button>
-                    <Button onClick={handleCancel} variant="outline" className="flex-1">Cancel</Button>
-                    </div>
                 </div>
             </TabsContent>
         ))}
@@ -326,4 +303,3 @@ export function OrderPlacementForm({ stock }: OrderPlacementFormProps) {
     </div>
   );
 }
-

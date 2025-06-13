@@ -135,6 +135,14 @@ export default function StockDetailPage() {
     }
   }, [symbol, router, toast]);
 
+  const handleBuyAction = () => {
+    toast({ title: "Buy Action (Mock)", description: `Initiating BUY for ${stock?.symbol}` });
+  };
+
+  const handleSellAction = () => {
+    toast({ title: "Sell Action (Mock)", description: `Initiating SELL for ${stock?.symbol}` });
+  };
+
 
   if (!stock) {
     return (
@@ -164,7 +172,7 @@ export default function StockDetailPage() {
           </Button>
         </header>
 
-        <main className="flex-grow overflow-y-auto pb-8"> {/* Adjusted padding-bottom */}
+        <main className="flex-grow overflow-y-auto pb-20"> {/* Adjusted padding for fixed footer */}
           <div className="container mx-auto px-4 py-4 space-y-4">
             <div className="flex justify-between items-start">
               <div>
@@ -196,9 +204,7 @@ export default function StockDetailPage() {
               </div>
             </div>
             
-            <OrderPlacementForm stock={stock} />
-
-            <div className="flex space-x-1 overflow-x-auto no-scrollbar py-2">
+             <div className="flex space-x-1 overflow-x-auto no-scrollbar py-2">
               {timescaleButtons.map(ts => (
                 <Button
                   key={ts}
@@ -214,6 +220,8 @@ export default function StockDetailPage() {
                 </Button>
               ))}
             </div>
+
+            <OrderPlacementForm stock={stock} />
 
             <Tabs defaultValue="overview" className="w-full">
               <TabsList className="grid w-full grid-cols-2 bg-muted/30">
@@ -356,6 +364,18 @@ export default function StockDetailPage() {
             </Tabs>
           </div>
         </main>
+        
+        <div className="fixed bottom-16 left-0 right-0 bg-background border-t border-border p-3 shadow-md_ z-20"> {/* Sits above AppFooter (h-16) */}
+          <div className="container mx-auto flex space-x-3">
+            <Button onClick={handleSellAction} variant="destructive" className="flex-1 text-base py-3 bg-red-600 hover:bg-red-700">
+              Sell
+            </Button>
+            <Button onClick={handleBuyAction} className="flex-1 text-base py-3 bg-green-600 hover:bg-green-700 text-white">
+              Buy
+            </Button>
+          </div>
+        </div>
+
       </div>
     </ProtectedRoute>
   );
