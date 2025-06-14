@@ -2,7 +2,7 @@
 "use client";
 
 import Link from 'next/link';
-import { Home, ClipboardList, Bot, QrCode, User } from 'lucide-react';
+import { Home, ClipboardList, Bot, Filter, User } from 'lucide-react'; // Changed QrCode to Filter
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 
@@ -16,7 +16,7 @@ const NavItem: React.FC<NavItemProps> = ({ href, icon: Icon, label }) => {
   const pathname = usePathname();
   const isActive = pathname === href;
 
-  const isPlaceholderAction = href.startsWith("#"); // Keep for UPI or other future placeholders
+  const isPlaceholderAction = href.startsWith("#"); 
 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     if (isPlaceholderAction) {
@@ -45,8 +45,8 @@ export function AppFooter() {
   const navItems = [
     { href: "/", icon: Home, label: "Home" },
     { href: "/orders", icon: ClipboardList, label: "Orders" },
-    { href: "/simbot", icon: Bot, label: "Simbot" }, // Changed href here
-    { href: "#upi", icon: QrCode, label: "UPI" },
+    { href: "/simbot", icon: Bot, label: "Simbot" },
+    { href: "#screener", icon: Filter, label: "Screener" }, // Changed UPI to Screener
     { href: "/profile", icon: User, label: "Profile" },
   ];
 
