@@ -11,13 +11,13 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator"; // Added import
+import { Separator } from "@/components/ui/separator"; 
 import { mockPortfolioHoldings } from '@/lib/mockData';
 import type { PortfolioHolding } from '@/types';
 import { cn } from '@/lib/utils';
-import { Briefcase, Info } from 'lucide-react'; // Added Info for consistency if needed
+import { Briefcase, Info } from 'lucide-react'; 
 
-type HoldingFilterType = 'All' | 'Stock' | 'Mutual Fund';
+type HoldingFilterType = 'All' | 'Stock' | 'Mutual Fund' | 'Bond'; // Added 'Bond'
 
 export function PortfolioHoldingsTable() {
   const holdings = mockPortfolioHoldings;
@@ -40,12 +40,14 @@ export function PortfolioHoldingsTable() {
     { label: "All", value: "All" },
     { label: "Stocks", value: "Stock" },
     { label: "Mutual Funds", value: "Mutual Fund" },
+    { label: "Bonds", value: "Bond" }, // Added Bonds filter option
   ];
 
   const filteredHoldings = holdings.filter(holding => {
     if (activeFilter === 'All') return true;
     if (activeFilter === 'Stock') return holding.type === 'Stock' || holding.type === 'ETF';
     if (activeFilter === 'Mutual Fund') return holding.type === 'Mutual Fund';
+    if (activeFilter === 'Bond') return holding.type === 'Bond'; // Added Bond filter logic
     return false;
   });
 
@@ -55,7 +57,6 @@ export function PortfolioHoldingsTable() {
           <Briefcase className="h-6 w-6 mr-2" /> Portfolio Holdings
       </h2>
 
-      {/* New P&L Display matching OverallPortfolioSummary style */}
       <div className="space-y-3 pt-2 mb-4">
         <div className="flex justify-between items-start">
           <div>
@@ -172,4 +173,3 @@ export function PortfolioHoldingsTable() {
     </section>
   );
 }
-
