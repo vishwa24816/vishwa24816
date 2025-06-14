@@ -11,10 +11,11 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator"; // Added import
 import { mockPortfolioHoldings } from '@/lib/mockData';
 import type { PortfolioHolding } from '@/types';
 import { cn } from '@/lib/utils';
-import { Briefcase } from 'lucide-react';
+import { Briefcase, Info } from 'lucide-react'; // Added Info for consistency if needed
 
 type HoldingFilterType = 'All' | 'Stock' | 'Mutual Fund';
 
@@ -54,32 +55,53 @@ export function PortfolioHoldingsTable() {
           <Briefcase className="h-6 w-6 mr-2" /> Portfolio Holdings
       </h2>
 
-      {/* Row 1: P&L Figures */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-          <div> {/* Overall P&L */}
-              <p className="text-sm text-muted-foreground">Overall P&L</p>
-              <p className={cn("text-lg font-semibold", overallPandL >= 0 ? 'text-green-600' : 'text-red-600')}>
-                  {formatCurrency(overallPandL)} ({overallPandLPercent.toFixed(2)}%)
-              </p>
+      {/* New P&L Display matching OverallPortfolioSummary style */}
+      <div className="space-y-3 pt-2 mb-4">
+        <div className="flex justify-between items-start">
+          <div>
+            <p
+              className={cn(
+                "text-xl font-semibold",
+                overallPandL >= 0 ? 'text-green-500' : 'text-red-500'
+              )}
+            >
+              {formatCurrency(overallPandL)}
+            </p>
+            <p className="text-xs text-muted-foreground">
+              Overall P&L ({overallPandLPercent.toFixed(2)}%)
+            </p>
           </div>
-          <div className="text-left sm:text-right"> {/* Day's P&L */}
-              <p className="text-sm text-muted-foreground">Day's P&L</p>
-              <p className={cn("text-lg font-semibold", totalDayChangeAbsolute >= 0 ? 'text-green-600' : 'text-red-600')}>
-                  {formatCurrency(totalDayChangeAbsolute)} ({totalDayChangePercent.toFixed(2)}%)
-              </p>
+          <div className="text-right">
+            <p
+              className={cn(
+                "text-xl font-semibold",
+                totalDayChangeAbsolute >= 0 ? 'text-green-500' : 'text-red-500'
+              )}
+            >
+              {formatCurrency(totalDayChangeAbsolute)}
+            </p>
+            <p className="text-xs text-muted-foreground">
+              Day's P&L ({totalDayChangePercent.toFixed(2)}%)
+            </p>
           </div>
-      </div>
+        </div>
 
-      {/* Row 2: Investment & Current Value */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div> {/* Total Investment */}
-              <p className="text-sm text-muted-foreground">Total Investment</p>
-              <p className="font-semibold text-lg">{formatCurrency(totalInvestmentValue)}</p>
+        <Separator />
+
+        <div className="space-y-1.5">
+          <div className="flex justify-between items-center text-sm">
+            <p className="text-muted-foreground">Total Investment</p>
+            <p className="font-medium text-foreground">
+              {formatCurrency(totalInvestmentValue)}
+            </p>
           </div>
-          <div className="text-left sm:text-right"> {/* Current Value */}
-              <p className="text-sm text-muted-foreground">Current Value</p>
-              <p className="text-2xl font-bold">{formatCurrency(totalCurrentValue)}</p>
+          <div className="flex justify-between items-center text-sm">
+            <p className="text-muted-foreground">Current Value</p>
+            <p className="font-medium text-foreground">
+              {formatCurrency(totalCurrentValue)}
+            </p>
           </div>
+        </div>
       </div>
       
       <div className="border-b border-border">
@@ -150,3 +172,4 @@ export function PortfolioHoldingsTable() {
     </section>
   );
 }
+
