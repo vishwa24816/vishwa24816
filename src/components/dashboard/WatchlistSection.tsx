@@ -87,6 +87,21 @@ const StockListItem: React.FC<StockListItemProps> = ({ stock, isPredefinedList, 
     onRemoveStock(stock.id);
   };
 
+  let itemLink = `/order/stock/${stock.symbol}`; // Default to stock
+  if (stock.exchange === 'MF') {
+    itemLink = `/order/mutual-fund/${stock.symbol}`;
+  } else if (stock.exchange === 'Crypto') {
+    itemLink = `/order/crypto/${stock.symbol}`;
+  } else if (stock.exchange === 'NFO') { // Futures and Options
+    if (stock.symbol.includes('FUT')) {
+      itemLink = `/order/future/${stock.symbol}`;
+    } else if (stock.symbol.includes('CE') || stock.symbol.includes('PE')) {
+      itemLink = `/order/option/${stock.symbol}`;
+    }
+  } else if (stock.exchange === 'BOND' || stock.exchange === 'CORP BOND' || stock.exchange === 'SGB') {
+    itemLink = `/order/bond/${stock.symbol}`;
+  }
+
 
   return (
     <li
@@ -133,7 +148,7 @@ const StockListItem: React.FC<StockListItemProps> = ({ stock, isPredefinedList, 
         }}
       >
         <Link
-          href={`/order/${stock.symbol}`}
+          href={itemLink}
           passHref
           className={cn(
             "flex items-center justify-between w-full p-3", 
@@ -232,11 +247,11 @@ export function WatchlistSection({
 
   const handleAddStock = (e: FormEvent) => {
     e.preventDefault();
-    if (isPredefinedList || !newStockSymbol.trim()) { // Guard for actual modification
-        if (isPredefinedList) {
-            toast({ title: "Info", description: "This is a predefined watchlist and cannot be modified here."});
-        }
-        setNewStockSymbol(''); // Clear input even if predefined
+    if (!newStockSymbol.trim()) return;
+
+    if (isPredefinedList) { 
+        toast({ title: "Info", description: "This is a predefined watchlist and cannot be modified here."});
+        setNewStockSymbol('');
         return;
     }
 
@@ -256,7 +271,7 @@ export function WatchlistSection({
   };
 
   const handleRemoveStock = (stockId: string) => {
-    if (isPredefinedList) return; // Guard for actual modification
+    if (isPredefinedList) return; 
     const stock = watchlist.find(s => s.id === stockId);
     setWatchlist(prev => prev.filter(s => s.id !== stockId));
     if (stock) {

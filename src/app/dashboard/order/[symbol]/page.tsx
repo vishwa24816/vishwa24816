@@ -136,11 +136,21 @@ export default function StockDetailPage() {
   }, [symbol, router, toast]);
 
   const handleBuy = () => {
-    toast({ title: "Buy Action (Mock)", description: `Initiating BUY for ${stock?.symbol}` });
+    // Redirect to the new stock order page
+    if (stock) {
+      router.push(`/order/stock/${stock.symbol}`);
+    } else {
+      toast({ title: "Error", description: "Stock details not available to place order.", variant: "destructive" });
+    }
   };
 
   const handleSell = () => {
-    toast({ title: "Sell Action (Mock)", description: `Initiating SELL for ${stock?.symbol}` });
+     // Redirect to the new stock order page
+    if (stock) {
+      router.push(`/order/stock/${stock.symbol}`);
+    } else {
+      toast({ title: "Error", description: "Stock details not available to place order.", variant: "destructive" });
+    }
   };
 
   if (!stock) {
@@ -329,7 +339,7 @@ export default function StockDetailPage() {
                       {stock.similarStocks.map(simStock => {
                         const isSimPositive = simStock.changePercent >= 0;
                         return (
-                          <Link href={`/dashboard/order/${simStock.symbol}`} key={simStock.id} className="block p-3 bg-muted/30 rounded-md hover:bg-muted/50 transition-colors">
+                          <Link href={`/order/stock/${simStock.symbol}`} key={simStock.id} className="block p-3 bg-muted/30 rounded-md hover:bg-muted/50 transition-colors">
                             <div className="flex justify-between items-center">
                               <div>
                                 <p className="font-semibold text-foreground text-sm">{simStock.name} <span className="text-xs text-muted-foreground">({simStock.symbol})</span></p>

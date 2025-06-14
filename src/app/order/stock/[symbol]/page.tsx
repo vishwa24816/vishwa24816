@@ -11,7 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { mockStocks, mockCryptoAssets, mockMutualFunds, mockBonds, mockIndexFuturesForWatchlist, mockStockFuturesForWatchlist, mockOptionsForWatchlist, mockNewsArticles } from '@/lib/mockData';
 import type { Stock, NewsArticle } from '@/types';
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, TrendingUp, TrendingDown, Info, Maximize2, BarChart2, ChevronUp, ChevronDown, ChevronLeftIcon, ChevronRightIcon, Landmark, SearchIcon, LineChart, FileText } from 'lucide-react';
+import { ArrowLeft, TrendingUp, TrendingDown, Info, Maximize2, BarChart2, ChevronUp, ChevronDown, ChevronLeftIcon, ChevronRightIcon, Landmark, SearchIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { NewsSection } from '@/components/dashboard/NewsSection';
 import { OrderPlacementForm } from '@/components/order/OrderPlacementForm';
@@ -118,7 +118,11 @@ export default function StockOrderPage() {
 
   useEffect(() => {
     if (symbol) {
-      const foundAsset = allMockAssets.find(s => s.symbol.toUpperCase() === symbol.toUpperCase());
+      // For a stock page, we explicitly look for assets that are typically stocks (NSE/BSE) or ETFs
+      const foundAsset = allMockAssets.find(s => 
+        s.symbol.toUpperCase() === symbol.toUpperCase() &&
+        (s.exchange === 'NSE' || s.exchange === 'BSE' || s.type === 'Stock' || s.type === 'ETF')
+      );
       if (foundAsset) {
         setAsset(foundAsset);
         const relevantNews = getRelevantNewsForStock(foundAsset, mockNewsArticles);
@@ -127,7 +131,7 @@ export default function StockOrderPage() {
       } else {
         toast({
           title: "Error",
-          description: `Asset with symbol ${symbol} not found.`,
+          description: `Stock with symbol ${symbol} not found.`,
           variant: "destructive",
         });
         router.push('/'); 
@@ -225,7 +229,7 @@ export default function StockOrderPage() {
               ))}
             </div>
 
-            <OrderPlacementForm asset={asset} productType={productTypeForOrder} onProductTypeChange={setProductTypeForOrder} assetType="stock" />
+            <OrderPlacementForm asset={asset} productType={productTypeForOrder} onProductTypeChange={setProductTypeForOrder} assetType="stock"/>
 
             <Tabs defaultValue="overview" className="w-full">
               <TabsList className="bg-muted/30 flex overflow-x-auto whitespace-nowrap no-scrollbar rounded-none p-0 h-auto border-b">

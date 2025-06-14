@@ -14,15 +14,16 @@ import { cn } from '@/lib/utils';
 import { useToast } from "@/hooks/use-toast";
 
 interface OrderPlacementFormProps {
-  stock: Stock;
+  asset: Stock; // Renamed from stock to asset
+  assetType: string; // e.g., "stock", "mutual-fund", "crypto", etc.
   productType: string;
   onProductTypeChange: (value: string) => void;
 }
 
-export function OrderPlacementForm({ stock, productType, onProductTypeChange }: OrderPlacementFormProps) {
+export function OrderPlacementForm({ asset, assetType, productType, onProductTypeChange }: OrderPlacementFormProps) {
   const { toast } = useToast();
   const [quantity, setQuantity] = useState(1);
-  const [price, setPrice] = useState(stock.price);
+  const [price, setPrice] = useState(asset.price);
   const [triggerPrice, setTriggerPrice] = useState(0);
 
   const [selectedExchange, setSelectedExchange] = useState<'BSE' | 'NSE'>('NSE');
@@ -42,20 +43,24 @@ export function OrderPlacementForm({ stock, productType, onProductTypeChange }: 
 
 
   useEffect(() => {
-    setPrice(stock.price);
-  }, [stock.price]);
+    setPrice(asset.price);
+  }, [asset.price]);
 
   useEffect(() => {
     let priceForCalc = 0;
+    // Use asset.price for Market order, or user-inputted price for others
     if (orderType === 'Market') {
-      priceForCalc = selectedExchange === 'NSE' ? stock.price : (stock.price * 0.995); // Using exchange specific price for market
-    } else { // Limit, SL, SL-M
+      // For stocks, use selected exchange price. For others, just asset.price.
+      priceForCalc = assetType === 'stock' 
+        ? (selectedExchange === 'NSE' ? asset.price : (asset.price * 0.995)) // Mock BSE price for stock
+        : asset.price;
+    } else { 
       priceForCalc = price; 
     }
 
     let baseMargin = quantity * priceForCalc;
 
-    if (orderMode === 'MTF') { 
+    if (orderMode === 'MTF' && assetType === 'stock') { // MTF currently only for stocks
       const leverageFactor = parseInt(mtfLeverage.replace('x', ''), 10) || 1;
       if (leverageFactor > 0) {
         baseMargin = baseMargin / leverageFactor;
@@ -63,7 +68,7 @@ export function OrderPlacementForm({ stock, productType, onProductTypeChange }: 
     }
     
     setDisplayedMargin(baseMargin);
-  }, [quantity, price, orderType, stock.price, orderMode, mtfLeverage, productType, selectedExchange]);
+  }, [quantity, price, orderType, asset.price, orderMode, mtfLeverage, productType, selectedExchange, assetType]);
 
 
   const handleOrderAction = (action: 'BUY' | 'SELL') => { 
@@ -77,19 +82,19 @@ export function OrderPlacementForm({ stock, productType, onProductTypeChange }: 
     }
     const advancedOptions = [slInfo, tpInfo].filter(Boolean).join(', ');
     let leverageInfo = '';
-    if (orderMode === 'MTF') {
+    if (orderMode === 'MTF' && assetType === 'stock') {
         leverageInfo = `Leverage: ${mtfLeverage}`;
     }
 
     toast({
       title: `Order Action (Mock - ${orderMode})`,
-      description: `${action} ${quantity} x ${stock.symbol} @ ${orderType === 'Market' ? 'Market' : `₹${price}`} (${productType}) ${advancedOptions ? `(${advancedOptions})` : ''} ${leverageInfo}`,
+      description: `${action} ${quantity} x ${asset.symbol} @ ${orderType === 'Market' ? 'Market' : `₹${price}`} (${productType}) ${advancedOptions ? `(${advancedOptions})` : ''} ${leverageInfo}`,
     });
   };
 
 
-  const exchangePrice = selectedExchange === 'NSE' ? stock.price : (stock.price * 0.995); // Mock BSE price
-  const orderModeTabs = ['Regular', 'AMO', 'MTF', 'SIP'];
+  const exchangePrice = selectedExchange === 'NSE' ? asset.price : (asset.price * 0.995); // Mock BSE price
+  const orderModeTabs = assetType === 'stock' ? ['Regular', 'AMO', 'MTF', 'SIP'] : ['Regular', 'AMO', 'SIP']; // MTF only for stocks for now
 
   const renderOrderFields = (currentOrderMode: string) => (
     <>
@@ -98,13 +103,15 @@ export function OrderPlacementForm({ stock, productType, onProductTypeChange }: 
         onValueChange={onProductTypeChange} 
         className="flex space-x-6"
       >
-        <div className="flex items-center space-x-2">
-          <RadioGroupItem value="Intraday" id={`intraday-${currentOrderMode}`} />
-          <Label htmlFor={`intraday-${currentOrderMode}`} className="font-normal">Intraday <span className="text-muted-foreground text-xs">MIS</span></Label>
-        </div>
+        {(assetType === 'stock' || assetType === 'future' || assetType === 'option') && ( // Intraday for specific asset types
+            <div className="flex items-center space-x-2">
+            <RadioGroupItem value="Intraday" id={`intraday-${currentOrderMode}`} />
+            <Label htmlFor={`intraday-${currentOrderMode}`} className="font-normal">Intraday <span className="text-muted-foreground text-xs">MIS</span></Label>
+            </div>
+        )}
         <div className="flex items-center space-x-2">
           <RadioGroupItem value="Longterm" id={`longterm-${currentOrderMode}`} />
-          <Label htmlFor={`longterm-${currentOrderMode}`} className="font-normal">Longterm <span className="text-muted-foreground text-xs">CNC</span></Label>
+          <Label htmlFor={`longterm-${currentOrderMode}`} className="font-normal">Longterm <span className="text-muted-foreground text-xs">CNC/NRML</span></Label>
         </div>
       </RadioGroup>
 
@@ -126,7 +133,7 @@ export function OrderPlacementForm({ stock, productType, onProductTypeChange }: 
             type="number"
             value={price}
             onChange={(e) => setPrice(parseFloat(e.target.value) || 0)}
-            disabled={orderType === 'Market'}
+            disabled={orderType === 'Market' && assetType !== 'mutual-fund'} // MFs might not have price input even for "market"
             step="0.05"
           />
         </div>
@@ -160,20 +167,29 @@ export function OrderPlacementForm({ stock, productType, onProductTypeChange }: 
         value={orderType}
         onValueChange={(value) => {
           setOrderType(value);
-          if (value === 'Market') setPrice(exchangePrice); 
+          if (value === 'Market') {
+             const marketPrice = assetType === 'stock' ? (selectedExchange === 'NSE' ? asset.price : (asset.price * 0.995)) : asset.price;
+             setPrice(marketPrice);
+          }
           if (value !== 'SL' && value !== 'SL-M') setTriggerPrice(0);
         }}
         className="flex flex-wrap gap-x-4 gap-y-2"
       >
-        {(['Market', 'Limit', 'SL', 'SL-M'] as const).map(type => (
-          <div key={type} className="flex items-center space-x-2">
-            <RadioGroupItem value={type} id={`orderType-${type}-${currentOrderMode}`} />
-            <Label htmlFor={`orderType-${type}-${currentOrderMode}`} className="font-normal">{type}</Label>
-          </div>
-        ))}
+        {(['Market', 'Limit', 'SL', 'SL-M'] as const).map(type => {
+            // Conditional rendering for MFs and Bonds
+            if ((assetType === 'mutual-fund' || assetType === 'bond') && (type === 'SL' || type === 'SL-M')) return null;
+            if (assetType === 'mutual-fund' && type === 'Limit') return null;
+
+           return (
+            <div key={type} className="flex items-center space-x-2">
+                <RadioGroupItem value={type} id={`orderType-${type}-${currentOrderMode}`} />
+                <Label htmlFor={`orderType-${type}-${currentOrderMode}`} className="font-normal">{type}</Label>
+            </div>
+           );
+        })}
       </RadioGroup>
 
-      {currentOrderMode === 'MTF' && (
+      {currentOrderMode === 'MTF' && assetType === 'stock' && (
         <div className="space-y-2 pt-2">
             <Label>Leverage</Label>
             <RadioGroup 
@@ -278,7 +294,7 @@ export function OrderPlacementForm({ stock, productType, onProductTypeChange }: 
           <p className="text-sm text-muted-foreground">
             Margin required: <span className="font-semibold text-foreground">₹{displayedMargin.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
           </p>
-          {(currentOrderMode === 'MTF' && parseInt(mtfLeverage.replace('x','')) > 1) && (
+          {(currentOrderMode === 'MTF' && assetType === 'stock' && parseInt(mtfLeverage.replace('x','')) > 1) && (
               <p className="text-xs text-muted-foreground mt-1">
                   (Leverage of {mtfLeverage} applied)
               </p>
@@ -289,25 +305,27 @@ export function OrderPlacementForm({ stock, productType, onProductTypeChange }: 
 
   return (
     <div className="bg-card shadow-md rounded-lg mt-4">
-      <div className="bg-card text-card-foreground p-3 rounded-t-lg border-b">
-        <div className="flex justify-between items-center mb-2">
-          {/* h2 title removed in previous step */}
+      {assetType === 'stock' && (
+        <div className="bg-card text-card-foreground p-3 rounded-t-lg border-b">
+            <div className="flex justify-between items-center mb-2">
+            {/* h2 title removed in previous step */}
+            </div>
+            <RadioGroup
+            value={selectedExchange}
+            onValueChange={(value) => setSelectedExchange(value as 'BSE' | 'NSE')}
+            className="flex space-x-4"
+            >
+            <div className="flex items-center space-x-2">
+                <RadioGroupItem value="BSE" id="BSE" className="border-input data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground" />
+                <Label htmlFor="BSE" className="text-sm text-card-foreground">BSE: ₹{(asset.price * 0.995).toFixed(2)}</Label>
+            </div>
+            <div className="flex items-center space-x-2">
+                <RadioGroupItem value="NSE" id="NSE" className="border-input data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground" />
+                <Label htmlFor="NSE" className="text-sm text-card-foreground">NSE: ₹{asset.price.toFixed(2)}</Label>
+            </div>
+            </RadioGroup>
         </div>
-        <RadioGroup
-          value={selectedExchange}
-          onValueChange={(value) => setSelectedExchange(value as 'BSE' | 'NSE')}
-          className="flex space-x-4"
-        >
-          <div className="flex items-center space-x-2">
-            <RadioGroupItem value="BSE" id="BSE" className="border-input data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground" />
-            <Label htmlFor="BSE" className="text-sm text-card-foreground">BSE: ₹{(stock.price * 0.995).toFixed(2)}</Label>
-          </div>
-          <div className="flex items-center space-x-2">
-            <RadioGroupItem value="NSE" id="NSE" className="border-input data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground" />
-            <Label htmlFor="NSE" className="text-sm text-card-foreground">NSE: ₹{stock.price.toFixed(2)}</Label>
-          </div>
-        </RadioGroup>
-      </div>
+      )}
 
       <Tabs value={orderMode} onValueChange={setOrderMode} className="w-full">
         <div className="flex justify-between items-center border-b px-1">
@@ -317,6 +335,7 @@ export function OrderPlacementForm({ stock, productType, onProductTypeChange }: 
                 key={mode}
                 value={mode}
                 className="text-xs sm:text-sm px-2 sm:px-3 py-2.5 data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:shadow-none rounded-none text-muted-foreground hover:text-primary"
+                disabled={mode === 'MTF' && assetType !== 'stock'} // Disable MTF for non-stocks
                 >
                 {mode}
                 </TabsTrigger>
@@ -332,12 +351,18 @@ export function OrderPlacementForm({ stock, productType, onProductTypeChange }: 
            {renderOrderFields("AMO")}
         </TabsContent>
 
+       {assetType === 'stock' && ( // MTF Tab only for stocks
         <TabsContent value="MTF" className="p-4 space-y-4 mt-0">
             {renderOrderFields("MTF")}
         </TabsContent>
+       )}
+
 
         <TabsContent value="SIP" className="p-4 mt-0 text-center text-muted-foreground">
             <p className="mb-4 pt-4">SIP order options will be shown here.</p>
+            {assetType === 'mutual-fund' && (
+                <Button>Start SIP</Button>
+            )}
         </TabsContent>
 
       </Tabs>
