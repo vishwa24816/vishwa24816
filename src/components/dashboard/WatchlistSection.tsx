@@ -232,7 +232,13 @@ export function WatchlistSection({
 
   const handleAddStock = (e: FormEvent) => {
     e.preventDefault();
-    if (isPredefinedList || !newStockSymbol.trim()) return;
+    if (isPredefinedList || !newStockSymbol.trim()) { // Guard for actual modification
+        if (isPredefinedList) {
+            toast({ title: "Info", description: "This is a predefined watchlist and cannot be modified here."});
+        }
+        setNewStockSymbol(''); // Clear input even if predefined
+        return;
+    }
 
     const stockToAdd = mockStocks.find(stock => stock.symbol.toUpperCase() === newStockSymbol.toUpperCase());
 
@@ -250,7 +256,7 @@ export function WatchlistSection({
   };
 
   const handleRemoveStock = (stockId: string) => {
-    if (isPredefinedList) return;
+    if (isPredefinedList) return; // Guard for actual modification
     const stock = watchlist.find(s => s.id === stockId);
     setWatchlist(prev => prev.filter(s => s.id !== stockId));
     if (stock) {
@@ -266,24 +272,24 @@ export function WatchlistSection({
         <h2 id={`watchlist-section-title-${title?.replace(/\s+/g, '-') || 'default'}`} className="text-xl font-semibold font-headline text-primary flex items-center mb-1">
           <Eye className="h-6 w-6 mr-2" /> {cardTitle}
         </h2>
-        {!isPredefinedList && <p className="text-sm text-muted-foreground mb-4">Track your favorite stocks. Swipe items for actions.</p>}
-        {isPredefinedList && <p className="text-sm text-muted-foreground mb-4">Tap items to view order page.</p>}
+        <p className="text-sm text-muted-foreground mb-4">
+          {isPredefinedList ? "Tap items to view order page." : "Track your favorite stocks. Swipe items for actions."}
+        </p>
       </div>
       
-      {!isPredefinedList && (
-        <form onSubmit={handleAddStock} className="flex space-x-2">
-          <Input
-            type="text"
-            placeholder="Enter stock symbol (e.g., RELIANCE)"
-            value={newStockSymbol}
-            onChange={(e) => setNewStockSymbol(e.target.value.toUpperCase())}
-            className="flex-grow"
-          />
-          <Button type="submit" size="icon" aria-label="Add stock to watchlist">
-            <PlusCircle className="h-5 w-5" />
-          </Button>
-        </form>
-      )}
+      <form onSubmit={handleAddStock} className="flex space-x-2">
+        <Input
+          type="text"
+          placeholder="Enter stock symbol (e.g., RELIANCE)"
+          value={newStockSymbol}
+          onChange={(e) => setNewStockSymbol(e.target.value.toUpperCase())}
+          className="flex-grow"
+        />
+        <Button type="submit" size="icon" aria-label="Add stock to watchlist">
+          <PlusCircle className="h-5 w-5" />
+        </Button>
+      </form>
+      
       <ScrollArea className="max-h-[480px] pr-1"> 
         {itemsToRender.length === 0 ? (
           <p className="text-muted-foreground text-center py-4">
