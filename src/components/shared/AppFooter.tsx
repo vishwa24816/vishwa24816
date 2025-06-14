@@ -2,7 +2,7 @@
 "use client";
 
 import Link from 'next/link';
-import { Home, ClipboardList, Bot, Filter, User } from 'lucide-react'; // Changed QrCode to Filter
+import { Home, ClipboardList, Bot, Filter, Users } from 'lucide-react'; // Changed User to Users
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 
@@ -46,8 +46,8 @@ export function AppFooter() {
     { href: "/", icon: Home, label: "Home" },
     { href: "/orders", icon: ClipboardList, label: "Orders" },
     { href: "/simbot", icon: Bot, label: "Simbot" },
-    { href: "#screener", icon: Filter, label: "Screener" }, // Changed UPI to Screener
-    { href: "/profile", icon: User, label: "Profile" },
+    { href: "#screener", icon: Filter, label: "Screener" },
+    { href: "#community", icon: Users, label: "Community" }, // Changed from Profile to Community
   ];
 
   return (

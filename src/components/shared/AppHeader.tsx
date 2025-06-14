@@ -10,7 +10,7 @@ import {
   Search,
   Sun,
   Moon,
-  QrCode,
+  User, // Changed from QrCode
   Menu,
   LogOut,
   Home as HomeIcon,
@@ -165,16 +165,16 @@ export function AppHeader() {
           </form>
         </div>
 
-        {/* Right Section: Theme and UPI */}
+        {/* Right Section: Theme and Profile */}
         <div className="flex items-center space-x-1 sm:space-x-2">
           <Button variant="ghost" size="icon" onClick={toggleTheme} className="hover:bg-primary-foreground/10 text-accent shrink-0">
             {theme === 'light' ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
             <span className="sr-only">Toggle theme</span>
           </Button>
 
-          <Button variant="ghost" size="icon" onClick={() => alert('UPI Scanner clicked!')} className="hover:bg-primary-foreground/10 text-accent shrink-0">
-            <QrCode className="h-5 w-5" />
-            <span className="sr-only">UPI Scanner</span>
+          <Button variant="ghost" size="icon" onClick={() => router.push('/profile')} className="hover:bg-primary-foreground/10 text-accent shrink-0">
+            <User className="h-5 w-5" />
+            <span className="sr-only">Open profile</span>
           </Button>
         </div>
       </div>
