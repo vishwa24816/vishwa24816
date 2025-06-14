@@ -293,7 +293,10 @@ export default function DashboardPage() {
             </div>
           ) : isUserPortfolioWatchlistView ? (
             <div className="space-y-8">
-              <WatchlistSection title="My Portfolio Watchlist" />
+              <WatchlistSection 
+                title="My Portfolio Watchlist" 
+                defaultInitialItems={mockStocks.slice(0, 5)}
+              />
               <NewsSection articles={newsForView} />
             </div>
           ) : isFuturesTopWatchlistView ? (
@@ -402,3 +405,4 @@ export default function DashboardPage() {
     </ProtectedRoute>
   );
 }
+
