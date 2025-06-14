@@ -159,7 +159,7 @@ export default function DashboardPage() {
     Portfolio: ["Holdings", "Positions", "Portfolio Watchlist"],
     Stocks: ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
     Futures: ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)], 
-    Options: ["Top watchlist"], 
+    Options: [], // MODIFIED: No secondary nav for Options
     Crypto: ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)], 
     "Mutual funds": ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
     Bonds: ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
@@ -181,7 +181,7 @@ export default function DashboardPage() {
     if (newSecondaryItems.length > 0) {
       setActiveSecondaryItem(newSecondaryItems[0]);
     } else {
-      setActiveSecondaryItem("");
+      setActiveSecondaryItem(""); // This will be set for Options
     }
   };
 
@@ -202,11 +202,8 @@ export default function DashboardPage() {
   const isCryptoTopWatchlistView = activePrimaryItem === "Crypto" && activeSecondaryItem.startsWith("Top watchlist");
 
 
-  const isOptionsTopWatchlistView = activePrimaryItem === "Options" && activeSecondaryItem.startsWith("Top watchlist");
-
-
   const isCategoryNumberedWatchlistView = 
-    ["Stocks", "Futures", "Options", "Crypto", "Mutual funds", "Bonds"].includes(activePrimaryItem) &&
+    ["Stocks", "Futures", "Crypto", "Mutual funds", "Bonds"].includes(activePrimaryItem) && // "Options" removed
     !!activeSecondaryItem.match(/^Watchlist \d+$/);
 
 
@@ -218,6 +215,10 @@ export default function DashboardPage() {
     newsForView = getRelevantNewsForHoldings(mockPortfolioHoldings, mockNewsArticles);
   } else if (isPortfolioPositionsView) {
     newsForView = getRelevantNewsForPositions(mockIntradayPositions, mockFoPositions, mockCryptoFutures, mockNewsArticles);
+  } else if (activePrimaryItem === "Options") { // Logic for Options news
+    newsForView = mockNewsArticles; 
+  } else if (isUserPortfolioWatchlistView) {
+    newsForView = mockNewsArticles; 
   } else if (isFuturesTopWatchlistView) {
     const combinedFutures = [...mockIndexFuturesForWatchlist, ...mockStockFuturesForWatchlist];
     newsForView = getRelevantNewsForWatchlistItems(combinedFutures, mockNewsArticles);
@@ -237,10 +238,6 @@ export default function DashboardPage() {
     categoryWatchlistTitle = `${activePrimaryItem} ${cryptoMarketView === 'futures' ? 'Futures' : 'Spot'} - ${activeSecondaryItem}`;
     itemsForCategoryWatchlist = cryptoMarketView === 'spot' ? mockCryptoAssets : mockCryptoFuturesForWatchlist;
     newsForView = getRelevantNewsForWatchlistItems(itemsForCategoryWatchlist, mockNewsArticles);
-  } else if (isOptionsTopWatchlistView) {
-    newsForView = mockNewsArticles; 
-  } else if (isUserPortfolioWatchlistView) {
-    newsForView = mockNewsArticles; 
   } else if (isCategoryNumberedWatchlistView) {
     categoryWatchlistTitle = `${activePrimaryItem} - ${activeSecondaryItem}`;
     newsForView = mockNewsArticles; 
@@ -259,9 +256,6 @@ export default function DashboardPage() {
             onSecondaryNavClick={handleSecondaryNavClick}
             secondaryNavTriggerCategories={secondaryNavTriggerCategories}
           />
-          {/* 
-            OverallPortfolioSummary component was here. It has been removed.
-          */}
           
           {activePrimaryItem === "Crypto" ? (
             <MarketOverview 
@@ -299,6 +293,11 @@ export default function DashboardPage() {
               />
               <NewsSection articles={newsForView} />
             </div>
+          ) : activePrimaryItem === "Options" ? ( // Render OptionChain directly when "Options" is primary
+            <div className="space-y-8">
+              <OptionChain />
+              <NewsSection articles={newsForView} />
+            </div>
           ) : isFuturesTopWatchlistView ? (
             <div className="space-y-8">
               <WatchlistSection
@@ -311,11 +310,6 @@ export default function DashboardPage() {
                 displayItems={mockStockFuturesForWatchlist}
                 isPredefinedList={true}
               />
-              <NewsSection articles={newsForView} />
-            </div>
-          ) : isOptionsTopWatchlistView ? ( 
-            <div className="space-y-8">
-              <OptionChain />
               <NewsSection articles={newsForView} />
             </div>
           ): isCategoryTopWatchlistView ? ( 
