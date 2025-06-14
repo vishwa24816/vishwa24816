@@ -4,6 +4,7 @@
 import { AppHeader } from '@/components/shared/AppHeader';
 import { ProtectedRoute } from '@/components/shared/ProtectedRoute';
 import { SubNav } from '@/components/dashboard/SubNav';
+import { OverallPortfolioSummary } from '@/components/dashboard/OverallPortfolioSummary'; // Added import
 import { MarketOverview } from '@/components/dashboard/MarketOverview';
 import { NewsSection } from '@/components/dashboard/NewsSection';
 import { WatchlistSection } from '@/components/dashboard/WatchlistSection';
@@ -39,7 +40,7 @@ import {
   mockIndexFuturesForWatchlist,
   mockStockFuturesForWatchlist,
   mockMarketIndices, 
-  mockCryptoFuturesForWatchlist, // Import new mock data
+  mockCryptoFuturesForWatchlist,
 } from '@/lib/mockData';
 
 function getRelevantNewsForHoldings(holdings: PortfolioHolding[], allNews: NewsArticle[]): NewsArticle[] {
@@ -131,7 +132,7 @@ function getRelevantNewsForWatchlistItems(items: Stock[] | MarketIndex[] | undef
         const nameParts = item.name.split(/[\s-]+/); 
         keywords.push(...nameParts.map(part => part.toLowerCase()));
         if ('symbol' in item && item.symbol) { 
-            const symbolParts = item.symbol.match(/[A-Z]+|[0-9.]+/g) || []; // Added '.' to regex for symbols like BTCUSDT.P
+            const symbolParts = item.symbol.match(/[A-Z]+|[0-9.]+/g) || [];
             keywords.push(...symbolParts.map(part => part.toLowerCase()));
         }
     }
@@ -257,6 +258,13 @@ export default function DashboardPage() {
             onSecondaryNavClick={handleSecondaryNavClick}
             secondaryNavTriggerCategories={secondaryNavTriggerCategories}
           />
+          <OverallPortfolioSummary
+            totalPortfolioValue={1886808.00} // Placeholder
+            unrealisedPnl={0.00} // Placeholder
+            availableMargin={1886808.00} // Placeholder
+            investedMargin={0.00} // Placeholder
+          />
+          
           {activePrimaryItem === "Crypto" ? (
             <MarketOverview 
               title="Top Cryptocurrencies" 
@@ -319,7 +327,7 @@ export default function DashboardPage() {
             </div>
           ) : isCryptoTopWatchlistView ? ( 
              <div className="space-y-8">
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-0 -mt-4"> {/* Adjusted margin */}
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-0 -mt-4">
                     <div className="flex space-x-2">
                         <Button
                         variant={cryptoMarketView === 'spot' ? 'secondary' : 'outline'}
