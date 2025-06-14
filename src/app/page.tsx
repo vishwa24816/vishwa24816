@@ -4,7 +4,7 @@
 import { AppHeader } from '@/components/shared/AppHeader';
 import { ProtectedRoute } from '@/components/shared/ProtectedRoute';
 import { SubNav } from '@/components/dashboard/SubNav';
-import { OverallPortfolioSummary } from '@/components/dashboard/OverallPortfolioSummary'; // Added import
+// import { OverallPortfolioSummary } from '@/components/dashboard/OverallPortfolioSummary'; // Removed import
 import { MarketOverview } from '@/components/dashboard/MarketOverview';
 import { NewsSection } from '@/components/dashboard/NewsSection';
 import { WatchlistSection } from '@/components/dashboard/WatchlistSection';
@@ -258,12 +258,9 @@ export default function DashboardPage() {
             onSecondaryNavClick={handleSecondaryNavClick}
             secondaryNavTriggerCategories={secondaryNavTriggerCategories}
           />
-          <OverallPortfolioSummary
-            totalPortfolioValue={1886808.00} // Placeholder
-            unrealisedPnl={0.00} // Placeholder
-            availableMargin={1886808.00} // Placeholder
-            investedMargin={0.00} // Placeholder
-          />
+          {/* 
+            OverallPortfolioSummary component was here. It has been removed.
+          */}
           
           {activePrimaryItem === "Crypto" ? (
             <MarketOverview 
@@ -403,3 +400,5 @@ export default function DashboardPage() {
     </ProtectedRoute>
   );
 }
+
+    
