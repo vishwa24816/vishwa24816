@@ -12,6 +12,7 @@ import { PortfolioHoldingsTable } from '@/components/dashboard/PortfolioHoldings
 import { CryptoHoldingsSection } from '@/components/dashboard/CryptoHoldingsSection';
 import { IntradayPositionsSection } from '@/components/dashboard/IntradayPositionsSection';
 import { FoPositionsSection } from '@/components/dashboard/FoPositionsSection';
+import { FoBasketSection } from '@/components/dashboard/FoBasketSection'; // Added import
 import { CryptoFuturesSection } from '@/components/dashboard/CryptoFuturesSection';
 import { OptionChain } from '@/components/dashboard/OptionChain';
 import { PackageOpen } from 'lucide-react';
@@ -286,6 +287,7 @@ export default function DashboardPage() {
             <div className="space-y-8">
               <IntradayPositionsSection />
               <FoPositionsSection />
+              <FoBasketSection />
               <CryptoFuturesSection />
               <NewsSection articles={newsForView} />
             </div>
@@ -400,5 +402,3 @@ export default function DashboardPage() {
     </ProtectedRoute>
   );
 }
-
-    

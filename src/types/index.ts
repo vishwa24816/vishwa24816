@@ -173,3 +173,13 @@ export interface Underlying {
   name: string;
   symbol: string;
 }
+
+export interface FoBasket {
+  id: string;
+  name: string;
+  status: 'Active' | 'Pending Execution' | 'Executed' | 'Cancelled' | 'Archived';
+  requiredMargin: number;
+  instrumentsCount: number;
+  createdDate: string; // YYYY-MM-DD
+  pnl?: number; // Optional P&L for the basket
+}
