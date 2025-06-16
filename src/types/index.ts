@@ -18,6 +18,8 @@ export interface Stock {
   sector?: string;
   lowerCircuit?: number;
   upperCircuit?: number;
+  lotSize?: number; // Added for Futures/Options
+  marginFactor?: number; // Added for Futures/Options margin
   fundamentals?: {
     marketCap: string; // e.g., "29,377Cr"
     peRatioTTM?: number;

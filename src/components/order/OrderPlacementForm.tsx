@@ -14,15 +14,15 @@ import { cn } from '@/lib/utils';
 import { useToast } from "@/hooks/use-toast";
 
 interface OrderPlacementFormProps {
-  asset: Stock; // Renamed from stock to asset
-  assetType: string; // e.g., "stock", "mutual-fund", "crypto", etc.
+  asset: Stock; 
+  assetType: "stock" | "future" | "option" | "crypto" | "mutual-fund" | "bond"; 
   productType: string;
   onProductTypeChange: (value: string) => void;
 }
 
 export function OrderPlacementForm({ asset, assetType, productType, onProductTypeChange }: OrderPlacementFormProps) {
   const { toast } = useToast();
-  const [quantity, setQuantity] = useState(1);
+  const [quantity, setQuantity] = useState(1); // For stocks/crypto: units; For futures/options: lots
   const [price, setPrice] = useState(asset.price);
   const [triggerPrice, setTriggerPrice] = useState(0);
 
@@ -48,9 +48,7 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
 
   useEffect(() => {
     let priceForCalc = 0;
-    // Use asset.price for Market order, or user-inputted price for others
     if (orderType === 'Market') {
-      // For stocks, use selected exchange price. For others, just asset.price.
       priceForCalc = assetType === 'stock' 
         ? (selectedExchange === 'NSE' ? asset.price : (asset.price * 0.995)) // Mock BSE price for stock
         : asset.price;
@@ -58,9 +56,18 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
       priceForCalc = price; 
     }
 
-    let baseMargin = quantity * priceForCalc;
+    let baseMargin = 0;
 
-    if (orderMode === 'MTF' && assetType === 'stock') { // MTF currently only for stocks
+    if (assetType === 'future') {
+      const lotSize = asset.lotSize || 1;
+      const marginFactor = asset.marginFactor || 0.1; // Default 10% margin if not specified
+      baseMargin = quantity * priceForCalc * lotSize * marginFactor;
+    } else { // For stocks and other asset types (assuming unit-based for now)
+      baseMargin = quantity * priceForCalc;
+    }
+
+
+    if (orderMode === 'MTF' && assetType === 'stock') {
       const leverageFactor = parseInt(mtfLeverage.replace('x', ''), 10) || 1;
       if (leverageFactor > 0) {
         baseMargin = baseMargin / leverageFactor;
@@ -68,7 +75,7 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
     }
     
     setDisplayedMargin(baseMargin);
-  }, [quantity, price, orderType, asset.price, orderMode, mtfLeverage, productType, selectedExchange, assetType]);
+  }, [quantity, price, orderType, asset.price, asset.lotSize, asset.marginFactor, orderMode, mtfLeverage, productType, selectedExchange, assetType]);
 
 
   const handleOrderAction = (action: 'BUY' | 'SELL') => { 
@@ -86,15 +93,17 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
         leverageInfo = `Leverage: ${mtfLeverage}`;
     }
 
+    const quantityLabel = assetType === 'future' ? 'Lots' : 'Qty.';
+    const priceDisplay = orderType === 'Market' ? 'Market' : `₹${price}`;
+
     toast({
       title: `Order Action (Mock - ${orderMode})`,
-      description: `${action} ${quantity} x ${asset.symbol} @ ${orderType === 'Market' ? 'Market' : `₹${price}`} (${productType}) ${advancedOptions ? `(${advancedOptions})` : ''} ${leverageInfo}`,
+      description: `${action} ${quantity} ${quantityLabel} x ${asset.symbol} @ ${priceDisplay} (${productType}) ${advancedOptions ? `(${advancedOptions})` : ''} ${leverageInfo}`,
     });
   };
 
-
-  const exchangePrice = selectedExchange === 'NSE' ? asset.price : (asset.price * 0.995); // Mock BSE price
-  const orderModeTabs = assetType === 'stock' ? ['Regular', 'MTF', 'SIP'] : ['Regular', 'SIP'];
+  const orderModeTabs = (assetType === 'stock' || assetType === 'future') ? ['Regular', 'MTF', 'SIP'] : ['Regular', 'SIP'];
+  const quantityInputLabel = assetType === 'future' ? 'Lots' : 'Qty.';
 
   const renderOrderFields = (currentOrderMode: string) => (
     <>
@@ -103,7 +112,7 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
         onValueChange={onProductTypeChange} 
         className="flex space-x-6"
       >
-        {(assetType === 'stock' || assetType === 'future' || assetType === 'option') && ( // Intraday for specific asset types
+        {(assetType === 'stock' || assetType === 'future' || assetType === 'option') && (
             <div className="flex items-center space-x-2">
             <RadioGroupItem value="Intraday" id={`intraday-${currentOrderMode}`} />
             <Label htmlFor={`intraday-${currentOrderMode}`} className="font-normal">Intraday <span className="text-muted-foreground text-xs">MIS</span></Label>
@@ -111,13 +120,13 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
         )}
         <div className="flex items-center space-x-2">
           <RadioGroupItem value="Longterm" id={`longterm-${currentOrderMode}`} />
-          <Label htmlFor={`longterm-${currentOrderMode}`} className="font-normal">Longterm <span className="text-muted-foreground text-xs">CNC/NRML</span></Label>
+          <Label htmlFor={`longterm-${currentOrderMode}`} className="font-normal">Longterm <span className="text-muted-foreground text-xs">{(assetType === 'future' || assetType === 'option') ? 'NRML' : 'CNC'}</span></Label>
         </div>
       </RadioGroup>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 items-end">
         <div>
-          <Label htmlFor={`qty-${currentOrderMode}`}>Qty.</Label>
+          <Label htmlFor={`qty-${currentOrderMode}`}>{quantityInputLabel}</Label>
           <Input
             id={`qty-${currentOrderMode}`}
             type="number"
@@ -125,6 +134,9 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
             onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
             min="1"
           />
+           {assetType === 'future' && asset.lotSize && (
+            <p className="text-xs text-muted-foreground mt-1">Lot Size: {asset.lotSize}</p>
+          )}
         </div>
         <div>
           <Label htmlFor={`price-${currentOrderMode}`}>Price</Label>
@@ -133,7 +145,7 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
             type="number"
             value={price}
             onChange={(e) => setPrice(parseFloat(e.target.value) || 0)}
-            disabled={orderType === 'Market' && assetType !== 'mutual-fund'} // MFs might not have price input even for "market"
+            disabled={orderType === 'Market' && assetType !== 'mutual-fund'} 
             step="0.05"
           />
         </div>
@@ -176,7 +188,6 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
         className="flex flex-wrap gap-x-4 gap-y-2"
       >
         {(['Market', 'Limit', 'SL', 'SL-M'] as const).map(type => {
-            // Conditional rendering for MFs and Bonds
             if ((assetType === 'mutual-fund' || assetType === 'bond') && (type === 'SL' || type === 'SL-M')) return null;
             if (assetType === 'mutual-fund' && type === 'Limit') return null;
 
@@ -189,7 +200,7 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
         })}
       </RadioGroup>
 
-      {currentOrderMode === 'MTF' && assetType === 'stock' && (
+      {(currentOrderMode === 'MTF' && (assetType === 'stock' || assetType === 'future')) && (
         <div className="space-y-2 pt-2">
             <Label>Leverage</Label>
             <RadioGroup 
@@ -294,7 +305,7 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
           <p className="text-sm text-muted-foreground">
             Margin required: <span className="font-semibold text-foreground">₹{displayedMargin.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
           </p>
-          {(currentOrderMode === 'MTF' && assetType === 'stock' && parseInt(mtfLeverage.replace('x','')) > 1) && (
+          {(currentOrderMode === 'MTF' && (assetType === 'stock' || assetType === 'future') && parseInt(mtfLeverage.replace('x','')) > 1) && (
               <p className="text-xs text-muted-foreground mt-1">
                   (Leverage of {mtfLeverage} applied)
               </p>
@@ -307,9 +318,6 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
     <div className="bg-card shadow-md rounded-lg mt-4">
       {assetType === 'stock' && (
         <div className="bg-card text-card-foreground p-3 rounded-t-lg border-b">
-            <div className="flex justify-between items-center mb-2">
-            {/* h2 title removed in previous step */}
-            </div>
             <RadioGroup
             value={selectedExchange}
             onValueChange={(value) => setSelectedExchange(value as 'BSE' | 'NSE')}
@@ -335,7 +343,7 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
                 key={mode}
                 value={mode}
                 className="text-xs sm:text-sm px-2 sm:px-3 py-2.5 data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:shadow-none rounded-none text-muted-foreground hover:text-primary"
-                disabled={mode === 'MTF' && assetType !== 'stock'} // Disable MTF for non-stocks
+                disabled={mode === 'MTF' && assetType !== 'stock' && assetType !== 'future'}
                 >
                 {mode}
                 </TabsTrigger>
@@ -347,7 +355,7 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
           {renderOrderFields("Regular")}
         </TabsContent>
         
-       {assetType === 'stock' && ( // MTF Tab only for stocks
+       {(assetType === 'stock' || assetType === 'future') && ( 
         <TabsContent value="MTF" className="p-4 space-y-4 mt-0">
             {renderOrderFields("MTF")}
         </TabsContent>
@@ -365,6 +373,3 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
     </div>
   );
 }
-
-
-    

@@ -6,15 +6,28 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { mockStocks } from '@/lib/mockData';
+import { mockStocks, mockIndexFuturesForWatchlist, mockStockFuturesForWatchlist, mockCryptoAssets, mockMutualFunds, mockBonds, mockOptionsForWatchlist, mockCryptoFuturesForWatchlist } from '@/lib/mockData'; // Added mockStockFuturesForWatchlist
 import type { Stock } from '@/types';
 import { Eye, PlusCircle, Trash2, TrendingUp, TrendingDown, ChevronsRight, ChevronsLeft } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { cn } from '@/lib/utils';
 
 const WATCHLIST_LS_KEY = 'simUserWatchlist';
-const DRAG_THRESHOLD = 50; 
-const ACTION_AREA_WIDTH = 80; 
+const DRAG_THRESHOLD = 50;
+const ACTION_AREA_WIDTH = 80;
+
+// Combine all searchable assets
+const allSearchableAssets: Stock[] = [
+    ...mockStocks,
+    ...mockIndexFuturesForWatchlist,
+    ...mockStockFuturesForWatchlist, // Added mockStockFuturesForWatchlist here
+    ...mockOptionsForWatchlist,
+    ...mockCryptoAssets,
+    ...mockCryptoFuturesForWatchlist,
+    ...mockMutualFunds,
+    ...mockBonds
+];
+
 
 interface StockListItemProps {
   stock: Stock;
@@ -34,7 +47,7 @@ const StockListItem: React.FC<StockListItemProps> = ({ stock, isPredefinedList, 
   const handleTouchStart = (e: React.TouchEvent) => {
     if (isPredefinedList) return;
     setTouchStartX(e.targetTouches[0].clientX);
-    setIsSwiping(true); 
+    setIsSwiping(true);
     ignoreClickAfterSwipeRef.current = false;
   };
 
@@ -45,26 +58,26 @@ const StockListItem: React.FC<StockListItemProps> = ({ stock, isPredefinedList, 
 
     if (diffX > ACTION_AREA_WIDTH) diffX = ACTION_AREA_WIDTH;
     if (diffX < -ACTION_AREA_WIDTH) diffX = -ACTION_AREA_WIDTH;
-    
+
     setCurrentTranslateX(diffX);
 
-    if (Math.abs(diffX) > 10) { 
+    if (Math.abs(diffX) > 10) {
       ignoreClickAfterSwipeRef.current = true;
     }
   };
 
   const handleTouchEnd = () => {
-    if (isPredefinedList || !isSwiping) return; 
-    
-    setIsSwiping(false); 
+    if (isPredefinedList || !isSwiping) return;
+
+    setIsSwiping(false);
 
     if (currentTranslateX > DRAG_THRESHOLD) {
       toast({ title: "BUY Action (Mock)", description: `Initiate BUY for ${stock.symbol}` });
     } else if (currentTranslateX < -DRAG_THRESHOLD) {
       toast({ title: "SELL Action (Mock)", description: `Initiate SELL for ${stock.symbol}` });
     }
-    
-    setCurrentTranslateX(0); 
+
+    setCurrentTranslateX(0);
     setTimeout(() => {
       ignoreClickAfterSwipeRef.current = false;
     }, 50);
@@ -80,10 +93,10 @@ const StockListItem: React.FC<StockListItemProps> = ({ stock, isPredefinedList, 
       e.preventDefault();
     }
   };
-  
+
   const handleDeleteClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
-    e.preventDefault(); 
+    e.preventDefault();
     onRemoveStock(stock.id);
   };
 
@@ -92,14 +105,16 @@ const StockListItem: React.FC<StockListItemProps> = ({ stock, isPredefinedList, 
     itemLink = `/order/mutual-fund/${stock.symbol}`;
   } else if (stock.exchange === 'Crypto') {
     itemLink = `/order/crypto/${stock.symbol}`;
-  } else if (stock.exchange === 'NFO') { // Futures and Options
-    if (stock.symbol.includes('FUT')) {
+  } else if (stock.exchange === 'NFO') {
+    if (stock.symbol.includes('FUT') || stock.name.toLowerCase().includes('future')) {
       itemLink = `/order/future/${stock.symbol}`;
-    } else if (stock.symbol.includes('CE') || stock.symbol.includes('PE')) {
+    } else if (stock.symbol.includes('CE') || stock.symbol.includes('PE') || stock.name.toLowerCase().includes('option')) {
       itemLink = `/order/option/${stock.symbol}`;
     }
   } else if (stock.exchange === 'BOND' || stock.exchange === 'CORP BOND' || stock.exchange === 'SGB') {
     itemLink = `/order/bond/${stock.symbol}`;
+  } else if (stock.exchange === 'Crypto Futures') {
+    itemLink = `/order/crypto-future/${stock.symbol}`;
   }
 
 
@@ -111,15 +126,15 @@ const StockListItem: React.FC<StockListItemProps> = ({ stock, isPredefinedList, 
       onTouchEnd={!isPredefinedList ? handleTouchEnd : undefined}
       className={cn(
         "relative group overflow-hidden rounded-md",
-        !isPredefinedList ? "bg-card" : "hover:bg-muted/30" 
+        !isPredefinedList ? "bg-card" : "hover:bg-muted/30"
       )}
     >
       {!isPredefinedList && (
         <>
           <div
             className="absolute left-0 top-0 bottom-0 flex items-center justify-start pl-4 bg-green-600 text-white transition-all duration-300 ease-out"
-            style={{ 
-              width: `${Math.max(0, currentTranslateX)}px`, 
+            style={{
+              width: `${Math.max(0, currentTranslateX)}px`,
               opacity: currentTranslateX > DRAG_THRESHOLD / 2 ? 1 : 0,
               pointerEvents: 'none'
             }}
@@ -128,7 +143,7 @@ const StockListItem: React.FC<StockListItemProps> = ({ stock, isPredefinedList, 
           </div>
           <div
             className="absolute right-0 top-0 bottom-0 flex items-center justify-end pr-4 bg-red-600 text-white transition-all duration-300 ease-out"
-            style={{ 
+            style={{
               width: `${Math.max(0, -currentTranslateX)}px`,
               opacity: currentTranslateX < -DRAG_THRESHOLD / 2 ? 1 : 0,
               pointerEvents: 'none'
@@ -140,18 +155,18 @@ const StockListItem: React.FC<StockListItemProps> = ({ stock, isPredefinedList, 
       )}
 
       <div
-        className="relative z-10 w-full" 
+        className="relative z-10 w-full"
         style={{
           transform: `translateX(${currentTranslateX}px)`,
           transition: isSwiping ? 'none' : 'transform 0.3s ease-out',
-          backgroundColor: !isPredefinedList ? 'hsl(var(--card))' : 'transparent', 
+          backgroundColor: !isPredefinedList ? 'hsl(var(--card))' : 'transparent',
         }}
       >
         <Link
           href={itemLink}
           passHref
           className={cn(
-            "flex items-center justify-between w-full p-3", 
+            "flex items-center justify-between w-full p-3",
             isPredefinedList ? "cursor-pointer" : "cursor-grab"
           )}
           onClick={handleLinkClick}
@@ -173,7 +188,7 @@ const StockListItem: React.FC<StockListItemProps> = ({ stock, isPredefinedList, 
             <Button
               variant="ghost"
               size="icon"
-              className="text-muted-foreground hover:text-destructive h-7 w-7 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity ml-2 shrink-0 z-20" 
+              className="text-muted-foreground hover:text-destructive h-7 w-7 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity ml-2 shrink-0 z-20"
               onClick={handleDeleteClick}
               aria-label={`Remove ${stock.symbol} from watchlist`}
             >
@@ -220,8 +235,8 @@ export function WatchlistSection({
         } else {
           if (typeof defaultInitialItems !== 'undefined') {
             setWatchlist(defaultInitialItems);
-          } else if (effectiveLocalStorageKey === WATCHLIST_LS_KEY) {
-            setWatchlist(mockStocks.slice(0, 2));
+          } else if (effectiveLocalStorageKey === WATCHLIST_LS_KEY) { // Default for "My Watchlist" only
+            setWatchlist(mockStocks.slice(0, 5));
           } else {
             setWatchlist([]);
           }
@@ -231,7 +246,7 @@ export function WatchlistSection({
         if (typeof defaultInitialItems !== 'undefined') {
           setWatchlist(defaultInitialItems);
         } else if (effectiveLocalStorageKey === WATCHLIST_LS_KEY) {
-          setWatchlist(mockStocks.slice(0, 2));
+          setWatchlist(mockStocks.slice(0, 5));
         } else {
           setWatchlist([]);
         }
@@ -249,33 +264,33 @@ export function WatchlistSection({
     e.preventDefault();
     if (!newStockSymbol.trim()) return;
 
-    if (isPredefinedList) { 
+    if (isPredefinedList) {
         toast({ title: "Info", description: "This is a predefined watchlist and cannot be modified here."});
         setNewStockSymbol('');
         return;
     }
 
-    const stockToAdd = mockStocks.find(stock => stock.symbol.toUpperCase() === newStockSymbol.toUpperCase());
+    const stockToAdd = allSearchableAssets.find(stock => stock.symbol.toUpperCase() === newStockSymbol.toUpperCase());
 
     if (stockToAdd) {
       if (!watchlist.find(s => s.id === stockToAdd.id)) {
         setWatchlist(prev => [...prev, stockToAdd]);
-        toast({ title: "Stock Added", description: `${stockToAdd.name} added to ${cardTitle}.` });
+        toast({ title: "Added to Watchlist", description: `${stockToAdd.name} added to ${cardTitle}.` });
       } else {
         toast({ title: "Already Added", description: `${stockToAdd.name} is already in ${cardTitle}.`, variant: "destructive" });
       }
     } else {
-      toast({ title: "Stock Not Found", description: `Could not find stock with symbol: ${newStockSymbol}. Please use symbols like RELIANCE, TCS etc.`, variant: "destructive" });
+      toast({ title: "Asset Not Found", description: `Could not find asset with symbol: ${newStockSymbol}. Please try common symbols.`, variant: "destructive" });
     }
     setNewStockSymbol('');
   };
 
   const handleRemoveStock = (stockId: string) => {
-    if (isPredefinedList) return; 
+    if (isPredefinedList) return;
     const stock = watchlist.find(s => s.id === stockId);
     setWatchlist(prev => prev.filter(s => s.id !== stockId));
     if (stock) {
-      toast({ title: "Stock Removed", description: `${stock.name} removed from ${cardTitle}.` });
+      toast({ title: "Removed from Watchlist", description: `${stock.name} removed from ${cardTitle}.` });
     }
   };
 
@@ -288,14 +303,14 @@ export function WatchlistSection({
           <Eye className="h-6 w-6 mr-2" /> {cardTitle}
         </h2>
         <p className="text-sm text-muted-foreground mb-4">
-          {isPredefinedList ? "Tap items to view order page." : "Track your favorite stocks. Swipe items for actions."}
+          {isPredefinedList ? "Tap items to view order page." : "Track your favorite assets. Swipe items for actions."}
         </p>
       </div>
-      
+
       <form onSubmit={handleAddStock} className="flex space-x-2">
         <Input
           type="text"
-          placeholder="Enter stock symbol (e.g., RELIANCE)"
+          placeholder="Enter symbol (e.g., RELIANCE, NIFTYJANFUT)"
           value={newStockSymbol}
           onChange={(e) => setNewStockSymbol(e.target.value.toUpperCase())}
           className="flex-grow"
@@ -304,19 +319,19 @@ export function WatchlistSection({
           <PlusCircle className="h-5 w-5" />
         </Button>
       </form>
-      
-      <ScrollArea className="max-h-[480px] pr-1"> 
+
+      <ScrollArea className="max-h-[480px] pr-1">
         {itemsToRender.length === 0 ? (
           <p className="text-muted-foreground text-center py-4">
-            {isPredefinedList ? "No items in this watchlist." : "Your watchlist is empty. Add stocks to track them."}
+            {isPredefinedList ? "No items in this watchlist." : "Your watchlist is empty. Add assets to track them."}
           </p>
         ) : (
           <ul className="space-y-1">
             {itemsToRender.map((stock) => (
-              <StockListItem 
-                key={stock.id} 
-                stock={stock} 
-                isPredefinedList={isPredefinedList} 
+              <StockListItem
+                key={stock.id}
+                stock={stock}
+                isPredefinedList={isPredefinedList}
                 onRemoveStock={handleRemoveStock}
                 cardTitleForToast={cardTitle}
               />
@@ -326,11 +341,9 @@ export function WatchlistSection({
       </ScrollArea>
       {!isPredefinedList && itemsToRender.length > 0 && (
         <p className="text-sm text-muted-foreground pt-2">
-          You are tracking {itemsToRender.length} stock(s) in {cardTitle}.
+          You are tracking {itemsToRender.length} asset(s) in {cardTitle}.
         </p>
       )}
     </section>
   );
 }
-
-    
