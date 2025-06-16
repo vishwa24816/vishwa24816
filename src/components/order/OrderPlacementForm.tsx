@@ -94,7 +94,7 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
 
 
   const exchangePrice = selectedExchange === 'NSE' ? asset.price : (asset.price * 0.995); // Mock BSE price
-  const orderModeTabs = assetType === 'stock' ? ['Regular', 'AMO', 'MTF', 'SIP'] : ['Regular', 'AMO', 'SIP']; // MTF only for stocks for now
+  const orderModeTabs = assetType === 'stock' ? ['Regular', 'MTF', 'SIP'] : ['Regular', 'SIP'];
 
   const renderOrderFields = (currentOrderMode: string) => (
     <>
@@ -347,10 +347,6 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
           {renderOrderFields("Regular")}
         </TabsContent>
         
-        <TabsContent value="AMO" className="p-4 space-y-4 mt-0">
-           {renderOrderFields("AMO")}
-        </TabsContent>
-
        {assetType === 'stock' && ( // MTF Tab only for stocks
         <TabsContent value="MTF" className="p-4 space-y-4 mt-0">
             {renderOrderFields("MTF")}
@@ -370,3 +366,5 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
   );
 }
 
+
+    
