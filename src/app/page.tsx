@@ -4,7 +4,6 @@
 import { AppHeader } from '@/components/shared/AppHeader';
 import { ProtectedRoute } from '@/components/shared/ProtectedRoute';
 import { SubNav } from '@/components/dashboard/SubNav';
-// import { OverallPortfolioSummary } from '@/components/dashboard/OverallPortfolioSummary'; // Removed import
 import { MarketOverview } from '@/components/dashboard/MarketOverview';
 import { NewsSection } from '@/components/dashboard/NewsSection';
 import { WatchlistSection } from '@/components/dashboard/WatchlistSection';
@@ -12,7 +11,7 @@ import { PortfolioHoldingsTable } from '@/components/dashboard/PortfolioHoldings
 import { CryptoHoldingsSection } from '@/components/dashboard/CryptoHoldingsSection';
 import { IntradayPositionsSection } from '@/components/dashboard/IntradayPositionsSection';
 import { FoPositionsSection } from '@/components/dashboard/FoPositionsSection';
-import { FoBasketSection } from '@/components/dashboard/FoBasketSection'; // Added import
+import { FoBasketSection } from '@/components/dashboard/FoBasketSection'; 
 import { CryptoFuturesSection } from '@/components/dashboard/CryptoFuturesSection';
 import { OptionChain } from '@/components/dashboard/OptionChain';
 import { PackageOpen } from 'lucide-react';
@@ -42,6 +41,7 @@ import {
   mockStockFuturesForWatchlist,
   mockMarketIndices, 
   mockCryptoFuturesForWatchlist,
+  mockFoBaskets, // Ensure FoBaskets is imported if used here, though it's for FoPositionsSection
 } from '@/lib/mockData';
 
 function getRelevantNewsForHoldings(holdings: PortfolioHolding[], allNews: NewsArticle[]): NewsArticle[] {
@@ -159,7 +159,7 @@ export default function DashboardPage() {
     Portfolio: ["Holdings", "Positions", "Portfolio Watchlist"],
     Stocks: ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
     Futures: ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)], 
-    Options: [], // MODIFIED: No secondary nav for Options
+    Options: [], 
     Crypto: ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)], 
     "Mutual funds": ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
     Bonds: ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
@@ -181,7 +181,7 @@ export default function DashboardPage() {
     if (newSecondaryItems.length > 0) {
       setActiveSecondaryItem(newSecondaryItems[0]);
     } else {
-      setActiveSecondaryItem(""); // This will be set for Options
+      setActiveSecondaryItem(""); 
     }
   };
 
@@ -203,7 +203,7 @@ export default function DashboardPage() {
 
 
   const isCategoryNumberedWatchlistView = 
-    ["Stocks", "Futures", "Crypto", "Mutual funds", "Bonds"].includes(activePrimaryItem) && // "Options" removed
+    ["Stocks", "Futures", "Crypto", "Mutual funds", "Bonds"].includes(activePrimaryItem) && 
     !!activeSecondaryItem.match(/^Watchlist \d+$/);
 
 
@@ -215,7 +215,7 @@ export default function DashboardPage() {
     newsForView = getRelevantNewsForHoldings(mockPortfolioHoldings, mockNewsArticles);
   } else if (isPortfolioPositionsView) {
     newsForView = getRelevantNewsForPositions(mockIntradayPositions, mockFoPositions, mockCryptoFutures, mockNewsArticles);
-  } else if (activePrimaryItem === "Options") { // Logic for Options news
+  } else if (activePrimaryItem === "Options") { 
     newsForView = mockNewsArticles; 
   } else if (isUserPortfolioWatchlistView) {
     newsForView = mockNewsArticles; 
@@ -293,7 +293,7 @@ export default function DashboardPage() {
               />
               <NewsSection articles={newsForView} />
             </div>
-          ) : activePrimaryItem === "Options" ? ( // Render OptionChain directly when "Options" is primary
+          ) : activePrimaryItem === "Options" ? ( 
             <div className="space-y-8">
               <OptionChain />
               <NewsSection articles={newsForView} />
@@ -399,4 +399,3 @@ export default function DashboardPage() {
     </ProtectedRoute>
   );
 }
-

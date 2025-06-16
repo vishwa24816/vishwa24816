@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { mockStocks, mockIndexFuturesForWatchlist, mockStockFuturesForWatchlist, mockCryptoAssets, mockMutualFunds, mockBonds, mockOptionsForWatchlist, mockCryptoFuturesForWatchlist } from '@/lib/mockData'; // Added mockStockFuturesForWatchlist
+import { mockStocks, mockIndexFuturesForWatchlist, mockStockFuturesForWatchlist, mockCryptoAssets, mockMutualFunds, mockBonds, mockOptionsForWatchlist, mockCryptoFuturesForWatchlist } from '@/lib/mockData';
 import type { Stock } from '@/types';
 import { Eye, PlusCircle, Trash2, TrendingUp, TrendingDown, ChevronsRight, ChevronsLeft } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
@@ -20,7 +20,7 @@ const ACTION_AREA_WIDTH = 80;
 const allSearchableAssets: Stock[] = [
     ...mockStocks,
     ...mockIndexFuturesForWatchlist,
-    ...mockStockFuturesForWatchlist, // Added mockStockFuturesForWatchlist here
+    ...mockStockFuturesForWatchlist,
     ...mockOptionsForWatchlist,
     ...mockCryptoAssets,
     ...mockCryptoFuturesForWatchlist,
@@ -100,7 +100,7 @@ const StockListItem: React.FC<StockListItemProps> = ({ stock, isPredefinedList, 
     onRemoveStock(stock.id);
   };
 
-  let itemLink = `/order/stock/${stock.symbol}`; // Default to stock
+  let itemLink = `/order/stock/${stock.symbol}`; 
   if (stock.exchange === 'MF') {
     itemLink = `/order/mutual-fund/${stock.symbol}`;
   } else if (stock.exchange === 'Crypto') {
@@ -235,7 +235,7 @@ export function WatchlistSection({
         } else {
           if (typeof defaultInitialItems !== 'undefined') {
             setWatchlist(defaultInitialItems);
-          } else if (effectiveLocalStorageKey === WATCHLIST_LS_KEY) { // Default for "My Watchlist" only
+          } else if (effectiveLocalStorageKey === WATCHLIST_LS_KEY) { 
             setWatchlist(mockStocks.slice(0, 5));
           } else {
             setWatchlist([]);
@@ -286,7 +286,7 @@ export function WatchlistSection({
   };
 
   const handleRemoveStock = (stockId: string) => {
-    if (isPredefinedList) return;
+    if (isPredefinedList) return; 
     const stock = watchlist.find(s => s.id === stockId);
     setWatchlist(prev => prev.filter(s => s.id !== stockId));
     if (stock) {
