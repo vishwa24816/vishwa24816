@@ -20,6 +20,7 @@ export interface Stock {
   upperCircuit?: number;
   lotSize?: number; // Added for Futures/Options
   marginFactor?: number; // Added for Futures/Options margin
+  availableExpiries?: string[]; // Added for Futures
   fundamentals?: {
     marketCap: string; // e.g., "29,377Cr"
     peRatioTTM?: number;

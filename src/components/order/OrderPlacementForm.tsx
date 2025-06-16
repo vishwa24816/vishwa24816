@@ -9,6 +9,13 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { RefreshCcw,ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from "@/hooks/use-toast";
@@ -25,6 +32,8 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
   const [quantity, setQuantity] = useState(1); // For stocks/crypto: units; For futures/options: lots
   const [price, setPrice] = useState(asset.price);
   const [triggerPrice, setTriggerPrice] = useState(0);
+  const [selectedExpiryDate, setSelectedExpiryDate] = useState<string>('');
+
 
   const [selectedExchange, setSelectedExchange] = useState<'BSE' | 'NSE'>('NSE');
   const [orderMode, setOrderMode] = useState('Regular'); 
@@ -44,7 +53,12 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
 
   useEffect(() => {
     setPrice(asset.price);
-  }, [asset.price]);
+    if (assetType === 'future' && asset.availableExpiries && asset.availableExpiries.length > 0) {
+      setSelectedExpiryDate(asset.availableExpiries[0]);
+    } else {
+      setSelectedExpiryDate('');
+    }
+  }, [asset, assetType]);
 
   useEffect(() => {
     let priceForCalc = 0;
@@ -92,13 +106,14 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
     if (orderMode === 'MTF' && assetType === 'stock') {
         leverageInfo = `Leverage: ${mtfLeverage}`;
     }
+    const expiryInfo = assetType === 'future' && selectedExpiryDate ? `Expiry: ${selectedExpiryDate}` : '';
 
     const quantityLabel = assetType === 'future' ? 'Lots' : 'Qty.';
     const priceDisplay = orderType === 'Market' ? 'Market' : `₹${price}`;
 
     toast({
       title: `Order Action (Mock - ${orderMode})`,
-      description: `${action} ${quantity} ${quantityLabel} x ${asset.symbol} @ ${priceDisplay} (${productType}) ${advancedOptions ? `(${advancedOptions})` : ''} ${leverageInfo}`,
+      description: `${action} ${quantity} ${quantityLabel} x ${asset.symbol} ${expiryInfo} @ ${priceDisplay} (${productType}) ${advancedOptions ? `(${advancedOptions})` : ''} ${leverageInfo}`,
     });
   };
 
@@ -107,6 +122,22 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
 
   const renderOrderFields = (currentOrderMode: string) => (
     <>
+      {assetType === 'future' && asset.availableExpiries && asset.availableExpiries.length > 0 && (
+        <div className="space-y-2">
+          <Label htmlFor={`expiry-${currentOrderMode}`}>Expiry Date</Label>
+          <Select value={selectedExpiryDate} onValueChange={setSelectedExpiryDate}>
+            <SelectTrigger id={`expiry-${currentOrderMode}`} className="w-full">
+              <SelectValue placeholder="Select expiry" />
+            </SelectTrigger>
+            <SelectContent>
+              {asset.availableExpiries.map(expiry => (
+                <SelectItem key={expiry} value={expiry}>{expiry}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      )}
+
       <RadioGroup
         value={productType}
         onValueChange={onProductTypeChange} 
