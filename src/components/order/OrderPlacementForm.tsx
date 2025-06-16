@@ -117,7 +117,7 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
     });
   };
 
-  const orderModeTabs = (assetType === 'stock' || assetType === 'future') ? ['Regular', 'MTF', 'SIP'] : ['Regular', 'SIP'];
+  const orderModeTabs = assetType === 'stock' ? ['Regular', 'MTF', 'SIP'] : ['Regular', 'SIP'];
   const quantityInputLabel = assetType === 'future' ? 'Lots' : 'Qty.';
 
   const renderOrderFields = (currentOrderMode: string) => (
@@ -231,7 +231,7 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
         })}
       </RadioGroup>
 
-      {(currentOrderMode === 'MTF' && (assetType === 'stock' || assetType === 'future')) && (
+      {(currentOrderMode === 'MTF' && assetType === 'stock') && (
         <div className="space-y-2 pt-2">
             <Label>Leverage</Label>
             <RadioGroup 
@@ -336,7 +336,7 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
           <p className="text-sm text-muted-foreground">
             Margin required: <span className="font-semibold text-foreground">₹{displayedMargin.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
           </p>
-          {(currentOrderMode === 'MTF' && (assetType === 'stock' || assetType === 'future') && parseInt(mtfLeverage.replace('x','')) > 1) && (
+          {(currentOrderMode === 'MTF' && assetType === 'stock' && parseInt(mtfLeverage.replace('x','')) > 1) && (
               <p className="text-xs text-muted-foreground mt-1">
                   (Leverage of {mtfLeverage} applied)
               </p>
@@ -366,41 +366,46 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
         </div>
       )}
 
-      <Tabs value={orderMode} onValueChange={setOrderMode} className="w-full">
-        <div className="flex justify-between items-center border-b px-1">
-            <TabsList className="bg-transparent p-0 justify-start">
-            {orderModeTabs.map((mode) => (
-                <TabsTrigger
-                key={mode}
-                value={mode}
-                className="text-xs sm:text-sm px-2 sm:px-3 py-2.5 data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:shadow-none rounded-none text-muted-foreground hover:text-primary"
-                disabled={mode === 'MTF' && assetType !== 'stock' && assetType !== 'future'}
-                >
-                {mode}
-                </TabsTrigger>
-            ))}
-            </TabsList>
-        </div>
+      {assetType !== 'future' ? (
+        <Tabs value={orderMode} onValueChange={setOrderMode} className="w-full">
+          <div className="flex justify-between items-center border-b px-1">
+              <TabsList className="bg-transparent p-0 justify-start">
+              {orderModeTabs.map((mode) => (
+                  <TabsTrigger
+                  key={mode}
+                  value={mode}
+                  className="text-xs sm:text-sm px-2 sm:px-3 py-2.5 data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:shadow-none rounded-none text-muted-foreground hover:text-primary"
+                  disabled={mode === 'MTF' && assetType !== 'stock'}
+                  >
+                  {mode}
+                  </TabsTrigger>
+              ))}
+              </TabsList>
+          </div>
 
-        <TabsContent value="Regular" className="p-4 space-y-4 mt-0">
+          <TabsContent value="Regular" className="p-4 space-y-4 mt-0">
+            {renderOrderFields("Regular")}
+          </TabsContent>
+          
+          {assetType === 'stock' && ( 
+          <TabsContent value="MTF" className="p-4 space-y-4 mt-0">
+              {renderOrderFields("MTF")}
+          </TabsContent>
+          )}
+
+          <TabsContent value="SIP" className="p-4 mt-0 text-center text-muted-foreground">
+              <p className="mb-4 pt-4">SIP order options will be shown here.</p>
+              {assetType === 'mutual-fund' && (
+                  <Button>Start SIP</Button>
+              )}
+          </TabsContent>
+        </Tabs>
+      ) : (
+        <div className="p-4 space-y-4 mt-0">
           {renderOrderFields("Regular")}
-        </TabsContent>
-        
-       {(assetType === 'stock' || assetType === 'future') && ( 
-        <TabsContent value="MTF" className="p-4 space-y-4 mt-0">
-            {renderOrderFields("MTF")}
-        </TabsContent>
-       )}
-
-
-        <TabsContent value="SIP" className="p-4 mt-0 text-center text-muted-foreground">
-            <p className="mb-4 pt-4">SIP order options will be shown here.</p>
-            {assetType === 'mutual-fund' && (
-                <Button>Start SIP</Button>
-            )}
-        </TabsContent>
-
-      </Tabs>
+        </div>
+      )}
     </div>
   );
 }
+
