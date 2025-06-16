@@ -19,10 +19,12 @@ import {
 } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button"; // Added Button import
 import { mockUnderlyings, mockOptionChains } from '@/lib/mockData/optionChainData';
 import type { OptionChainData, OptionData, OptionChainEntry, Underlying } from '@/types';
 import { cn } from '@/lib/utils';
-import { ArrowRightLeft } from 'lucide-react';
+import { ArrowRightLeft, PlusCircle } from 'lucide-react'; // Added PlusCircle
+import { useToast } from "@/hooks/use-toast"; // Added useToast
 
 type OptionChainViewType = 'price' | 'volume_oi' | 'greeks';
 
@@ -60,7 +62,7 @@ const renderCells = (data: OptionData | undefined, view: OptionChainViewType, is
   const cellClass = cn(isCall ? "bg-blue-500/5 dark:bg-blue-500/10" : "bg-orange-500/5 dark:bg-orange-500/10", "px-2");
 
   if (!data) {
-    return Array(6).fill(null).map((_, idx) => <TableCell key={`empty-${idx}-${view}`} className={cn("text-center", cellClass)}>-</TableCell>);
+    return Array(6).fill(null).map((_, idx) => <TableCell key={`empty-${idx}-${view}-${isCall ? 'call' : 'put'}`} className={cn("text-center", cellClass)}>-</TableCell>);
   }
 
   const isPositiveChange = data.netChng >= 0;
@@ -80,7 +82,7 @@ const renderCells = (data: OptionData | undefined, view: OptionChainViewType, is
             ? `${data.netChng !== 0 ? (isPositiveChange ? '+' : '') : ''}${formatNumber(data.netChng, 2)}`
             : formatNumber(value as number | undefined, precisions[idx]);
 
-        return <TableCell key={`price-${idx}-${view}`} className={cn("text-right", cellClass, specialClass)}>{content}</TableCell>
+        return <TableCell key={`price-${idx}-${view}-${isCall ? 'call' : 'put'}`} className={cn("text-right", cellClass, specialClass)}>{content}</TableCell>
     });
 
   } else if (view === 'volume_oi') {
@@ -99,7 +101,7 @@ const renderCells = (data: OptionData | undefined, view: OptionChainViewType, is
             ? `${data.netChng !== 0 ? (isPositiveChange ? '+' : '') : ''}${formatNumber(data.netChng, 2)}`
             : formatNumber(value as number | undefined, precisions[idx]);
 
-        return <TableCell key={`vol-${idx}-${view}`} className={cn("text-right", cellClass, specialClass)}>{content}</TableCell>;
+        return <TableCell key={`vol-${idx}-${view}-${isCall ? 'call' : 'put'}`} className={cn("text-right", cellClass, specialClass)}>{content}</TableCell>;
     });
   } else { // greeks
     const cells = isCall
@@ -110,7 +112,7 @@ const renderCells = (data: OptionData | undefined, view: OptionChainViewType, is
     return cells.map((value, idx) => {
         let specialClass = "";
         if((isCall && idx === 5) || (!isCall && idx === 0)) specialClass = "font-bold"; // LTP
-        return <TableCell key={`greek-${idx}-${view}`} className={cn("text-right", cellClass, specialClass)}>{formatNumber(value as number | undefined, precisions[idx])}</TableCell>;
+        return <TableCell key={`greek-${idx}-${view}-${isCall ? 'call' : 'put'}`} className={cn("text-right", cellClass, specialClass)}>{formatNumber(value as number | undefined, precisions[idx])}</TableCell>;
     });
   }
 };
@@ -122,6 +124,7 @@ export function OptionChain() {
   const [selectedExpiry, setSelectedExpiry] = useState<string>('');
   const [optionChainData, setOptionChainData] = useState<OptionChainData | null>(null);
   const [optionChainView, setOptionChainView] = useState<OptionChainViewType>('volume_oi');
+  const { toast } = useToast();
 
   useEffect(() => {
     const chainsForUnderlying = mockOptionChains[selectedUnderlyingSymbol];
@@ -165,6 +168,19 @@ export function OptionChain() {
     }
     return "";
   };
+
+  const handleAddAction = (strike: number, optionType: 'Call' | 'Put') => {
+    const expiryDisplay = optionChainData?.expiryDate || selectedExpiry;
+    toast({
+      title: "Add to Watchlist (Mock)",
+      description: `Adding ${selectedUnderlyingSymbol} ${expiryDisplay} ${strike} ${optionType} to watchlist.`,
+    });
+  };
+
+  const callCellBaseClass = "bg-blue-500/5 dark:bg-blue-500/10 px-2";
+  const putCellBaseClass = "bg-orange-500/5 dark:bg-orange-500/10 px-2";
+  const callHeaderBaseClass = "bg-blue-500/10 dark:bg-blue-500/20";
+  const putHeaderBaseClass = "bg-orange-500/10 dark:bg-orange-500/20";
 
 
   return (
@@ -230,27 +246,49 @@ export function OptionChain() {
       </div>
       <div className="overflow-x-auto"> 
         {optionChainData && optionChainData.data.length > 0 ? (
-          <Table className="min-w-[1200px] text-xs">
+          <Table className="min-w-[1300px] text-xs"> {/* Adjusted min-width for extra columns */}
             <TableHeader>
               <TableRow>
-                <TableHead className="text-center sticky left-0 z-10 bg-card" colSpan={6}>CALLS</TableHead>
+                <TableHead className="text-center sticky left-0 z-10 bg-card" colSpan={7}>CALLS</TableHead> {/* Increased colSpan */}
                 <TableHead className="text-center w-[100px] sm:w-[120px] bg-muted dark:bg-muted/50">Strike</TableHead>
-                <TableHead className="text-center sticky right-0 z-10 bg-card" colSpan={6}>PUTS</TableHead>
+                <TableHead className="text-center sticky right-0 z-10 bg-card" colSpan={7}>PUTS</TableHead> {/* Increased colSpan */}
               </TableRow>
               <TableRow>
+                <TableHead className={cn("text-center px-2 min-w-[70px]", callHeaderBaseClass)}>Action</TableHead>
                 {renderOptionTableHeaders(optionChainView, true)}
                 <TableHead className="text-center font-bold bg-muted dark:bg-muted/50 w-[100px] sm:w-[120px]">Price</TableHead>
                 {renderOptionTableHeaders(optionChainView, false)}
+                <TableHead className={cn("text-center px-2 min-w-[70px]", putHeaderBaseClass)}>Action</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {optionChainData.data.map((entry: OptionChainEntry) => (
                 <TableRow key={entry.strikePrice} className={cn("hover:bg-muted/20",getStrikePriceRowClass(entry.strikePrice, optionChainData.underlyingValue))}>
+                  <TableCell className={cn("text-center", callCellBaseClass)}>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-6 w-6 mx-auto"
+                      onClick={() => handleAddAction(entry.strikePrice, 'Call')}
+                    >
+                      <PlusCircle className="h-4 w-4 text-primary" />
+                    </Button>
+                  </TableCell>
                   {renderCells(entry.call, optionChainView, true)}
                   <TableCell className={cn("text-center font-bold bg-muted dark:bg-muted/50", getStrikePriceRowClass(entry.strikePrice, optionChainData.underlyingValue))}>
                     {formatNumber(entry.strikePrice)}
                   </TableCell>
                   {renderCells(entry.put, optionChainView, false)}
+                  <TableCell className={cn("text-center", putCellBaseClass)}>
+                     <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-6 w-6 mx-auto"
+                      onClick={() => handleAddAction(entry.strikePrice, 'Put')}
+                    >
+                      <PlusCircle className="h-4 w-4 text-primary" />
+                    </Button>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -265,3 +303,4 @@ export function OptionChain() {
     </div>
   );
 }
+
