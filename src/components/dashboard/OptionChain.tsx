@@ -2,7 +2,6 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -87,27 +86,27 @@ export function OptionChain() {
 
   const getStrikePriceRowClass = (strike: number, underlyingValue?: number): string => {
     if (!underlyingValue) return "";
-    const lowerBound = underlyingValue * 0.995; // Slightly below ATM
-    const upperBound = underlyingValue * 1.005; // Slightly above ATM
+    const lowerBound = underlyingValue * 0.995; 
+    const upperBound = underlyingValue * 1.005; 
     if (strike >= lowerBound && strike <= upperBound) {
-      return "bg-yellow-400/20 dark:bg-yellow-600/20"; // Highlight ATM strikes
+      return "bg-yellow-400/20 dark:bg-yellow-600/20"; 
     }
     return "";
   };
 
 
   return (
-    <Card className="shadow-lg w-full">
-      <CardHeader>
+    <div className="bg-card text-card-foreground border rounded-lg shadow-lg w-full">
+      <div className="p-4 sm:p-6"> 
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-                <CardTitle className="text-xl font-semibold font-headline text-primary flex items-center">
+                <h2 className="text-xl font-semibold font-headline text-primary flex items-center">
                     <ArrowRightLeft className="h-6 w-6 mr-2" /> Option Chain
-                </CardTitle>
+                </h2>
                 {selectedUnderlyingDetails && optionChainData?.underlyingValue && (
-                    <CardDescription className="text-xs mt-1">
+                    <p className="text-xs mt-1 text-muted-foreground">
                         {selectedUnderlyingDetails.name} at {formatNumber(optionChainData.underlyingValue, 2)} as of mock data time.
-                    </CardDescription>
+                    </p>
                 )}
             </div>
             <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
@@ -137,8 +136,8 @@ export function OptionChain() {
             </Select>
           </div>
         </div>
-      </CardHeader>
-      <CardContent className="overflow-x-auto p-0">
+      </div>
+      <div className="overflow-x-auto">
         {optionChainData && optionChainData.data.length > 0 ? (
           <Table className="min-w-[1200px]">
             <TableHeader>
@@ -185,7 +184,8 @@ export function OptionChain() {
             <p>Please select an underlying and expiry date.</p>
           </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
+
