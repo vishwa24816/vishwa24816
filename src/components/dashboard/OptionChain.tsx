@@ -182,7 +182,7 @@ export function OptionChain() {
 
     toast({
       title: "Option Selected for Strategy",
-      description: `${action} ${selectedUnderlyingSymbol} ${optionChainData.expiryDate} ${strikePrice} ${optionType} @ ${formatNumber(optionData.ltp, 2)} selected.`,
+      description: `${action} ${selectedUnderlyingSymbol} ${optionChainData.expiryDate} ${strikePrice} ${optionType} @ ${formatNumber(optionData.ltp, 2)} selected. This would be added to a strategy builder.`,
     });
   };
 
@@ -195,7 +195,7 @@ export function OptionChain() {
 
   return (
     <div className="bg-card text-card-foreground border rounded-lg shadow-lg w-full">
-      <div className="p-4 sm:p-6 border-b">
+      <div className="p-3 sm:p-4 border-b">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
                 <h2 className="text-xl font-semibold font-headline text-primary flex items-center">
@@ -256,12 +256,12 @@ export function OptionChain() {
       </div>
       <div className="overflow-x-auto"> 
         {optionChainData && optionChainData.data.length > 0 ? (
-          <Table className="min-w-[1600px] text-xs"> {/* Adjusted min-width */}
+          <Table className="min-w-[1300px] text-xs"> {/* Adjusted min-width for compactness */}
             <TableHeader>
               <TableRow>
-                <TableHead className="text-center bg-card" colSpan={7}>CALLS</TableHead>
+                <TableHead className="text-center bg-card" colSpan={7}>CALLS</TableHead> {/* 6 data + 1 action */}
                 <TableHead className="text-center w-[100px] sm:w-[120px] bg-muted dark:bg-muted/50 align-middle">Strike</TableHead>
-                <TableHead className="text-center bg-card" colSpan={7}>PUTS</TableHead>
+                <TableHead className="text-center bg-card" colSpan={7}>PUTS</TableHead> {/* 6 data + 1 action */}
               </TableRow>
               <TableRow>
                 {renderOptionTableHeaders(optionChainView, true)}
@@ -278,7 +278,7 @@ export function OptionChain() {
                 <TableRow key={entry.strikePrice} className={cn("hover:bg-muted/20",getStrikePriceRowClass(entry.strikePrice, optionChainData.underlyingValue))}>
                   {renderCells(entry.call, optionChainView, true)}
                   <TableCell className={cn("text-center align-middle px-1", callCellBaseClass)}>
-                    <div className="flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1">
+                    <div className="flex flex-row items-center justify-center gap-0.5 sm:gap-1">
                         <Button variant="outline" className="h-6 px-1.5 text-xs font-medium text-green-600 border-green-600 hover:bg-green-600/10 hover:text-green-700" onClick={() => handleSelectOptionForStrategy('Call', 'Buy', entry.strikePrice, entry.call)}>B</Button>
                         <Button variant="outline" className="h-6 px-1.5 text-xs font-medium text-red-600 border-red-600 hover:bg-red-600/10 hover:text-red-700" onClick={() => handleSelectOptionForStrategy('Call', 'Sell', entry.strikePrice, entry.call)}>S</Button>
                     </div>
@@ -289,7 +289,7 @@ export function OptionChain() {
                   </TableCell>
 
                   <TableCell className={cn("text-center align-middle px-1", putCellBaseClass)}>
-                     <div className="flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1">
+                     <div className="flex flex-row items-center justify-center gap-0.5 sm:gap-1">
                         <Button variant="outline" className="h-6 px-1.5 text-xs font-medium text-green-600 border-green-600 hover:bg-green-600/10 hover:text-green-700" onClick={() => handleSelectOptionForStrategy('Put', 'Buy', entry.strikePrice, entry.put)}>B</Button>
                         <Button variant="outline" className="h-6 px-1.5 text-xs font-medium text-red-600 border-red-600 hover:bg-red-600/10 hover:text-red-700" onClick={() => handleSelectOptionForStrategy('Put', 'Sell', entry.strikePrice, entry.put)}>S</Button>
                     </div>
