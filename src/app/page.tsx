@@ -14,6 +14,7 @@ import { FoPositionsSection } from '@/components/dashboard/FoPositionsSection';
 import { FoBasketSection } from '@/components/dashboard/FoBasketSection'; 
 import { CryptoFuturesSection } from '@/components/dashboard/CryptoFuturesSection';
 import { OptionChain } from '@/components/dashboard/OptionChain';
+import { ReadymadeStrategiesSection } from '@/components/dashboard/ReadymadeStrategiesSection';
 import { PackageOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -302,13 +303,7 @@ export default function DashboardPage() {
               </div>
             ) : activeSecondaryItem === "Readymade" ? (
               <div className="space-y-8">
-                <div className="flex flex-col items-center justify-center text-center py-12 text-muted-foreground">
-                  <PackageOpen className="h-16 w-16 mb-4" />
-                  <h2 className="text-2xl font-semibold mb-2 text-foreground">Readymade Option Strategies</h2>
-                  <p className="max-w-md">
-                    Pre-built option strategies and analysis will be displayed here.
-                  </p>
-                </div>
+                <ReadymadeStrategiesSection />
                 <NewsSection articles={newsForView} />
               </div>
             ) : null
