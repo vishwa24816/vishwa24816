@@ -18,18 +18,18 @@ export interface Stock {
   sector?: string;
   lowerCircuit?: number;
   upperCircuit?: number;
-  lotSize?: number; // Added for Futures/Options
-  marginFactor?: number; // Added for Futures/Options margin
-  availableExpiries?: string[]; // Added for Futures
+  lotSize?: number; 
+  marginFactor?: number; 
+  availableExpiries?: string[]; 
   fundamentals?: {
-    marketCap: string; // e.g., "29,377Cr"
+    marketCap: string; 
     peRatioTTM?: number;
     pbRatio?: number;
     industryPe?: number;
     debtToEquity?: number;
-    roe?: number; // percentage
+    roe?: number; 
     epsTTM?: number;
-    divYield?: number; // percentage
+    divYield?: number; 
     bookValue?: number;
     faceValue?: number;
   };
@@ -40,18 +40,18 @@ export interface Stock {
   };
   aboutCompany?: string;
   shareholdingPattern?: Array<{
-    period: string; // e.g., "May '25"
+    period: string; 
     data: Array<{
-      category: string; // e.g., "Retail", "Promoters"
+      category: string; 
       percentage: number;
     }>;
   }>;
   topMutualFundsInvested?: Array<{
     id: string;
     name: string;
-    schemeType?: string; // e.g., "Equity ELSS"
+    schemeType?: string; 
     nav?: number;
-    assetValue?: string; // e.g., "₹10,000 Cr"
+    assetValue?: string; 
   }>;
   similarStocks?: Array<{
     id: string;
@@ -92,12 +92,12 @@ export interface PortfolioHolding {
   type: 'Stock' | 'Mutual Fund' | 'Crypto' | 'Bond' | 'ETF';
   quantity: number;
   avgCostPrice: number;
-  ltp: number; // Last Traded Price
+  ltp: number; 
   currentValue: number;
   profitAndLoss: number;
   profitAndLossPercent: number;
-  dayChangeAbsolute: number; // Total absolute change for the quantity held on that day
-  dayChangePercent: number; // Percentage change of the instrument's price/NAV for the day
+  dayChangeAbsolute: number; 
+  dayChangePercent: number; 
 }
 
 export interface IntradayPosition {
@@ -114,29 +114,29 @@ export interface IntradayPosition {
 
 export interface FoPosition {
   id: string;
-  instrumentName: string; // e.g., NIFTY 23OCT23 19500 CE
-  optionType: 'CE' | 'PE' | 'FUT'; // Call, Put, or Future
+  instrumentName: string; 
+  optionType: 'CE' | 'PE' | 'FUT'; 
   transactionType: 'BUY' | 'SELL';
   lots: number;
   quantityPerLot: number;
-  avgPrice: number; // Price per unit, not per lot
+  avgPrice: number; 
   ltp: number;
   pAndL: number;
   pAndLPercent: number;
-  expiryDate: string; // YYYY-MM-DD
+  expiryDate: string; 
 }
 
 export interface CryptoFuturePosition {
   id: string;
-  symbol: string; // e.g., BTCUSDT
+  symbol: string; 
   positionSide: 'LONG' | 'SHORT';
-  quantity: number; // Number of contracts or base asset amount
+  quantity: number; 
   entryPrice: number;
-  markPrice: number; // Current market price for calculating P&L
+  markPrice: number; 
   liquidationPrice?: number;
-  unrealizedPnL: number; // In quote currency (e.g., USDT)
-  margin: number; // In quote currency (e.g., USDT)
-  leverage: number; // e.g., 10x
+  unrealizedPnL: number; 
+  margin: number; 
+  leverage: number; 
 }
 
 export interface ChatMessage {
@@ -150,13 +150,18 @@ export interface OptionData {
   oi: number;
   chngInOI: number;
   volume: number;
-  iv?: number; // Implied Volatility - can be optional
+  iv?: number; 
   ltp: number;
   netChng: number;
   bidQty?: number;
   bidPrice?: number;
   askPrice?: number;
   askQty?: number;
+  delta?: number;
+  gamma?: number;
+  theta?: number;
+  vega?: number;
+  rho?: number;
 }
 
 export interface OptionChainEntry {
@@ -183,6 +188,6 @@ export interface FoBasket {
   status: 'Active' | 'Pending Execution' | 'Executed' | 'Cancelled' | 'Archived';
   requiredMargin: number;
   instrumentsCount: number;
-  createdDate: string; // YYYY-MM-DD
-  pnl?: number; // Optional P&L for the basket
+  createdDate: string; 
+  pnl?: number; 
 }

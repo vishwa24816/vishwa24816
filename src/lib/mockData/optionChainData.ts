@@ -1,5 +1,5 @@
 
-import type { OptionChainData, Underlying } from '@/types';
+import type { OptionChainData, Underlying, OptionData } from '@/types';
 
 export const mockUnderlyings: Underlying[] = [
   { id: 'nifty', name: 'NIFTY 50', symbol: 'NIFTY' },
@@ -8,18 +8,39 @@ export const mockUnderlyings: Underlying[] = [
 
 const generateOptionData = (baseLTP: number, isCall: boolean, strike: number, underlyingPrice: number): OptionData => {
   const randomFactor = () => (Math.random() - 0.5) * 0.2 + 1; // +/- 20%
-  const ltp = Math.max(0.05, baseLTP * randomFactor() * (isCall ? Math.max(0.1, (underlyingPrice - strike + 50)/100) : Math.max(0.1, (strike - underlyingPrice + 50)/100) ) );
+  
+  let ltpMultiplier = 0.1;
+  if (isCall) {
+    ltpMultiplier = Math.max(0.1, (underlyingPrice - strike + 100) / 200); // More sensitive for calls
+  } else {
+    ltpMultiplier = Math.max(0.1, (strike - underlyingPrice + 100) / 200); // More sensitive for puts
+  }
+  ltpMultiplier = Math.max(0.05, Math.min(2, ltpMultiplier)); // Bound multiplier
+
+
+  const ltp = parseFloat(Math.max(0.05, baseLTP * randomFactor() * ltpMultiplier).toFixed(2));
+  
+  const deltaRandomFactor = isCall ? (Math.random() * 0.4 + 0.3) : (Math.random() * -0.4 - 0.3); // Call: 0.3 to 0.7, Put: -0.3 to -0.7
+  let delta = 0.5 + (strike - underlyingPrice) * (isCall ? -0.001 : 0.001); // Basic delta approximation
+  delta = Math.max(isCall ? 0.01 : -1.0, Math.min(isCall ? 1.0 : -0.01, delta + deltaRandomFactor * 0.2));
+
+
   return {
     oi: Math.floor(Math.random() * 500000) + 10000,
     chngInOI: Math.floor((Math.random() - 0.5) * 100000),
     volume: Math.floor(Math.random() * 20000) + 500,
     iv: Math.random() * 30 + 10, // IV between 10 and 40
-    ltp: parseFloat(ltp.toFixed(2)),
+    ltp: ltp,
     netChng: parseFloat(((Math.random() - 0.5) * (ltp * 0.2)).toFixed(2)), // Max 20% change
     bidQty: Math.floor(Math.random() * 500),
-    bidPrice: parseFloat(Math.max(0.05, ltp * 0.98).toFixed(2)),
-    askPrice: parseFloat(Math.max(0.10, ltp * 1.02).toFixed(2)),
+    bidPrice: parseFloat(Math.max(0.05, ltp * (1 - Math.random() * 0.02 - 0.005)).toFixed(2)), // Slightly lower than LTP
+    askPrice: parseFloat(Math.max(ltp, ltp * (1 + Math.random() * 0.02 + 0.005)).toFixed(2)), // Slightly higher than LTP
     askQty: Math.floor(Math.random() * 500),
+    delta: parseFloat(delta.toFixed(4)),
+    gamma: parseFloat((Math.random() * 0.0005 + 0.0001).toFixed(4)), // Small positive value
+    theta: parseFloat((-(Math.random() * 0.5 + 0.1)).toFixed(4)),   // Small negative value
+    vega: parseFloat((Math.random() * 0.2 + 0.05).toFixed(4)),    // Small positive value
+    rho: parseFloat((Math.random() * 0.05 * (isCall ? 1 : -1)).toFixed(4)), // Small, sign depends on call/put
   };
 };
 
@@ -54,17 +75,17 @@ export const mockNiftyOptionChain: Record<string, OptionChainData> = {
   },
 };
 
-// Add more mock data for BANKNIFTY or other underlyings if needed
+const bankNiftyCurrentPrice = 47000;
 export const mockBankNiftyOptionChain: Record<string, OptionChainData> = {
     '2024-07-25': {
-    underlyingValue: 47000, // Example
+    underlyingValue: bankNiftyCurrentPrice, 
     expiryDate: '25 Jul 2024',
     data: [
-        { strikePrice: 46800, call: generateOptionData(250, true, 46800, 47000), put: generateOptionData(130, false, 46800, 47000) },
-        { strikePrice: 46900, call: generateOptionData(200, true, 46900, 47000), put: generateOptionData(160, false, 46900, 47000) },
-        { strikePrice: 47000, call: generateOptionData(150, true, 47000, 47000), put: generateOptionData(180, false, 47000, 47000) },
-        { strikePrice: 47100, call: generateOptionData(120, true, 47100, 47000), put: generateOptionData(220, false, 47100, 47000) },
-        { strikePrice: 47200, call: generateOptionData(90, true, 47200, 47000), put: generateOptionData(270, false, 47200, 47000) },
+        { strikePrice: 46800, call: generateOptionData(250, true, 46800, bankNiftyCurrentPrice), put: generateOptionData(130, false, 46800, bankNiftyCurrentPrice) },
+        { strikePrice: 46900, call: generateOptionData(200, true, 46900, bankNiftyCurrentPrice), put: generateOptionData(160, false, 46900, bankNiftyCurrentPrice) },
+        { strikePrice: 47000, call: generateOptionData(150, true, 47000, bankNiftyCurrentPrice), put: generateOptionData(180, false, 47000, bankNiftyCurrentPrice) },
+        { strikePrice: 47100, call: generateOptionData(120, true, 47100, bankNiftyCurrentPrice), put: generateOptionData(220, false, 47100, bankNiftyCurrentPrice) },
+        { strikePrice: 47200, call: generateOptionData(90, true, 47200, bankNiftyCurrentPrice), put: generateOptionData(270, false, 47200, bankNiftyCurrentPrice) },
     ]
     }
 };

@@ -17,31 +17,102 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 import { mockUnderlyings, mockOptionChains } from '@/lib/mockData/optionChainData';
 import type { OptionChainData, OptionData, OptionChainEntry, Underlying } from '@/types';
 import { cn } from '@/lib/utils';
 import { ArrowRightLeft } from 'lucide-react';
 
+type OptionChainViewType = 'price' | 'volume_oi' | 'greeks';
+
 const formatNumber = (num?: number, precision = 0) => {
-  if (num === undefined || num === null) return '-';
+  if (num === undefined || num === null || isNaN(num)) return '-';
   return num.toLocaleString('en-IN', { minimumFractionDigits: precision, maximumFractionDigits: precision });
 };
 
-const OptionChainCell: React.FC<{ data?: OptionData, isCall?: boolean, isPut?: boolean }> = ({ data, isCall, isPut }) => {
-  if (!data) return <TableCell className="text-center">-</TableCell>;
+const renderOptionTableHeaders = (view: OptionChainViewType, isCallSide: boolean): JSX.Element[] => {
+  const callHeaderClass = "bg-blue-500/10 dark:bg-blue-500/20";
+  const putHeaderClass = "bg-orange-500/10 dark:bg-orange-500/20";
+  let headers: string[];
+  const appliedHeaderClass = isCallSide ? callHeaderClass : putHeaderClass;
+
+  if (view === 'price') {
+    headers = isCallSide 
+      ? ["Ask Qty", "Ask Price", "LTP", "Net Chng", "Bid Price", "Bid Qty"]
+      : ["Bid Qty", "Bid Price", "Net Chng", "LTP", "Ask Price", "Ask Qty"];
+  } else if (view === 'volume_oi') {
+    headers = isCallSide
+      ? ["IV", "Volume", "Chng in OI", "OI", "LTP", "Net Chng"]
+      : ["Net Chng", "LTP", "OI", "Chng in OI", "Volume", "IV"];
+  } else { // greeks
+    headers = isCallSide
+      ? ["Delta", "Gamma", "Theta", "Vega", "Rho", "LTP"]
+      : ["LTP", "Rho", "Vega", "Theta", "Gamma", "Delta"];
+  }
+  
+  return headers.map(header => (
+    <TableHead key={`${isCallSide ? 'call' : 'put'}-${header}-${view}`} className={cn("text-right min-w-[80px] px-2", appliedHeaderClass)}>{header}</TableHead>
+  ));
+};
+
+const renderCells = (data: OptionData | undefined, view: OptionChainViewType, isCall: boolean): JSX.Element[] => {
+  const cellClass = cn(isCall ? "bg-blue-500/5 dark:bg-blue-500/10" : "bg-orange-500/5 dark:bg-orange-500/10", "px-2");
+
+  if (!data) {
+    return Array(6).fill(null).map((_, idx) => <TableCell key={`empty-${idx}-${view}`} className={cn("text-center", cellClass)}>-</TableCell>);
+  }
+
   const isPositiveChange = data.netChng >= 0;
-  return (
-    <>
-      <TableCell className={cn("text-right", isCall && "bg-blue-500/5 dark:bg-blue-500/10", isPut && "bg-orange-500/5 dark:bg-orange-500/10")}>{formatNumber(data.iv, 2)}</TableCell>
-      <TableCell className={cn("text-right", isCall && "bg-blue-500/5 dark:bg-blue-500/10", isPut && "bg-orange-500/5 dark:bg-orange-500/10")}>{formatNumber(data.volume)}</TableCell>
-      <TableCell className={cn("text-right font-semibold", data.chngInOI > 0 ? 'text-green-600' : data.chngInOI < 0 ? 'text-red-600' : '', isCall && "bg-blue-500/5 dark:bg-blue-500/10", isPut && "bg-orange-500/5 dark:bg-orange-500/10")}>{formatNumber(data.chngInOI)}</TableCell>
-      <TableCell className={cn("text-right", isCall && "bg-blue-500/5 dark:bg-blue-500/10", isPut && "bg-orange-500/5 dark:bg-orange-500/10")}>{formatNumber(data.oi)}</TableCell>
-      <TableCell className={cn("text-right font-bold", isCall && "bg-blue-500/5 dark:bg-blue-500/10", isPut && "bg-orange-500/5 dark:bg-orange-500/10")}>{formatNumber(data.ltp, 2)}</TableCell>
-      <TableCell className={cn("text-right", isPositiveChange ? 'text-green-600' : 'text-red-600', isCall && "bg-blue-500/5 dark:bg-blue-500/10", isPut && "bg-orange-500/5 dark:bg-orange-500/10")}>
-        {data.netChng !== 0 ? (isPositiveChange ? '+' : '') : ''}{formatNumber(data.netChng, 2)}
-      </TableCell>
-    </>
-  );
+
+  if (view === 'price') {
+    const cells = isCall
+      ? [data.askQty, data.askPrice, data.ltp, data.netChng, data.bidPrice, data.bidQty]
+      : [data.bidQty, data.bidPrice, data.netChng, data.ltp, data.askPrice, data.askQty];
+    const precisions = isCall ? [0,2,2,2,2,0] : [0,2,2,2,2,0];
+    
+    return cells.map((value, idx) => {
+        let specialClass = "";
+        if((isCall && idx === 2) || (!isCall && idx === 3)) specialClass = "font-bold"; // LTP
+        if((isCall && idx === 3) || (!isCall && idx === 2)) specialClass = cn(specialClass, data.netChng >= 0 ? 'text-green-600' : 'text-red-600'); // NetChng
+
+        const content = (isCall && idx === 3) || (!isCall && idx === 2) // NetChng column
+            ? `${data.netChng !== 0 ? (isPositiveChange ? '+' : '') : ''}${formatNumber(data.netChng, 2)}`
+            : formatNumber(value as number | undefined, precisions[idx]);
+
+        return <TableCell key={`price-${idx}-${view}`} className={cn("text-right", cellClass, specialClass)}>{content}</TableCell>
+    });
+
+  } else if (view === 'volume_oi') {
+     const cells = isCall
+      ? [data.iv, data.volume, data.chngInOI, data.oi, data.ltp, data.netChng]
+      : [data.netChng, data.ltp, data.oi, data.chngInOI, data.volume, data.iv];
+    const precisions = isCall ? [2,0,0,0,2,2] : [2,2,0,0,0,2];
+     
+    return cells.map((value, idx) => {
+        let specialClass = "";
+        if((isCall && idx === 2) || (!isCall && idx === 3)) specialClass = cn(data.chngInOI > 0 ? 'text-green-600' : data.chngInOI < 0 ? 'text-red-600' : '', "font-semibold"); // ChngInOI
+        if((isCall && idx === 4) || (!isCall && idx === 1)) specialClass = "font-bold"; // LTP
+        if((isCall && idx === 5) || (!isCall && idx === 0)) specialClass = cn(specialClass, data.netChng >= 0 ? 'text-green-600' : 'text-red-600'); // NetChng
+
+        const content = (isCall && idx === 5) || (!isCall && idx === 0) // NetChng column
+            ? `${data.netChng !== 0 ? (isPositiveChange ? '+' : '') : ''}${formatNumber(data.netChng, 2)}`
+            : formatNumber(value as number | undefined, precisions[idx]);
+
+        return <TableCell key={`vol-${idx}-${view}`} className={cn("text-right", cellClass, specialClass)}>{content}</TableCell>;
+    });
+  } else { // greeks
+    const cells = isCall
+      ? [data.delta, data.gamma, data.theta, data.vega, data.rho, data.ltp]
+      : [data.ltp, data.rho, data.vega, data.theta, data.gamma, data.delta];
+    const precisions = isCall ? [4,4,4,4,4,2] : [2,4,4,4,4,4];
+
+    return cells.map((value, idx) => {
+        let specialClass = "";
+        if((isCall && idx === 5) || (!isCall && idx === 0)) specialClass = "font-bold"; // LTP
+        return <TableCell key={`greek-${idx}-${view}`} className={cn("text-right", cellClass, specialClass)}>{formatNumber(value as number | undefined, precisions[idx])}</TableCell>;
+    });
+  }
 };
 
 
@@ -50,6 +121,7 @@ export function OptionChain() {
   const [availableExpiries, setAvailableExpiries] = useState<string[]>([]);
   const [selectedExpiry, setSelectedExpiry] = useState<string>('');
   const [optionChainData, setOptionChainData] = useState<OptionChainData | null>(null);
+  const [optionChainView, setOptionChainView] = useState<OptionChainViewType>('volume_oi');
 
   useEffect(() => {
     const chainsForUnderlying = mockOptionChains[selectedUnderlyingSymbol];
@@ -97,7 +169,7 @@ export function OptionChain() {
 
   return (
     <div className="bg-card text-card-foreground border rounded-lg shadow-lg w-full">
-      <div className="p-4 sm:p-6 border-b"> {/* Mimics CardHeader styling */}
+      <div className="p-4 sm:p-6 border-b">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
                 <h2 className="text-xl font-semibold font-headline text-primary flex items-center">
@@ -136,50 +208,55 @@ export function OptionChain() {
             </Select>
           </div>
         </div>
+        <RadioGroup 
+            value={optionChainView} 
+            onValueChange={(value) => setOptionChainView(value as OptionChainViewType)} 
+            className="flex flex-wrap gap-2 mt-4"
+        >
+            {(['price', 'volume_oi', 'greeks'] as OptionChainViewType[]).map(viewType => (
+                <Label 
+                    key={viewType}
+                    htmlFor={`view-${viewType}`} 
+                    className={cn(
+                        "flex items-center space-x-2 px-3 py-1.5 rounded-md border cursor-pointer text-xs sm:text-sm transition-colors hover:bg-muted/50",
+                        optionChainView === viewType && "bg-primary/10 border-primary text-primary"
+                    )}
+                >
+                    <RadioGroupItem value={viewType} id={`view-${viewType}`} className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                    <span>{viewType === 'volume_oi' ? 'Volume/OI' : viewType.charAt(0).toUpperCase() + viewType.slice(1)}</span>
+                </Label>
+            ))}
+        </RadioGroup>
       </div>
-      <div className="overflow-x-auto"> {/* Mimics CardContent behavior for the table */}
+      <div className="overflow-x-auto"> 
         {optionChainData && optionChainData.data.length > 0 ? (
-          <Table className="min-w-[1200px]">
+          <Table className="min-w-[1200px] text-xs">
             <TableHeader>
               <TableRow>
                 <TableHead className="text-center sticky left-0 z-10 bg-card" colSpan={6}>CALLS</TableHead>
-                <TableHead className="text-center w-[120px] bg-muted dark:bg-muted/50">Strike</TableHead>
+                <TableHead className="text-center w-[100px] sm:w-[120px] bg-muted dark:bg-muted/50">Strike</TableHead>
                 <TableHead className="text-center sticky right-0 z-10 bg-card" colSpan={6}>PUTS</TableHead>
               </TableRow>
               <TableRow>
-                {/* Calls Headers */}
-                <TableHead className="text-right min-w-[70px] bg-blue-500/10 dark:bg-blue-500/20">IV</TableHead>
-                <TableHead className="text-right min-w-[80px] bg-blue-500/10 dark:bg-blue-500/20">Volume</TableHead>
-                <TableHead className="text-right min-w-[100px] bg-blue-500/10 dark:bg-blue-500/20">Chg in OI</TableHead>
-                <TableHead className="text-right min-w-[100px] bg-blue-500/10 dark:bg-blue-500/20">OI</TableHead>
-                <TableHead className="text-right min-w-[80px] bg-blue-500/10 dark:bg-blue-500/20">LTP</TableHead>
-                <TableHead className="text-right min-w-[80px] bg-blue-500/10 dark:bg-blue-500/20">Net Chng</TableHead>
-                
-                <TableHead className="text-center font-bold bg-muted dark:bg-muted/50 w-[120px]">Price</TableHead>
-                
-                {/* Puts Headers */}
-                <TableHead className="text-right min-w-[80px] bg-orange-500/10 dark:bg-orange-500/20">Net Chng</TableHead>
-                <TableHead className="text-right min-w-[80px] bg-orange-500/10 dark:bg-orange-500/20">LTP</TableHead>
-                <TableHead className="text-right min-w-[100px] bg-orange-500/10 dark:bg-orange-500/20">OI</TableHead>
-                <TableHead className="text-right min-w-[100px] bg-orange-500/10 dark:bg-orange-500/20">Chg in OI</TableHead>
-                <TableHead className="text-right min-w-[80px] bg-orange-500/10 dark:bg-orange-500/20">Volume</TableHead>
-                <TableHead className="text-right min-w-[70px] bg-orange-500/10 dark:bg-orange-500/20">IV</TableHead>
+                {renderOptionTableHeaders(optionChainView, true)}
+                <TableHead className="text-center font-bold bg-muted dark:bg-muted/50 w-[100px] sm:w-[120px]">Price</TableHead>
+                {renderOptionTableHeaders(optionChainView, false)}
               </TableRow>
             </TableHeader>
             <TableBody>
               {optionChainData.data.map((entry: OptionChainEntry) => (
-                <TableRow key={entry.strikePrice} className={getStrikePriceRowClass(entry.strikePrice, optionChainData.underlyingValue)}>
-                  <OptionChainCell data={entry.call} isCall />
+                <TableRow key={entry.strikePrice} className={cn("hover:bg-muted/20",getStrikePriceRowClass(entry.strikePrice, optionChainData.underlyingValue))}>
+                  {renderCells(entry.call, optionChainView, true)}
                   <TableCell className={cn("text-center font-bold bg-muted dark:bg-muted/50", getStrikePriceRowClass(entry.strikePrice, optionChainData.underlyingValue))}>
                     {formatNumber(entry.strikePrice)}
                   </TableCell>
-                  <OptionChainCell data={entry.put} isPut />
+                  {renderCells(entry.put, optionChainView, false)}
                 </TableRow>
               ))}
             </TableBody>
           </Table>
         ) : (
-          <div className="text-center py-10 text-muted-foreground p-4 sm:p-6"> {/* Added padding to mimic content area */}
+          <div className="text-center py-10 text-muted-foreground p-4 sm:p-6">
             <p>No option chain data available for the selected underlying and expiry.</p>
             <p>Please select an underlying and expiry date.</p>
           </div>
