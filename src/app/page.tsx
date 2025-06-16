@@ -41,7 +41,7 @@ import {
   mockStockFuturesForWatchlist,
   mockMarketIndices, 
   mockCryptoFuturesForWatchlist,
-  mockFoBaskets, // Ensure FoBaskets is imported if used here, though it's for FoPositionsSection
+  mockFoBaskets,
 } from '@/lib/mockData';
 
 function getRelevantNewsForHoldings(holdings: PortfolioHolding[], allNews: NewsArticle[]): NewsArticle[] {
@@ -159,7 +159,7 @@ export default function DashboardPage() {
     Portfolio: ["Holdings", "Positions", "Portfolio Watchlist"],
     Stocks: ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
     Futures: ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)], 
-    Options: [], 
+    Options: ["Custom", "Readymade"], 
     Crypto: ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)], 
     "Mutual funds": ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
     Bonds: ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
@@ -218,7 +218,8 @@ export default function DashboardPage() {
   } else if (activePrimaryItem === "Options") { 
     newsForView = mockNewsArticles; 
   } else if (isUserPortfolioWatchlistView) {
-    newsForView = mockNewsArticles; 
+     // For the user's specific portfolio watchlist, we can show all news or filter by portfolio items
+    newsForView = getRelevantNewsForHoldings(mockPortfolioHoldings, mockNewsArticles); // Or mockNewsArticles for general news
   } else if (isFuturesTopWatchlistView) {
     const combinedFutures = [...mockIndexFuturesForWatchlist, ...mockStockFuturesForWatchlist];
     newsForView = getRelevantNewsForWatchlistItems(combinedFutures, mockNewsArticles);
@@ -293,11 +294,24 @@ export default function DashboardPage() {
               />
               <NewsSection articles={newsForView} />
             </div>
-          ) : activePrimaryItem === "Options" ? ( 
-            <div className="space-y-8">
-              <OptionChain />
-              <NewsSection articles={newsForView} />
-            </div>
+          ) : activePrimaryItem === "Options" ? (
+            activeSecondaryItem === "Custom" ? (
+              <div className="space-y-8">
+                <OptionChain />
+                <NewsSection articles={newsForView} />
+              </div>
+            ) : activeSecondaryItem === "Readymade" ? (
+              <div className="space-y-8">
+                <div className="flex flex-col items-center justify-center text-center py-12 text-muted-foreground">
+                  <PackageOpen className="h-16 w-16 mb-4" />
+                  <h2 className="text-2xl font-semibold mb-2 text-foreground">Readymade Option Strategies</h2>
+                  <p className="max-w-md">
+                    Pre-built option strategies and analysis will be displayed here.
+                  </p>
+                </div>
+                <NewsSection articles={newsForView} />
+              </div>
+            ) : null
           ) : isFuturesTopWatchlistView ? (
             <div className="space-y-8">
               <WatchlistSection
