@@ -20,7 +20,7 @@ import {
 import { mockUnderlyings, mockOptionChains } from '@/lib/mockData/optionChainData';
 import type { OptionChainData, OptionData, OptionChainEntry, Underlying } from '@/types';
 import { cn } from '@/lib/utils';
-import { TrendingUp, TrendingDown, ArrowRightLeft } from 'lucide-react';
+import { ArrowRightLeft } from 'lucide-react';
 
 const formatNumber = (num?: number, precision = 0) => {
   if (num === undefined || num === null) return '-';
@@ -97,7 +97,7 @@ export function OptionChain() {
 
   return (
     <div className="bg-card text-card-foreground border rounded-lg shadow-lg w-full">
-      <div className="p-4 sm:p-6"> 
+      <div className="p-4 sm:p-6 border-b"> {/* Mimics CardHeader styling */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
                 <h2 className="text-xl font-semibold font-headline text-primary flex items-center">
@@ -137,7 +137,7 @@ export function OptionChain() {
           </div>
         </div>
       </div>
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto"> {/* Mimics CardContent behavior for the table */}
         {optionChainData && optionChainData.data.length > 0 ? (
           <Table className="min-w-[1200px]">
             <TableHeader>
@@ -179,7 +179,7 @@ export function OptionChain() {
             </TableBody>
           </Table>
         ) : (
-          <div className="text-center py-10 text-muted-foreground">
+          <div className="text-center py-10 text-muted-foreground p-4 sm:p-6"> {/* Added padding to mimic content area */}
             <p>No option chain data available for the selected underlying and expiry.</p>
             <p>Please select an underlying and expiry date.</p>
           </div>
@@ -188,4 +188,3 @@ export function OptionChain() {
     </div>
   );
 }
-
