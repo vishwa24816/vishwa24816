@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect } from 'react';
@@ -22,20 +23,10 @@ import { Button } from "@/components/ui/button";
 import { mockUnderlyings, mockOptionChains } from '@/lib/mockData/optionChainData';
 import type { OptionChainData, OptionData, OptionChainEntry, Underlying } from '@/types';
 import { cn } from '@/lib/utils';
-import { ArrowRightLeft, ShoppingBasket, XCircle, PlayCircle } from 'lucide-react';
+import { ArrowRightLeft, PlusCircle } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 
 type OptionChainViewType = 'price' | 'volume_oi' | 'greeks';
-
-interface BasketItem {
-  id: string;
-  underlyingSymbol: string;
-  expiryDate: string;
-  strikePrice: number;
-  optionType: 'Call' | 'Put';
-  action: 'Buy' | 'Sell';
-  ltp: number;
-}
 
 const formatNumber = (num?: number, precision = 0) => {
   if (num === undefined || num === null || isNaN(num)) return '-';
@@ -134,7 +125,6 @@ export function OptionChain() {
   const [optionChainData, setOptionChainData] = useState<OptionChainData | null>(null);
   const [optionChainView, setOptionChainView] = useState<OptionChainViewType>('volume_oi');
   const { toast } = useToast();
-  const [basketItems, setBasketItems] = useState<BasketItem[]>([]);
 
   useEffect(() => {
     const chainsForUnderlying = mockOptionChains[selectedUnderlyingSymbol];
@@ -179,50 +169,21 @@ export function OptionChain() {
     return "";
   };
 
-  const handleAddToBasket = (
+  const handleSelectOptionForStrategy = (
     optionType: 'Call' | 'Put',
     action: 'Buy' | 'Sell',
     strikePrice: number,
     optionData?: OptionData
   ) => {
     if (!selectedUnderlyingDetails || !optionChainData || !optionData) {
-      toast({ title: "Error", description: "Option data not available to add to basket.", variant: "destructive" });
+      toast({ title: "Error", description: "Option data not available to select for strategy.", variant: "destructive" });
       return;
     }
 
-    const newItem: BasketItem = {
-      id: `${selectedUnderlyingSymbol}-${optionChainData.expiryDate}-${strikePrice}-${optionType}-${action}-${Date.now()}`,
-      underlyingSymbol: selectedUnderlyingSymbol,
-      expiryDate: optionChainData.expiryDate,
-      strikePrice,
-      optionType,
-      action,
-      ltp: optionData.ltp,
-    };
-
-    setBasketItems(prev => [...prev, newItem]);
     toast({
-      title: `${action} ${optionType} Added`,
-      description: `${selectedUnderlyingSymbol} ${strikePrice} ${optionType} (Expiry: ${optionChainData.expiryDate}) added to basket. LTP: ${formatNumber(optionData.ltp, 2)}`,
+      title: "Option Selected for Strategy",
+      description: `${action} ${selectedUnderlyingSymbol} ${optionChainData.expiryDate} ${strikePrice} ${optionType} @ ${formatNumber(optionData.ltp, 2)} selected.`,
     });
-  };
-
-  const handleRemoveFromBasket = (itemId: string) => {
-    setBasketItems(prev => prev.filter(item => item.id !== itemId));
-  };
-
-  const handleClearBasket = () => {
-    setBasketItems([]);
-    toast({ title: "Basket Cleared", description: "All items removed from the option basket." });
-  };
-
-  const handleExecuteBasket = () => {
-    if (basketItems.length === 0) {
-      toast({ title: "Empty Basket", description: "No items in the basket to execute.", variant: "destructive" });
-      return;
-    }
-    toast({ title: "Basket Executed (Mock)", description: `Executing ${basketItems.length} option orders. This is a mock action.` });
-    setBasketItems([]); // Clear basket after mock execution
   };
 
 
@@ -295,7 +256,7 @@ export function OptionChain() {
       </div>
       <div className="overflow-x-auto"> 
         {optionChainData && optionChainData.data.length > 0 ? (
-          <Table className="min-w-[1400px] text-xs"> {/* Increased min-width */}
+          <Table className="min-w-[1600px] text-xs"> {/* Adjusted min-width */}
             <TableHeader>
               <TableRow>
                 <TableHead className="text-center bg-card" colSpan={7}>CALLS</TableHead>
@@ -304,11 +265,11 @@ export function OptionChain() {
               </TableRow>
               <TableRow>
                 {renderOptionTableHeaders(optionChainView, true)}
-                <TableHead className={cn("text-center px-1 min-w-[100px]", callHeaderBaseClass)}>Action</TableHead>
+                <TableHead className={cn("text-center px-2 min-w-[70px]", callHeaderBaseClass)}>Action</TableHead>
                 
                 <TableHead className="text-center font-bold bg-muted dark:bg-muted/50 w-[100px] sm:w-[120px] align-middle">Price</TableHead>
                 
-                <TableHead className={cn("text-center px-1 min-w-[100px]", putHeaderBaseClass)}>Action</TableHead>
+                <TableHead className={cn("text-center px-2 min-w-[70px]", putHeaderBaseClass)}>Action</TableHead>
                 {renderOptionTableHeaders(optionChainView, false)}
               </TableRow>
             </TableHeader>
@@ -318,8 +279,8 @@ export function OptionChain() {
                   {renderCells(entry.call, optionChainView, true)}
                   <TableCell className={cn("text-center align-middle px-1", callCellBaseClass)}>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1">
-                        <Button variant="outline" className="h-6 px-1.5 text-xs font-medium text-green-600 border-green-600 hover:bg-green-600/10 hover:text-green-700" onClick={() => handleAddToBasket('Call', 'Buy', entry.strikePrice, entry.call)}>B</Button>
-                        <Button variant="outline" className="h-6 px-1.5 text-xs font-medium text-red-600 border-red-600 hover:bg-red-600/10 hover:text-red-700" onClick={() => handleAddToBasket('Call', 'Sell', entry.strikePrice, entry.call)}>S</Button>
+                        <Button variant="outline" className="h-6 px-1.5 text-xs font-medium text-green-600 border-green-600 hover:bg-green-600/10 hover:text-green-700" onClick={() => handleSelectOptionForStrategy('Call', 'Buy', entry.strikePrice, entry.call)}>B</Button>
+                        <Button variant="outline" className="h-6 px-1.5 text-xs font-medium text-red-600 border-red-600 hover:bg-red-600/10 hover:text-red-700" onClick={() => handleSelectOptionForStrategy('Call', 'Sell', entry.strikePrice, entry.call)}>S</Button>
                     </div>
                   </TableCell>
 
@@ -329,8 +290,8 @@ export function OptionChain() {
 
                   <TableCell className={cn("text-center align-middle px-1", putCellBaseClass)}>
                      <div className="flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1">
-                        <Button variant="outline" className="h-6 px-1.5 text-xs font-medium text-green-600 border-green-600 hover:bg-green-600/10 hover:text-green-700" onClick={() => handleAddToBasket('Put', 'Buy', entry.strikePrice, entry.put)}>B</Button>
-                        <Button variant="outline" className="h-6 px-1.5 text-xs font-medium text-red-600 border-red-600 hover:bg-red-600/10 hover:text-red-700" onClick={() => handleAddToBasket('Put', 'Sell', entry.strikePrice, entry.put)}>S</Button>
+                        <Button variant="outline" className="h-6 px-1.5 text-xs font-medium text-green-600 border-green-600 hover:bg-green-600/10 hover:text-green-700" onClick={() => handleSelectOptionForStrategy('Put', 'Buy', entry.strikePrice, entry.put)}>B</Button>
+                        <Button variant="outline" className="h-6 px-1.5 text-xs font-medium text-red-600 border-red-600 hover:bg-red-600/10 hover:text-red-700" onClick={() => handleSelectOptionForStrategy('Put', 'Sell', entry.strikePrice, entry.put)}>S</Button>
                     </div>
                   </TableCell>
                   {renderCells(entry.put, optionChainView, false)}
@@ -345,40 +306,6 @@ export function OptionChain() {
           </div>
         )}
       </div>
-      {basketItems.length > 0 && (
-        <div className="mt-6 p-4 border-t">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-3 gap-2">
-                <h3 className="text-lg font-semibold text-primary flex items-center">
-                    <ShoppingBasket className="h-5 w-5 mr-2" />
-                    Option Basket ({basketItems.length})
-                </h3>
-                <div className="flex gap-2 flex-wrap">
-                    <Button variant="outline" size="sm" onClick={handleExecuteBasket} className="text-sm">
-                        <PlayCircle className="h-4 w-4 mr-1.5" /> Execute All
-                    </Button>
-                    <Button variant="destructive" size="sm" onClick={handleClearBasket} className="text-sm">
-                        <XCircle className="h-4 w-4 mr-1.5" /> Clear All
-                    </Button>
-                </div>
-            </div>
-            <div className="space-y-2 max-h-60 overflow-y-auto border rounded-md p-2 bg-background">
-                {basketItems.map((item) => (
-                <div key={item.id} className="flex items-center justify-between p-2 bg-muted/30 rounded-md text-sm hover:bg-muted/50">
-                    <div className="flex-grow overflow-hidden mr-2">
-                        <span className={`font-semibold ${item.action === 'Buy' ? 'text-green-600' : 'text-red-600'}`}>
-                            {item.action.toUpperCase()}{' '}
-                        </span>
-                        <span className="truncate">{item.underlyingSymbol} {item.expiryDate} {item.strikePrice} {item.optionType}</span>
-                        <span className="text-xs text-muted-foreground ml-2 whitespace-nowrap">@ {formatNumber(item.ltp, 2)}</span>
-                    </div>
-                    <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-destructive flex-shrink-0" onClick={() => handleRemoveFromBasket(item.id)}>
-                        <XCircle className="h-4 w-4" />
-                    </Button>
-                </div>
-                ))}
-            </div>
-        </div>
-    )}
     </div>
   );
 }
