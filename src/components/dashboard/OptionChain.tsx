@@ -21,9 +21,9 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { mockUnderlyings, mockOptionChains } from '@/lib/mockData/optionChainData';
-import type { OptionChainData, OptionData, OptionChainEntry, Underlying } from '@/types';
+import type { OptionChainData, OptionData, OptionChainEntry, Underlying, SelectedOptionLeg } from '@/types';
 import { cn } from '@/lib/utils';
-import { ArrowRightLeft, PlusCircle } from 'lucide-react';
+import { ArrowRightLeft, PlusCircle, ShoppingBasket, X, BarChartBig, Zap } from 'lucide-react'; // Added ShoppingBasket, X, BarChartBig, Zap
 import { useToast } from "@/hooks/use-toast";
 
 type OptionChainViewType = 'price' | 'volume_oi' | 'greeks';
@@ -124,6 +124,7 @@ export function OptionChain() {
   const [selectedExpiry, setSelectedExpiry] = useState<string>('');
   const [optionChainData, setOptionChainData] = useState<OptionChainData | null>(null);
   const [optionChainView, setOptionChainView] = useState<OptionChainViewType>('volume_oi');
+  const [selectedLegs, setSelectedLegs] = useState<SelectedOptionLeg[]>([]);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -144,6 +145,7 @@ export function OptionChain() {
       setSelectedExpiry('');
       setOptionChainData(null);
     }
+    setSelectedLegs([]); // Clear legs when underlying changes
   }, [selectedUnderlyingSymbol]);
 
   useEffect(() => {
@@ -155,6 +157,7 @@ export function OptionChain() {
         setOptionChainData(null);
       }
     }
+    setSelectedLegs([]); // Clear legs when expiry changes
   }, [selectedUnderlyingSymbol, selectedExpiry]);
   
   const selectedUnderlyingDetails = mockUnderlyings.find(u => u.symbol === selectedUnderlyingSymbol);
@@ -175,15 +178,59 @@ export function OptionChain() {
     strikePrice: number,
     optionData?: OptionData
   ) => {
-    if (!selectedUnderlyingDetails || !optionChainData || !optionData) {
+    if (!selectedUnderlyingDetails || !optionChainData || !optionData || !optionData.ltp) {
       toast({ title: "Error", description: "Option data not available to select for strategy.", variant: "destructive" });
       return;
     }
 
+    const legId = `${selectedUnderlyingSymbol}-${optionChainData.expiryDate}-${strikePrice}-${optionType}-${action}-${Date.now()}`;
+    const instrumentName = `${selectedUnderlyingSymbol} ${optionChainData.expiryDate} ${strikePrice} ${optionType.toUpperCase()}`;
+    
+    const newLeg: SelectedOptionLeg = {
+      id: legId,
+      underlyingSymbol: selectedUnderlyingSymbol,
+      instrumentName,
+      expiryDate: optionChainData.expiryDate,
+      strikePrice,
+      optionType,
+      action,
+      ltp: optionData.ltp,
+      quantity: 1, // Default to 1 lot for now
+    };
+
+    setSelectedLegs(prev => [...prev, newLeg]);
+
     toast({
-      title: "Option Selected for Strategy",
-      description: `${action} ${selectedUnderlyingSymbol} ${optionChainData.expiryDate} ${strikePrice} ${optionType} @ ${formatNumber(optionData.ltp, 2)} selected. This would be added to a strategy builder.`,
+      title: "Leg Added to Strategy",
+      description: `${action} ${instrumentName} @ ${formatNumber(optionData.ltp, 2)}`,
     });
+  };
+
+  const handleRemoveLeg = (legId: string) => {
+    setSelectedLegs(prev => prev.filter(leg => leg.id !== legId));
+    toast({ title: "Leg Removed", description: "Option leg removed from strategy."});
+  };
+
+  const handleClearStrategy = () => {
+    setSelectedLegs([]);
+    toast({ title: "Strategy Cleared", description: "All option legs removed."});
+  };
+
+  const handleAnalyzeStrategy = () => {
+    if (selectedLegs.length === 0) {
+        toast({ title: "No Legs Selected", description: "Please add option legs to analyze.", variant: "destructive"});
+        return;
+    }
+    toast({ title: "Analyze Strategy (Mock)", description: `Analyzing ${selectedLegs.length} leg(s). Payoff chart and greeks would appear here.`});
+  };
+  
+  const handleExecuteStrategy = () => {
+    if (selectedLegs.length === 0) {
+        toast({ title: "No Legs to Execute", description: "Please add option legs to your strategy.", variant: "destructive"});
+        return;
+    }
+    toast({ title: "Execute Strategy (Mock)", description: `Executing ${selectedLegs.length} leg(s). Orders would be placed.`});
+    setSelectedLegs([]); // Clear after mock execution
   };
 
 
@@ -256,12 +303,12 @@ export function OptionChain() {
       </div>
       <div className="overflow-x-auto"> 
         {optionChainData && optionChainData.data.length > 0 ? (
-          <Table className="min-w-[1300px] text-xs"> {/* Adjusted min-width for compactness */}
+          <Table className="min-w-[1300px] text-xs">
             <TableHeader>
               <TableRow>
-                <TableHead className="text-center bg-card" colSpan={7}>CALLS</TableHead> {/* 6 data + 1 action */}
+                <TableHead className="text-center" colSpan={7}>CALLS</TableHead> {/* 6 data + 1 action */}
                 <TableHead className="text-center w-[100px] sm:w-[120px] bg-muted dark:bg-muted/50 align-middle">Strike</TableHead>
-                <TableHead className="text-center bg-card" colSpan={7}>PUTS</TableHead> {/* 6 data + 1 action */}
+                <TableHead className="text-center" colSpan={7}>PUTS</TableHead> {/* 6 data + 1 action */}
               </TableRow>
               <TableRow>
                 {renderOptionTableHeaders(optionChainView, true)}
@@ -306,7 +353,44 @@ export function OptionChain() {
           </div>
         )}
       </div>
+      {selectedLegs.length > 0 && (
+        <div className="p-3 sm:p-4 border-t mt-4">
+          <h3 className="text-lg font-semibold mb-3 text-primary flex items-center">
+            <ShoppingBasket className="h-5 w-5 mr-2" />
+            Strategy Legs ({selectedLegs.length})
+          </h3>
+          <div className="max-h-60 overflow-y-auto space-y-2 pr-2">
+            {selectedLegs.map((leg) => (
+              <div key={leg.id} className="flex items-center justify-between p-2.5 rounded-md bg-muted/50 border">
+                <div>
+                  <p className="text-sm font-medium text-foreground">
+                    <span className={cn("font-bold", leg.action === 'Buy' ? 'text-green-600' : 'text-red-600')}>
+                      {leg.action.toUpperCase()} {leg.quantity} Lot(s)
+                    </span> - {leg.instrumentName}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    LTP: {formatNumber(leg.ltp, 2)}
+                  </p>
+                </div>
+                <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-destructive" onClick={() => handleRemoveLeg(leg.id)}>
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+            ))}
+          </div>
+          <div className="mt-4 flex flex-col sm:flex-row sm:justify-end sm:space-x-2 space-y-2 sm:space-y-0">
+            <Button variant="outline" size="sm" onClick={handleAnalyzeStrategy} className="text-sm">
+              <BarChartBig className="mr-2 h-4 w-4" /> Analyze Strategy (Mock)
+            </Button>
+            <Button variant="destructive" size="sm" onClick={handleClearStrategy} className="text-sm">
+              <X className="mr-2 h-4 w-4" /> Clear All
+            </Button>
+            <Button size="sm" onClick={handleExecuteStrategy} className="text-sm bg-green-600 hover:bg-green-700 text-white">
+              <Zap className="mr-2 h-4 w-4" /> Execute Strategy (Mock)
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
-

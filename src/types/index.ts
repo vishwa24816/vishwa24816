@@ -191,3 +191,15 @@ export interface FoBasket {
   createdDate: string; 
   pnl?: number; 
 }
+
+export interface SelectedOptionLeg {
+  id: string; 
+  underlyingSymbol: string;
+  instrumentName: string; // e.g. NIFTY 25 JUL 24 21500 CE
+  expiryDate: string;
+  strikePrice: number;
+  optionType: 'Call' | 'Put';
+  action: 'Buy' | 'Sell';
+  ltp: number;
+  quantity: number; // Number of lots
+}
