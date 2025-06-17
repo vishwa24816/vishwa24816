@@ -15,6 +15,7 @@ import { FoBasketSection } from '@/components/dashboard/FoBasketSection';
 import { CryptoFuturesSection } from '@/components/dashboard/CryptoFuturesSection';
 import { OptionChain } from '@/components/dashboard/OptionChain';
 import { ReadymadeStrategiesSection } from '@/components/dashboard/ReadymadeStrategiesSection';
+import { StrategyBuilder } from '@/components/dashboard/StrategyBuilder';
 import { PackageOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -160,7 +161,7 @@ export default function DashboardPage() {
     Portfolio: ["Holdings", "Positions", "Portfolio Watchlist"],
     Stocks: ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
     Futures: ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)], 
-    Options: ["Custom", "Readymade"], 
+    Options: ["Custom", "Strategy Builder", "Readymade"], 
     Crypto: ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)], 
     "Mutual funds": ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
     Bonds: ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
@@ -219,8 +220,7 @@ export default function DashboardPage() {
   } else if (activePrimaryItem === "Options") { 
     newsForView = mockNewsArticles; 
   } else if (isUserPortfolioWatchlistView) {
-     // For the user's specific portfolio watchlist, we can show all news or filter by portfolio items
-    newsForView = getRelevantNewsForHoldings(mockPortfolioHoldings, mockNewsArticles); // Or mockNewsArticles for general news
+    newsForView = getRelevantNewsForHoldings(mockPortfolioHoldings, mockNewsArticles); 
   } else if (isFuturesTopWatchlistView) {
     const combinedFutures = [...mockIndexFuturesForWatchlist, ...mockStockFuturesForWatchlist];
     newsForView = getRelevantNewsForWatchlistItems(combinedFutures, mockNewsArticles);
@@ -296,17 +296,22 @@ export default function DashboardPage() {
               <NewsSection articles={newsForView} />
             </div>
           ) : activePrimaryItem === "Options" ? (
-            activeSecondaryItem === "Custom" ? (
-              <div className="space-y-8">
-                <OptionChain />
-                <NewsSection articles={newsForView} />
-              </div>
-            ) : activeSecondaryItem === "Readymade" ? (
-              <div className="space-y-8">
-                <ReadymadeStrategiesSection />
-                <NewsSection articles={newsForView} />
-              </div>
-            ) : null
+              activeSecondaryItem === "Custom" ? (
+                <div className="space-y-8">
+                  <OptionChain />
+                  <NewsSection articles={newsForView} />
+                </div>
+              ) : activeSecondaryItem === "Strategy Builder" ? (
+                <div className="space-y-8">
+                  <StrategyBuilder />
+                  <NewsSection articles={newsForView} />
+                </div>
+              ) : activeSecondaryItem === "Readymade" ? (
+                <div className="space-y-8">
+                  <ReadymadeStrategiesSection />
+                  <NewsSection articles={newsForView} />
+                </div>
+              ) : null
           ) : isFuturesTopWatchlistView ? (
             <div className="space-y-8">
               <WatchlistSection
@@ -408,3 +413,5 @@ export default function DashboardPage() {
     </ProtectedRoute>
   );
 }
+
+    
