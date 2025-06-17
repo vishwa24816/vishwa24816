@@ -15,21 +15,9 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Minus, Plus, TrendingUp, TrendingDown, MinusSquare, Shuffle } from 'lucide-react'; // Added more icons
+import { Minus, Plus, TrendingUp, TrendingDown, MinusSquare, Shuffle } from 'lucide-react'; 
 import { cn } from '@/lib/utils';
-import { mockUnderlyings, mockOptionChains } from '@/lib/mockData/optionChainData'; // Assuming these exist
-
-const predefinedStrategies = [
-  { name: 'Long Call', type: 'Bullish', icon: TrendingUp, hint: "payoff graph" },
-  { name: 'Short Put', type: 'Bullish', icon: TrendingUp, hint: "payoff graph" },
-  { name: 'Bull Call Spread', type: 'Bullish', icon: TrendingUp, hint: "payoff graph" },
-  { name: 'Long Put', type: 'Bearish', icon: TrendingDown, hint: "payoff graph" },
-  { name: 'Short Call', type: 'Bearish', icon: TrendingDown, hint: "payoff graph" },
-  { name: 'Bear Put Spread', type: 'Bearish', icon: TrendingDown, hint: "payoff graph" },
-  { name: 'Long Straddle', type: 'Non-Directional', icon: Shuffle, hint: "payoff graph" },
-  { name: 'Short Strangle', type: 'Non-Directional', icon: MinusSquare, hint: "payoff graph" },
-  { name: 'Iron Condor', type: 'Non-Directional', icon: MinusSquare, hint: "payoff graph" },
-];
+import { mockUnderlyings } from '@/lib/mockData/optionChainData'; 
 
 interface StrategyLeg {
   id: string;
@@ -43,7 +31,7 @@ interface StrategyLeg {
 
 export function StrategyBuilder() {
   const [selectedUnderlying, setSelectedUnderlying] = useState(mockUnderlyings[0].symbol);
-  const [payoffDate, setPayoffDate] = useState("17-06-2025"); // Mock data
+  const [payoffDate, setPayoffDate] = useState("17-06-2025"); 
   const [spotPrice, setSpotPrice] = useState(24841.5);
   const [futuresPrice, setFuturesPrice] = useState(24859);
   const [lotSize, setLotSize] = useState(75);
@@ -51,7 +39,6 @@ export function StrategyBuilder() {
   const [ivPercentile, setIvPercentile] = useState(82.8);
   const [dte, setDte] = useState(0);
 
-  const [activeOutlook, setActiveOutlook] = useState<'Bullish' | 'Bearish' | 'Non-Directional'>('Bullish');
   const [selectedSegment, setSelectedSegment] = useState('Futures');
   const [selectedExpiry, setSelectedExpiry] = useState('26JUN2025');
   const [buySellAction, setBuySellAction] = useState<'Buy' | 'Sell'>('Buy');
@@ -62,12 +49,12 @@ export function StrategyBuilder() {
   const handleAddLeg = () => {
     const newLeg: StrategyLeg = {
       id: `leg-${Date.now()}`,
-      type: selectedSegment === 'Futures' ? 'Future' : 'Call', // Simplified
+      type: selectedSegment === 'Futures' ? 'Future' : 'Call', 
       action: buySellAction,
       expiry: selectedExpiry,
       quantity: lotQuantity,
-      price: selectedSegment === 'Futures' ? futuresPrice : spotPrice, // Placeholder price
-      strike: selectedSegment === 'Options' ? spotPrice : undefined, // Placeholder strike
+      price: selectedSegment === 'Futures' ? futuresPrice : spotPrice, 
+      strike: selectedSegment === 'Options' ? spotPrice : undefined, 
     };
     setStrategyLegs(prev => [...prev, newLeg]);
   }
@@ -76,13 +63,11 @@ export function StrategyBuilder() {
     setStrategyLegs(prev => prev.filter(leg => leg.id !== id));
   }
 
-  const filteredStrategies = predefinedStrategies.filter(s => s.type === activeOutlook);
-
   return (
     <div className="space-y-6 p-1">
       <Card>
         <CardContent className="p-4 space-y-4">
-          {/* Top Section: Underlying and Info Badges */}
+          
           <div>
             <Label htmlFor="underlying-select" className="text-sm font-medium">Select Index/Stock</Label>
             <Select value={selectedUnderlying} onValueChange={setSelectedUnderlying}>
@@ -98,13 +83,13 @@ export function StrategyBuilder() {
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2 text-xs">
-            <InfoBadge label="Spot Price" value={spotPrice.toFixed(1)} color="bg-cyan-100 text-cyan-700" />
-            <InfoBadge label="Futures Price" value={futuresPrice} color="bg-orange-100 text-orange-700" />
-            <InfoBadge label="Lot Size" value={lotSize} color="bg-lime-100 text-lime-700" />
-            <InfoBadge label="IV" value={iv.toFixed(2)} color="bg-fuchsia-100 text-fuchsia-700" />
-            <InfoBadge label="IV Percentile" value={ivPercentile.toFixed(1)} color="bg-purple-100 text-purple-700" />
-            <Button variant="outline" size="sm" className="text-xs h-auto py-1.5 px-2 border-sky-500 text-sky-600 hover:bg-sky-50">NIFTY IV Chart</Button>
-            <InfoBadge label="DTE" value={dte} color="bg-pink-100 text-pink-700" />
+            <InfoBadge label="Spot Price" value={spotPrice.toFixed(1)} color="bg-cyan-100 text-cyan-700 dark:bg-cyan-700/30 dark:text-cyan-300" />
+            <InfoBadge label="Futures Price" value={futuresPrice} color="bg-orange-100 text-orange-700 dark:bg-orange-700/30 dark:text-orange-300" />
+            <InfoBadge label="Lot Size" value={lotSize} color="bg-lime-100 text-lime-700 dark:bg-lime-700/30 dark:text-lime-300" />
+            <InfoBadge label="IV" value={iv.toFixed(2)} color="bg-fuchsia-100 text-fuchsia-700 dark:bg-fuchsia-700/30 dark:text-fuchsia-300" />
+            <InfoBadge label="IV Percentile" value={ivPercentile.toFixed(1)} color="bg-purple-100 text-purple-700 dark:bg-purple-700/30 dark:text-purple-300" />
+            <Button variant="outline" size="sm" className="text-xs h-auto py-1.5 px-2 border-sky-500 text-sky-600 hover:bg-sky-50 dark:border-sky-400 dark:text-sky-300 dark:hover:bg-sky-700/30">NIFTY IV Chart</Button>
+            <InfoBadge label="DTE" value={dte} color="bg-pink-100 text-pink-700 dark:bg-pink-700/30 dark:text-pink-300" />
           </div>
 
           <div>
@@ -114,50 +99,9 @@ export function StrategyBuilder() {
         </CardContent>
       </Card>
       
-      {/* Middle Section: Outlook and Predefined Strategies */}
-       <Card>
-        <CardContent className="p-4">
-          <div className="flex flex-col md:flex-row gap-4">
-            <div className="flex md:flex-col space-x-2 md:space-x-0 md:space-y-2">
-              {(['Bullish', 'Bearish', 'Non-Directional'] as const).map(outlook => (
-                <Button
-                  key={outlook}
-                  variant={activeOutlook === outlook ? 'default' : 'outline'}
-                  onClick={() => setActiveOutlook(outlook)}
-                  className={cn(
-                    "w-full md:w-auto justify-start text-left px-4 py-2 text-sm",
-                    activeOutlook === outlook && outlook === 'Bullish' && 'bg-green-500 hover:bg-green-600 text-white',
-                    activeOutlook === outlook && outlook === 'Bearish' && 'bg-red-500 hover:bg-red-600 text-white',
-                    activeOutlook === outlook && outlook === 'Non-Directional' && 'bg-gray-500 hover:bg-gray-600 text-white',
-                    activeOutlook !== outlook && 'border-gray-300 text-gray-600'
-                  )}
-                >
-                  {outlook.toUpperCase()}
-                </Button>
-              ))}
-            </div>
+      
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 flex-1">
-              {filteredStrategies.map(strategy => (
-                <Card key={strategy.name} className="shadow hover:shadow-md cursor-pointer" onClick={() => alert(`${strategy.name} selected (mock)`)}>
-                  <CardContent className="p-2 text-center space-y-1">
-                    <div className="h-16 bg-muted rounded flex items-center justify-center" data-ai-hint={strategy.hint}>
-                       <strategy.icon className={cn("w-8 h-8", 
-                        strategy.type === 'Bullish' && 'text-green-500',
-                        strategy.type === 'Bearish' && 'text-red-500',
-                        strategy.type === 'Non-Directional' && 'text-gray-500'
-                       )} />
-                    </div>
-                    <p className="text-xs font-medium">{strategy.name}</p>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Bottom Section: Segment, Expiry, Buy/Sell, Lot Qty */}
+      
       <Card>
         <CardHeader>
           <CardTitle className="text-lg">Build Your Strategy</CardTitle>
@@ -183,7 +127,7 @@ export function StrategyBuilder() {
                   <SelectValue placeholder="Select Expiry" />
                 </SelectTrigger>
                 <SelectContent>
-                  {/* Populate with actual expiries based on underlying and segment */}
+                  
                   <SelectItem value="26JUN2025">26JUN2025</SelectItem>
                   <SelectItem value="31JUL2025">31JUL2025</SelectItem>
                 </SelectContent>
@@ -214,7 +158,7 @@ export function StrategyBuilder() {
         </CardContent>
       </Card>
 
-      {/* Strategy Legs Display */}
+      
       {strategyLegs.length > 0 && (
         <Card>
           <CardHeader>
@@ -226,7 +170,7 @@ export function StrategyBuilder() {
                 {strategyLegs.map(leg => (
                   <li key={leg.id} className="flex justify-between items-center p-2 border rounded-md">
                     <div>
-                      <span className={cn("font-semibold", leg.action === "Buy" ? "text-green-600" : "text-red-600")}>{leg.action} {leg.quantity} Lot(s)</span> -
+                      <span className={cn("font-semibold", leg.action === "Buy" ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400")}>{leg.action} {leg.quantity} Lot(s)</span> -
                       <span> {leg.type}</span>
                       {leg.strike && <span> @ Strike {leg.strike}</span>}
                       <span> (Expiry: {leg.expiry})</span>
@@ -244,7 +188,7 @@ export function StrategyBuilder() {
         </Card>
       )}
 
-      {/* Payoff Chart Placeholder */}
+      
       <Card>
         <CardHeader>
           <CardTitle className="text-lg">Payoff Chart</CardTitle>
@@ -259,11 +203,9 @@ export function StrategyBuilder() {
   );
 }
 
-const InfoBadge: React.FC<{ label: string; value: string | number; color?: string }> = ({ label, value, color = "bg-gray-100 text-gray-700" }) => (
-  <div className={cn("p-2 rounded-md text-center", color)}>
+const InfoBadge: React.FC<{ label: string; value: string | number; color?: string }> = ({ label, value, color }) => (
+  <div className={cn("p-2 rounded-md text-center", color || "bg-gray-100 text-gray-700 dark:bg-gray-700/30 dark:text-gray-300")}>
     <p className="text-xs font-medium">{label}</p>
     <p className="font-semibold">{value}</p>
   </div>
 );
-
-    
