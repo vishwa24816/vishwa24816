@@ -34,12 +34,8 @@ export default function CommunityPage() {
         <AppHeader />
 
         <main className="flex-grow flex flex-col overflow-hidden">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-4">
-            <h1 className="text-2xl sm:text-3xl font-bold font-headline">Community</h1>
-          </div>
-
           <Tabs defaultValue="hot" value={activeTab} onValueChange={setActiveTab} className="flex flex-col flex-grow overflow-hidden">
-            <div className="border-b bg-background sticky top-20 z-30"> {/* AppHeader height is h-20 */}
+            <div className="border-b bg-background"> {/* Removed sticky positioning */}
               <TabsList className="container mx-auto px-2 sm:px-4 lg:px-6 flex overflow-x-auto whitespace-nowrap no-scrollbar rounded-none h-auto p-0 border-none bg-transparent">
                 {communityTabs.map((tab) => (
                   <TabsTrigger
