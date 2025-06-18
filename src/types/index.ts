@@ -203,3 +203,23 @@ export interface SelectedOptionLeg {
   ltp: number;
   quantity: number; // Number of lots
 }
+
+export interface CommunityPost {
+  id: string;
+  user: {
+    name: string;
+    avatarUrl?: string;
+    username: string; 
+  };
+  timestamp: string; 
+  content: string; 
+  imageUrl?: string; 
+  imageAiHint?: string;
+  stockSymbol?: string; 
+  stockChangePercent?: number;
+  tags?: string[]; 
+  source?: string; 
+  likes: number;
+  comments: number;
+  reposts: number;
+}

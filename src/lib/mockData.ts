@@ -16,4 +16,5 @@ export * from './mockData/futuresWatchlistData'; // Exports mockIndexFuturesForW
 export * from './mockData/optionsWatchlistData';
 export * from './mockData/optionChainData';
 export * from './mockData/cryptoFuturesWatchlist';
-export * from './mockData/foBaskets'; // Added new export
+export * from './mockData/foBaskets'; 
+export * from './mockData/communityPosts';
