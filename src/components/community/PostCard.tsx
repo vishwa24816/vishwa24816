@@ -6,17 +6,40 @@ import type { CommunityPost } from '@/types';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Heart, MessageCircle, Repeat, Share2, MoreHorizontal } from 'lucide-react';
+import { Heart, MessageCircle, Repeat, Share2, MoreHorizontal, TrendingUp, TrendingDown, MinusCircle, PlusCircle } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { cn } from '@/lib/utils';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+
 
 interface PostCardProps {
   post: CommunityPost;
 }
 
+const getRecommendationBadgeVariant = (type?: CommunityPost['recommendationType']) => {
+  switch (type) {
+    case 'Buy': return 'bg-green-500 hover:bg-green-600 text-white';
+    case 'Accumulate': return 'bg-green-400 hover:bg-green-500 text-white';
+    case 'Hold': return 'bg-yellow-500 hover:bg-yellow-600 text-black';
+    case 'Sell': return 'bg-red-500 hover:bg-red-600 text-white';
+    default: return 'secondary';
+  }
+};
+
+const RecommendationIcon = ({ type }: { type?: CommunityPost['recommendationType'] }) => {
+  switch (type) {
+    case 'Buy': return <TrendingUp className="h-4 w-4 mr-1.5" />;
+    case 'Accumulate': return <PlusCircle className="h-4 w-4 mr-1.5" />;
+    case 'Hold': return <MinusCircle className="h-4 w-4 mr-1.5" />;
+    case 'Sell': return <TrendingDown className="h-4 w-4 mr-1.5" />;
+    default: return null;
+  }
+};
+
 export function PostCard({ post }: PostCardProps) {
   const timeAgo = formatDistanceToNow(new Date(post.timestamp), { addSuffix: true });
   const userInitial = post.user.name?.[0].toUpperCase() || post.user.username?.[0].toUpperCase() || 'U';
+  const isResearchPost = post.researchFirm || post.recommendationType;
 
   return (
     <div className="bg-card border-b border-border p-3 sm:p-4 hover:bg-muted/50 transition-colors duration-150">
@@ -27,16 +50,30 @@ export function PostCard({ post }: PostCardProps) {
         </Avatar>
         <div className="flex-1 space-y-1.5">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-1.5 text-sm">
+            <div className="flex items-center space-x-1.5 text-sm flex-wrap">
               <span className="font-semibold text-foreground hover:underline cursor-pointer">{post.user.name}</span>
               <span className="text-muted-foreground">@{post.user.username}</span>
-              <span className="text-muted-foreground/80">·</span>
+              <span className="text-muted-foreground/80 hidden sm:inline">·</span>
               <span className="text-muted-foreground hover:underline cursor-pointer" title={new Date(post.timestamp).toLocaleString()}>{timeAgo}</span>
+              {post.researchFirm && <span className="text-xs text-muted-foreground italic ml-1">via {post.researchFirm}</span>}
             </div>
             <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:bg-primary/10 hover:text-primary rounded-full">
               <MoreHorizontal className="h-5 w-5" />
             </Button>
           </div>
+
+          {isResearchPost && post.recommendationType && (
+            <div className="mt-2 mb-1">
+              <Badge variant="outline" className={cn("text-sm py-1 px-3 border-2", getRecommendationBadgeVariant(post.recommendationType))}>
+                <RecommendationIcon type={post.recommendationType} />
+                {post.recommendationType.toUpperCase()}
+                {post.stockSymbol && <span className="ml-1.5 font-normal">({post.stockSymbol})</span>}
+              </Badge>
+              {post.targetPrice && (
+                <span className="ml-3 text-sm text-muted-foreground">Target: <span className="font-semibold text-foreground">₹{post.targetPrice.toFixed(2)}</span></span>
+              )}
+            </div>
+          )}
 
           <p className="text-foreground text-sm whitespace-pre-wrap leading-relaxed">{post.content}</p>
 
@@ -50,7 +87,7 @@ export function PostCard({ post }: PostCardProps) {
                 className="object-cover w-full h-full"
                 data-ai-hint={post.imageAiHint || "community post image"}
               />
-              {post.stockSymbol && post.stockChangePercent !== undefined && (
+              {post.stockSymbol && post.stockChangePercent !== undefined && !isResearchPost && ( // Only show this if not a research post with its own symbol display
                 <div className="absolute bottom-2 left-2 bg-black/60 backdrop-blur-sm text-white px-2.5 py-1 rounded-md text-xs font-medium shadow-md">
                   {post.stockSymbol}: <span className={cn(post.stockChangePercent >= 0 ? "text-green-400" : "text-red-400")}>
                     {post.stockChangePercent >= 0 ? '+' : ''}{post.stockChangePercent.toFixed(2)}%

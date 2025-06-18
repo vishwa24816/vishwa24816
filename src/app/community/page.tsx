@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { AppHeader } from '@/components/shared/AppHeader';
 import { ProtectedRoute } from '@/components/shared/ProtectedRoute';
 import { PostCard } from '@/components/community/PostCard';
@@ -23,10 +23,15 @@ const communityTabs = [
 
 export default function CommunityPage() {
   const [activeTab, setActiveTab] = useState("hot");
-  const [posts, setPosts] = useState<CommunityPost[]>(mockCommunityPosts); // Initialize with mock posts
+  // const [posts, setPosts] = useState<CommunityPost[]>(mockCommunityPosts); // Initialize with mock posts
 
-  // In a real app, posts would be fetched based on the activeTab
-  const displayedPosts = posts;
+  const displayedPosts = useMemo(() => {
+    if (activeTab === 'research') {
+      return mockCommunityPosts.filter(post => post.researchFirm || post.recommendationType);
+    }
+    // For other tabs, return all posts (or implement specific filtering later)
+    return mockCommunityPosts;
+  }, [activeTab]);
 
   return (
     <ProtectedRoute>
@@ -35,7 +40,7 @@ export default function CommunityPage() {
 
         <main className="flex-grow flex flex-col overflow-hidden">
           <Tabs defaultValue="hot" value={activeTab} onValueChange={setActiveTab} className="flex flex-col flex-grow overflow-hidden">
-            <div className="border-b bg-background"> {/* Removed sticky positioning */}
+            <div className="border-b bg-background">
               <TabsList className="container mx-auto px-2 sm:px-4 lg:px-6 flex overflow-x-auto whitespace-nowrap no-scrollbar rounded-none h-auto p-0 border-none bg-transparent">
                 {communityTabs.map((tab) => (
                   <TabsTrigger
@@ -47,9 +52,6 @@ export default function CommunityPage() {
                     )}
                   >
                     {tab.label}
-                    {tab.value === 'new' && <span className="ml-1.5 h-2 w-2 rounded-full bg-primary animate-pulse"></span>}
-                    {tab.value === 'foryou' && <span className="ml-1.5 h-2 w-2 rounded-full bg-primary animate-pulse"></span>}
-                    {tab.value === 'research' && <span className="ml-1.5 h-2 w-2 rounded-full bg-primary animate-pulse"></span>}
                   </TabsTrigger>
                 ))}
               </TabsList>
@@ -63,7 +65,11 @@ export default function CommunityPage() {
                           displayedPosts.map(post => <PostCard key={post.id} post={post} />)
                       ) : (
                           <div className="text-center py-10 text-muted-foreground">
-                              <p>No posts in {tab.label} yet.</p>
+                              <p>
+                                {activeTab === 'research' 
+                                  ? "No research reports or recommendations available yet." 
+                                  : `No posts in ${tab.label} yet.`}
+                              </p>
                           </div>
                       )}
                     </TabsContent>

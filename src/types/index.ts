@@ -222,4 +222,8 @@ export interface CommunityPost {
   likes: number;
   comments: number;
   reposts: number;
+  recommendationType?: 'Buy' | 'Sell' | 'Hold' | 'Accumulate';
+  targetPrice?: number;
+  researchFirm?: string;
+  analystName?: string;
 }
