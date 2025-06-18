@@ -4,7 +4,7 @@
 import Image from 'next/image';
 import type { CommunityPost } from '@/types';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Heart, MessageCircle, Repeat, Share2, MoreHorizontal } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
@@ -92,4 +92,3 @@ export function PostCard({ post }: PostCardProps) {
     </div>
   );
 }
-
