@@ -1,0 +1,53 @@
+
+import type { PriceAlert } from '@/types';
+
+export const mockPriceAlerts: PriceAlert[] = [
+  {
+    id: 'alert1',
+    instrumentName: 'Infosys Ltd.',
+    symbol: 'INFY',
+    targetPrice: 1400.00,
+    condition: 'Above',
+    currentPrice: 1350.00,
+    status: 'Active',
+    createdDate: '2024-01-01',
+    exchange: 'NSE',
+    assetType: 'Stock',
+    notes: 'Check for breakout potential.',
+  },
+  {
+    id: 'alert2',
+    instrumentName: 'NIFTY 50 Index',
+    symbol: 'NIFTY',
+    targetPrice: 21000.00,
+    condition: 'Below',
+    currentPrice: 21500.75,
+    status: 'Active',
+    createdDate: '2023-12-15',
+    exchange: 'NSE',
+    assetType: 'Index',
+  },
+  {
+    id: 'alert3',
+    instrumentName: 'Bitcoin',
+    symbol: 'BTC',
+    targetPrice: 30000.00,
+    condition: 'Equals',
+    currentPrice: 30500.00,
+    status: 'Triggered',
+    createdDate: '2023-11-20',
+    exchange: 'Crypto',
+    assetType: 'Crypto',
+  },
+  {
+    id: 'alert4',
+    instrumentName: 'BANKNIFTY FEB FUT',
+    symbol: 'BANKNIFTYFEBFUT',
+    targetPrice: 48000.00,
+    condition: 'Above',
+    status: 'Cancelled',
+    createdDate: '2023-10-10',
+    exchange: 'NFO',
+    assetType: 'Future',
+  },
+];

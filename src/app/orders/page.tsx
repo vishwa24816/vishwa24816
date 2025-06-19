@@ -8,9 +8,17 @@ import { ProtectedRoute } from '@/components/shared/ProtectedRoute';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Search, SlidersHorizontal } from 'lucide-react';
+import { OpenPositionsDisplay } from '@/components/orders/OpenPositionsDisplay';
+import { GttOrdersDisplay } from '@/components/orders/GttOrdersDisplay';
+import { BondBidsDisplay } from '@/components/orders/BondBidsDisplay';
+import { BasketsDisplay } from '@/components/orders/BasketsDisplay';
+import { SipsDisplay } from '@/components/orders/SipsDisplay';
+import { AlertsDisplay } from '@/components/orders/AlertsDisplay';
+import { mockGttOrders, mockBondBids, mockFoBaskets, mockSips, mockPriceAlerts } from '@/lib/mockData';
+import { mockPortfolioHoldings, mockIntradayPositions, mockFoPositions, mockCryptoFutures } from '@/lib/mockData'; // For Open tab
 
 const orderTabs = [
-  { value: "executed", label: "Open" }, // Was "Executed", now first and labeled "Open"
+  { value: "executed", label: "Open" }, // Value "executed" might mean orders that ARE executed leading to open positions
   { value: "gtt", label: "GTT" },
   { value: "bids", label: "Bids" },
   { value: "baskets", label: "Baskets" },
@@ -19,27 +27,28 @@ const orderTabs = [
 ];
 
 export default function OrdersPage() {
-  const [activeTab, setActiveTab] = useState("executed"); // Default to 'executed'
+  const [activeTab, setActiveTab] = useState("executed");
 
-  const NoOrdersContent = ({ currentTabValue, tabDisplayLabel }: { currentTabValue: string, tabDisplayLabel: string }) => (
+  const hasOpenPositions =
+    mockPortfolioHoldings.some(h => h.type === 'Stock' || h.type === 'ETF' || h.type === 'Crypto') ||
+    mockIntradayPositions.length > 0 ||
+    mockFoPositions.length > 0 ||
+    mockCryptoFutures.length > 0;
+
+  const NoDataContent = ({ message }: { message: string }) => (
     <div className="flex flex-col items-center justify-center text-center py-16 flex-grow">
       <Image
         src="https://placehold.co/200x150.png"
-        alt={`No ${tabDisplayLabel.toLowerCase()} orders`}
+        alt="No data illustration"
         width={200}
         height={150}
         data-ai-hint="documents order papers"
         className="mb-8 opacity-75"
       />
       <h2 className="text-xl font-semibold text-foreground mb-2">
-        {/* Simplified logic as original 'open' (pending) tab is removed */}
-        {`No ${tabDisplayLabel.toLowerCase()} orders here`}
+        Nothing Here Yet
       </h2>
-      <p className="text-muted-foreground">
-        {/* Simplified logic */}
-        {currentTabValue === 'executed' ? 'Executed orders will appear here.' : `Orders for ${tabDisplayLabel.toLowerCase()} will appear here.`}
-        {currentTabValue === 'executed' && ' You can also place an order from your watchlist.'}
-      </p>
+      <p className="text-muted-foreground">{message}</p>
     </div>
   );
 
@@ -48,7 +57,7 @@ export default function OrdersPage() {
       <div className="flex flex-col min-h-screen">
         <AppHeader />
         <main className="flex-grow flex flex-col">
-          <Tabs defaultValue="executed" value={activeTab} onValueChange={setActiveTab} className="flex flex-col flex-grow"> {/* Default to 'executed' */}
+          <Tabs defaultValue="executed" value={activeTab} onValueChange={setActiveTab} className="flex flex-col flex-grow">
             <div className="bg-background border-b">
               <TabsList className="container mx-auto px-4 sm:px-6 lg:px-8 flex overflow-x-auto whitespace-nowrap no-scrollbar rounded-none h-auto p-0 border-none bg-transparent">
                 {orderTabs.map((tab) => (
@@ -78,12 +87,25 @@ export default function OrdersPage() {
                 </div>
             </div>
 
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 flex-grow flex flex-col">
-              {orderTabs.map((tab) => (
-                <TabsContent key={tab.value} value={tab.value} className="flex-grow flex flex-col mt-0 data-[state=inactive]:hidden">
-                  <NoOrdersContent currentTabValue={tab.value} tabDisplayLabel={tab.label} />
-                </TabsContent>
-              ))}
+            <div className="container mx-auto px-0 sm:px-2 md:px-4 py-4 flex-grow flex flex-col">
+              <TabsContent value="executed" className="flex-grow flex flex-col mt-0 data-[state=inactive]:hidden">
+                {hasOpenPositions ? <OpenPositionsDisplay /> : <NoDataContent message="No open positions or holdings found." />}
+              </TabsContent>
+              <TabsContent value="gtt" className="flex-grow flex flex-col mt-0 data-[state=inactive]:hidden">
+                {mockGttOrders.length > 0 ? <GttOrdersDisplay /> : <NoDataContent message="No GTT orders found. You can place GTT orders from stock/future detail pages." />}
+              </TabsContent>
+              <TabsContent value="bids" className="flex-grow flex flex-col mt-0 data-[state=inactive]:hidden">
+                {mockBondBids.length > 0 ? <BondBidsDisplay /> : <NoDataContent message="No bond bids found. Explore bonds and place bids." />}
+              </TabsContent>
+              <TabsContent value="baskets" className="flex-grow flex flex-col mt-0 data-[state=inactive]:hidden">
+                {mockFoBaskets.length > 0 ? <BasketsDisplay /> : <NoDataContent message="No basket orders found. Create baskets from the F&O section." />}
+              </TabsContent>
+              <TabsContent value="sips" className="flex-grow flex flex-col mt-0 data-[state=inactive]:hidden">
+                {mockSips.length > 0 ? <SipsDisplay /> : <NoDataContent message="No active or paused SIPs found. Start an SIP in stocks or mutual funds." />}
+              </TabsContent>
+              <TabsContent value="alerts" className="flex-grow flex flex-col mt-0 data-[state=inactive]:hidden">
+                {mockPriceAlerts.length > 0 ? <AlertsDisplay /> : <NoDataContent message="No price alerts set. Create alerts for your favorite instruments." />}
+              </TabsContent>
             </div>
           </Tabs>
         </main>

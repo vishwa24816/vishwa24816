@@ -18,18 +18,18 @@ export interface Stock {
   sector?: string;
   lowerCircuit?: number;
   upperCircuit?: number;
-  lotSize?: number; 
-  marginFactor?: number; 
-  availableExpiries?: string[]; 
+  lotSize?: number;
+  marginFactor?: number;
+  availableExpiries?: string[];
   fundamentals?: {
-    marketCap: string; 
+    marketCap: string;
     peRatioTTM?: number;
     pbRatio?: number;
     industryPe?: number;
     debtToEquity?: number;
-    roe?: number; 
+    roe?: number;
     epsTTM?: number;
-    divYield?: number; 
+    divYield?: number;
     bookValue?: number;
     faceValue?: number;
   };
@@ -40,18 +40,18 @@ export interface Stock {
   };
   aboutCompany?: string;
   shareholdingPattern?: Array<{
-    period: string; 
+    period: string;
     data: Array<{
-      category: string; 
+      category: string;
       percentage: number;
     }>;
   }>;
   topMutualFundsInvested?: Array<{
     id: string;
     name: string;
-    schemeType?: string; 
+    schemeType?: string;
     nav?: number;
-    assetValue?: string; 
+    assetValue?: string;
   }>;
   similarStocks?: Array<{
     id: string;
@@ -92,12 +92,12 @@ export interface PortfolioHolding {
   type: 'Stock' | 'Mutual Fund' | 'Crypto' | 'Bond' | 'ETF';
   quantity: number;
   avgCostPrice: number;
-  ltp: number; 
+  ltp: number;
   currentValue: number;
   profitAndLoss: number;
   profitAndLossPercent: number;
-  dayChangeAbsolute: number; 
-  dayChangePercent: number; 
+  dayChangeAbsolute: number;
+  dayChangePercent: number;
 }
 
 export interface IntradayPosition {
@@ -114,29 +114,29 @@ export interface IntradayPosition {
 
 export interface FoPosition {
   id: string;
-  instrumentName: string; 
-  optionType: 'CE' | 'PE' | 'FUT'; 
+  instrumentName: string;
+  optionType: 'CE' | 'PE' | 'FUT';
   transactionType: 'BUY' | 'SELL';
   lots: number;
   quantityPerLot: number;
-  avgPrice: number; 
+  avgPrice: number;
   ltp: number;
   pAndL: number;
   pAndLPercent: number;
-  expiryDate: string; 
+  expiryDate: string;
 }
 
 export interface CryptoFuturePosition {
   id: string;
-  symbol: string; 
+  symbol: string;
   positionSide: 'LONG' | 'SHORT';
-  quantity: number; 
+  quantity: number;
   entryPrice: number;
-  markPrice: number; 
+  markPrice: number;
   liquidationPrice?: number;
-  unrealizedPnL: number; 
-  margin: number; 
-  leverage: number; 
+  unrealizedPnL: number;
+  margin: number;
+  leverage: number;
 }
 
 export interface ChatMessage {
@@ -150,7 +150,7 @@ export interface OptionData {
   oi: number;
   chngInOI: number;
   volume: number;
-  iv?: number; 
+  iv?: number;
   ltp: number;
   netChng: number;
   bidQty?: number;
@@ -188,12 +188,12 @@ export interface FoBasket {
   status: 'Active' | 'Pending Execution' | 'Executed' | 'Cancelled' | 'Archived';
   requiredMargin: number;
   instrumentsCount: number;
-  createdDate: string; 
-  pnl?: number; 
+  createdDate: string;
+  pnl?: number;
 }
 
 export interface SelectedOptionLeg {
-  id: string; 
+  id: string;
   underlyingSymbol: string;
   instrumentName: string; // e.g. NIFTY 25 JUL 24 21500 CE
   expiryDate: string;
@@ -209,16 +209,16 @@ export interface CommunityPost {
   user: {
     name: string;
     avatarUrl?: string;
-    username: string; 
+    username: string;
   };
-  timestamp: string; 
-  content: string; 
-  imageUrl?: string; 
+  timestamp: string;
+  content: string;
+  imageUrl?: string;
   imageAiHint?: string;
-  stockSymbol?: string; 
+  stockSymbol?: string;
   stockChangePercent?: number;
-  tags?: string[]; 
-  source?: string; 
+  tags?: string[];
+  source?: string;
   likes: number;
   comments: number;
   reposts: number;
@@ -226,4 +226,59 @@ export interface CommunityPost {
   targetPrice?: number;
   researchFirm?: string;
   analystName?: string;
+}
+
+export interface GttOrder {
+  id: string;
+  instrumentName: string;
+  symbol: string;
+  orderType: 'BUY' | 'SELL';
+  triggerPrice: number;
+  quantity: number;
+  limitPrice?: number;
+  status: 'Active' | 'Triggered' | 'Cancelled' | 'Expired';
+  createdDate: string;
+  exchange: string;
+  productType: 'CNC' | 'MIS' | 'NRML';
+}
+
+export interface BondBid {
+  id: string;
+  bondName: string;
+  isin: string;
+  bidPrice: number;
+  bidYield?: string;
+  quantity: number;
+  status: 'Pending' | 'Partial Fill' | 'Filled' | 'Cancelled' | 'Rejected';
+  bidDate: string;
+  platform: 'Exchange' | 'Primary Market';
+}
+
+export interface SipOrder {
+  id: string;
+  instrumentName: string;
+  symbol?: string;
+  assetType: 'Stock' | 'Mutual Fund' | 'ETF' | 'Gold Bond';
+  amount?: number;
+  quantity?: number;
+  frequency: 'Daily' | 'Weekly' | 'Bi-Weekly' | 'Monthly';
+  nextDueDate: string;
+  status: 'Active' | 'Paused' | 'Cancelled' | 'Completed';
+  startDate: string;
+  installmentsDone: number;
+  totalInstallments?: number;
+}
+
+export interface PriceAlert {
+  id: string;
+  instrumentName: string;
+  symbol: string;
+  targetPrice: number;
+  condition: 'Above' | 'Below' | 'Equals';
+  currentPrice?: number;
+  status: 'Active' | 'Triggered' | 'Cancelled' | 'Expired';
+  createdDate: string;
+  exchange: string;
+  assetType: 'Stock' | 'Mutual Fund' | 'Crypto' | 'Future' | 'Option' | 'ETF' | 'Index';
+  notes?: string;
 }
