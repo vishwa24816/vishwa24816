@@ -15,16 +15,23 @@ import { Separator } from "@/components/ui/separator";
 import { mockPortfolioHoldings } from '@/lib/mockData';
 import type { PortfolioHolding } from '@/types';
 import { cn } from '@/lib/utils';
-import { Briefcase, Info } from 'lucide-react'; 
+import { Briefcase, Info, PlusCircle, MinusCircle, XCircle } from 'lucide-react'; 
+import { useToast } from "@/hooks/use-toast";
 
-type HoldingFilterType = 'All' | 'Stock' | 'Mutual Fund' | 'Bond'; // Added 'Bond'
+type HoldingFilterType = 'All' | 'Stock' | 'Mutual Fund' | 'Bond';
 
 export function PortfolioHoldingsTable() {
   const holdings = mockPortfolioHoldings;
   const [activeFilter, setActiveFilter] = useState<HoldingFilterType>('All');
+  const [expandedRowId, setExpandedRowId] = useState<string | null>(null);
+  const { toast } = useToast();
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
+  };
+
+  const handleRowClick = (holdingId: string) => {
+    setExpandedRowId(prevId => (prevId === holdingId ? null : holdingId));
   };
 
   const totalCurrentValue = holdings.reduce((acc, holding) => acc + holding.currentValue, 0);
@@ -40,14 +47,14 @@ export function PortfolioHoldingsTable() {
     { label: "All", value: "All" },
     { label: "Stocks", value: "Stock" },
     { label: "Mutual Funds", value: "Mutual Fund" },
-    { label: "Bonds", value: "Bond" }, // Added Bonds filter option
+    { label: "Bonds", value: "Bond" },
   ];
 
   const filteredHoldings = holdings.filter(holding => {
     if (activeFilter === 'All') return true;
     if (activeFilter === 'Stock') return holding.type === 'Stock' || holding.type === 'ETF';
     if (activeFilter === 'Mutual Fund') return holding.type === 'Mutual Fund';
-    if (activeFilter === 'Bond') return holding.type === 'Bond'; // Added Bond filter logic
+    if (activeFilter === 'Bond') return holding.type === 'Bond';
     return false;
   });
 
@@ -143,23 +150,78 @@ export function PortfolioHoldingsTable() {
         <TableBody>
           {filteredHoldings.length > 0 ? (
             filteredHoldings.map((holding) => (
-              <TableRow key={holding.id}>
-                <TableCell className="font-medium">
-                  <div>{holding.name}</div>
-                  {holding.symbol && <div className="text-xs text-muted-foreground">{holding.symbol}</div>}
-                </TableCell>
-                <TableCell>{holding.type}</TableCell>
-                <TableCell className="text-right">{holding.quantity.toLocaleString()}</TableCell>
-                <TableCell className="text-right">{formatCurrency(holding.avgCostPrice)}</TableCell>
-                <TableCell className="text-right">{formatCurrency(holding.ltp)}</TableCell>
-                <TableCell className="text-right">{formatCurrency(holding.currentValue)}</TableCell>
-                <TableCell className={cn("text-right whitespace-nowrap", holding.profitAndLoss >= 0 ? 'text-green-600' : 'text-red-600')}>
-                  {formatCurrency(holding.profitAndLoss)}<br/>({holding.profitAndLossPercent.toFixed(2)}%)
-                </TableCell>
-                <TableCell className={cn("text-right whitespace-nowrap", holding.dayChangeAbsolute >= 0 ? 'text-green-600' : 'text-red-600')}>
-                  {formatCurrency(holding.dayChangeAbsolute)}<br/>({holding.dayChangePercent.toFixed(2)}%)
-                </TableCell>
-              </TableRow>
+              <React.Fragment key={holding.id}>
+                <TableRow 
+                  onClick={() => handleRowClick(holding.id)}
+                  className="cursor-pointer"
+                >
+                  <TableCell className="font-medium">
+                    <div>{holding.name}</div>
+                    {holding.symbol && <div className="text-xs text-muted-foreground">{holding.symbol}</div>}
+                  </TableCell>
+                  <TableCell>{holding.type}</TableCell>
+                  <TableCell className="text-right">{holding.quantity.toLocaleString()}</TableCell>
+                  <TableCell className="text-right">{formatCurrency(holding.avgCostPrice)}</TableCell>
+                  <TableCell className="text-right">{formatCurrency(holding.ltp)}</TableCell>
+                  <TableCell className="text-right">{formatCurrency(holding.currentValue)}</TableCell>
+                  <TableCell className={cn("text-right whitespace-nowrap", holding.profitAndLoss >= 0 ? 'text-green-600' : 'text-red-600')}>
+                    {formatCurrency(holding.profitAndLoss)}<br/>({holding.profitAndLossPercent.toFixed(2)}%)
+                  </TableCell>
+                  <TableCell className={cn("text-right whitespace-nowrap", holding.dayChangeAbsolute >= 0 ? 'text-green-600' : 'text-red-600')}>
+                    {formatCurrency(holding.dayChangeAbsolute)}<br/>({holding.dayChangePercent.toFixed(2)}%)
+                  </TableCell>
+                </TableRow>
+                {expandedRowId === holding.id && (
+                  <TableRow className="bg-muted/50 hover:bg-muted/60 data-[state=selected]:bg-muted/70">
+                    <TableCell colSpan={8} className="p-0">
+                      <div className="p-4 space-y-3">
+                        <h4 className="font-semibold text-md text-foreground">
+                          {holding.name} ({holding.symbol || holding.type}) - Actions
+                        </h4>
+                        <div className="flex flex-col sm:flex-row gap-2">
+                          <Button 
+                            size="sm" 
+                            variant="outline" 
+                            className="flex-1 justify-center text-green-600 border-green-500 hover:bg-green-500/10 hover:text-green-700" 
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                toast({ title: `Buy More: ${holding.symbol || holding.name}`});
+                            }}
+                          >
+                            <PlusCircle className="mr-2 h-4 w-4" /> Buy More
+                          </Button>
+                          <Button 
+                            size="sm" 
+                            variant="outline" 
+                            className="flex-1 justify-center text-orange-600 border-orange-500 hover:bg-orange-500/10 hover:text-orange-700" 
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                toast({ title: `Sell/Reduce: ${holding.symbol || holding.name}`});
+                            }}
+                          >
+                            <MinusCircle className="mr-2 h-4 w-4" /> Sell/Reduce
+                          </Button>
+                          <Button 
+                            size="sm" 
+                            variant="destructive" 
+                            className="flex-1 justify-center" 
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                toast({ 
+                                    title: `Exit Position: ${holding.symbol || holding.name}`,
+                                    description: "This action would close your entire position.",
+                                    variant: "destructive"
+                                });
+                            }}
+                          >
+                            <XCircle className="mr-2 h-4 w-4" /> Exit Position
+                          </Button>
+                        </div>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                )}
+              </React.Fragment>
             ))
           ) : (
             <TableRow>
