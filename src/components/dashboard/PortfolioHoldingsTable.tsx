@@ -20,7 +20,12 @@ import { useToast } from "@/hooks/use-toast";
 
 type HoldingFilterType = 'All' | 'Stock' | 'Mutual Fund' | 'Bond';
 
-export function PortfolioHoldingsTable() {
+interface PortfolioHoldingsTableProps {
+  mainPortfolioCashBalance: number;
+  setMainPortfolioCashBalance: React.Dispatch<React.SetStateAction<number>>;
+}
+
+export function PortfolioHoldingsTable({ mainPortfolioCashBalance, setMainPortfolioCashBalance }: PortfolioHoldingsTableProps) {
   const holdings = mockPortfolioHoldings.filter(h => h.type !== 'Crypto'); // Exclude crypto from main holdings table
   const [activeFilter, setActiveFilter] = useState<HoldingFilterType>('All');
   const [expandedRowId, setExpandedRowId] = useState<string | null>(null);
@@ -42,7 +47,6 @@ export function PortfolioHoldingsTable() {
   const totalDayChangeAbsolute = holdings.reduce((acc, holding) => acc + holding.dayChangeAbsolute, 0);
   const totalPreviousDayValue = totalCurrentValue - totalDayChangeAbsolute;
   const totalDayChangePercent = totalPreviousDayValue !== 0 ? (totalDayChangeAbsolute / totalPreviousDayValue) * 100 : 0;
-  const mockCashBalance = 50000.00; // Mock cash balance
 
   const filterOptions: { label: string; value: HoldingFilterType }[] = [
     { label: "All", value: "All" },
@@ -113,14 +117,14 @@ export function PortfolioHoldingsTable() {
           <div className="flex justify-between items-center text-sm">
             <p className="text-muted-foreground">Cash Balance</p>
             <p className="font-medium text-foreground">
-              {formatCurrency(mockCashBalance)}
+              {formatCurrency(mainPortfolioCashBalance)}
             </p>
           </div>
           <div className="pt-2 flex flex-col sm:flex-row gap-2">
-            <Button variant="outline" size="sm" className="flex-1" onClick={() => toast({ title: "Add Cash (Mock)", description: "Functionality to add funds to your account." })}>
+            <Button variant="outline" size="sm" className="flex-1" onClick={() => toast({ title: "Add Cash (Mock)", description: "Functionality to add funds to your main portfolio." })}>
               <Coins className="mr-2 h-4 w-4" /> Add Cash
             </Button>
-            <Button variant="outline" size="sm" className="flex-1" onClick={() => toast({ title: "Withdraw Cash (Mock)", description: "Functionality to withdraw funds from your account." })}>
+            <Button variant="outline" size="sm" className="flex-1" onClick={() => toast({ title: "Withdraw Cash (Mock)", description: "Functionality to withdraw funds from your main portfolio." })}>
               <Landmark className="mr-2 h-4 w-4" /> Withdraw Cash
             </Button>
           </div>

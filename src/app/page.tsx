@@ -176,6 +176,8 @@ export default function DashboardPage() {
   const [cryptoFuturesLeverage, setCryptoFuturesLeverage] = useState<string>('1x');
   const leverageOptions = ['1x', '2x', '3x', '4x', '5x', '10x', '20x', '25x', '50x', '100x', '200x'];
 
+  const [mainPortfolioCashBalance, setMainPortfolioCashBalance] = useState(50000.00);
+
 
   const handlePrimaryNavClick = (item: string) => {
     setActivePrimaryItem(item);
@@ -274,8 +276,14 @@ export default function DashboardPage() {
 
           {isPortfolioHoldingsView ? (
             <>
-              <PortfolioHoldingsTable />
-              <CryptoHoldingsSection />
+              <PortfolioHoldingsTable 
+                mainPortfolioCashBalance={mainPortfolioCashBalance} 
+                setMainPortfolioCashBalance={setMainPortfolioCashBalance} 
+              />
+              <CryptoHoldingsSection 
+                mainPortfolioCashBalance={mainPortfolioCashBalance}
+                setMainPortfolioCashBalance={setMainPortfolioCashBalance}
+              />
               <div className="mt-8">
                 <NewsSection articles={newsForView} />
               </div>
