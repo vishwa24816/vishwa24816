@@ -41,12 +41,12 @@ const AlertItem: React.FC<AlertItemProps> = ({ alert }) => {
       </CardContent>
        <CardFooter className="px-4 py-2 border-t flex justify-end space-x-2">
         {alert.status === 'Active' && (
-          <Button variant="outline" size="xs" onClick={() => toast({ title: `Modify Alert: ${alert.symbol}`})}>
+          <Button variant="outline" size="sm" onClick={() => toast({ title: `Modify Alert: ${alert.symbol}`})}>
             <Edit3 className="mr-1 h-3 w-3" /> Modify
           </Button>
         )}
         {alert.status !== 'Triggered' && ( // Cannot cancel a triggered alert, maybe delete
-          <Button variant="destructive" size="xs" onClick={() => toast({ title: `Cancel Alert: ${alert.symbol}`, variant: "destructive"})}>
+          <Button variant="destructive" size="sm" onClick={() => toast({ title: `Cancel Alert: ${alert.symbol}`, variant: "destructive"})}>
             <XCircle className="mr-1 h-3 w-3" /> {alert.status === 'Triggered' ? 'Delete' : 'Cancel'}
           </Button>
         )}
@@ -75,3 +75,4 @@ export function AlertsDisplay() {
     </ScrollArea>
   );
 }
+

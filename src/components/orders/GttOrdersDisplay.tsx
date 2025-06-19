@@ -38,10 +38,10 @@ const GttOrderItem: React.FC<GttOrderItemProps> = ({ order }) => {
         </div>
       </CardContent>
       <CardFooter className="px-4 py-2 border-t flex justify-end space-x-2">
-        <Button variant="outline" size="xs" onClick={() => toast({ title: `Modify GTT: ${order.symbol}`})}>
+        <Button variant="outline" size="sm" onClick={() => toast({ title: `Modify GTT: ${order.symbol}`})}>
           <Edit3 className="mr-1 h-3 w-3" /> Modify
         </Button>
-        <Button variant="destructive" size="xs" onClick={() => toast({ title: `Cancel GTT: ${order.symbol}`, variant: "destructive"})}>
+        <Button variant="destructive" size="sm" onClick={() => toast({ title: `Cancel GTT: ${order.symbol}`, variant: "destructive"})}>
           <XCircle className="mr-1 h-3 w-3" /> Cancel
         </Button>
       </CardFooter>
@@ -69,3 +69,4 @@ export function GttOrdersDisplay() {
     </ScrollArea>
   );
 }
+

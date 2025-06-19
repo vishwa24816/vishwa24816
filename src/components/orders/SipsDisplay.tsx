@@ -41,20 +41,20 @@ const SipItem: React.FC<SipItemProps> = ({ sip }) => {
         </div>
       </CardContent>
        <CardFooter className="px-4 py-2 border-t flex justify-end space-x-2">
-        <Button variant="outline" size="xs" onClick={() => toast({ title: `Modify SIP: ${sip.instrumentName}`})}>
+        <Button variant="outline" size="sm" onClick={() => toast({ title: `Modify SIP: ${sip.instrumentName}`})}>
            <Edit3 className="mr-1 h-3 w-3" /> Modify
         </Button>
         {sip.status === 'Active' && (
-          <Button variant="outline" size="xs" className="text-yellow-600 border-yellow-500 hover:bg-yellow-500/10 hover:text-yellow-700" onClick={() => toast({ title: `Pause SIP: ${sip.instrumentName}`})}>
+          <Button variant="outline" size="sm" className="text-yellow-600 border-yellow-500 hover:bg-yellow-500/10 hover:text-yellow-700" onClick={() => toast({ title: `Pause SIP: ${sip.instrumentName}`})}>
             <PauseCircle className="mr-1 h-3 w-3" /> Pause
           </Button>
         )}
         {sip.status === 'Paused' && (
-           <Button variant="outline" size="xs" className="text-green-600 border-green-500 hover:bg-green-500/10 hover:text-green-700" onClick={() => toast({ title: `Resume SIP: ${sip.instrumentName}`})}>
+           <Button variant="outline" size="sm" className="text-green-600 border-green-500 hover:bg-green-500/10 hover:text-green-700" onClick={() => toast({ title: `Resume SIP: ${sip.instrumentName}`})}>
             <PlayCircle className="mr-1 h-3 w-3" /> Resume
           </Button>
         )}
-        <Button variant="destructive" size="xs" onClick={() => toast({ title: `Cancel SIP: ${sip.instrumentName}`, variant: "destructive"})}>
+        <Button variant="destructive" size="sm" onClick={() => toast({ title: `Cancel SIP: ${sip.instrumentName}`, variant: "destructive"})}>
            <XCircle className="mr-1 h-3 w-3" /> Cancel
         </Button>
       </CardFooter>
@@ -82,3 +82,4 @@ export function SipsDisplay() {
     </ScrollArea>
   );
 }
+

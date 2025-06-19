@@ -35,10 +35,10 @@ const BondBidItem: React.FC<BondBidItemProps> = ({ bid }) => {
         </div>
       </CardContent>
        <CardFooter className="px-4 py-2 border-t flex justify-end space-x-2">
-        <Button variant="outline" size="xs" onClick={() => toast({ title: `Modify Bid: ${bid.isin}`})}>
+        <Button variant="outline" size="sm" onClick={() => toast({ title: `Modify Bid: ${bid.isin}`})}>
            <Edit3 className="mr-1 h-3 w-3" /> Modify
         </Button>
-        <Button variant="destructive" size="xs" onClick={() => toast({ title: `Cancel Bid: ${bid.isin}`, variant: "destructive"})}>
+        <Button variant="destructive" size="sm" onClick={() => toast({ title: `Cancel Bid: ${bid.isin}`, variant: "destructive"})}>
            <XCircle className="mr-1 h-3 w-3" /> Cancel
         </Button>
       </CardFooter>
@@ -66,3 +66,4 @@ export function BondBidsDisplay() {
     </ScrollArea>
   );
 }
+

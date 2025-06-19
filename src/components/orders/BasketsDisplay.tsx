@@ -39,14 +39,14 @@ const BasketItem: React.FC<BasketItemProps> = ({ basket }) => {
       </CardContent>
        <CardFooter className="px-4 py-2 border-t flex justify-end space-x-2">
         {basket.status === 'Pending Execution' && (
-          <Button variant="default" size="xs" className="bg-primary" onClick={() => toast({ title: `Execute Basket: ${basket.name}`})}>
+          <Button variant="default" size="sm" className="bg-primary" onClick={() => toast({ title: `Execute Basket: ${basket.name}`})}>
             <PlayCircle className="mr-1 h-3 w-3" /> Execute
           </Button>
         )}
-        <Button variant="outline" size="xs" onClick={() => toast({ title: `Edit Basket: ${basket.name}`})}>
+        <Button variant="outline" size="sm" onClick={() => toast({ title: `Edit Basket: ${basket.name}`})}>
             <Edit3 className="mr-1 h-3 w-3" /> Edit
         </Button>
-         <Button variant="outline" size="xs" onClick={() => toast({ title: `Duplicate Basket: ${basket.name}`})}>
+         <Button variant="outline" size="sm" onClick={() => toast({ title: `Duplicate Basket: ${basket.name}`})}>
             <Copy className="mr-1 h-3 w-3" /> Duplicate
         </Button>
       </CardFooter>
@@ -74,3 +74,4 @@ export function BasketsDisplay() {
     </ScrollArea>
   );
 }
+
