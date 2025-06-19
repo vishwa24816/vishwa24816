@@ -23,14 +23,14 @@ const IndexCard: React.FC<IndexCardProps> = ({ itemData }) => {
   const isPositive = change >= 0;
 
   return (
-    <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300 w-36 h-36 flex flex-col shrink-0">
-      <CardHeader className="p-2 pb-0.5 flex flex-row items-start justify-between space-y-0">
+    <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300 w-36 h-24 flex flex-col shrink-0">
+      <CardHeader className="p-1.5 pb-0 flex flex-row items-start justify-between space-y-0">
         <CardTitle className="text-xs font-medium font-headline">{name}</CardTitle>
-        <Activity className="h-3 w-3 text-muted-foreground" />
+        <Activity className="h-2.5 w-2.5 text-muted-foreground" />
       </CardHeader>
-      <CardContent className="p-2 pt-0.5 flex flex-col flex-grow justify-between">
-        <div className="flex-grow flex items-center justify-center my-1" data-ai-hint="stock chart graph">
-          <svg viewBox="0 0 100 35" className="w-full h-auto max-h-[30px]">
+      <CardContent className="p-1.5 pt-0 flex flex-col flex-grow justify-between">
+        <div className="flex-grow flex items-center justify-center my-0.5" data-ai-hint="stock chart graph">
+          <svg viewBox="0 0 100 35" className="w-full h-auto max-h-[20px]">
             <polyline
               fill="none"
               stroke={isPositive ? 'hsl(var(--positive))' : 'hsl(var(--destructive))'}
@@ -41,9 +41,9 @@ const IndexCard: React.FC<IndexCardProps> = ({ itemData }) => {
         </div>
         
         <div>
-          <div className="text-lg font-bold">{value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+          <div className="text-base font-bold">{value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
           <p className={`text-xs ${isPositive ? 'text-[hsl(var(--positive))]' : 'text-destructive'} flex items-center`}>
-            {isPositive ? <TrendingUp className="h-2.5 w-2.5 mr-1" /> : <TrendingDown className="h-2.5 w-2.5 mr-1" />}
+            {isPositive ? <TrendingUp className="h-2 w-2 mr-1" /> : <TrendingDown className="h-2 w-2 mr-1" />}
             {isPositive ? '+' : ''}{change.toFixed(2)} ({isPositive ? '+' : ''}{changePercent.toFixed(2)}%)
           </p>
         </div>
@@ -61,7 +61,7 @@ interface MarketOverviewProps {
 export function MarketOverview({ title, items }: MarketOverviewProps) {
   return (
     <section aria-labelledby="market-overview-title">
-      <h2 id="market-overview-title" className="text-xl font-semibold font-headline mb-4 text-primary">
+      <h2 id="market-overview-title" className="text-lg font-semibold font-headline mb-3 text-primary">
         {title} {/* Use prop title */}
       </h2>
       <div className="flex space-x-4 overflow-x-auto pb-4 -mb-4 no-scrollbar">
@@ -76,4 +76,3 @@ export function MarketOverview({ title, items }: MarketOverviewProps) {
     </section>
   );
 }
-
