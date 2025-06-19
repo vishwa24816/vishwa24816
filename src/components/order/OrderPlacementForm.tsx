@@ -16,9 +16,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { RefreshCcw,ChevronDown, BarChartHorizontal } from 'lucide-react';
+import { RefreshCcw,ChevronDown, BarChartHorizontal, ShoppingBasket, BellPlus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from "@/hooks/use-toast";
+import { AddToBasketDialog } from './AddToBasketDialog'; // Import the new dialog
 
 interface OrderPlacementFormProps {
   asset: Stock;
@@ -49,6 +50,8 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
 
   const [mtfLeverage, setMtfLeverage] = useState('1x');
   const [displayedMargin, setDisplayedMargin] = useState(0);
+  const [isAddToBasketDialogOpen, setIsAddToBasketDialogOpen] = useState(false);
+
 
   const marketDepthData = useMemo(() => {
     if (assetType !== "stock") return null;
@@ -81,7 +84,12 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
     if (orderType === 'Market') {
       setPrice(currentPrice);
     } else {
-      setPrice(currentPrice); // Initialize with current price, user can change for limit
+      // If not market, keep the user-set price or initialize with current market price
+      // This ensures that if user was typing a limit price, it's not overwritten
+      // unless it's the initial load or exchange change for market order type
+      if (price === asset.price || (assetType === 'stock' && price === asset.price * 0.995) || price === 0 ) {
+         setPrice(currentPrice);
+      }
     }
 
     if (assetType === 'future' && asset.availableExpiries && asset.availableExpiries.length > 0) {
@@ -89,7 +97,8 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
     } else {
       setSelectedExpiryDate('');
     }
-  }, [asset, assetType, selectedExchange]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [asset, assetType, selectedExchange, orderType]); // price removed from deps to avoid overriding user input
 
   useEffect(() => {
     let priceForCalc = 0;
@@ -108,9 +117,9 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
 
     if (assetType === 'future') {
       const lotSize = asset.lotSize || 1;
-      const marginFactor = asset.marginFactor || 0.1;
+      const marginFactor = asset.marginFactor || 0.1; // Default margin factor if not provided
       baseMargin = quantity * priceForCalc * lotSize * marginFactor;
-    } else {
+    } else { // For stocks, crypto, mutual funds, bonds
       baseMargin = quantity * priceForCalc;
     }
 
@@ -153,15 +162,15 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
 
   const handleMarketDepthPriceClick = (clickedPrice: number) => {
     setPrice(clickedPrice);
-    setOrderType('Limit'); // When a price is clicked from depth, it's for a limit order
+    setOrderType('Limit'); 
   };
 
   const orderModeTabs = assetType === 'stock' ? ['Regular', 'MTF', 'SIP'] : ['Regular', 'SIP'];
-  const quantityInputLabel = assetType === 'future' ? 'Lots' : 'Qty.';
+  const quantityInputLabel = (assetType === 'future' || assetType === 'option') ? 'Lots' : 'Qty.';
 
   const renderOrderFields = (currentOrderMode: string) => (
     <>
-      {assetType === 'future' && asset.availableExpiries && asset.availableExpiries.length > 0 && (
+      {(assetType === 'future' || assetType === 'option') && asset.availableExpiries && asset.availableExpiries.length > 0 && (
         <div className="space-y-2">
           <Label htmlFor={`expiry-${currentOrderMode}`}>Expiry Date</Label>
           <Select value={selectedExpiryDate} onValueChange={setSelectedExpiryDate}>
@@ -204,7 +213,7 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
             onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
             min="1"
           />
-           {assetType === 'future' && asset.lotSize && (
+           {(assetType === 'future' || assetType === 'option') && asset.lotSize && (
             <p className="text-xs text-muted-foreground mt-1">Lot Size: {asset.lotSize}</p>
           )}
         </div>
@@ -390,17 +399,17 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
               <BarChartHorizontal className="h-5 w-5 mr-2 text-primary" />
               Market Depth
             </h3>
-            <div className="grid grid-cols-2 gap-x-3 text-sm">
+            <div className="grid grid-cols-2 gap-x-4 text-sm">
               <div>
-                <div className="flex justify-between font-semibold mb-1.5 text-green-600">
+                <div className="flex justify-between font-semibold mb-2 text-green-600">
                   <span>Buy Orders</span>
                   <span>Total: {marketDepthData.totalBuyQty.toLocaleString()}</span>
                 </div>
-                <div className="space-y-1">
+                <div className="space-y-1.5">
                   {marketDepthData.buy.map((order, index) => (
                     <div 
                         key={`buy-${index}`} 
-                        className="flex justify-between p-1.5 rounded bg-green-500/10 cursor-pointer hover:bg-green-500/20 transition-colors"
+                        className="flex justify-between p-2 rounded bg-green-500/10 cursor-pointer hover:bg-green-500/20 transition-colors"
                         onClick={() => handleMarketDepthPriceClick(order.price)}
                     >
                       <span className="text-green-700 dark:text-green-400">{order.quantity.toLocaleString()}</span>
@@ -410,15 +419,15 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
                 </div>
               </div>
               <div>
-                <div className="flex justify-between font-semibold mb-1.5 text-red-600">
+                <div className="flex justify-between font-semibold mb-2 text-red-600">
                   <span>Sell Orders</span>
                   <span>Total: {marketDepthData.totalSellQty.toLocaleString()}</span>
                 </div>
-                <div className="space-y-1">
+                <div className="space-y-1.5">
                   {marketDepthData.sell.map((order, index) => (
                      <div 
                         key={`sell-${index}`} 
-                        className="flex justify-between p-1.5 rounded bg-red-500/10 cursor-pointer hover:bg-red-500/20 transition-colors"
+                        className="flex justify-between p-2 rounded bg-red-500/10 cursor-pointer hover:bg-red-500/20 transition-colors"
                         onClick={() => handleMarketDepthPriceClick(order.price)}
                     >
                        <span className="font-medium text-foreground">@{order.price.toFixed(2)}</span>
@@ -428,12 +437,29 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
                 </div>
               </div>
             </div>
+            <div className="mt-6 pt-4 border-t flex flex-col sm:flex-row gap-2">
+                <Button 
+                    variant="outline" 
+                    className="flex-1" 
+                    onClick={() => setIsAddToBasketDialogOpen(true)}
+                >
+                    <ShoppingBasket className="mr-2 h-4 w-4" /> Add to Basket
+                </Button>
+                <Button 
+                    variant="outline" 
+                    className="flex-1" 
+                    onClick={() => toast({ title: "Add Alert (Feature Coming Soon)", description: `You can set price alerts for ${asset.symbol}.`})}
+                >
+                    <BellPlus className="mr-2 h-4 w-4" /> Add Alert
+                </Button>
+            </div>
           </div>
         )}
     </>
   );
 
   return (
+    <>
     <div className="bg-card shadow-md rounded-lg mt-4">
       {assetType === 'stock' && (
         <div className="bg-card text-card-foreground p-3 rounded-t-lg border-b">
@@ -443,7 +469,7 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
               const newExchange = value as 'BSE' | 'NSE';
               setSelectedExchange(newExchange);
               if (orderType === 'Market' && assetType === 'stock') {
-                const marketPrice = newExchange === 'NSE' ? asset.price : (asset.price * 0.995);
+                const marketPrice = newExchange === 'NSE' ? asset.price : (asset.price * 0.995); // Mock BSE price
                 setPrice(marketPrice);
               }
             }}
@@ -501,5 +527,13 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
         </div>
       )}
     </div>
+    <AddToBasketDialog 
+        isOpen={isAddToBasketDialogOpen}
+        onOpenChange={setIsAddToBasketDialogOpen}
+        asset={asset}
+        assetType={assetType}
+    />
+    </>
   );
 }
+
