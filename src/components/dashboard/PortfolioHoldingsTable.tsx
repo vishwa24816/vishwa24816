@@ -21,7 +21,7 @@ import { useToast } from "@/hooks/use-toast";
 type HoldingFilterType = 'All' | 'Stock' | 'Mutual Fund' | 'Bond';
 
 export function PortfolioHoldingsTable() {
-  const holdings = mockPortfolioHoldings;
+  const holdings = mockPortfolioHoldings.filter(h => h.type !== 'Crypto'); // Exclude crypto from main holdings table
   const [activeFilter, setActiveFilter] = useState<HoldingFilterType>('All');
   const [expandedRowId, setExpandedRowId] = useState<string | null>(null);
   const { toast } = useToast();
@@ -42,6 +42,7 @@ export function PortfolioHoldingsTable() {
   const totalDayChangeAbsolute = holdings.reduce((acc, holding) => acc + holding.dayChangeAbsolute, 0);
   const totalPreviousDayValue = totalCurrentValue - totalDayChangeAbsolute;
   const totalDayChangePercent = totalPreviousDayValue !== 0 ? (totalDayChangeAbsolute / totalPreviousDayValue) * 100 : 0;
+  const mockCashBalance = 50000.00; // Mock cash balance
 
   const filterOptions: { label: string; value: HoldingFilterType }[] = [
     { label: "All", value: "All" },
@@ -107,6 +108,12 @@ export function PortfolioHoldingsTable() {
             <p className="text-muted-foreground">Current Value</p>
             <p className="font-medium text-foreground">
               {formatCurrency(totalCurrentValue)}
+            </p>
+          </div>
+          <div className="flex justify-between items-center text-sm">
+            <p className="text-muted-foreground">Cash Balance</p>
+            <p className="font-medium text-foreground">
+              {formatCurrency(mockCashBalance)}
             </p>
           </div>
           <div className="pt-2 flex flex-col sm:flex-row gap-2">
@@ -243,3 +250,4 @@ export function PortfolioHoldingsTable() {
     </section>
   );
 }
+

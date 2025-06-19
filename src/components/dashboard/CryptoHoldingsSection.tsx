@@ -39,6 +39,7 @@ export function CryptoHoldingsSection() {
   const totalDayChangeAbsolute = cryptoHoldings.reduce((acc, holding) => acc + holding.dayChangeAbsolute, 0);
   const totalPreviousDayValue = totalCurrentValue - totalDayChangeAbsolute;
   const totalDayChangePercent = totalPreviousDayValue !== 0 ? (totalDayChangeAbsolute / totalPreviousDayValue) * 100 : 0;
+  const mockCryptoCashBalance = 15000.00; // Mock crypto cash balance
 
   if (cryptoHoldings.length === 0) {
     return (
@@ -100,6 +101,12 @@ export function CryptoHoldingsSection() {
             <p className="text-muted-foreground">Current Crypto Value</p>
             <p className="font-medium text-foreground">
               {formatCurrency(totalCurrentValue)}
+            </p>
+          </div>
+          <div className="flex justify-between items-center text-sm">
+            <p className="text-muted-foreground">Cash Balance (Crypto)</p>
+            <p className="font-medium text-foreground">
+              {formatCurrency(mockCryptoCashBalance)}
             </p>
           </div>
           <div className="pt-2 flex flex-col sm:flex-row gap-2">
@@ -204,3 +211,4 @@ export function CryptoHoldingsSection() {
     </section>
   );
 }
+
