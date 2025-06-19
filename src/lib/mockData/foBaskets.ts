@@ -28,13 +28,5 @@ export const mockFoBaskets: FoBasket[] = [
     createdDate: '2024-07-10',
     pnl: -350.80,
   },
-  {
-    id: 'basket4',
-    name: 'Short Strangle - FINNIFTY',
-    status: 'Archived',
-    requiredMargin: 65000.00,
-    instrumentsCount: 2,
-    createdDate: '2024-06-25',
-    pnl: 2300.00,
-  },
 ];
+
