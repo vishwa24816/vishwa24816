@@ -232,9 +232,15 @@ export default function StockOrderPage() {
 
             <OrderPlacementForm asset={asset} productType={productTypeForOrder} onProductTypeChange={setProductTypeForOrder} assetType="stock"/>
 
-            <Tabs defaultValue="overview" className="w-full">
+            <Tabs defaultValue="fundamentals" className="w-full">
+              <TabsList className="w-full bg-muted/30 flex overflow-x-auto whitespace-nowrap no-scrollbar rounded-none p-0 h-auto border-b mb-1">
+                <TabsTrigger value="fundamentals" className="flex-shrink-0 px-4 py-3 text-sm rounded-t-md rounded-b-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=inactive]:border-b-2 data-[state=inactive]:border-transparent data-[state=active]:shadow-none hover:text-primary">Fundamentals</TabsTrigger>
+                <TabsTrigger value="financials" className="flex-shrink-0 px-4 py-3 text-sm rounded-t-md rounded-b-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=inactive]:border-b-2 data-[state=inactive]:border-transparent data-[state=active]:shadow-none hover:text-primary">Financials</TabsTrigger>
+                <TabsTrigger value="technicals" className="flex-shrink-0 px-4 py-3 text-sm rounded-t-md rounded-b-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=inactive]:border-b-2 data-[state=inactive]:border-transparent data-[state=active]:shadow-none hover:text-primary">Technicals</TabsTrigger>
+                <TabsTrigger value="scores" className="flex-shrink-0 px-4 py-3 text-sm rounded-t-md rounded-b-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=inactive]:border-b-2 data-[state=inactive]:border-transparent data-[state=active]:shadow-none hover:text-primary">Scores</TabsTrigger>
+                <TabsTrigger value="news" className="flex-shrink-0 px-4 py-3 text-sm rounded-t-md rounded-b-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=inactive]:border-b-2 data-[state=inactive]:border-transparent data-[state=active]:shadow-none hover:text-primary">News</TabsTrigger>
+              </TabsList>
               <TabsList className="w-full bg-muted/30 flex overflow-x-auto whitespace-nowrap no-scrollbar rounded-none p-0 h-auto border-b">
-                <TabsTrigger value="overview" className="flex-shrink-0 px-4 py-3 text-sm rounded-t-md rounded-b-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=inactive]:border-b-2 data-[state=inactive]:border-transparent data-[state=active]:shadow-none hover:text-primary">Overview</TabsTrigger>
                 <TabsTrigger value="fundamentals" className="flex-shrink-0 px-4 py-3 text-sm rounded-t-md rounded-b-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=inactive]:border-b-2 data-[state=inactive]:border-transparent data-[state=active]:shadow-none hover:text-primary">Fundamentals</TabsTrigger>
                 <TabsTrigger value="financials" className="flex-shrink-0 px-4 py-3 text-sm rounded-t-md rounded-b-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=inactive]:border-b-2 data-[state=inactive]:border-transparent data-[state=active]:shadow-none hover:text-primary">Financials</TabsTrigger>
                 <TabsTrigger value="technicals" className="flex-shrink-0 px-4 py-3 text-sm rounded-t-md rounded-b-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=inactive]:border-b-2 data-[state=inactive]:border-transparent data-[state=active]:shadow-none hover:text-primary">Technicals</TabsTrigger>
@@ -242,76 +248,6 @@ export default function StockOrderPage() {
                 <TabsTrigger value="news" className="flex-shrink-0 px-4 py-3 text-sm rounded-t-md rounded-b-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=inactive]:border-b-2 data-[state=inactive]:border-transparent data-[state=active]:shadow-none hover:text-primary">News</TabsTrigger>
               </TabsList>
               
-              <TabsContent value="overview" className="mt-4 space-y-6">
-                <div>
-                  <h3 className="text-md font-semibold flex items-center mb-2">
-                    Performance 
-                    <Info className="h-3 w-3 ml-1.5 text-muted-foreground cursor-pointer" onClick={() => toast({title: "Performance Info Clicked"})} />
-                  </h3>
-                  {asset.todayLow && asset.todayHigh && (
-                    <PerformanceBar low={asset.todayLow} high={asset.todayHigh} current={asset.price} labelLow="Today's Low" labelHigh="Today's High" />
-                  )}
-                  {asset.fiftyTwoWeekLow && asset.fiftyTwoWeekHigh && (
-                    <div className="mt-3">
-                      <PerformanceBar low={asset.fiftyTwoWeekLow} high={asset.fiftyTwoWeekHigh} current={asset.price} labelLow="52 Week Low" labelHigh="52 Week High" />
-                    </div>
-                  )}
-                  {(asset.lowerCircuit || asset.upperCircuit) && (
-                    <div className="flex justify-between text-xs mt-4">
-                      <div>
-                        <p className="text-muted-foreground">Lower circuit</p>
-                        <p className="font-semibold text-foreground">{asset.lowerCircuit?.toFixed(2) || 'N/A'}</p>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-muted-foreground">Upper circuit</p>
-                        <p className="font-semibold text-foreground">{asset.upperCircuit?.toFixed(2) || 'N/A'}</p>
-                      </div>
-                    </div>
-                  )}
-                </div>
-                
-                <div className="grid grid-cols-2 gap-4 text-sm pt-2">
-                  <div>
-                    <p className="text-xs text-muted-foreground">Open</p>
-                    <p className="font-semibold text-foreground">{asset.openPrice?.toFixed(2) || 'N/A'}</p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground">Prev. Close</p>
-                    <p className="font-semibold text-foreground">{asset.prevClosePrice?.toFixed(2) || 'N/A'}</p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground">Volume</p>
-                    <p className="font-semibold text-foreground">{asset.volume?.toLocaleString() || 'N/A'}</p>
-                  </div>
-                </div>
-                
-                {asset.similarStocks && asset.similarStocks.length > 0 && (
-                  <CollapsibleSection title="Similar Stocks" icon={Landmark} defaultOpen>
-                     <div className="space-y-3">
-                      {asset.similarStocks.map(simStock => {
-                        const isSimPositive = simStock.changePercent >= 0;
-                        return (
-                          <Link href={`/order/stock/${simStock.symbol}`} key={simStock.id} className="block p-3 bg-muted/30 rounded-md hover:bg-muted/50 transition-colors">
-                            <div className="flex justify-between items-center">
-                              <div>
-                                <p className="font-semibold text-foreground text-sm">{simStock.name} <span className="text-xs text-muted-foreground">({simStock.symbol})</span></p>
-                                {simStock.marketCap && <p className="text-xs text-muted-foreground">Mkt Cap: {simStock.marketCap}</p>}
-                              </div>
-                              <div className="text-right">
-                                <p className={`font-medium ${isSimPositive ? 'text-green-500' : 'text-red-500'}`}>₹{simStock.price.toFixed(2)}</p>
-                                <p className={`text-xs ${isSimPositive ? 'text-green-500' : 'text-red-500'}`}>
-                                  {isSimPositive ? '+' : ''}{simStock.changePercent.toFixed(2)}%
-                                </p>
-                              </div>
-                            </div>
-                          </Link>
-                        );
-                      })}
-                    </div>
-                  </CollapsibleSection>
-                )}
-              </TabsContent>
-
               <TabsContent value="fundamentals" className="mt-4 space-y-6">
                  {asset.fundamentals && (
                   <CollapsibleSection title="Fundamentals" icon={SearchIcon} defaultOpen>
@@ -372,6 +308,74 @@ export default function StockOrderPage() {
               </TabsContent>
 
               <TabsContent value="technicals" className="mt-4 space-y-6">
+                <div className="mb-6">
+                  <h3 className="text-md font-semibold flex items-center mb-2">
+                    Performance 
+                    <Info className="h-3 w-3 ml-1.5 text-muted-foreground cursor-pointer" onClick={() => toast({title: "Performance Info Clicked"})} />
+                  </h3>
+                  {asset.todayLow && asset.todayHigh && (
+                    <PerformanceBar low={asset.todayLow} high={asset.todayHigh} current={asset.price} labelLow="Today's Low" labelHigh="Today's High" />
+                  )}
+                  {asset.fiftyTwoWeekLow && asset.fiftyTwoWeekHigh && (
+                    <div className="mt-3">
+                      <PerformanceBar low={asset.fiftyTwoWeekLow} high={asset.fiftyTwoWeekHigh} current={asset.price} labelLow="52 Week Low" labelHigh="52 Week High" />
+                    </div>
+                  )}
+                  {(asset.lowerCircuit || asset.upperCircuit) && (
+                    <div className="flex justify-between text-xs mt-4">
+                      <div>
+                        <p className="text-muted-foreground">Lower circuit</p>
+                        <p className="font-semibold text-foreground">{asset.lowerCircuit?.toFixed(2) || 'N/A'}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-muted-foreground">Upper circuit</p>
+                        <p className="font-semibold text-foreground">{asset.upperCircuit?.toFixed(2) || 'N/A'}</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4 text-sm pt-2 mb-6">
+                  <div>
+                    <p className="text-xs text-muted-foreground">Open</p>
+                    <p className="font-semibold text-foreground">{asset.openPrice?.toFixed(2) || 'N/A'}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground">Prev. Close</p>
+                    <p className="font-semibold text-foreground">{asset.prevClosePrice?.toFixed(2) || 'N/A'}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground">Volume</p>
+                    <p className="font-semibold text-foreground">{asset.volume?.toLocaleString() || 'N/A'}</p>
+                  </div>
+                </div>
+                
+                {asset.similarStocks && asset.similarStocks.length > 0 && (
+                  <CollapsibleSection title="Similar Stocks" icon={Landmark} defaultOpen>
+                     <div className="space-y-3">
+                      {asset.similarStocks.map(simStock => {
+                        const isSimPositive = simStock.changePercent >= 0;
+                        return (
+                          <Link href={`/order/stock/${simStock.symbol}`} key={simStock.id} className="block p-3 bg-muted/30 rounded-md hover:bg-muted/50 transition-colors">
+                            <div className="flex justify-between items-center">
+                              <div>
+                                <p className="font-semibold text-foreground text-sm">{simStock.name} <span className="text-xs text-muted-foreground">({simStock.symbol})</span></p>
+                                {simStock.marketCap && <p className="text-xs text-muted-foreground">Mkt Cap: {simStock.marketCap}</p>}
+                              </div>
+                              <div className="text-right">
+                                <p className={`font-medium ${isSimPositive ? 'text-green-500' : 'text-red-500'}`}>₹{simStock.price.toFixed(2)}</p>
+                                <p className={`text-xs ${isSimPositive ? 'text-green-500' : 'text-red-500'}`}>
+                                  {isSimPositive ? '+' : ''}{simStock.changePercent.toFixed(2)}%
+                                </p>
+                              </div>
+                            </div>
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  </CollapsibleSection>
+                )}
+
                 <Card>
                   <CardHeader>
                     <CardTitle className="flex items-center"><LineChart className="h-5 w-5 mr-2 text-primary" /> Technical Analysis</CardTitle>
