@@ -251,14 +251,6 @@ export default function DashboardPage() {
       <div className="flex flex-col min-h-screen">
         <AppHeader />
         <main className="flex-grow container mx-auto p-4 sm:p-6 lg:p-8 space-y-8">
-          <SubNav
-            activePrimaryItem={activePrimaryItem}
-            activeSecondaryItem={activeSecondaryItem}
-            onPrimaryNavClick={handlePrimaryNavClick}
-            onSecondaryNavClick={handleSecondaryNavClick}
-            secondaryNavTriggerCategories={secondaryNavTriggerCategories}
-          />
-          
           {activePrimaryItem === "Crypto" ? (
             <MarketOverview 
               title="Top Cryptocurrencies" 
@@ -270,6 +262,15 @@ export default function DashboardPage() {
               items={mockMarketIndices}
             />
           )}
+
+          <SubNav
+            activePrimaryItem={activePrimaryItem}
+            activeSecondaryItem={activeSecondaryItem}
+            onPrimaryNavClick={handlePrimaryNavClick}
+            onSecondaryNavClick={handleSecondaryNavClick}
+            secondaryNavTriggerCategories={secondaryNavTriggerCategories}
+          />
+          
 
           {isPortfolioHoldingsView ? (
             <>
