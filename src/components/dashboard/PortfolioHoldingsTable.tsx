@@ -15,7 +15,7 @@ import { Separator } from "@/components/ui/separator";
 import { mockPortfolioHoldings } from '@/lib/mockData';
 import type { PortfolioHolding } from '@/types';
 import { cn } from '@/lib/utils';
-import { Briefcase, Info, PlusCircle, MinusCircle, XCircle } from 'lucide-react'; 
+import { Briefcase, Info, PlusCircle, MinusCircle, XCircle, Coins, Landmark } from 'lucide-react'; 
 import { useToast } from "@/hooks/use-toast";
 
 type HoldingFilterType = 'All' | 'Stock' | 'Mutual Fund' | 'Bond';
@@ -108,6 +108,14 @@ export function PortfolioHoldingsTable() {
             <p className="font-medium text-foreground">
               {formatCurrency(totalCurrentValue)}
             </p>
+          </div>
+          <div className="pt-2 flex flex-col sm:flex-row gap-2">
+            <Button variant="outline" size="sm" className="flex-1" onClick={() => toast({ title: "Add Cash (Mock)", description: "Functionality to add funds to your account." })}>
+              <Coins className="mr-2 h-4 w-4" /> Add Cash
+            </Button>
+            <Button variant="outline" size="sm" className="flex-1" onClick={() => toast({ title: "Withdraw Cash (Mock)", description: "Functionality to withdraw funds from your account." })}>
+              <Landmark className="mr-2 h-4 w-4" /> Withdraw Cash
+            </Button>
           </div>
         </div>
       </div>

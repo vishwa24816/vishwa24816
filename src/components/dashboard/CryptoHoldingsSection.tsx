@@ -15,7 +15,7 @@ import { Separator } from "@/components/ui/separator";
 import { mockPortfolioHoldings } from '@/lib/mockData';
 import type { PortfolioHolding } from '@/types';
 import { cn } from '@/lib/utils';
-import { Bitcoin, PlusCircle, MinusCircle, XCircle } from 'lucide-react'; 
+import { Bitcoin, PlusCircle, MinusCircle, XCircle, Coins, Landmark } from 'lucide-react'; 
 import { useToast } from "@/hooks/use-toast";
 
 export function CryptoHoldingsSection() {
@@ -101,6 +101,14 @@ export function CryptoHoldingsSection() {
             <p className="font-medium text-foreground">
               {formatCurrency(totalCurrentValue)}
             </p>
+          </div>
+          <div className="pt-2 flex flex-col sm:flex-row gap-2">
+            <Button variant="outline" size="sm" className="flex-1" onClick={() => toast({ title: "Add Crypto Funds (Mock)", description: "Functionality to add crypto funds." })}>
+              <Coins className="mr-2 h-4 w-4" /> Add Funds
+            </Button>
+            <Button variant="outline" size="sm" className="flex-1" onClick={() => toast({ title: "Withdraw Crypto Funds (Mock)", description: "Functionality to withdraw crypto funds." })}>
+              <Landmark className="mr-2 h-4 w-4" /> Withdraw Funds
+            </Button>
           </div>
         </div>
       </div>

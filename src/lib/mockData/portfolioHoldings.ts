@@ -30,20 +30,6 @@ export const mockPortfolioHoldings: PortfolioHolding[] = [
     dayChangePercent: 0.45,
   },
   {
-    id: 'holding3',
-    name: 'Bitcoin',
-    symbol: 'BTC',
-    type: 'Crypto',
-    quantity: 0.05,
-    avgCostPrice: 2200000.00,
-    ltp: 2350000.00, 
-    currentValue: 117500.00,
-    profitAndLoss: 7500.00,
-    profitAndLossPercent: 6.82,
-    dayChangeAbsolute: 750.00, 
-    dayChangePercent: 0.64,
-  },
-  {
     id: 'holding4',
     name: '7.26% GS 2033',
     symbol: 'GOI2033',
@@ -86,3 +72,4 @@ export const mockPortfolioHoldings: PortfolioHolding[] = [
     dayChangePercent: 1.69,
   },
 ];
+
