@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useEffect, useMemo } from 'react';
@@ -21,8 +20,8 @@ import { cn } from '@/lib/utils';
 import { useToast } from "@/hooks/use-toast";
 
 interface OrderPlacementFormProps {
-  asset: Stock; 
-  assetType: "stock" | "future" | "option" | "crypto" | "mutual-fund" | "bond"; 
+  asset: Stock;
+  assetType: "stock" | "future" | "option" | "crypto" | "mutual-fund" | "bond";
   productType: string;
   onProductTypeChange: (value: string) => void;
 }
@@ -36,7 +35,7 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
 
 
   const [selectedExchange, setSelectedExchange] = useState<'BSE' | 'NSE'>('NSE');
-  const [orderMode, setOrderMode] = useState('Regular'); 
+  const [orderMode, setOrderMode] = useState('Regular');
   const [orderType, setOrderType] = useState('Limit'); // Market, Limit, SL, SL-M
 
   const [showMoreOptions, setShowMoreOptions] = useState(false);
@@ -46,18 +45,21 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
   const [enableTakeProfit, setEnableTakeProfit] = useState(false);
   const [takeProfitInputValue, setTakeProfitInputValue] = useState('');
   const [takeProfitType, setTakeProfitType] = useState<'price' | 'percentage'>('price');
-  
+
   const [mtfLeverage, setMtfLeverage] = useState('1x');
   const [displayedMargin, setDisplayedMargin] = useState(0);
 
   const marketDepthData = useMemo(() => {
     if (assetType !== "stock") return null;
+    
+    const basePrice = selectedExchange === 'NSE' ? asset.price : asset.price * 0.995;
+
     const buy = Array.from({ length: 5 }, (_, i) => ({
       quantity: Math.floor(Math.random() * 200 + 50),
-      price: asset.price - 0.05 * (i + 1),
+      price: basePrice - 0.05 * (i + 1) * (Math.random() * 0.1 + 0.95), // Add some randomness
     }));
     const sell = Array.from({ length: 5 }, (_, i) => ({
-      price: asset.price + 0.05 * (i + 1),
+      price: basePrice + 0.05 * (i + 1) * (Math.random() * 0.1 + 0.95), // Add some randomness
       quantity: Math.floor(Math.random() * 200 + 50),
     }));
     return {
@@ -66,35 +68,50 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
       totalBuyQty: buy.reduce((sum, order) => sum + order.quantity, 0),
       totalSellQty: sell.reduce((sum, order) => sum + order.quantity, 0),
     };
-  }, [asset.price, assetType]);
+  }, [asset.price, assetType, selectedExchange]);
 
 
   useEffect(() => {
-    setPrice(asset.price);
+    // Update price if orderType is Market, or when asset itself changes
+    if (orderType === 'Market') {
+      const marketPrice = assetType === 'stock'
+        ? (selectedExchange === 'NSE' ? asset.price : (asset.price * 0.995))
+        : asset.price;
+      setPrice(marketPrice);
+    } else {
+      // If not market, and asset changes, reset price to new asset's price (could be user choice)
+      // This handles initial load and asset prop changes primarily.
+      // If user manually changes price input, that takes precedence for non-market orders.
+      setPrice(asset.price);
+    }
+
     if (assetType === 'future' && asset.availableExpiries && asset.availableExpiries.length > 0) {
       setSelectedExpiryDate(asset.availableExpiries[0]);
     } else {
       setSelectedExpiryDate('');
     }
-  }, [asset, assetType]);
+  }, [asset, assetType]); // Removed selectedExchange from here to avoid loop with its own onValueChange effect
 
   useEffect(() => {
+    // This effect recalculates margin whenever relevant states change.
+    // The price state (for limit orders) or asset.price (for market orders, adjusted by exchange) is used.
     let priceForCalc = 0;
+
     if (orderType === 'Market') {
-      priceForCalc = assetType === 'stock' 
-        ? (selectedExchange === 'NSE' ? asset.price : (asset.price * 0.995)) // Mock BSE price for stock
+      priceForCalc = assetType === 'stock'
+        ? (selectedExchange === 'NSE' ? asset.price : (asset.price * 0.995))
         : asset.price;
-    } else { 
-      priceForCalc = price; 
+    } else {
+      priceForCalc = price; // This `price` state is user-entered or set when switching to Market
     }
 
     let baseMargin = 0;
 
     if (assetType === 'future') {
       const lotSize = asset.lotSize || 1;
-      const marginFactor = asset.marginFactor || 0.1; // Default 10% margin if not specified
+      const marginFactor = asset.marginFactor || 0.1;
       baseMargin = quantity * priceForCalc * lotSize * marginFactor;
-    } else { // For stocks and other asset types (assuming unit-based for now)
+    } else {
       baseMargin = quantity * priceForCalc;
     }
 
@@ -105,12 +122,12 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
         baseMargin = baseMargin / leverageFactor;
       }
     }
-    
+
     setDisplayedMargin(baseMargin);
   }, [quantity, price, orderType, asset.price, asset.lotSize, asset.marginFactor, orderMode, mtfLeverage, productType, selectedExchange, assetType]);
 
 
-  const handleOrderAction = (action: 'BUY' | 'SELL') => { 
+  const handleOrderAction = (action: 'BUY' | 'SELL') => {
     let slInfo = '';
     if (enableStopLoss && stopLossInputValue) {
       slInfo = `SL: ${stopLossInputValue}${stopLossType === 'percentage' ? '%' : ''}`;
@@ -158,7 +175,7 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
 
       <RadioGroup
         value={productType}
-        onValueChange={onProductTypeChange} 
+        onValueChange={onProductTypeChange}
         className="flex space-x-6"
       >
         {(assetType === 'stock' || assetType === 'future' || assetType === 'option') && (
@@ -194,7 +211,7 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
             type="number"
             value={price}
             onChange={(e) => setPrice(parseFloat(e.target.value) || 0)}
-            disabled={orderType === 'Market' && assetType !== 'mutual-fund'} 
+            disabled={orderType === 'Market' && assetType !== 'mutual-fund'}
             step="0.05"
           />
         </div>
@@ -229,7 +246,9 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
         onValueChange={(value) => {
           setOrderType(value);
           if (value === 'Market') {
-             const marketPrice = assetType === 'stock' ? (selectedExchange === 'NSE' ? asset.price : (asset.price * 0.995)) : asset.price;
+             const marketPrice = assetType === 'stock'
+                ? (selectedExchange === 'NSE' ? asset.price : (asset.price * 0.995))
+                : asset.price;
              setPrice(marketPrice);
           }
           if (value !== 'SL' && value !== 'SL-M') setTriggerPrice(0);
@@ -252,9 +271,9 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
       {(currentOrderMode === 'MTF' && assetType === 'stock') && (
         <div className="space-y-2 pt-2">
             <Label>Leverage</Label>
-            <RadioGroup 
-                value={mtfLeverage} 
-                onValueChange={setMtfLeverage} 
+            <RadioGroup
+                value={mtfLeverage}
+                onValueChange={setMtfLeverage}
                 className="flex flex-wrap gap-x-4 gap-y-2"
             >
             {['1x', '2x', '3x', '4x'].map(val => (
@@ -270,23 +289,23 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
       <Button variant="link" size="sm" className="p-0 h-auto text-primary text-xs flex items-center" onClick={() => setShowMoreOptions(!showMoreOptions)}>
         More options <ChevronDown className={cn("h-3 w-3 ml-0.5 transition-transform duration-200", showMoreOptions && "rotate-180")} />
       </Button>
-      
+
       {showMoreOptions && (
         <div className="mt-1 p-3 border rounded-md bg-muted/30 space-y-4 animate-accordion-down">
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <Label htmlFor={`enableStopLoss-${currentOrderMode}`} className="flex items-center font-normal text-sm">
-                <Checkbox 
-                  id={`enableStopLoss-${currentOrderMode}`} 
-                  className="mr-2" 
-                  checked={enableStopLoss} 
+                <Checkbox
+                  id={`enableStopLoss-${currentOrderMode}`}
+                  className="mr-2"
+                  checked={enableStopLoss}
                   onCheckedChange={(checked) => setEnableStopLoss(Boolean(checked))}
-                /> 
+                />
                 Stop loss
               </Label>
-              <RadioGroup 
-                value={stopLossType} 
-                onValueChange={(value) => setStopLossType(value as 'price' | 'percentage')} 
+              <RadioGroup
+                value={stopLossType}
+                onValueChange={(value) => setStopLossType(value as 'price' | 'percentage')}
                 className="flex"
                 disabled={!enableStopLoss}
               >
@@ -300,10 +319,10 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
                 </div>
               </RadioGroup>
             </div>
-            <Input 
-              id={`stopLossValue-${currentOrderMode}`} 
-              type="number" 
-              placeholder="0" 
+            <Input
+              id={`stopLossValue-${currentOrderMode}`}
+              type="number"
+              placeholder="0"
               value={stopLossInputValue}
               onChange={(e) => setStopLossInputValue(e.target.value)}
               disabled={!enableStopLoss}
@@ -314,17 +333,17 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <Label htmlFor={`enableTakeProfit-${currentOrderMode}`} className="flex items-center font-normal text-sm">
-                <Checkbox 
-                  id={`enableTakeProfit-${currentOrderMode}`} 
-                  className="mr-2" 
+                <Checkbox
+                  id={`enableTakeProfit-${currentOrderMode}`}
+                  className="mr-2"
                   checked={enableTakeProfit}
                   onCheckedChange={(checked) => setEnableTakeProfit(Boolean(checked))}
-                /> 
+                />
                 Take profit
               </Label>
-              <RadioGroup 
-                value={takeProfitType} 
-                onValueChange={(value) => setTakeProfitType(value as 'price' | 'percentage')} 
+              <RadioGroup
+                value={takeProfitType}
+                onValueChange={(value) => setTakeProfitType(value as 'price' | 'percentage')}
                 className="flex"
                 disabled={!enableTakeProfit}
               >
@@ -338,10 +357,10 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
                 </div>
               </RadioGroup>
             </div>
-            <Input 
-              id={`takeProfitValue-${currentOrderMode}`} 
-              type="number" 
-              placeholder="0" 
+            <Input
+              id={`takeProfitValue-${currentOrderMode}`}
+              type="number"
+              placeholder="0"
               value={takeProfitInputValue}
               onChange={(e) => setTakeProfitInputValue(e.target.value)}
               disabled={!enableTakeProfit}
@@ -408,7 +427,15 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
         <div className="bg-card text-card-foreground p-3 rounded-t-lg border-b">
             <RadioGroup
             value={selectedExchange}
-            onValueChange={(value) => setSelectedExchange(value as 'BSE' | 'NSE')}
+            onValueChange={(value) => {
+              const newExchange = value as 'BSE' | 'NSE';
+              setSelectedExchange(newExchange);
+              // If current order type is Market, update the price input to reflect the new exchange's market price
+              if (orderType === 'Market' && assetType === 'stock') {
+                const marketPrice = newExchange === 'NSE' ? asset.price : (asset.price * 0.995);
+                setPrice(marketPrice);
+              }
+            }}
             className="flex space-x-4"
             >
             <div className="flex items-center space-x-2">
@@ -443,8 +470,8 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
           <TabsContent value="Regular" className="p-4 space-y-4 mt-0">
             {renderOrderFields("Regular")}
           </TabsContent>
-          
-          {assetType === 'stock' && ( 
+
+          {assetType === 'stock' && (
           <TabsContent value="MTF" className="p-4 space-y-4 mt-0">
               {renderOrderFields("MTF")}
           </TabsContent>
@@ -465,3 +492,4 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
     </div>
   );
 }
+
