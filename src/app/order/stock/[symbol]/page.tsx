@@ -237,7 +237,6 @@ export default function StockOrderPage() {
                 <TabsTrigger value="fundamentals" className="flex-shrink-0 px-4 py-3 text-sm rounded-t-md rounded-b-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=inactive]:border-b-2 data-[state=inactive]:border-transparent data-[state=active]:shadow-none hover:text-primary">Fundamentals</TabsTrigger>
                 <TabsTrigger value="financials" className="flex-shrink-0 px-4 py-3 text-sm rounded-t-md rounded-b-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=inactive]:border-b-2 data-[state=inactive]:border-transparent data-[state=active]:shadow-none hover:text-primary">Financials</TabsTrigger>
                 <TabsTrigger value="technicals" className="flex-shrink-0 px-4 py-3 text-sm rounded-t-md rounded-b-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=inactive]:border-b-2 data-[state=inactive]:border-transparent data-[state=active]:shadow-none hover:text-primary">Technicals</TabsTrigger>
-                <TabsTrigger value="scores" className="flex-shrink-0 px-4 py-3 text-sm rounded-t-md rounded-b-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=inactive]:border-b-2 data-[state=inactive]:border-transparent data-[state=active]:shadow-none hover:text-primary">Scores</TabsTrigger>
                 <TabsTrigger value="news" className="flex-shrink-0 px-4 py-3 text-sm rounded-t-md rounded-b-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=inactive]:border-b-2 data-[state=inactive]:border-transparent data-[state=active]:shadow-none hover:text-primary">News</TabsTrigger>
               </TabsList>
               
@@ -301,7 +300,7 @@ export default function StockOrderPage() {
               </TabsContent>
 
               <TabsContent value="technicals" className="mt-4 space-y-6">
-                <div className="mb-6">
+                <div>
                   <h3 className="text-md font-semibold flex items-center mb-2">
                     Performance 
                     <Info className="h-3 w-3 ml-1.5 text-muted-foreground cursor-pointer" onClick={() => toast({title: "Performance Info Clicked"})} />
@@ -382,20 +381,6 @@ export default function StockOrderPage() {
                 </Card>
               </TabsContent>
 
-              <TabsContent value="scores" className="mt-4 space-y-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center"><FileText className="h-5 w-5 mr-2 text-primary" /> SIM Score & Ratings</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p>Proprietary SIM scores, analyst ratings, and peer comparisons will be shown here.</p>
-                    <div className="h-40 bg-muted rounded-md flex items-center justify-center my-4" data-ai-hint="scorecard rating report">
-                      <p className="text-muted-foreground">Scores Placeholder</p>
-                    </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-
               <TabsContent value="news" className="mt-4">
                  <NewsSection
                     articles={assetSpecificNews}
@@ -433,3 +418,4 @@ export default function StockOrderPage() {
     
 
     
+
