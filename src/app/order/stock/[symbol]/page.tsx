@@ -7,12 +7,11 @@ import Link from 'next/link';
 import { ProtectedRoute } from '@/components/shared/ProtectedRoute';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { mockStocks, mockCryptoAssets, mockMutualFunds, mockBonds, mockIndexFuturesForWatchlist, mockStockFuturesForWatchlist, mockOptionsForWatchlist, mockNewsArticles } from '@/lib/mockData';
 import type { Stock, NewsArticle } from '@/types';
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, TrendingUp, TrendingDown, Info, Maximize2, BarChart2, ChevronUp, ChevronDown, ChevronLeftIcon, ChevronRightIcon, Landmark, SearchIcon, LineChart, FileText, BarChartHorizontal } from 'lucide-react';
+import { ArrowLeft, TrendingUp, TrendingDown, Info, Maximize2, BarChart2, ChevronUp, ChevronDown, ChevronLeftIcon, ChevronRightIcon, Landmark, SearchIcon, LineChart, FileText } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { NewsSection } from '@/components/dashboard/NewsSection';
 import { OrderPlacementForm } from '@/components/order/OrderPlacementForm';
@@ -171,26 +170,6 @@ export default function StockOrderPage() {
   const currentFinancialsData = asset.financials?.[activeFinancialsCategory] || [];
   const maxFinancialValue = Math.max(...currentFinancialsData.map(d => d.value), 0);
 
-  const mockMarketDepth = {
-    buy: [
-      { quantity: Math.floor(Math.random() * 200 + 50), price: asset.price - 0.05 },
-      { quantity: Math.floor(Math.random() * 200 + 50), price: asset.price - 0.10 },
-      { quantity: Math.floor(Math.random() * 200 + 50), price: asset.price - 0.15 },
-      { quantity: Math.floor(Math.random() * 200 + 50), price: asset.price - 0.20 },
-      { quantity: Math.floor(Math.random() * 200 + 50), price: asset.price - 0.25 },
-    ],
-    sell: [
-      { price: asset.price + 0.05, quantity: Math.floor(Math.random() * 200 + 50) },
-      { price: asset.price + 0.10, quantity: Math.floor(Math.random() * 200 + 50) },
-      { price: asset.price + 0.15, quantity: Math.floor(Math.random() * 200 + 50) },
-      { price: asset.price + 0.20, quantity: Math.floor(Math.random() * 200 + 50) },
-      { price: asset.price + 0.25, quantity: Math.floor(Math.random() * 200 + 50) },
-    ],
-  };
-  const totalBuyQty = mockMarketDepth.buy.reduce((sum, order) => sum + order.quantity, 0);
-  const totalSellQty = mockMarketDepth.sell.reduce((sum, order) => sum + order.quantity, 0);
-
-
   return (
     <ProtectedRoute>
       <div className="flex flex-col min-h-screen bg-background text-foreground">
@@ -248,48 +227,7 @@ export default function StockOrderPage() {
                 </Button>
               ))}
             </div>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg flex items-center">
-                  <BarChartHorizontal className="h-5 w-5 mr-2 text-primary" />
-                  Market Depth
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="text-xs">
-                <div className="grid grid-cols-2 gap-2">
-                  <div>
-                    <div className="flex justify-between font-semibold mb-1 text-green-600">
-                      <span>Buy Orders</span>
-                      <span>Total: {totalBuyQty.toLocaleString()}</span>
-                    </div>
-                    <div className="space-y-0.5">
-                      {mockMarketDepth.buy.map((order, index) => (
-                        <div key={`buy-${index}`} className="flex justify-between p-1 rounded bg-green-500/10">
-                          <span className="text-green-700">{order.quantity.toLocaleString()}</span>
-                          <span className="font-medium text-foreground">@{order.price.toFixed(2)}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                  <div>
-                    <div className="flex justify-between font-semibold mb-1 text-red-600">
-                      <span>Sell Orders</span>
-                      <span>Total: {totalSellQty.toLocaleString()}</span>
-                    </div>
-                    <div className="space-y-0.5">
-                      {mockMarketDepth.sell.map((order, index) => (
-                        <div key={`sell-${index}`} className="flex justify-between p-1 rounded bg-red-500/10">
-                           <span className="font-medium text-foreground">@{order.price.toFixed(2)}</span>
-                           <span className="text-red-700">{order.quantity.toLocaleString()}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
+            
             <OrderPlacementForm asset={asset} productType={productTypeForOrder} onProductTypeChange={setProductTypeForOrder} assetType="stock"/>
 
             <Tabs defaultValue="technicals" className="w-full">
@@ -428,17 +366,12 @@ export default function StockOrderPage() {
                   </CollapsibleSection>
                 )}
 
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center"><LineChart className="h-5 w-5 mr-2 text-primary" /> Technical Analysis</CardTitle>
-                  </CardHeader>
-                  <CardContent>
+                <CollapsibleSection title="Technical Analysis" icon={LineChart} defaultOpen>
                     <p>Detailed technical indicators and charts will be displayed here.</p>
                     <div className="h-60 bg-muted rounded-md flex items-center justify-center my-4" data-ai-hint="technical chart indicators">
                       <p className="text-muted-foreground">Technical Chart Placeholder</p>
                     </div>
-                  </CardContent>
-                </Card>
+                </CollapsibleSection>
               </TabsContent>
 
               <TabsContent value="news" className="mt-4">
@@ -478,5 +411,6 @@ export default function StockOrderPage() {
     
 
     
+
 
 

@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import type { Stock } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -16,7 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { RefreshCcw,ChevronDown } from 'lucide-react';
+import { RefreshCcw,ChevronDown, BarChartHorizontal } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from "@/hooks/use-toast";
 
@@ -49,6 +49,24 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
   
   const [mtfLeverage, setMtfLeverage] = useState('1x');
   const [displayedMargin, setDisplayedMargin] = useState(0);
+
+  const marketDepthData = useMemo(() => {
+    if (assetType !== "stock") return null;
+    const buy = Array.from({ length: 5 }, (_, i) => ({
+      quantity: Math.floor(Math.random() * 200 + 50),
+      price: asset.price - 0.05 * (i + 1),
+    }));
+    const sell = Array.from({ length: 5 }, (_, i) => ({
+      price: asset.price + 0.05 * (i + 1),
+      quantity: Math.floor(Math.random() * 200 + 50),
+    }));
+    return {
+      buy,
+      sell,
+      totalBuyQty: buy.reduce((sum, order) => sum + order.quantity, 0),
+      totalSellQty: sell.reduce((sum, order) => sum + order.quantity, 0),
+    };
+  }, [asset.price, assetType]);
 
 
   useEffect(() => {
@@ -342,6 +360,45 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
               </p>
           )}
         </div>
+
+        {assetType === 'stock' && marketDepthData && (
+          <div className="mt-4 pt-4 border-t">
+            <h3 className="text-md font-semibold mb-2 flex items-center">
+              <BarChartHorizontal className="h-5 w-5 mr-2 text-primary" />
+              Market Depth
+            </h3>
+            <div className="grid grid-cols-2 gap-x-2 text-xs">
+              <div>
+                <div className="flex justify-between font-semibold mb-1 text-green-600">
+                  <span>Buy Orders</span>
+                  <span>Total: {marketDepthData.totalBuyQty.toLocaleString()}</span>
+                </div>
+                <div className="space-y-0.5">
+                  {marketDepthData.buy.map((order, index) => (
+                    <div key={`buy-${index}`} className="flex justify-between p-1 rounded bg-green-500/10">
+                      <span className="text-green-700">{order.quantity.toLocaleString()}</span>
+                      <span className="font-medium text-foreground">@{order.price.toFixed(2)}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <div className="flex justify-between font-semibold mb-1 text-red-600">
+                  <span>Sell Orders</span>
+                  <span>Total: {marketDepthData.totalSellQty.toLocaleString()}</span>
+                </div>
+                <div className="space-y-0.5">
+                  {marketDepthData.sell.map((order, index) => (
+                    <div key={`sell-${index}`} className="flex justify-between p-1 rounded bg-red-500/10">
+                       <span className="font-medium text-foreground">@{order.price.toFixed(2)}</span>
+                       <span className="text-red-700">{order.quantity.toLocaleString()}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
     </>
   );
 
@@ -408,4 +465,3 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
     </div>
   );
 }
-
