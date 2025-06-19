@@ -12,7 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { mockStocks, mockCryptoAssets, mockMutualFunds, mockBonds, mockIndexFuturesForWatchlist, mockStockFuturesForWatchlist, mockOptionsForWatchlist, mockNewsArticles } from '@/lib/mockData';
 import type { Stock, NewsArticle } from '@/types';
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, TrendingUp, TrendingDown, Info, Maximize2, BarChart2, ChevronUp, ChevronDown, ChevronLeftIcon, ChevronRightIcon, Landmark, SearchIcon, LineChart, FileText } from 'lucide-react';
+import { ArrowLeft, TrendingUp, TrendingDown, Info, Maximize2, BarChart2, ChevronUp, ChevronDown, ChevronLeftIcon, ChevronRightIcon, Landmark, SearchIcon, LineChart, FileText, BarChartHorizontal } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { NewsSection } from '@/components/dashboard/NewsSection';
 import { OrderPlacementForm } from '@/components/order/OrderPlacementForm';
@@ -171,6 +171,25 @@ export default function StockOrderPage() {
   const currentFinancialsData = asset.financials?.[activeFinancialsCategory] || [];
   const maxFinancialValue = Math.max(...currentFinancialsData.map(d => d.value), 0);
 
+  const mockMarketDepth = {
+    buy: [
+      { quantity: Math.floor(Math.random() * 200 + 50), price: asset.price - 0.05 },
+      { quantity: Math.floor(Math.random() * 200 + 50), price: asset.price - 0.10 },
+      { quantity: Math.floor(Math.random() * 200 + 50), price: asset.price - 0.15 },
+      { quantity: Math.floor(Math.random() * 200 + 50), price: asset.price - 0.20 },
+      { quantity: Math.floor(Math.random() * 200 + 50), price: asset.price - 0.25 },
+    ],
+    sell: [
+      { price: asset.price + 0.05, quantity: Math.floor(Math.random() * 200 + 50) },
+      { price: asset.price + 0.10, quantity: Math.floor(Math.random() * 200 + 50) },
+      { price: asset.price + 0.15, quantity: Math.floor(Math.random() * 200 + 50) },
+      { price: asset.price + 0.20, quantity: Math.floor(Math.random() * 200 + 50) },
+      { price: asset.price + 0.25, quantity: Math.floor(Math.random() * 200 + 50) },
+    ],
+  };
+  const totalBuyQty = mockMarketDepth.buy.reduce((sum, order) => sum + order.quantity, 0);
+  const totalSellQty = mockMarketDepth.sell.reduce((sum, order) => sum + order.quantity, 0);
+
 
   return (
     <ProtectedRoute>
@@ -230,13 +249,54 @@ export default function StockOrderPage() {
               ))}
             </div>
 
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg flex items-center">
+                  <BarChartHorizontal className="h-5 w-5 mr-2 text-primary" />
+                  Market Depth
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="text-xs">
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <div className="flex justify-between font-semibold mb-1 text-green-600">
+                      <span>Buy Orders</span>
+                      <span>Total: {totalBuyQty.toLocaleString()}</span>
+                    </div>
+                    <div className="space-y-0.5">
+                      {mockMarketDepth.buy.map((order, index) => (
+                        <div key={`buy-${index}`} className="flex justify-between p-1 rounded bg-green-500/10">
+                          <span className="text-green-700">{order.quantity.toLocaleString()}</span>
+                          <span className="font-medium text-foreground">@{order.price.toFixed(2)}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="flex justify-between font-semibold mb-1 text-red-600">
+                      <span>Sell Orders</span>
+                      <span>Total: {totalSellQty.toLocaleString()}</span>
+                    </div>
+                    <div className="space-y-0.5">
+                      {mockMarketDepth.sell.map((order, index) => (
+                        <div key={`sell-${index}`} className="flex justify-between p-1 rounded bg-red-500/10">
+                           <span className="font-medium text-foreground">@{order.price.toFixed(2)}</span>
+                           <span className="text-red-700">{order.quantity.toLocaleString()}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
             <OrderPlacementForm asset={asset} productType={productTypeForOrder} onProductTypeChange={setProductTypeForOrder} assetType="stock"/>
 
-            <Tabs defaultValue="fundamentals" className="w-full">
+            <Tabs defaultValue="technicals" className="w-full">
               <TabsList className="w-full bg-muted/30 flex overflow-x-auto whitespace-nowrap no-scrollbar rounded-none p-0 h-auto border-b mb-1">
+                <TabsTrigger value="technicals" className="flex-shrink-0 px-4 py-3 text-sm rounded-t-md rounded-b-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=inactive]:border-b-2 data-[state=inactive]:border-transparent data-[state=active]:shadow-none hover:text-primary">Technicals</TabsTrigger>
                 <TabsTrigger value="fundamentals" className="flex-shrink-0 px-4 py-3 text-sm rounded-t-md rounded-b-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=inactive]:border-b-2 data-[state=inactive]:border-transparent data-[state=active]:shadow-none hover:text-primary">Fundamentals</TabsTrigger>
                 <TabsTrigger value="financials" className="flex-shrink-0 px-4 py-3 text-sm rounded-t-md rounded-b-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=inactive]:border-b-2 data-[state=inactive]:border-transparent data-[state=active]:shadow-none hover:text-primary">Financials</TabsTrigger>
-                <TabsTrigger value="technicals" className="flex-shrink-0 px-4 py-3 text-sm rounded-t-md rounded-b-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=inactive]:border-b-2 data-[state=inactive]:border-transparent data-[state=active]:shadow-none hover:text-primary">Technicals</TabsTrigger>
                 <TabsTrigger value="news" className="flex-shrink-0 px-4 py-3 text-sm rounded-t-md rounded-b-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=inactive]:border-b-2 data-[state=inactive]:border-transparent data-[state=active]:shadow-none hover:text-primary">News</TabsTrigger>
               </TabsList>
               
@@ -418,4 +478,5 @@ export default function StockOrderPage() {
     
 
     
+
 
