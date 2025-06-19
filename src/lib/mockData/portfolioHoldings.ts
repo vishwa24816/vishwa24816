@@ -71,5 +71,18 @@ export const mockPortfolioHoldings: PortfolioHolding[] = [
     dayChangeAbsolute: 450.00, 
     dayChangePercent: 1.69,
   },
+  {
+    id: 'holding_eth',
+    name: 'Ethereum',
+    symbol: 'ETH',
+    type: 'Crypto',
+    quantity: 2.77, // Approx to reach ~500 INR current value
+    avgCostPrice: 170.00,
+    ltp: 180.00, // Mock LTP
+    currentValue: 2.77 * 180.00, // Roughly 498.60
+    profitAndLoss: (180.00 - 170.00) * 2.77, // 27.70
+    profitAndLossPercent: (((180.00 - 170.00) * 2.77) / (170.00 * 2.77)) * 100, // 5.88%
+    dayChangeAbsolute: 5.00,
+    dayChangePercent: (5.00 / ((2.77 * 180.00) - 5.00)) * 100, // approx 1.01%
+  },
 ];
-
