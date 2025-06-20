@@ -185,11 +185,11 @@ export interface Underlying {
 export interface FoInstrumentInBasket {
   id: string;
   action: 'BUY' | 'SELL';
-  name: string; // e.g., "NIFTY 25JUL24 22000 CE"
-  price: number; // Price at which it was added or avg price
+  name: string; 
+  price: number; 
   lots: number;
-  ltp?: number; // Current LTP for potential P&L calculation per leg
-  quantityPerLot?: number;
+  ltp?: number; 
+  quantityPerLot?: number; 
 }
 
 export interface FoBasket {
@@ -200,27 +200,26 @@ export interface FoBasket {
   instrumentsCount: number;
   createdDate: string;
   pnl?: number;
-  // New fields for expanded view
   instruments?: FoInstrumentInBasket[];
-  probabilityOfProfit?: number; // Percentage e.g. 60 for 60%
-  maxProfit?: number; // In currency
-  maxLoss?: number; // In currency (usually positive number representing loss)
-  riskRewardRatio?: string; // e.g. "1:2"
-  breakEvenPoints?: string; // e.g. "21850, 22150" or "Above 22000"
-  totalMargin?: number; // Can be same as requiredMargin or different
-  marginBenefits?: number; // In currency
+  probabilityOfProfit?: number; 
+  maxProfit?: number; 
+  maxLoss?: number; 
+  riskRewardRatio?: string; 
+  breakEvenPoints?: string; 
+  totalMargin?: number; 
+  marginBenefits?: number; 
 }
 
 export interface SelectedOptionLeg {
   id: string;
   underlyingSymbol: string;
-  instrumentName: string; // e.g. NIFTY 25 JUL 24 21500 CE
+  instrumentName: string; 
   expiryDate: string;
   strikePrice: number;
   optionType: 'Call' | 'Put';
   action: 'Buy' | 'Sell';
   ltp: number;
-  quantity: number; // Number of lots
+  quantity: number; 
 }
 
 export interface CommunityPost {

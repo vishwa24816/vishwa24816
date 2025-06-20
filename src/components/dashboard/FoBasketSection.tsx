@@ -2,9 +2,10 @@
 "use client";
 
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from '@/components/ui/button';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { mockFoBaskets } from '@/lib/mockData';
 import type { FoBasket, FoInstrumentInBasket } from '@/types';
 import { cn } from '@/lib/utils';
@@ -19,11 +20,11 @@ const formatCurrency = (value?: number, precision = 2) => {
 const getStatusBadgeVariant = (status: FoBasket['status']): "default" | "secondary" | "destructive" | "outline" => {
   switch (status) {
     case 'Active':
-      return 'default';
+      return 'default'; // Will be overridden by specific bg colors later
     case 'Pending Execution':
-      return 'secondary';
+      return 'secondary'; // Will be overridden
     case 'Executed':
-      return 'outline';
+      return 'outline'; // Will be overridden
     case 'Cancelled':
       return 'destructive';
     case 'Archived':
@@ -104,7 +105,7 @@ export function FoBasketSection() {
                   </div>
                 </div>
               </CardHeader>
-              <CardContent className="space-y-2 text-sm flex-grow">
+              <CardContent className="space-y-2 text-sm pb-3"> {/* Removed flex-grow, adjusted padding */}
                 <div className="flex items-center text-muted-foreground">
                   <Layers className="h-4 w-4 mr-2 text-primary/70" />
                   <span>{basket.instrumentsCount} Instrument{basket.instrumentsCount > 1 ? 's' : ''}</span>
@@ -132,7 +133,7 @@ export function FoBasketSection() {
             </div>
             
             {expandedBasketId === basket.id && (
-              <div className="border-t mt-2 p-3 space-y-4">
+              <div className="border-t p-3 space-y-4">
                 <div>
                     <h4 className="text-sm font-semibold mb-1.5 text-foreground">Instruments:</h4>
                     {basket.instruments && basket.instruments.length > 0 ? (
@@ -151,8 +152,8 @@ export function FoBasketSection() {
                     <h4 className="text-sm font-semibold mb-1.5 text-foreground">Strategy Metrics:</h4>
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                         <MetricDisplay label="Prob. of Profit" value={basket.probabilityOfProfit} unit="%" icon={TrendingUp} />
-                        <MetricDisplay label="Max Profit" value={formatCurrency(basket.maxProfit)} icon={Maximize} />
-                        <MetricDisplay label="Max Loss" value={formatCurrency(basket.maxLoss)} icon={Minimize} className="text-red-600"/>
+                        <MetricDisplay label="Max Profit" value={basket.maxProfit !== undefined ? formatCurrency(basket.maxProfit) : 'Unlimited'} icon={Maximize} className={basket.maxProfit === undefined ? 'text-green-600' : ''} />
+                        <MetricDisplay label="Max Loss" value={basket.maxLoss !== undefined ? formatCurrency(basket.maxLoss) : 'Unlimited'} icon={Minimize} className={cn('text-red-600', basket.maxLoss === undefined && 'text-red-600')} />
                         <MetricDisplay label="Risk/Reward" value={basket.riskRewardRatio} icon={Sigma} />
                         <MetricDisplay label="Breakeven(s)" value={basket.breakEvenPoints} icon={Info} className="col-span-2 sm:col-span-1"/>
                         <MetricDisplay label="Actual P&L" value={formatCurrency(basket.pnl)} icon={DollarSign} className={cn(basket.pnl !== undefined && basket.pnl >=0 ? 'text-green-600' : 'text-red-600')} />
@@ -162,7 +163,7 @@ export function FoBasketSection() {
                 </div>
               </div>
             )}
-             <div className="border-t mt-auto p-3 flex justify-end space-x-2">
+            <CardFooter className="border-t mt-auto p-3 flex justify-end space-x-2"> {/* Ensure CardFooter is used */}
                 {basket.status === 'Pending Execution' && (
                   <Button variant="default" size="sm" className="bg-primary" onClick={(e) => {e.stopPropagation(); toast({ title: `Execute Basket: ${basket.name}`})}}>
                     <PlayCircle className="mr-1 h-4 w-4" /> Execute
@@ -174,7 +175,7 @@ export function FoBasketSection() {
                 <Button variant="outline" size="sm" onClick={(e) => {e.stopPropagation(); toast({ title: `Duplicate Basket: ${basket.name}`})}}>
                     <Copy className="mr-1 h-4 w-4" /> Duplicate
                 </Button>
-            </div>
+            </CardFooter>
           </Card>
         ))}
       </div>
