@@ -20,11 +20,11 @@ const formatCurrency = (value?: number, precision = 2) => {
 const getStatusBadgeVariant = (status: FoBasket['status']): "default" | "secondary" | "destructive" | "outline" => {
   switch (status) {
     case 'Active':
-      return 'default'; // Will be overridden by specific bg colors later
+      return 'default'; 
     case 'Pending Execution':
-      return 'secondary'; // Will be overridden
+      return 'secondary'; 
     case 'Executed':
-      return 'outline'; // Will be overridden
+      return 'outline'; 
     case 'Cancelled':
       return 'destructive';
     case 'Archived':
@@ -105,7 +105,7 @@ export function FoBasketSection() {
                   </div>
                 </div>
               </CardHeader>
-              <CardContent className="space-y-2 text-sm pb-3"> {/* Removed flex-grow, adjusted padding */}
+              <CardContent className="space-y-2 text-sm pb-3">
                 <div className="flex items-center text-muted-foreground">
                   <Layers className="h-4 w-4 mr-2 text-primary/70" />
                   <span>{basket.instrumentsCount} Instrument{basket.instrumentsCount > 1 ? 's' : ''}</span>
@@ -153,7 +153,7 @@ export function FoBasketSection() {
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                         <MetricDisplay label="Prob. of Profit" value={basket.probabilityOfProfit} unit="%" icon={TrendingUp} />
                         <MetricDisplay label="Max Profit" value={basket.maxProfit !== undefined ? formatCurrency(basket.maxProfit) : 'Unlimited'} icon={Maximize} className={basket.maxProfit === undefined ? 'text-green-600' : ''} />
-                        <MetricDisplay label="Max Loss" value={basket.maxLoss !== undefined ? formatCurrency(basket.maxLoss) : 'Unlimited'} icon={Minimize} className={cn('text-red-600', basket.maxLoss === undefined && 'text-red-600')} />
+                        <MetricDisplay label="Max Loss" value={basket.maxLoss !== undefined ? formatCurrency(basket.maxLoss) : 'Unlimited'} icon={Minimize} className={cn(basket.maxLoss === undefined ? 'text-red-600' : (basket.maxLoss >= 0 ? 'text-red-600' : 'text-green-600'))} />
                         <MetricDisplay label="Risk/Reward" value={basket.riskRewardRatio} icon={Sigma} />
                         <MetricDisplay label="Breakeven(s)" value={basket.breakEvenPoints} icon={Info} className="col-span-2 sm:col-span-1"/>
                         <MetricDisplay label="Actual P&L" value={formatCurrency(basket.pnl)} icon={DollarSign} className={cn(basket.pnl !== undefined && basket.pnl >=0 ? 'text-green-600' : 'text-red-600')} />
@@ -163,7 +163,7 @@ export function FoBasketSection() {
                 </div>
               </div>
             )}
-            <CardFooter className="border-t mt-auto p-3 flex justify-end space-x-2"> {/* Ensure CardFooter is used */}
+            <CardFooter className="border-t mt-auto p-3 flex justify-end space-x-2">
                 {basket.status === 'Pending Execution' && (
                   <Button variant="default" size="sm" className="bg-primary" onClick={(e) => {e.stopPropagation(); toast({ title: `Execute Basket: ${basket.name}`})}}>
                     <PlayCircle className="mr-1 h-4 w-4" /> Execute
@@ -182,3 +182,4 @@ export function FoBasketSection() {
     </section>
   );
 }
+

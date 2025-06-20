@@ -30,10 +30,10 @@ export const mockFoBaskets: FoBasket[] = [
     instrumentsCount: 4,
     createdDate: '2024-07-20',
     instruments: [
-      { id: 'instr2-1', action: 'SELL', name: 'BANKNIFTY 29AUG24 47000 PE', price: 120.00, lots: 1, quantityPerLot: 15 },
-      { id: 'instr2-2', action: 'BUY', name: 'BANKNIFTY 29AUG24 46800 PE', price: 90.00, lots: 1, quantityPerLot: 15 },
-      { id: 'instr2-3', action: 'SELL', name: 'BANKNIFTY 29AUG24 48000 CE', price: 150.00, lots: 1, quantityPerLot: 15 },
-      { id: 'instr2-4', action: 'BUY', name: 'BANKNIFTY 29AUG24 48200 CE', price: 110.00, lots: 1, quantityPerLot: 15 },
+      { id: 'instr2-1', action: 'SELL', name: 'BANKNIFTY 29AUG24 47000 PE', price: 120.00, lots: 1, quantityPerLot: 15, ltp: 125.00 },
+      { id: 'instr2-2', action: 'BUY', name: 'BANKNIFTY 29AUG24 46800 PE', price: 90.00, lots: 1, quantityPerLot: 15, ltp: 95.00 },
+      { id: 'instr2-3', action: 'SELL', name: 'BANKNIFTY 29AUG24 48000 CE', price: 150.00, lots: 1, quantityPerLot: 15, ltp: 145.00 },
+      { id: 'instr2-4', action: 'BUY', name: 'BANKNIFTY 29AUG24 48200 CE', price: 110.00, lots: 1, quantityPerLot: 15, ltp: 105.00 },
     ],
     probabilityOfProfit: 70,
     maxProfit: 1050,
@@ -56,10 +56,11 @@ export const mockFoBaskets: FoBasket[] = [
       { id: 'instr3-2', action: 'BUY', name: 'RELIANCE JAN25 2800 PE', price: 50.75, lots: 1, quantityPerLot: 250, ltp: 60.25 },
     ],
     probabilityOfProfit: 50,
-    maxProfit: undefined,
-    maxLoss: 12687.50 + (2900 - 2800)*250,
-    breakEvenPoints: "Fut Price + Put Premium = 2900 + 50.75 = 2950.75",
-    totalMargin: 8100.20,
+    maxProfit: undefined, // Unlimited if stock goes up
+    maxLoss: (2900 - 2800 + 50.75) * 250, // ((Fut Entry - Strike) + Put Premium) * Qty
+    riskRewardRatio: "Varies",
+    breakEvenPoints: "Fut Entry + Put Premium = 2900 + 50.75 = 2950.75",
+    totalMargin: 170100.20, // Example total underlying value + option premium
     marginBenefits: 0,
   },
   {
@@ -71,9 +72,9 @@ export const mockFoBaskets: FoBasket[] = [
     createdDate: '2024-05-10',
     pnl: 12500.00,
     instruments: [
-      { id: 'bs1-1', action: 'BUY', name: 'RELIANCE', price: 2800, lots: 20, quantityPerLot: 1 },
-      { id: 'bs1-2', action: 'BUY', name: 'HDFCBANK', price: 1500, lots: 30, quantityPerLot: 1 },
-      { id: 'bs1-3', action: 'BUY', name: 'INFY', price: 1400, lots: 25, quantityPerLot: 1 },
+      { id: 'bs1-1', action: 'BUY', name: 'RELIANCE', price: 2800, lots: 20, quantityPerLot: 1, ltp: 2950 },
+      { id: 'bs1-2', action: 'BUY', name: 'HDFCBANK', price: 1500, lots: 30, quantityPerLot: 1, ltp: 1550 },
+      { id: 'bs1-3', action: 'BUY', name: 'INFY', price: 1400, lots: 25, quantityPerLot: 1, ltp: 1480 },
     ],
     probabilityOfProfit: undefined,
     maxProfit: undefined,
@@ -92,8 +93,8 @@ export const mockFoBaskets: FoBasket[] = [
     createdDate: '2024-06-01',
     pnl: 3200.00,
     instruments: [
-        { id: 'bs2-1', action: 'BUY', name: 'TCS', price: 3800, lots: 10, quantityPerLot: 1 },
-        { id: 'bs2-2', action: 'BUY', name: 'WIPRO', price: 450, lots: 80, quantityPerLot: 1 },
+        { id: 'bs2-1', action: 'BUY', name: 'TCS', price: 3800, lots: 10, quantityPerLot: 1, ltp: 3850 },
+        { id: 'bs2-2', action: 'BUY', name: 'WIPRO', price: 450, lots: 80, quantityPerLot: 1, ltp: 460 },
     ],
     probabilityOfProfit: undefined,
     maxProfit: undefined,
@@ -112,8 +113,8 @@ export const mockFoBaskets: FoBasket[] = [
     createdDate: '2024-04-15',
     pnl: 8500.00,
     instruments: [
-        { id: 'bc1-1', action: 'BUY', name: 'BTC', price: 2500000, lots: 0.01, quantityPerLot: 1 }, 
-        { id: 'bc1-2', action: 'BUY', name: 'ETH', price: 180000, lots: 0.138, quantityPerLot: 1 }, 
+        { id: 'bc1-1', action: 'BUY', name: 'BTC', price: 2500000, lots: 0.01, quantityPerLot: 1, ltp: 2800000 }, 
+        { id: 'bc1-2', action: 'BUY', name: 'ETH', price: 180000, lots: 0.138, quantityPerLot: 1, ltp: 200000 }, 
     ],
     probabilityOfProfit: undefined,
     maxProfit: undefined,
@@ -131,8 +132,8 @@ export const mockFoBaskets: FoBasket[] = [
     instrumentsCount: 2,
     createdDate: '2024-07-22',
      instruments: [
-        { id: 'bc2-1', action: 'BUY', name: 'SOL', price: 15000, lots: 1, quantityPerLot: 1 },
-        { id: 'bc2-2', action: 'BUY', name: 'ADA', price: 100, lots: 100, quantityPerLot: 1 },
+        { id: 'bc2-1', action: 'BUY', name: 'SOL', price: 15000, lots: 1, quantityPerLot: 1, ltp: 15500 },
+        { id: 'bc2-2', action: 'BUY', name: 'ADA', price: 100, lots: 100, quantityPerLot: 1, ltp: 105 },
     ],
     probabilityOfProfit: undefined,
     maxProfit: undefined,
@@ -151,8 +152,8 @@ export const mockFoBaskets: FoBasket[] = [
     createdDate: '2024-03-01',
     pnl: 15000.00,
     instruments: [
-        { id: 'bmf1-1', action: 'BUY', name: 'Parag Parikh Flexi Cap', price: 60, lots: 1000, quantityPerLot: 1 },
-        { id: 'bmf1-2', action: 'BUY', name: 'Mirae Asset ELSS', price: 30, lots: 2000, quantityPerLot: 1 },
+        { id: 'bmf1-1', action: 'BUY', name: 'Parag Parikh Flexi Cap', price: 60, lots: 1000, quantityPerLot: 1, ltp: 65 },
+        { id: 'bmf1-2', action: 'BUY', name: 'Mirae Asset ELSS', price: 30, lots: 2000, quantityPerLot: 1, ltp: 33 },
     ],
     probabilityOfProfit: undefined,
     maxProfit: undefined,
@@ -171,7 +172,7 @@ export const mockFoBaskets: FoBasket[] = [
     createdDate: '2024-02-10',
     pnl: 4500.00,
     instruments: [
-        { id: 'bmf2-1', action: 'BUY', name: 'Axis Long Term Equity', price: 50, lots: 1000, quantityPerLot: 1 },
+        { id: 'bmf2-1', action: 'BUY', name: 'Axis Long Term Equity', price: 50, lots: 1000, quantityPerLot: 1, ltp: 55 },
     ],
     probabilityOfProfit: undefined,
     maxProfit: undefined,

@@ -300,3 +300,4 @@ export interface PriceAlert {
   assetType: 'Stock' | 'Mutual Fund' | 'Crypto' | 'Future' | 'Option' | 'ETF' | 'Index';
   notes?: string;
 }
+
