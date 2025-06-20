@@ -11,7 +11,7 @@ import { PortfolioHoldingsTable } from '@/components/dashboard/PortfolioHoldings
 import { CryptoHoldingsSection } from '@/components/dashboard/CryptoHoldingsSection';
 import { IntradayPositionsSection } from '@/components/dashboard/IntradayPositionsSection';
 import { FoPositionsSection } from '@/components/dashboard/FoPositionsSection';
-// import { FoBasketSection } from '@/components/dashboard/FoBasketSection'; // Removed
+import { FoBasketSection } from '@/components/dashboard/FoBasketSection'; // Re-added import
 import { CryptoFuturesSection } from '@/components/dashboard/CryptoFuturesSection';
 import { OptionChain } from '@/components/dashboard/OptionChain';
 import { ReadymadeStrategiesSection } from '@/components/dashboard/ReadymadeStrategiesSection';
@@ -292,7 +292,7 @@ export default function DashboardPage() {
             <div className="space-y-8">
               <IntradayPositionsSection />
               <FoPositionsSection />
-              {/* <FoBasketSection /> Removed */}
+              <FoBasketSection /> {/* Re-added F&O Basket Section here */}
               <CryptoFuturesSection />
               <NewsSection articles={newsForView} />
             </div>
