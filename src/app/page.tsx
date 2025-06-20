@@ -11,7 +11,7 @@ import { PortfolioHoldingsTable } from '@/components/dashboard/PortfolioHoldings
 import { CryptoHoldingsSection } from '@/components/dashboard/CryptoHoldingsSection';
 import { IntradayPositionsSection } from '@/components/dashboard/IntradayPositionsSection';
 import { FoPositionsSection } from '@/components/dashboard/FoPositionsSection';
-import { FoBasketSection } from '@/components/dashboard/FoBasketSection'; 
+// import { FoBasketSection } from '@/components/dashboard/FoBasketSection'; // Removed
 import { CryptoFuturesSection } from '@/components/dashboard/CryptoFuturesSection';
 import { OptionChain } from '@/components/dashboard/OptionChain';
 import { ReadymadeStrategiesSection } from '@/components/dashboard/ReadymadeStrategiesSection';
@@ -43,7 +43,7 @@ import {
   mockStockFuturesForWatchlist,
   mockMarketIndices, 
   mockCryptoFuturesForWatchlist,
-  mockFoBaskets,
+  // mockFoBaskets, // Kept for data integrity, but component removed
 } from '@/lib/mockData';
 
 function getRelevantNewsForHoldings(holdings: PortfolioHolding[], allNews: NewsArticle[]): NewsArticle[] {
@@ -292,7 +292,7 @@ export default function DashboardPage() {
             <div className="space-y-8">
               <IntradayPositionsSection />
               <FoPositionsSection />
-              <FoBasketSection />
+              {/* <FoBasketSection /> Removed */}
               <CryptoFuturesSection />
               <NewsSection articles={newsForView} />
             </div>
@@ -416,11 +416,9 @@ export default function DashboardPage() {
           )}
         </main>
         <footer className="py-6 text-center text-sm text-muted-foreground border-t">
-          © {new Date().getFullYear()} SIM - Stock Information & Management. All rights reserved.
+          © {new Date().getFullYear()} SIM - Stock Information &amp; Management. All rights reserved.
         </footer>
       </div>
     </ProtectedRoute>
   );
 }
-
-    

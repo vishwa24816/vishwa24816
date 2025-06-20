@@ -11,17 +11,17 @@ import { Search, SlidersHorizontal } from 'lucide-react';
 import { OpenPositionsDisplay } from '@/components/orders/OpenPositionsDisplay';
 import { GttOrdersDisplay } from '@/components/orders/GttOrdersDisplay';
 import { BondBidsDisplay } from '@/components/orders/BondBidsDisplay';
-import { BasketsDisplay } from '@/components/orders/BasketsDisplay';
+// import { BasketsDisplay } from '@/components/orders/BasketsDisplay'; // Removed
 import { SipsDisplay } from '@/components/orders/SipsDisplay';
 import { AlertsDisplay } from '@/components/orders/AlertsDisplay';
-import { mockGttOrders, mockBondBids, mockFoBaskets, mockSips, mockPriceAlerts } from '@/lib/mockData';
+import { mockGttOrders, mockBondBids, mockSips, mockPriceAlerts } from '@/lib/mockData'; // mockFoBaskets removed from here if it was present
 import { mockPortfolioHoldings, mockIntradayPositions, mockFoPositions, mockCryptoFutures } from '@/lib/mockData'; // For Open tab
 
 const orderTabs = [
-  { value: "executed", label: "Open" }, // Value "executed" might mean orders that ARE executed leading to open positions
+  { value: "executed", label: "Open" }, 
   { value: "gtt", label: "GTT" },
   { value: "bids", label: "Bids" },
-  { value: "baskets", label: "Baskets" },
+  // { value: "baskets", label: "Baskets" }, // Removed
   { value: "sips", label: "SIPs" },
   { value: "alerts", label: "Alerts" },
 ];
@@ -97,9 +97,11 @@ export default function OrdersPage() {
               <TabsContent value="bids" className="flex-grow flex flex-col mt-0 data-[state=inactive]:hidden">
                 {mockBondBids.length > 0 ? <BondBidsDisplay /> : <NoDataContent message="No bond bids found. Explore bonds and place bids." />}
               </TabsContent>
+              {/*
               <TabsContent value="baskets" className="flex-grow flex flex-col mt-0 data-[state=inactive]:hidden">
                 {mockFoBaskets.length > 0 ? <BasketsDisplay /> : <NoDataContent message="No basket orders found. Create baskets from the F&O section." />}
               </TabsContent>
+              */}
               <TabsContent value="sips" className="flex-grow flex flex-col mt-0 data-[state=inactive]:hidden">
                 {mockSips.length > 0 ? <SipsDisplay /> : <NoDataContent message="No active or paused SIPs found. Start an SIP in stocks or mutual funds." />}
               </TabsContent>
