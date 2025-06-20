@@ -47,7 +47,7 @@ export const mockFoBaskets: FoBasket[] = [
     id: 'basket3',
     name: 'Reliance Protective Put Jan Fut',
     status: 'Executed',
-    requiredMargin: 8100.20, // This seems low for a future, likely should be option premium + future margin
+    requiredMargin: 8100.20, 
     instrumentsCount: 2,
     createdDate: '2024-07-10',
     pnl: -350.80,
@@ -55,12 +55,12 @@ export const mockFoBaskets: FoBasket[] = [
       { id: 'instr3-1', action: 'BUY', name: 'RELIANCE JAN25 FUT', price: 2900.00, lots: 1, quantityPerLot: 250, ltp: 2880.00 },
       { id: 'instr3-2', action: 'BUY', name: 'RELIANCE JAN25 2800 PE', price: 50.75, lots: 1, quantityPerLot: 250, ltp: 60.25 },
     ],
-    probabilityOfProfit: 50, // Difficult to quantify accurately without models
-    maxProfit: undefined, // Unlimited if stock goes up significantly beyond breakeven
-    maxLoss: (2900 - 2800 + 50.75) * 250, // ((Fut Entry - Strike) + Put Premium) * Qty
+    probabilityOfProfit: 50, 
+    maxProfit: undefined, 
+    maxLoss: (2900 - 2800 + 50.75) * 250, 
     riskRewardRatio: "Varies",
     breakEvenPoints: "Fut Entry + Put Premium = 2900 + 50.75 = 2950.75",
-    totalMargin: 170100.20, // Example of full future margin + option premium
+    totalMargin: 170100.20, 
     marginBenefits: 0,
   },
   {
@@ -76,9 +76,9 @@ export const mockFoBaskets: FoBasket[] = [
       { id: 'bs1-2', action: 'BUY', name: 'HDFCBANK', price: 1500, lots: 30, quantityPerLot: 1, ltp: 1550 },
       { id: 'bs1-3', action: 'BUY', name: 'INFY', price: 1400, lots: 25, quantityPerLot: 1, ltp: 1480 },
     ],
-    probabilityOfProfit: undefined, // Not typically calculated for stock baskets
-    maxProfit: undefined, // Unlimited
-    maxLoss: 150000.00, // Total investment
+    probabilityOfProfit: undefined, 
+    maxProfit: undefined, 
+    maxLoss: 150000.00, 
     riskRewardRatio: "N/A",
     breakEvenPoints: "N/A",
     totalMargin: 150000.00,
@@ -132,7 +132,7 @@ export const mockFoBaskets: FoBasket[] = [
     instrumentsCount: 2,
     createdDate: '2024-07-22',
      instruments: [
-        { id: 'bc2-1', action: 'BUY', name: 'SOL', price: 15000, lots: 1, quantityPerLot: 1, ltp: 15500 }, // Assuming price is per unit for crypto
+        { id: 'bc2-1', action: 'BUY', name: 'SOL', price: 15000, lots: 1, quantityPerLot: 1, ltp: 15500 }, 
         { id: 'bc2-2', action: 'BUY', name: 'ADA', price: 100, lots: 100, quantityPerLot: 1, ltp: 105 },
     ],
     probabilityOfProfit: undefined,
@@ -151,7 +151,7 @@ export const mockFoBaskets: FoBasket[] = [
     instrumentsCount: 2, 
     createdDate: '2024-03-01',
     pnl: 15000.00,
-    instruments: [ // Assuming price is NAV for MFs, lots as units
+    instruments: [ 
         { id: 'bmf1-1', action: 'BUY', name: 'Parag Parikh Flexi Cap', price: 60, lots: 1000, quantityPerLot: 1, ltp: 65 },
         { id: 'bmf1-2', action: 'BUY', name: 'Mirae Asset ELSS', price: 30, lots: 2000, quantityPerLot: 1, ltp: 33 },
     ],
