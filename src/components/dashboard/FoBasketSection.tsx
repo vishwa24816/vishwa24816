@@ -6,23 +6,24 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from '@/components/ui/button';
 import { mockFoBaskets } from '@/lib/mockData';
-import type { FoBasket } from '@/types';
+import type { FoBasket, FoInstrumentInBasket } from '@/types';
 import { cn } from '@/lib/utils';
-import { ShoppingBasket, CalendarDays, Layers, ChevronDown, ChevronUp, Edit3, Copy, PlayCircle } from 'lucide-react';
+import { ShoppingBasket, CalendarDays, Layers, ChevronDown, ChevronUp, Edit3, Copy, PlayCircle, TrendingUp, TrendingDown, Info, DollarSign, AlertTriangle, Sigma, Maximize, Minimize } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 
-const formatCurrency = (value: number) => {
-  return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
+const formatCurrency = (value?: number, precision = 2) => {
+  if (value === undefined || value === null || isNaN(value)) return 'N/A';
+  return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: precision, maximumFractionDigits: precision }).format(value);
 };
 
 const getStatusBadgeVariant = (status: FoBasket['status']): "default" | "secondary" | "destructive" | "outline" => {
   switch (status) {
     case 'Active':
-      return 'default'; // Using default for green-like appearance based on theme
+      return 'default';
     case 'Pending Execution':
-      return 'secondary'; // Yellowish/Grayish
+      return 'secondary';
     case 'Executed':
-      return 'outline'; // Neutral
+      return 'outline';
     case 'Cancelled':
       return 'destructive';
     case 'Archived':
@@ -31,6 +32,31 @@ const getStatusBadgeVariant = (status: FoBasket['status']): "default" | "seconda
       return 'outline';
   }
 };
+
+const MetricDisplay: React.FC<{ label: string; value: string | number | undefined; icon?: React.ElementType; unit?: string; className?: string }> = ({ label, value, icon: Icon, unit, className }) => (
+  <div className={cn("flex flex-col p-2 bg-muted/50 rounded-md", className)}>
+    <div className="text-xs text-muted-foreground flex items-center">
+      {Icon && <Icon className="h-3.5 w-3.5 mr-1.5" />}
+      {label}
+    </div>
+    <p className="text-sm font-semibold text-foreground">
+      {typeof value === 'number' ? (unit === '₹' ? formatCurrency(value) : `${value}${unit || ''}`) : (value || 'N/A')}
+    </p>
+  </div>
+);
+
+const InstrumentListItem: React.FC<{ instrument: FoInstrumentInBasket }> = ({ instrument }) => (
+  <li className="flex justify-between items-center py-1.5 px-2 even:bg-muted/30 rounded-sm text-xs">
+    <div className="flex-1">
+      <span className={cn("font-semibold", instrument.action === 'BUY' ? 'text-green-600' : 'text-red-600')}>{instrument.action}</span>
+      <span className="ml-1.5 text-foreground">{instrument.name}</span>
+    </div>
+    <div className="flex-shrink-0 text-right min-w-[100px]">
+      <span>{instrument.lots} Lot{instrument.lots > 1 ? 's' : ''}</span>
+      <span className="ml-2 text-muted-foreground">@ {formatCurrency(instrument.price)}</span>
+    </div>
+  </li>
+);
 
 
 export function FoBasketSection() {
@@ -106,17 +132,34 @@ export function FoBasketSection() {
             </div>
             
             {expandedBasketId === basket.id && (
-              <div className="border-t mt-2 p-4"> {/* Removed animate-accordion-down */}
-                <h4 className="text-sm font-semibold mb-2 text-foreground">Basket Instrument Details:</h4>
-                <ul className="space-y-1 text-xs text-muted-foreground">
-                  {/* Placeholder for actual instrument details */}
-                  <li>- BUY NIFTY 25JUL24 22000 CE @ 150.50 (1 Lot)</li>
-                  <li>- SELL NIFTY 25JUL24 22200 CE @ 80.25 (1 Lot)</li>
-                  {basket.instrumentsCount > 2 && <li>- ... and {basket.instrumentsCount - 2} more instruments.</li>}
-                </ul>
-                <p className="text-xs text-muted-foreground mt-3 italic">
-                  Full instrument breakdown will appear here. Click Edit to modify.
-                </p>
+              <div className="border-t mt-2 p-3 space-y-4">
+                <div>
+                    <h4 className="text-sm font-semibold mb-1.5 text-foreground">Instruments:</h4>
+                    {basket.instruments && basket.instruments.length > 0 ? (
+                        <ScrollArea className="max-h-40 pr-2">
+                        <ul className="space-y-1">
+                            {basket.instruments.map(instrument => (
+                                <InstrumentListItem key={instrument.id} instrument={instrument} />
+                            ))}
+                        </ul>
+                        </ScrollArea>
+                    ) : (
+                        <p className="text-xs text-muted-foreground italic">No instrument details available.</p>
+                    )}
+                </div>
+                <div>
+                    <h4 className="text-sm font-semibold mb-1.5 text-foreground">Strategy Metrics:</h4>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                        <MetricDisplay label="Prob. of Profit" value={basket.probabilityOfProfit} unit="%" icon={TrendingUp} />
+                        <MetricDisplay label="Max Profit" value={formatCurrency(basket.maxProfit)} icon={Maximize} />
+                        <MetricDisplay label="Max Loss" value={formatCurrency(basket.maxLoss)} icon={Minimize} className="text-red-600"/>
+                        <MetricDisplay label="Risk/Reward" value={basket.riskRewardRatio} icon={Sigma} />
+                        <MetricDisplay label="Breakeven(s)" value={basket.breakEvenPoints} icon={Info} className="col-span-2 sm:col-span-1"/>
+                        <MetricDisplay label="Actual P&L" value={formatCurrency(basket.pnl)} icon={DollarSign} className={cn(basket.pnl !== undefined && basket.pnl >=0 ? 'text-green-600' : 'text-red-600')} />
+                        <MetricDisplay label="Total Margin" value={formatCurrency(basket.totalMargin || basket.requiredMargin)} icon={DollarSign} />
+                        <MetricDisplay label="Margin Benefits" value={formatCurrency(basket.marginBenefits)} icon={AlertTriangle} />
+                    </div>
+                </div>
               </div>
             )}
              <div className="border-t mt-auto p-3 flex justify-end space-x-2">
@@ -138,4 +181,3 @@ export function FoBasketSection() {
     </section>
   );
 }
-

@@ -182,6 +182,16 @@ export interface Underlying {
   symbol: string;
 }
 
+export interface FoInstrumentInBasket {
+  id: string;
+  action: 'BUY' | 'SELL';
+  name: string; // e.g., "NIFTY 25JUL24 22000 CE"
+  price: number; // Price at which it was added or avg price
+  lots: number;
+  ltp?: number; // Current LTP for potential P&L calculation per leg
+  quantityPerLot?: number;
+}
+
 export interface FoBasket {
   id: string;
   name: string;
@@ -190,6 +200,15 @@ export interface FoBasket {
   instrumentsCount: number;
   createdDate: string;
   pnl?: number;
+  // New fields for expanded view
+  instruments?: FoInstrumentInBasket[];
+  probabilityOfProfit?: number; // Percentage e.g. 60 for 60%
+  maxProfit?: number; // In currency
+  maxLoss?: number; // In currency (usually positive number representing loss)
+  riskRewardRatio?: string; // e.g. "1:2"
+  breakEvenPoints?: string; // e.g. "21850, 22150" or "Above 22000"
+  totalMargin?: number; // Can be same as requiredMargin or different
+  marginBenefits?: number; // In currency
 }
 
 export interface SelectedOptionLeg {
@@ -258,10 +277,10 @@ export interface SipOrder {
   id: string;
   instrumentName: string;
   symbol?: string;
-  assetType: 'Stock' | 'Mutual Fund' | 'ETF' | 'Gold Bond';
+  assetType: 'Stock' | 'Mutual Fund' | 'ETF' | 'Gold Bond' | 'Crypto';
   amount?: number;
   quantity?: number;
-  frequency: 'Daily' | 'Weekly' | 'Bi-Weekly' | 'Monthly';
+  frequency: 'Daily' | 'Weekly' | 'Bi-Weekly' | 'Monthly' | 'Annually';
   nextDueDate: string;
   status: 'Active' | 'Paused' | 'Cancelled' | 'Completed';
   startDate: string;
