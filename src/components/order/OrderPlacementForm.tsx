@@ -22,7 +22,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { CalendarIcon, RefreshCcw, ChevronDown, BarChartHorizontal, ShoppingBasket, BellPlus } from 'lucide-react';
+import { CalendarIcon, ChevronDown, BarChartHorizontal, ShoppingBasket, BellPlus } from 'lucide-react';
 import { format } from "date-fns";
 import { cn } from '@/lib/utils';
 import { useToast } from "@/hooks/use-toast";
@@ -66,17 +66,22 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
   const [sipStartDate, setSipStartDate] = useState<Date | undefined>(new Date());
   const [sipInstallments, setSipInstallments] = useState('');
 
+  useEffect(() => {
+    if (assetType === 'mutual-fund' || assetType === 'bond') {
+      setSipInvestmentType('amount'); // Force to amount for these types
+    }
+  }, [assetType]);
 
   const isSipAmountBased = useMemo(() => {
-    if (assetType === 'mutual-fund' || assetType === 'bond') return true;
-    if (assetType === 'stock' || assetType === 'etf' || assetType === 'crypto') return false; // Default to quantity for these
+    if (assetType === 'mutual-fund' || assetType === 'bond') return true; // For these types, it's always amount based
+    // For other types (stock, etf, crypto), let user choose.
     return sipInvestmentType === 'amount';
   }, [assetType, sipInvestmentType]);
 
   const marketDepthData = useMemo(() => {
     if (assetType !== "stock") return null;
     
-    const basePrice = selectedExchange === 'NSE' ? asset.price : asset.price * 0.995;
+    const basePrice = selectedExchange === 'NSE' ? asset.price : asset.price * 0.995; // Use asset's current exchange price
 
     const buy = Array.from({ length: 5 }, (_, i) => ({
       quantity: Math.floor(Math.random() * 200 + 50),
@@ -97,12 +102,14 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
   useEffect(() => {
     let currentPrice = asset.price;
     if (assetType === 'stock' && selectedExchange === 'BSE') {
-      currentPrice = asset.price * 0.995;
+      currentPrice = asset.price * 0.995; // Apply BSE price adjustment
     }
 
     if (orderType === 'Market') {
-      setPrice(currentPrice);
+      setPrice(currentPrice); // Update price to current market price for the selected exchange
     } else {
+      // Only reset price if it's the initial load or matches the old asset price
+      // This prevents overriding user input when they switch exchanges with a limit price already set
       if (price === asset.price || (assetType === 'stock' && price === asset.price * 0.995) || price === 0 ) {
          setPrice(currentPrice);
       }
@@ -117,22 +124,23 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
 
   useEffect(() => {
     let priceForCalc = 0;
+    // Determine the current asset price based on selected exchange for stocks
     let currentAssetPrice = asset.price;
     if (assetType === 'stock' && selectedExchange === 'BSE') {
-        currentAssetPrice = asset.price * 0.995;
+        currentAssetPrice = asset.price * 0.995; // BSE price adjustment
     }
 
     if (orderType === 'Market') {
-      priceForCalc = currentAssetPrice;
+      priceForCalc = currentAssetPrice; // Use adjusted market price
     } else {
-      priceForCalc = price; 
+      priceForCalc = price; // Use user-entered limit price
     }
 
     let baseMargin = 0;
 
     if (assetType === 'future') {
       const lotSize = asset.lotSize || 1;
-      const marginFactor = asset.marginFactor || 0.1;
+      const marginFactor = asset.marginFactor || 0.1; // Default margin factor if not provided
       baseMargin = quantity * priceForCalc * lotSize * marginFactor;
     } else {
       baseMargin = quantity * priceForCalc;
@@ -173,7 +181,7 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
 
   const handleMarketDepthPriceClick = (clickedPrice: number) => {
     setPrice(clickedPrice);
-    setOrderType('Limit'); 
+    setOrderType('Limit'); // Switch to Limit order when a price from depth is clicked
   };
 
   const handleStartSip = () => {
@@ -281,6 +289,7 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
         onValueChange={(value) => {
           setOrderType(value);
           if (value === 'Market') {
+             // Set market price based on selected exchange for stocks
              const marketPrice = assetType === 'stock'
                 ? (selectedExchange === 'NSE' ? asset.price : (asset.price * 0.995))
                 : asset.price;
@@ -291,8 +300,9 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
         className="flex flex-wrap gap-x-4 gap-y-2"
       >
         {(['Market', 'Limit', 'SL', 'SL-M'] as const).map(type => {
+            // Mutual funds & Bonds typically don't have SL/SL-M orders or Limit for MF
             if ((assetType === 'mutual-fund' || assetType === 'bond') && (type === 'SL' || type === 'SL-M')) return null;
-            if (assetType === 'mutual-fund' && type === 'Limit') return null;
+            if (assetType === 'mutual-fund' && type === 'Limit') return null; // MFs are usually NAV based (Market)
 
            return (
             <div key={type} className="flex items-center space-x-2">
@@ -327,6 +337,7 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
 
       {showMoreOptions && (
         <div className="mt-1 p-3 border rounded-md bg-muted/30 space-y-4 animate-accordion-down">
+          {/* Stop Loss Section */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <Label htmlFor={`enableStopLoss-${currentOrderMode}`} className="flex items-center font-normal text-sm">
@@ -365,6 +376,7 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
             />
           </div>
 
+          {/* Take Profit Section */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <Label htmlFor={`enableTakeProfit-${currentOrderMode}`} className="flex items-center font-normal text-sm">
@@ -489,6 +501,7 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
           value={isSipAmountBased ? 'amount' : 'quantity'}
           onValueChange={(value) => setSipInvestmentType(value as 'amount' | 'quantity')}
           className="flex space-x-4"
+          // Disable group if asset type forces amount-based (MF/Bond)
           disabled={assetType === 'mutual-fund' || assetType === 'bond'}
         >
           <div className="flex items-center space-x-2">
@@ -496,8 +509,18 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
             <Label htmlFor="sip-amount-type" className="font-normal">Amount</Label>
           </div>
           <div className="flex items-center space-x-2">
-            <RadioGroupItem value="quantity" id="sip-quantity-type" disabled={assetType === 'mutual-fund' || assetType === 'bond'}/>
-            <Label htmlFor="sip-quantity-type" className={cn("font-normal", (assetType === 'mutual-fund' || assetType === 'bond') && "text-muted-foreground/70")}>Quantity</Label>
+            <RadioGroupItem 
+                value="quantity" 
+                id="sip-quantity-type" 
+                // Also individually disable quantity if MF/Bond
+                disabled={assetType === 'mutual-fund' || assetType === 'bond'}
+            />
+            <Label 
+                htmlFor="sip-quantity-type" 
+                className={cn("font-normal", (assetType === 'mutual-fund' || assetType === 'bond') && "text-muted-foreground/70")}
+            >
+                Quantity
+            </Label>
           </div>
         </RadioGroup>
       </div>
@@ -599,6 +622,7 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
             onValueChange={(value) => {
               const newExchange = value as 'BSE' | 'NSE';
               setSelectedExchange(newExchange);
+              // Update price to market if order type is Market when exchange changes
               if (orderType === 'Market' && assetType === 'stock') {
                 const marketPrice = newExchange === 'NSE' ? asset.price : (asset.price * 0.995);
                 setPrice(marketPrice);
@@ -664,4 +688,3 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
     </>
   );
 }
-
