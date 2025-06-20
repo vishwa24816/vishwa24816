@@ -154,25 +154,23 @@ export default function SimbotPage() {
                   disabled={isLoading}
                   autoFocus
                 />
+                <Button
+                  type="button"
+                  variant="default" 
+                  size="icon"
+                  className="rounded-full shadow-sm"
+                  disabled={isLoading}
+                  onClick={() => alert("Voice input coming soon!")}
+                >
+                  <Mic className="h-5 w-5" />
+                  <span className="sr-only">Use Microphone</span>
+                </Button>
                 <Button type="submit" size="icon" disabled={isLoading || !inputValue.trim()}>
                   {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
                   <span className="sr-only">Send message</span>
                 </Button>
               </form>
             </div>
-            
-            <Button
-              type="button"
-              variant="default" 
-              size="icon"
-              className="absolute bottom-20 right-4 sm:right-6 md:right-8 rounded-full shadow-lg z-10 h-14 w-14 flex items-center justify-center"
-              disabled={isLoading}
-              onClick={() => alert("Voice input coming soon!")}
-            >
-              <Mic className="h-7 w-7" />
-              <span className="sr-only">Use Microphone</span>
-            </Button>
-
           </div>
         </main>
       </div>
