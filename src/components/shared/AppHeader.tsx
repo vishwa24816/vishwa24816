@@ -10,11 +10,14 @@ import {
   Search,
   Sun,
   Moon,
-  User, // Changed from QrCode
+  User, 
   Menu,
   LogOut,
   Home as HomeIcon,
-  Info as InfoIcon
+  Info as InfoIcon,
+  TrendingUp,
+  Trophy,
+  LifeBuoy,
 } from 'lucide-react';
 import {
   Sheet,
@@ -129,6 +132,36 @@ export function AppHeader() {
                   >
                     <InfoIcon className="mr-3 h-5 w-5 text-primary" />
                     About
+                  </Button>
+                </SheetClose>
+                <SheetClose asChild>
+                  <Button
+                    variant="ghost"
+                    className="justify-start text-base p-3 hover:bg-accent/10"
+                    onClick={() => alert('Advanced Analytics feature coming soon!')}
+                  >
+                    <TrendingUp className="mr-3 h-5 w-5 text-primary" />
+                    Advanced Analytics
+                  </Button>
+                </SheetClose>
+                <SheetClose asChild>
+                  <Button
+                    variant="ghost"
+                    className="justify-start text-base p-3 hover:bg-accent/10"
+                    onClick={() => alert('Stocks Challenge feature coming soon!')}
+                  >
+                    <Trophy className="mr-3 h-5 w-5 text-primary" />
+                    Stocks Challenge
+                  </Button>
+                </SheetClose>
+                <SheetClose asChild>
+                  <Button
+                    variant="ghost"
+                    className="justify-start text-base p-3 hover:bg-accent/10"
+                    onClick={() => alert('Support feature coming soon!')}
+                  >
+                    <LifeBuoy className="mr-3 h-5 w-5 text-primary" />
+                    Support
                   </Button>
                 </SheetClose>
               </nav>
