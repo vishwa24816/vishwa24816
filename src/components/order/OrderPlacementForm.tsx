@@ -73,7 +73,7 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
   }, [assetType]);
 
   const leverageOptions = useMemo(() => {
-    if (assetType === 'crypto-future') return ['1x', '5x', '10x', '20x', '50x', '100x'];
+    if (assetType === 'crypto-future') return ['1x', '2x', '3x', '4x', '5x', '10x', '20x', '25x', '50x', '100x', '200x'];
     return ['1x', '2x', '3x', '4x'];
   }, [assetType]);
 
@@ -323,7 +323,7 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
         })}
       </RadioGroup>
 
-      {(currentOrderMode === 'MTF' && (assetType === 'stock' || assetType === 'crypto-future')) && (
+      {(currentOrderMode === 'MTF' && assetType === 'stock') && (
         <div className="space-y-2 pt-2">
             <Label>Leverage</Label>
             <RadioGroup
@@ -338,6 +338,22 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
                 </div>
             ))}
             </RadioGroup>
+        </div>
+      )}
+
+      {(currentOrderMode === 'MTF' && assetType === 'crypto-future') && (
+        <div className="space-y-2 pt-2">
+          <Label htmlFor={`leverage-${currentOrderMode}`}>Leverage</Label>
+          <Select value={mtfLeverage} onValueChange={setMtfLeverage}>
+            <SelectTrigger id={`leverage-${currentOrderMode}`} className="w-full sm:w-[180px]">
+              <SelectValue placeholder="Select leverage" />
+            </SelectTrigger>
+            <SelectContent>
+              {leverageOptions.map(val => (
+                <SelectItem key={val} value={val}>{val}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
       )}
 
@@ -702,3 +718,4 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
     </>
   );
 }
+
