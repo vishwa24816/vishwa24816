@@ -1,3 +1,4 @@
+
 "use client";
 
 import { AppHeader } from '@/components/shared/AppHeader';
@@ -158,13 +159,18 @@ function getRelevantNewsForWatchlistItems(items: Stock[] | MarketIndex[] | undef
 
 
 export default function DashboardPage() {
+  const cryptoNavItems = ["Crypto Spot", "Crypto Futures", "Crypto Mutual Fund", "Crypto ETF"];
+
   const secondaryNavTriggerCategories: Record<string, string[]> = {
     Portfolio: ["Holdings", "Positions", "Portfolio Watchlist"],
     Stocks: ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
     "Index Futures": ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
     "Stock Futures": ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
     Options: ["Custom", "Strategy Builder", "Readymade"],
-    Crypto: ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
+    "Crypto Spot": ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
+    "Crypto Futures": ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
+    "Crypto Mutual Fund": ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
+    "Crypto ETF": ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
     "Mutual funds": ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
     Bonds: ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
     IPO: [],
@@ -174,7 +180,6 @@ export default function DashboardPage() {
   const [activeSecondaryItem, setActiveSecondaryItem] = useState(
     secondaryNavTriggerCategories["Portfolio"]?.[0] || ""
   );
-  const [cryptoMarketView, setCryptoMarketView] = useState<'spot' | 'futures' | 'mutual-fund' | 'etf'>('spot');
   
   const [mainPortfolioCashBalance, setMainPortfolioCashBalance] = useState(50000.00);
 
@@ -192,28 +197,30 @@ export default function DashboardPage() {
   const handleSecondaryNavClick = (item: string) => {
     setActiveSecondaryItem(item);
   };
-
+  
+  const isCryptoView = cryptoNavItems.includes(activePrimaryItem);
   const isPortfolioHoldingsView = activePrimaryItem === "Portfolio" && activeSecondaryItem === "Holdings";
   const isPortfolioPositionsView = activePrimaryItem === "Portfolio" && activeSecondaryItem === "Positions";
   const isUserPortfolioWatchlistView = activePrimaryItem === "Portfolio" && activeSecondaryItem === "Portfolio Watchlist";
 
-  const isIndexFuturesTopWatchlistView = activePrimaryItem === "Index Futures" && activeSecondaryItem.startsWith("Top watchlist");
-  const isStockFuturesTopWatchlistView = activePrimaryItem === "Stock Futures" && activeSecondaryItem.startsWith("Top watchlist");
+  const topWatchlistItems = [
+    "Stocks",
+    "Index Futures",
+    "Stock Futures",
+    "Mutual funds",
+    "Bonds",
+    ...cryptoNavItems,
+  ];
 
-  const isCategoryTopWatchlistView = 
-    ["Stocks", "Mutual funds", "Bonds"].includes(activePrimaryItem) && 
-    activeSecondaryItem.startsWith("Top watchlist");
-  
-  const isCryptoTopWatchlistView = activePrimaryItem === "Crypto" && activeSecondaryItem.startsWith("Top watchlist");
-
+  const isTopWatchlistView = topWatchlistItems.includes(activePrimaryItem) && activeSecondaryItem.startsWith("Top watchlist");
 
   const isCategoryNumberedWatchlistView = 
-    ["Stocks", "Index Futures", "Stock Futures", "Crypto", "Mutual funds", "Bonds"].includes(activePrimaryItem) && 
+    [...topWatchlistItems].includes(activePrimaryItem) && 
     !!activeSecondaryItem.match(/^Watchlist \d+$/);
 
 
   let newsForView: NewsArticle[] = mockNewsArticles; 
-  let itemsForCategoryWatchlist: Stock[] | undefined = undefined;
+  let itemsForTopWatchlist: Stock[] | undefined = undefined;
   let categoryWatchlistTitle: string = "";
 
   if (isPortfolioHoldingsView) {
@@ -224,45 +231,30 @@ export default function DashboardPage() {
     newsForView = mockNewsArticles; 
   } else if (isUserPortfolioWatchlistView) {
     newsForView = getRelevantNewsForHoldings(mockPortfolioHoldings, mockNewsArticles); 
-  } else if (isIndexFuturesTopWatchlistView) {
-    newsForView = getRelevantNewsForWatchlistItems(mockIndexFuturesForWatchlist, mockNewsArticles);
-  } else if (isStockFuturesTopWatchlistView) {
-    newsForView = getRelevantNewsForWatchlistItems(mockStockFuturesForWatchlist, mockNewsArticles);
-  } else if (isCategoryTopWatchlistView) { 
-    categoryWatchlistTitle = `${activePrimaryItem} - ${activeSecondaryItem}`;
-    if (activePrimaryItem === "Stocks") {
-      itemsForCategoryWatchlist = mockStocks.map(s => ({...s, exchange: s.exchange || (Math.random() > 0.5 ? "NSE" : "BSE")}));
-    } else if (activePrimaryItem === "Mutual funds") {
-      itemsForCategoryWatchlist = mockMutualFunds;
-    } else if (activePrimaryItem === "Bonds") {
-      itemsForCategoryWatchlist = mockBonds;
-    } else {
-      itemsForCategoryWatchlist = []; 
-    }
-    newsForView = getRelevantNewsForWatchlistItems(itemsForCategoryWatchlist, mockNewsArticles);
-  } else if (isCryptoTopWatchlistView) {
-    switch (cryptoMarketView) {
-        case 'spot':
-            categoryWatchlistTitle = `Crypto Spot - ${activeSecondaryItem}`;
-            itemsForCategoryWatchlist = mockCryptoAssets;
-            break;
-        case 'futures':
-            categoryWatchlistTitle = `Crypto Futures - ${activeSecondaryItem}`;
-            itemsForCategoryWatchlist = mockCryptoFuturesForWatchlist;
-            break;
-        case 'mutual-fund':
-            categoryWatchlistTitle = `Crypto Mutual Funds - ${activeSecondaryItem}`;
-            itemsForCategoryWatchlist = mockCryptoMutualFunds;
-            break;
-        case 'etf':
-            categoryWatchlistTitle = `Crypto ETFs - ${activeSecondaryItem}`;
-            itemsForCategoryWatchlist = mockCryptoETFs;
-            break;
-        default:
-            categoryWatchlistTitle = `Crypto Spot - ${activeSecondaryItem}`;
-            itemsForCategoryWatchlist = mockCryptoAssets;
-    }
-    newsForView = getRelevantNewsForWatchlistItems(itemsForCategoryWatchlist, mockNewsArticles);
+  } else if (isTopWatchlistView) {
+      categoryWatchlistTitle = `${activePrimaryItem} - ${activeSecondaryItem}`;
+      if (activePrimaryItem === "Stocks") {
+        itemsForTopWatchlist = mockStocks.map(s => ({...s, exchange: s.exchange || (Math.random() > 0.5 ? "NSE" : "BSE")}));
+      } else if (activePrimaryItem === "Index Futures") {
+        itemsForTopWatchlist = mockIndexFuturesForWatchlist;
+      } else if (activePrimaryItem === "Stock Futures") {
+        itemsForTopWatchlist = mockStockFuturesForWatchlist;
+      } else if (activePrimaryItem === "Crypto Spot") {
+        itemsForTopWatchlist = mockCryptoAssets;
+      } else if (activePrimaryItem === "Crypto Futures") {
+        itemsForTopWatchlist = mockCryptoFuturesForWatchlist;
+      } else if (activePrimaryItem === "Crypto Mutual Fund") {
+        itemsForTopWatchlist = mockCryptoMutualFunds;
+      } else if (activePrimaryItem === "Crypto ETF") {
+        itemsForTopWatchlist = mockCryptoETFs;
+      } else if (activePrimaryItem === "Mutual funds") {
+        itemsForTopWatchlist = mockMutualFunds;
+      } else if (activePrimaryItem === "Bonds") {
+        itemsForTopWatchlist = mockBonds;
+      } else {
+        itemsForTopWatchlist = []; 
+      }
+      newsForView = getRelevantNewsForWatchlistItems(itemsForTopWatchlist, mockNewsArticles);
   } else if (isCategoryNumberedWatchlistView) {
     categoryWatchlistTitle = `${activePrimaryItem} - ${activeSecondaryItem}`;
     newsForView = mockNewsArticles; 
@@ -274,7 +266,7 @@ export default function DashboardPage() {
       <div className="flex flex-col min-h-screen">
         <AppHeader />
         <main className="flex-grow container mx-auto p-4 sm:p-6 lg:p-8 space-y-8">
-          {activePrimaryItem === "Crypto" ? (
+          {isCryptoView ? (
             <MarketOverview 
               title="Top Cryptocurrencies" 
               items={mockCryptoAssets.slice(0, 3)} 
@@ -342,70 +334,11 @@ export default function DashboardPage() {
                   <NewsSection articles={newsForView} />
                 </div>
               ) : null
-          ) : isIndexFuturesTopWatchlistView ? (
-            <div className="space-y-8">
-              <WatchlistSection
-                title="Index Futures - Top Watchlist"
-                displayItems={mockIndexFuturesForWatchlist}
-                isPredefinedList={true}
-              />
-              <NewsSection articles={newsForView} />
-            </div>
-          ) : isStockFuturesTopWatchlistView ? (
-            <div className="space-y-8">
-              <WatchlistSection
-                title="Stock Futures - Top Watchlist"
-                displayItems={mockStockFuturesForWatchlist}
-                isPredefinedList={true}
-              />
-              <NewsSection articles={newsForView} />
-            </div>
-          ) : isCategoryTopWatchlistView ? ( 
+          ) : isTopWatchlistView ? ( 
             <div className="space-y-8">
               <WatchlistSection
                 title={categoryWatchlistTitle}
-                displayItems={itemsForCategoryWatchlist}
-                isPredefinedList={true}
-              />
-              <NewsSection articles={newsForView} />
-            </div>
-          ) : isCryptoTopWatchlistView ? ( 
-             <div className="space-y-8">
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-0 -mt-4">
-                    <div className="flex space-x-2 overflow-x-auto no-scrollbar pb-2">
-                        <Button
-                        variant={cryptoMarketView === 'spot' ? 'secondary' : 'outline'}
-                        onClick={() => setCryptoMarketView('spot')}
-                        size="sm"
-                        >
-                        Spot
-                        </Button>
-                        <Button
-                        variant={cryptoMarketView === 'futures' ? 'secondary' : 'outline'}
-                        onClick={() => setCryptoMarketView('futures')}
-                        size="sm"
-                        >
-                        Futures
-                        </Button>
-                        <Button
-                        variant={cryptoMarketView === 'mutual-fund' ? 'secondary' : 'outline'}
-                        onClick={() => setCryptoMarketView('mutual-fund')}
-                        size="sm"
-                        >
-                        Crypto Mutual Fund
-                        </Button>
-                        <Button
-                        variant={cryptoMarketView === 'etf' ? 'secondary' : 'outline'}
-                        onClick={() => setCryptoMarketView('etf')}
-                        size="sm"
-                        >
-                        Crypto ETF
-                        </Button>
-                    </div>
-                </div>
-              <WatchlistSection
-                title={categoryWatchlistTitle}
-                displayItems={itemsForCategoryWatchlist} 
+                displayItems={itemsForTopWatchlist}
                 isPredefinedList={true}
               />
               <NewsSection articles={newsForView} />
