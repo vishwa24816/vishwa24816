@@ -159,7 +159,7 @@ function getRelevantNewsForWatchlistItems(items: Stock[] | MarketIndex[] | undef
 
 
 export default function DashboardPage() {
-  const cryptoNavItems = ["Crypto Spot", "Crypto Futures", "Crypto Mutual Fund", "Crypto ETF"];
+  const cryptoNavItems = ["Crypto Spot", "Crypto Futures", "Crypto Mutual Fund"];
 
   const secondaryNavTriggerCategories: Record<string, string[]> = {
     Portfolio: ["Holdings", "Positions", "Portfolio Watchlist"],
@@ -170,7 +170,6 @@ export default function DashboardPage() {
     "Crypto Spot": ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
     "Crypto Futures": ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
     "Crypto Mutual Fund": ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
-    "Crypto ETF": ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
     "Stocks Mutual fund": ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
     Bonds: ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
     IPO: [],
@@ -244,9 +243,7 @@ export default function DashboardPage() {
       } else if (activePrimaryItem === "Crypto Futures") {
         itemsForTopWatchlist = mockCryptoFuturesForWatchlist;
       } else if (activePrimaryItem === "Crypto Mutual Fund") {
-        itemsForTopWatchlist = mockCryptoMutualFunds;
-      } else if (activePrimaryItem === "Crypto ETF") {
-        itemsForTopWatchlist = mockCryptoETFs;
+        itemsForTopWatchlist = [...mockCryptoMutualFunds, ...mockCryptoETFs];
       } else if (activePrimaryItem === "Stocks Mutual fund") {
         itemsForTopWatchlist = mockMutualFunds;
       } else if (activePrimaryItem === "Bonds") {

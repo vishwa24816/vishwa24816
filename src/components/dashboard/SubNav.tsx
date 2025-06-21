@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 const primaryNavItems = [
-  "Portfolio", "Crypto Spot", "Crypto Futures", "Crypto Mutual Fund", "Crypto ETF", "Stocks", "Index Futures", "Stock Futures", "Options", "Stocks Mutual fund", "Bonds", "IPO"
+  "Portfolio", "Crypto Spot", "Crypto Futures", "Crypto Mutual Fund", "Stocks", "Index Futures", "Stock Futures", "Options", "Stocks Mutual fund", "Bonds", "IPO"
 ];
 
 interface SubNavProps {
