@@ -1,4 +1,3 @@
-
 "use client";
 
 import React from 'react';
@@ -6,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 const primaryNavItems = [
-  "Portfolio", "Stocks", "Futures", "Options", "Crypto", "Mutual funds", "Bonds", "IPO"
+  "Portfolio", "Stocks", "Index Futures", "Stock Futures", "Options", "Crypto", "Mutual funds", "Bonds", "IPO"
 ];
 
 interface SubNavProps {

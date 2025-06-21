@@ -1,4 +1,3 @@
-
 "use client";
 
 import { AppHeader } from '@/components/shared/AppHeader';
@@ -162,12 +161,13 @@ export default function DashboardPage() {
   const secondaryNavTriggerCategories: Record<string, string[]> = {
     Portfolio: ["Holdings", "Positions", "Portfolio Watchlist"],
     Stocks: ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
-    Futures: ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)], 
-    Options: ["Custom", "Strategy Builder", "Readymade"], 
-    Crypto: ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)], 
+    "Index Futures": ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
+    "Stock Futures": ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
+    Options: ["Custom", "Strategy Builder", "Readymade"],
+    Crypto: ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
     "Mutual funds": ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
     Bonds: ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
-    IPO: [], 
+    IPO: [],
   };
 
   const [activePrimaryItem, setActivePrimaryItem] = useState("Portfolio");
@@ -197,7 +197,8 @@ export default function DashboardPage() {
   const isPortfolioPositionsView = activePrimaryItem === "Portfolio" && activeSecondaryItem === "Positions";
   const isUserPortfolioWatchlistView = activePrimaryItem === "Portfolio" && activeSecondaryItem === "Portfolio Watchlist";
 
-  const isFuturesTopWatchlistView = activePrimaryItem === "Futures" && activeSecondaryItem.startsWith("Top watchlist");
+  const isIndexFuturesTopWatchlistView = activePrimaryItem === "Index Futures" && activeSecondaryItem.startsWith("Top watchlist");
+  const isStockFuturesTopWatchlistView = activePrimaryItem === "Stock Futures" && activeSecondaryItem.startsWith("Top watchlist");
 
   const isCategoryTopWatchlistView = 
     ["Stocks", "Mutual funds", "Bonds"].includes(activePrimaryItem) && 
@@ -207,7 +208,7 @@ export default function DashboardPage() {
 
 
   const isCategoryNumberedWatchlistView = 
-    ["Stocks", "Futures", "Crypto", "Mutual funds", "Bonds"].includes(activePrimaryItem) && 
+    ["Stocks", "Index Futures", "Stock Futures", "Crypto", "Mutual funds", "Bonds"].includes(activePrimaryItem) && 
     !!activeSecondaryItem.match(/^Watchlist \d+$/);
 
 
@@ -223,9 +224,10 @@ export default function DashboardPage() {
     newsForView = mockNewsArticles; 
   } else if (isUserPortfolioWatchlistView) {
     newsForView = getRelevantNewsForHoldings(mockPortfolioHoldings, mockNewsArticles); 
-  } else if (isFuturesTopWatchlistView) {
-    const combinedFutures = [...mockIndexFuturesForWatchlist, ...mockStockFuturesForWatchlist];
-    newsForView = getRelevantNewsForWatchlistItems(combinedFutures, mockNewsArticles);
+  } else if (isIndexFuturesTopWatchlistView) {
+    newsForView = getRelevantNewsForWatchlistItems(mockIndexFuturesForWatchlist, mockNewsArticles);
+  } else if (isStockFuturesTopWatchlistView) {
+    newsForView = getRelevantNewsForWatchlistItems(mockStockFuturesForWatchlist, mockNewsArticles);
   } else if (isCategoryTopWatchlistView) { 
     categoryWatchlistTitle = `${activePrimaryItem} - ${activeSecondaryItem}`;
     if (activePrimaryItem === "Stocks") {
@@ -340,13 +342,17 @@ export default function DashboardPage() {
                   <NewsSection articles={newsForView} />
                 </div>
               ) : null
-          ) : isFuturesTopWatchlistView ? (
+          ) : isIndexFuturesTopWatchlistView ? (
             <div className="space-y-8">
               <WatchlistSection
                 title="Index Futures - Top Watchlist"
                 displayItems={mockIndexFuturesForWatchlist}
                 isPredefinedList={true}
               />
+              <NewsSection articles={newsForView} />
+            </div>
+          ) : isStockFuturesTopWatchlistView ? (
+            <div className="space-y-8">
               <WatchlistSection
                 title="Stock Futures - Top Watchlist"
                 displayItems={mockStockFuturesForWatchlist}
@@ -354,7 +360,7 @@ export default function DashboardPage() {
               />
               <NewsSection articles={newsForView} />
             </div>
-          ): isCategoryTopWatchlistView ? ( 
+          ) : isCategoryTopWatchlistView ? ( 
             <div className="space-y-8">
               <WatchlistSection
                 title={categoryWatchlistTitle}
