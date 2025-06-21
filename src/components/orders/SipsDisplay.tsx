@@ -62,14 +62,22 @@ const SipItem: React.FC<SipItemProps> = ({ sip }) => {
   );
 };
 
-export function SipsDisplay() {
-  const sips = mockSips;
+interface SipsDisplayProps {
+  isRealMode?: boolean;
+}
+
+export function SipsDisplay({ isRealMode = false }: SipsDisplayProps) {
+  const sips = isRealMode
+    ? mockSips.filter(sip => sip.assetType === 'Crypto')
+    : mockSips.filter(sip => sip.assetType !== 'Crypto');
 
   if (sips.length === 0) {
     return (
       <div className="text-center py-10">
         <CalendarClock className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-        <p className="text-muted-foreground">No SIPs found.</p>
+        <p className="text-muted-foreground">
+          {isRealMode ? "No crypto SIPs found." : "No SIPs found for stocks or mutual funds."}
+        </p>
       </div>
     );
   }
@@ -82,4 +90,3 @@ export function SipsDisplay() {
     </ScrollArea>
   );
 }
-

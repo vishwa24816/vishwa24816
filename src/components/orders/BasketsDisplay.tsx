@@ -54,14 +54,22 @@ const BasketItem: React.FC<BasketItemProps> = ({ basket }) => {
   );
 };
 
-export function BasketsDisplay() {
-  const baskets = mockFoBaskets; // Using F&O baskets as example
+interface BasketsDisplayProps {
+  isRealMode?: boolean;
+}
+
+export function BasketsDisplay({ isRealMode = false }: BasketsDisplayProps) {
+  const baskets = isRealMode
+    ? mockFoBaskets.filter(basket => basket.name.toLowerCase().includes('crypto') || basket.name.toLowerCase().includes('defi'))
+    : mockFoBaskets.filter(basket => !basket.name.toLowerCase().includes('crypto') && !basket.name.toLowerCase().includes('defi'));
 
   if (baskets.length === 0) {
     return (
       <div className="text-center py-10">
         <ShoppingBasket className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-        <p className="text-muted-foreground">No basket orders found.</p>
+        <p className="text-muted-foreground">
+          {isRealMode ? "No crypto basket orders found." : "No stock or F&O basket orders found."}
+        </p>
       </div>
     );
   }
@@ -74,4 +82,3 @@ export function BasketsDisplay() {
     </ScrollArea>
   );
 }
-

@@ -14,8 +14,6 @@ import { BondBidsDisplay } from '@/components/orders/BondBidsDisplay';
 import { BasketsDisplay } from '@/components/orders/BasketsDisplay';
 import { SipsDisplay } from '@/components/orders/SipsDisplay';
 import { AlertsDisplay } from '@/components/orders/AlertsDisplay';
-import { mockGttOrders, mockBondBids, mockSips, mockPriceAlerts, mockFoBaskets } from '@/lib/mockData'; 
-import { mockPortfolioHoldings, mockIntradayPositions, mockFoPositions, mockCryptoFutures } from '@/lib/mockData';
 import { useAuth } from '@/contexts/AuthContext';
 
 const demoOrderTabs = [
@@ -29,6 +27,8 @@ const demoOrderTabs = [
 
 const realOrderTabs = [
   { value: "executed", label: "Open" },
+  { value: "baskets", label: "Baskets" },
+  { value: "sips", label: "SIPs" },
   { value: "alerts", label: "Alerts" },
 ];
 
@@ -98,19 +98,19 @@ export default function OrdersPage() {
                 <OpenPositionsDisplay isRealMode={isRealMode} />
               </TabsContent>
               <TabsContent value="gtt" className="flex-grow flex flex-col mt-0 data-[state=inactive]:hidden">
-                {mockGttOrders.length > 0 ? <GttOrdersDisplay /> : <NoDataContent message="No GTT orders found. You can place GTT orders from stock/future detail pages." />}
+                <GttOrdersDisplay />
               </TabsContent>
               <TabsContent value="bids" className="flex-grow flex flex-col mt-0 data-[state=inactive]:hidden">
-                {mockBondBids.length > 0 ? <BondBidsDisplay /> : <NoDataContent message="No bond bids found. Explore bonds and place bids." />}
+                <BondBidsDisplay />
               </TabsContent>
               <TabsContent value="baskets" className="flex-grow flex flex-col mt-0 data-[state=inactive]:hidden">
-                {mockFoBaskets.length > 0 ? <BasketsDisplay /> : <NoDataContent message="No basket orders found. Create baskets for F&O or other asset types." />}
+                <BasketsDisplay isRealMode={isRealMode} />
               </TabsContent>
               <TabsContent value="sips" className="flex-grow flex flex-col mt-0 data-[state=inactive]:hidden">
-                {mockSips.length > 0 ? <SipsDisplay /> : <NoDataContent message="No active or paused SIPs found. Start an SIP in stocks or mutual funds." />}
+                <SipsDisplay isRealMode={isRealMode} />
               </TabsContent>
               <TabsContent value="alerts" className="flex-grow flex flex-col mt-0 data-[state=inactive]:hidden">
-                {mockPriceAlerts.length > 0 ? <AlertsDisplay /> : <NoDataContent message="No price alerts set. Create alerts for your favorite instruments." />}
+                <AlertsDisplay />
               </TabsContent>
             </div>
           </Tabs>
