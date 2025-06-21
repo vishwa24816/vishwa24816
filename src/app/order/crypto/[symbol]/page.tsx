@@ -8,7 +8,7 @@ import { ProtectedRoute } from '@/components/shared/ProtectedRoute';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { allMockAssets, mockNewsArticles } from '@/lib/mockData'; // Import all assets
+import { mockCryptoAssets, mockNewsArticles } from '@/lib/mockData';
 import type { Stock, NewsArticle } from '@/types';
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, TrendingUp, TrendingDown, Info, Maximize2, BarChart2, ChevronUp, ChevronDown } from 'lucide-react';
@@ -96,9 +96,8 @@ export default function CryptoOrderPage() {
 
   useEffect(() => {
     if (symbol) {
-      const foundAsset = allMockAssets.find(s => 
-        s.symbol.toUpperCase() === symbol.toUpperCase() &&
-        s.exchange === 'Crypto'
+      const foundAsset = mockCryptoAssets.find(s => 
+        s.symbol.toUpperCase() === symbol.toUpperCase()
       );
       if (foundAsset) {
         setAsset(foundAsset);
