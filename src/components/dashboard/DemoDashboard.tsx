@@ -1,4 +1,3 @@
-
 "use client";
 
 import { SubNav } from '@/components/dashboard/SubNav';
@@ -267,6 +266,7 @@ export function DemoDashboard() {
           <CryptoHoldingsSection 
             mainPortfolioCashBalance={mainPortfolioCashBalance}
             setMainPortfolioCashBalance={setMainPortfolioCashBalance}
+            isRealMode={false}
           />
           <PortfolioHoldingsTable 
             mainPortfolioCashBalance={mainPortfolioCashBalance} 

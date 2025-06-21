@@ -1,4 +1,3 @@
-
 "use client";
 
 import { SubNav } from '@/components/dashboard/SubNav';
@@ -188,9 +187,9 @@ export function RealDashboard() {
   let categoryWatchlistTitle: string = "";
 
   if (isPortfolioHoldingsView) {
-    newsForView = getRelevantNewsForHoldings(mockPortfolioHoldings, mockNewsArticles);
+    newsForView = getRelevantNewsForHoldings(mockPortfolioHoldings.filter(h => h.type === 'Crypto'), mockNewsArticles);
   } else if (isPortfolioPositionsView) {
-    newsForView = getRelevantNewsForPositions(mockIntradayPositions, mockFoPositions, mockCryptoFutures, mockNewsArticles);
+    newsForView = getRelevantNewsForPositions([], [], mockCryptoFutures, mockNewsArticles);
   } else if (isUserPortfolioWatchlistView) {
     newsForView = getRelevantNewsForHoldings(mockPortfolioHoldings.filter(h => h.type === 'Crypto'), mockNewsArticles); 
   } else if (isTopWatchlistView) {
@@ -231,6 +230,7 @@ export function RealDashboard() {
           <CryptoHoldingsSection 
             mainPortfolioCashBalance={mainPortfolioCashBalance}
             setMainPortfolioCashBalance={setMainPortfolioCashBalance}
+            isRealMode={true}
           />
           <div className="mt-8">
             <NewsSection articles={newsForView} />

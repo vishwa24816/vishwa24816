@@ -23,9 +23,10 @@ import { Label } from '@/components/ui/label';
 interface CryptoHoldingsSectionProps {
   mainPortfolioCashBalance: number;
   setMainPortfolioCashBalance: React.Dispatch<React.SetStateAction<number>>;
+  isRealMode?: boolean;
 }
 
-export function CryptoHoldingsSection({ mainPortfolioCashBalance, setMainPortfolioCashBalance }: CryptoHoldingsSectionProps) {
+export function CryptoHoldingsSection({ mainPortfolioCashBalance, setMainPortfolioCashBalance, isRealMode = false }: CryptoHoldingsSectionProps) {
   const cryptoHoldings = mockPortfolioHoldings.filter(holding => holding.type === 'Crypto');
   const [expandedRowId, setExpandedRowId] = useState<string | null>(null);
   const { toast } = useToast();
@@ -147,14 +148,16 @@ export function CryptoHoldingsSection({ mainPortfolioCashBalance, setMainPortfol
                 {formatCurrency(cryptoCashBalance, currencyMode)}
               </p>
             </div>
-            <div className="pt-2 flex flex-col sm:flex-row gap-2">
-              <Button variant="outline" size="sm" className="flex-1 h-11" onClick={() => handleOpenFundTransferDialog('toCrypto')}>
-                <Coins className="mr-2 h-4 w-4" /> Add Funds
-              </Button>
-              <Button variant="outline" size="sm" className="flex-1 h-11" onClick={() => handleOpenFundTransferDialog('fromCrypto')}>
-                <Landmark className="mr-2 h-4 w-4" /> Withdraw Funds
-              </Button>
-            </div>
+            {!isRealMode && (
+              <div className="pt-2 flex flex-col sm:flex-row gap-2">
+                <Button variant="outline" size="sm" className="flex-1 h-11" onClick={() => handleOpenFundTransferDialog('toCrypto')}>
+                  <Coins className="mr-2 h-4 w-4" /> Add Funds
+                </Button>
+                <Button variant="outline" size="sm" className="flex-1 h-11" onClick={() => handleOpenFundTransferDialog('fromCrypto')}>
+                  <Landmark className="mr-2 h-4 w-4" /> Withdraw Funds
+                </Button>
+              </div>
+            )}
             <div className="pt-4">
               <Label className="text-sm font-medium">Display Currency</Label>
               <RadioGroup value={currencyMode} onValueChange={(v) => setCurrencyMode(v as any)} className="flex space-x-4 mt-2">
