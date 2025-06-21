@@ -171,7 +171,7 @@ export default function DashboardPage() {
     "Crypto Futures": ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
     "Crypto Mutual Fund": ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
     "Crypto ETF": ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
-    "Mutual funds": ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
+    "Stocks Mutual fund": ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
     Bonds: ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
     IPO: [],
   };
@@ -207,7 +207,7 @@ export default function DashboardPage() {
     "Stocks",
     "Index Futures",
     "Stock Futures",
-    "Mutual funds",
+    "Stocks Mutual fund",
     "Bonds",
     ...cryptoNavItems,
   ];
@@ -247,7 +247,7 @@ export default function DashboardPage() {
         itemsForTopWatchlist = mockCryptoMutualFunds;
       } else if (activePrimaryItem === "Crypto ETF") {
         itemsForTopWatchlist = mockCryptoETFs;
-      } else if (activePrimaryItem === "Mutual funds") {
+      } else if (activePrimaryItem === "Stocks Mutual fund") {
         itemsForTopWatchlist = mockMutualFunds;
       } else if (activePrimaryItem === "Bonds") {
         itemsForTopWatchlist = mockBonds;
@@ -289,13 +289,13 @@ export default function DashboardPage() {
 
           {isPortfolioHoldingsView ? (
             <>
-              <PortfolioHoldingsTable 
-                mainPortfolioCashBalance={mainPortfolioCashBalance} 
-                setMainPortfolioCashBalance={setMainPortfolioCashBalance} 
-              />
               <CryptoHoldingsSection 
                 mainPortfolioCashBalance={mainPortfolioCashBalance}
                 setMainPortfolioCashBalance={setMainPortfolioCashBalance}
+              />
+              <PortfolioHoldingsTable 
+                mainPortfolioCashBalance={mainPortfolioCashBalance} 
+                setMainPortfolioCashBalance={setMainPortfolioCashBalance} 
               />
               <div className="mt-8">
                 <NewsSection articles={newsForView} />
