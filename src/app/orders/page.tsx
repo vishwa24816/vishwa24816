@@ -11,29 +11,35 @@ import { Search, SlidersHorizontal } from 'lucide-react';
 import { OpenPositionsDisplay } from '@/components/orders/OpenPositionsDisplay';
 import { GttOrdersDisplay } from '@/components/orders/GttOrdersDisplay';
 import { BondBidsDisplay } from '@/components/orders/BondBidsDisplay';
-import { BasketsDisplay } from '@/components/orders/BasketsDisplay'; // Re-added import
+import { BasketsDisplay } from '@/components/orders/BasketsDisplay';
 import { SipsDisplay } from '@/components/orders/SipsDisplay';
 import { AlertsDisplay } from '@/components/orders/AlertsDisplay';
 import { mockGttOrders, mockBondBids, mockSips, mockPriceAlerts, mockFoBaskets } from '@/lib/mockData'; 
-import { mockPortfolioHoldings, mockIntradayPositions, mockFoPositions, mockCryptoFutures } from '@/lib/mockData'; // For Open tab
+import { mockPortfolioHoldings, mockIntradayPositions, mockFoPositions, mockCryptoFutures } from '@/lib/mockData';
+import { useAuth } from '@/contexts/AuthContext';
 
-const orderTabs = [
+const demoOrderTabs = [
   { value: "executed", label: "Open" }, 
   { value: "gtt", label: "GTT" },
   { value: "bids", label: "Bids" },
-  { value: "baskets", label: "Baskets" }, // Re-added Baskets tab
+  { value: "baskets", label: "Baskets" },
   { value: "sips", label: "SIPs" },
   { value: "alerts", label: "Alerts" },
 ];
 
+const realOrderTabs = [
+  { value: "executed", label: "Open" },
+  { value: "alerts", label: "Alerts" },
+];
+
+
 export default function OrdersPage() {
+  const { user } = useAuth();
+  const isRealMode = user?.id === 'REAL456';
+
+  const orderTabs = isRealMode ? realOrderTabs : demoOrderTabs;
   const [activeTab, setActiveTab] = useState("executed");
 
-  const hasOpenPositions =
-    mockPortfolioHoldings.some(h => h.type === 'Stock' || h.type === 'ETF' || h.type === 'Crypto') ||
-    mockIntradayPositions.length > 0 ||
-    mockFoPositions.length > 0 ||
-    mockCryptoFutures.length > 0;
 
   const NoDataContent = ({ message }: { message: string }) => (
     <div className="flex flex-col items-center justify-center text-center py-16 flex-grow">
@@ -89,7 +95,7 @@ export default function OrdersPage() {
 
             <div className="container mx-auto px-0 sm:px-2 md:px-4 py-4 flex-grow flex flex-col">
               <TabsContent value="executed" className="flex-grow flex flex-col mt-0 data-[state=inactive]:hidden">
-                {hasOpenPositions ? <OpenPositionsDisplay /> : <NoDataContent message="No open positions or holdings found." />}
+                <OpenPositionsDisplay isRealMode={isRealMode} />
               </TabsContent>
               <TabsContent value="gtt" className="flex-grow flex flex-col mt-0 data-[state=inactive]:hidden">
                 {mockGttOrders.length > 0 ? <GttOrdersDisplay /> : <NoDataContent message="No GTT orders found. You can place GTT orders from stock/future detail pages." />}

@@ -9,8 +9,8 @@ import type { PortfolioHolding, IntradayPosition, FoPosition, CryptoFuturePositi
 import { mockPortfolioHoldings, mockIntradayPositions, mockFoPositions, mockCryptoFutures } from '@/lib/mockData';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
-import { Briefcase, InfoIcon, XCircle } from 'lucide-react'; // Added InfoIcon, XCircle
-import { useRouter } from 'next/navigation'; // Added useRouter
+import { Briefcase, InfoIcon, XCircle } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 interface PositionItemProps {
   item: PortfolioHolding | IntradayPosition | FoPosition | CryptoFuturePosition;
@@ -168,20 +168,25 @@ const PositionItemCard: React.FC<PositionItemProps> = ({ item, type }) => {
   );
 };
 
+interface OpenPositionsDisplayProps {
+  isRealMode?: boolean;
+}
 
-export function OpenPositionsDisplay() {
-  const equityHoldings = mockPortfolioHoldings.filter(h => h.type === 'Stock' || h.type === 'ETF');
-  const cryptoHoldings = mockPortfolioHoldings.filter(h => h.type === 'Crypto');
-  
-  // Consolidate all items into one list with their type
-  const allPositions = [
-    ...equityHoldings.map(item => ({ item, typeLabel: "Holding" })), // from PortfolioHolding with type Stock/ETF
+export function OpenPositionsDisplay({ isRealMode = false }: OpenPositionsDisplayProps) {
+  const allDemoPositions = [
+    ...mockPortfolioHoldings.filter(h => h.type === 'Stock' || h.type === 'ETF').map(item => ({ item, typeLabel: "Holding" })),
     ...mockIntradayPositions.map(item => ({ item, typeLabel: "Intraday" })),
     ...mockFoPositions.map(item => ({ item, typeLabel: "F&O" })),
-    ...cryptoHoldings.map(item => ({ item, typeLabel: "Crypto" })), // from PortfolioHolding with type Crypto
+    ...mockPortfolioHoldings.filter(h => h.type === 'Crypto').map(item => ({ item, typeLabel: "Crypto" })),
     ...mockCryptoFutures.map(item => ({ item, typeLabel: "Crypto Future" })),
   ];
-
+  
+  const allRealPositions = [
+    ...mockPortfolioHoldings.filter(h => h.type === 'Crypto').map(item => ({ item, typeLabel: "Crypto" })),
+    ...mockCryptoFutures.map(item => ({ item, typeLabel: "Crypto Future" })),
+  ];
+  
+  const allPositions = isRealMode ? allRealPositions : allDemoPositions;
 
   if (allPositions.length === 0) {
     return (
@@ -193,7 +198,7 @@ export function OpenPositionsDisplay() {
   }
 
   return (
-    <ScrollArea className="h-[calc(100vh-200px)] p-1"> {/* Adjust height as needed */}
+    <ScrollArea className="h-[calc(100vh-200px)] p-1">
       {allPositions.map((pos, index) => (
         <PositionItemCard key={`${pos.typeLabel}-${pos.item.id}-${index}`} item={pos.item} type={pos.typeLabel} />
       ))}

@@ -5,11 +5,7 @@ import { SubNav } from '@/components/dashboard/SubNav';
 import { MarketOverview } from '@/components/dashboard/MarketOverview';
 import { NewsSection } from '@/components/dashboard/NewsSection';
 import { WatchlistSection } from '@/components/dashboard/WatchlistSection';
-import { PortfolioHoldingsTable } from '@/components/dashboard/PortfolioHoldingsTable';
 import { CryptoHoldingsSection } from '@/components/dashboard/CryptoHoldingsSection';
-import { IntradayPositionsSection } from '@/components/dashboard/IntradayPositionsSection';
-import { FoPositionsSection } from '@/components/dashboard/FoPositionsSection';
-import { FoBasketSection } from '@/components/dashboard/FoBasketSection';
 import { CryptoFuturesSection } from '@/components/dashboard/CryptoFuturesSection';
 import { PackageOpen } from 'lucide-react';
 
@@ -196,7 +192,7 @@ export function RealDashboard() {
   } else if (isPortfolioPositionsView) {
     newsForView = getRelevantNewsForPositions(mockIntradayPositions, mockFoPositions, mockCryptoFutures, mockNewsArticles);
   } else if (isUserPortfolioWatchlistView) {
-    newsForView = getRelevantNewsForHoldings(mockPortfolioHoldings, mockNewsArticles); 
+    newsForView = getRelevantNewsForHoldings(mockPortfolioHoldings.filter(h => h.type === 'Crypto'), mockNewsArticles); 
   } else if (isTopWatchlistView) {
       categoryWatchlistTitle = `${activePrimaryItem} - ${activeSecondaryItem}`;
       if (activePrimaryItem === "Crypto Spot") {
@@ -218,7 +214,7 @@ export function RealDashboard() {
     <main className="flex-grow container mx-auto p-4 sm:p-6 lg:p-8 space-y-8">
       <MarketOverview 
         title="Top Cryptocurrencies" 
-        items={mockCryptoAssets.slice(0, 3)} 
+        items={mockCryptoAssets.slice(0, 5)} 
       />
 
       <SubNav
@@ -236,27 +232,20 @@ export function RealDashboard() {
             mainPortfolioCashBalance={mainPortfolioCashBalance}
             setMainPortfolioCashBalance={setMainPortfolioCashBalance}
           />
-          <PortfolioHoldingsTable 
-            mainPortfolioCashBalance={mainPortfolioCashBalance} 
-            setMainPortfolioCashBalance={setMainPortfolioCashBalance} 
-          />
           <div className="mt-8">
             <NewsSection articles={newsForView} />
           </div>
         </>
       ) : isPortfolioPositionsView ? (
         <div className="space-y-8">
-          <IntradayPositionsSection />
-          <FoPositionsSection />
-          <FoBasketSection />
           <CryptoFuturesSection />
           <NewsSection articles={newsForView} />
         </div>
       ) : isUserPortfolioWatchlistView ? (
         <div className="space-y-8">
           <WatchlistSection 
-            title="My Portfolio Watchlist" 
-            defaultInitialItems={mockStocks.slice(0, 5)}
+            title="My Crypto Watchlist" 
+            defaultInitialItems={mockCryptoAssets.slice(0, 5)}
           />
           <NewsSection articles={newsForView} />
         </div>
