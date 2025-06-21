@@ -2,11 +2,12 @@
 "use client";
 
 import React, { useState } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
 import { KeyRound, User, LogIn } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -107,6 +108,14 @@ export function LoginForm() {
           </Button>
         </form>
       </CardContent>
+      <CardFooter className="flex justify-center text-sm">
+        <p className="text-muted-foreground">
+          Don't have an account?{' '}
+          <Link href="#" className="text-primary hover:underline font-semibold" onClick={(e) => { e.preventDefault(); alert('Sign up feature coming soon!'); }}>
+            Sign Up
+          </Link>
+        </p>
+      </CardFooter>
     </Card>
   );
 }
