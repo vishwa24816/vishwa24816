@@ -43,6 +43,8 @@ import {
   mockStockFuturesForWatchlist,
   mockMarketIndices, 
   mockCryptoFuturesForWatchlist,
+  mockCryptoMutualFunds,
+  mockCryptoETFs,
   // mockFoBaskets, // Kept for data integrity, but component removed
 } from '@/lib/mockData';
 
@@ -172,7 +174,7 @@ export default function DashboardPage() {
   const [activeSecondaryItem, setActiveSecondaryItem] = useState(
     secondaryNavTriggerCategories["Portfolio"]?.[0] || ""
   );
-  const [cryptoMarketView, setCryptoMarketView] = useState<'spot' | 'futures'>('spot');
+  const [cryptoMarketView, setCryptoMarketView] = useState<'spot' | 'futures' | 'mutual-fund' | 'etf'>('spot');
   
   const [mainPortfolioCashBalance, setMainPortfolioCashBalance] = useState(50000.00);
 
@@ -236,9 +238,28 @@ export default function DashboardPage() {
       itemsForCategoryWatchlist = []; 
     }
     newsForView = getRelevantNewsForWatchlistItems(itemsForCategoryWatchlist, mockNewsArticles);
-  } else if (isCryptoTopWatchlistView) { 
-    categoryWatchlistTitle = `${activePrimaryItem} ${cryptoMarketView === 'futures' ? 'Futures' : 'Spot'} - ${activeSecondaryItem}`;
-    itemsForCategoryWatchlist = cryptoMarketView === 'spot' ? mockCryptoAssets : mockCryptoFuturesForWatchlist;
+  } else if (isCryptoTopWatchlistView) {
+    switch (cryptoMarketView) {
+        case 'spot':
+            categoryWatchlistTitle = `Crypto Spot - ${activeSecondaryItem}`;
+            itemsForCategoryWatchlist = mockCryptoAssets;
+            break;
+        case 'futures':
+            categoryWatchlistTitle = `Crypto Futures - ${activeSecondaryItem}`;
+            itemsForCategoryWatchlist = mockCryptoFuturesForWatchlist;
+            break;
+        case 'mutual-fund':
+            categoryWatchlistTitle = `Crypto Mutual Funds - ${activeSecondaryItem}`;
+            itemsForCategoryWatchlist = mockCryptoMutualFunds;
+            break;
+        case 'etf':
+            categoryWatchlistTitle = `Crypto ETFs - ${activeSecondaryItem}`;
+            itemsForCategoryWatchlist = mockCryptoETFs;
+            break;
+        default:
+            categoryWatchlistTitle = `Crypto Spot - ${activeSecondaryItem}`;
+            itemsForCategoryWatchlist = mockCryptoAssets;
+    }
     newsForView = getRelevantNewsForWatchlistItems(itemsForCategoryWatchlist, mockNewsArticles);
   } else if (isCategoryNumberedWatchlistView) {
     categoryWatchlistTitle = `${activePrimaryItem} - ${activeSecondaryItem}`;
@@ -345,7 +366,7 @@ export default function DashboardPage() {
           ) : isCryptoTopWatchlistView ? ( 
              <div className="space-y-8">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-0 -mt-4">
-                    <div className="flex space-x-2">
+                    <div className="flex space-x-2 overflow-x-auto no-scrollbar pb-2">
                         <Button
                         variant={cryptoMarketView === 'spot' ? 'secondary' : 'outline'}
                         onClick={() => setCryptoMarketView('spot')}
@@ -359,6 +380,20 @@ export default function DashboardPage() {
                         size="sm"
                         >
                         Futures
+                        </Button>
+                        <Button
+                        variant={cryptoMarketView === 'mutual-fund' ? 'secondary' : 'outline'}
+                        onClick={() => setCryptoMarketView('mutual-fund')}
+                        size="sm"
+                        >
+                        Crypto Mutual Fund
+                        </Button>
+                        <Button
+                        variant={cryptoMarketView === 'etf' ? 'secondary' : 'outline'}
+                        onClick={() => setCryptoMarketView('etf')}
+                        size="sm"
+                        >
+                        Crypto ETF
                         </Button>
                     </div>
                 </div>

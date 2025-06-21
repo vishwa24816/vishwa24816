@@ -22,3 +22,5 @@ export * from './mockData/gttOrders';
 export * from './mockData/bondBids';
 export * from './mockData/sips';
 export * from './mockData/priceAlerts';
+export * from './mockData/cryptoMutualFunds';
+export * from './mockData/cryptoETFs';
