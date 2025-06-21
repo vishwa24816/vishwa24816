@@ -2,6 +2,10 @@
 
 import type { User } from '@/types';
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { usePathname } from 'next/navigation';
+import { cn } from '@/lib/utils';
+import { Toaster } from "@/components/ui/toaster";
+import { AppFooter } from '@/components/shared/AppFooter';
 
 interface AuthContextType {
   user: User | null;
@@ -16,6 +20,8 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const pathname = usePathname();
+  const showFooter = pathname !== '/login';
 
   useEffect(() => {
     // Check localStorage for a persisted user session
@@ -43,7 +49,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <AuthContext.Provider value={{ user, isAuthenticated: !!user, login, logout, loading }}>
-      {children}
+      <div className={cn(showFooter ? "pb-16" : "")}>
+        {children}
+      </div>
+      <Toaster />
+      {showFooter && <AppFooter />}
     </AuthContext.Provider>
   );
 };
