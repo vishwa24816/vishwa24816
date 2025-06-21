@@ -30,7 +30,7 @@ import { AddToBasketDialog } from './AddToBasketDialog';
 
 interface OrderPlacementFormProps {
   asset: Stock;
-  assetType: "stock" | "future" | "option" | "crypto" | "mutual-fund" | "bond";
+  assetType: "stock" | "future" | "option" | "crypto" | "mutual-fund" | "bond" | "crypto-future";
   productType: string;
   onProductTypeChange: (value: string) => void;
 }
@@ -43,7 +43,7 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
   const [selectedExpiryDate, setSelectedExpiryDate] = useState<string>('');
 
   const [selectedExchange, setSelectedExchange] = useState<'BSE' | 'NSE'>('NSE');
-  const [orderMode, setOrderMode] = useState('Regular');
+  const [orderMode, setOrderMode] = useState(assetType === 'crypto-future' ? 'MTF' : 'Regular');
   const [orderType, setOrderType] = useState('Limit');
 
   const [showMoreOptions, setShowMoreOptions] = useState(false);
@@ -65,6 +65,17 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
   const [sipFrequency, setSipFrequency] = useState<'Daily' | 'Weekly' | 'Monthly' | 'Annually'>('Monthly');
   const [sipStartDate, setSipStartDate] = useState<Date | undefined>(new Date());
   const [sipInstallments, setSipInstallments] = useState('');
+
+  const orderModeTabs = useMemo(() => {
+    if (assetType === 'stock') return ['Regular', 'MTF', 'SIP'];
+    if (assetType === 'crypto-future') return ['MTF', 'SIP'];
+    return ['Regular', 'SIP'];
+  }, [assetType]);
+
+  const leverageOptions = useMemo(() => {
+    if (assetType === 'crypto-future') return ['1x', '5x', '10x', '20x', '50x', '100x'];
+    return ['1x', '2x', '3x', '4x'];
+  }, [assetType]);
 
   useEffect(() => {
     if (assetType === 'mutual-fund' || assetType === 'bond') {
@@ -138,7 +149,7 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
 
     let baseMargin = 0;
 
-    if (assetType === 'future') {
+    if (assetType === 'future' || assetType === 'crypto-future') {
       const lotSize = asset.lotSize || 1;
       const marginFactor = asset.marginFactor || 0.1; // Default margin factor if not provided
       baseMargin = quantity * priceForCalc * lotSize * marginFactor;
@@ -146,14 +157,14 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
       baseMargin = quantity * priceForCalc;
     }
 
-    if (orderMode === 'MTF' && assetType === 'stock') {
+    if (orderMode === 'MTF' && (assetType === 'stock' || assetType === 'crypto-future')) {
       const leverageFactor = parseInt(mtfLeverage.replace('x', ''), 10) || 1;
       if (leverageFactor > 0) {
         baseMargin = baseMargin / leverageFactor;
       }
     }
     setDisplayedMargin(baseMargin);
-  }, [quantity, price, orderType, asset.price, asset.lotSize, asset.marginFactor, orderMode, mtfLeverage, productType, selectedExchange, assetType]);
+  }, [quantity, price, orderType, asset, orderMode, mtfLeverage, productType, selectedExchange, assetType]);
 
   const handleOrderAction = (action: 'BUY' | 'SELL') => {
     let slInfo = '';
@@ -166,11 +177,11 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
     }
     const advancedOptions = [slInfo, tpInfo].filter(Boolean).join(', ');
     let leverageInfo = '';
-    if (orderMode === 'MTF' && assetType === 'stock') {
+    if (orderMode === 'MTF' && (assetType === 'stock' || assetType === 'crypto-future')) {
         leverageInfo = `Leverage: ${mtfLeverage}`;
     }
     const expiryInfo = assetType === 'future' && selectedExpiryDate ? `Expiry: ${selectedExpiryDate}` : '';
-    const quantityLabel = assetType === 'future' ? 'Lots' : 'Qty.';
+    const quantityLabel = (assetType === 'future' || assetType === 'crypto-future' || assetType === 'option') ? 'Lots' : 'Qty.';
     const priceDisplay = orderType === 'Market' ? 'Market' : `₹${price}`;
 
     toast({
@@ -195,8 +206,7 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
     });
   };
 
-  const orderModeTabs = assetType === 'stock' ? ['Regular', 'MTF', 'SIP'] : ['Regular', 'SIP'];
-  const quantityInputLabel = (assetType === 'future' || assetType === 'option') ? 'Lots' : 'Qty.';
+  const quantityInputLabel = (assetType === 'future' || assetType === 'crypto-future' || assetType === 'option') ? 'Lots' : 'Qty.';
 
   const renderOrderFields = (currentOrderMode: string) => (
     <>
@@ -221,7 +231,7 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
         onValueChange={onProductTypeChange}
         className="flex space-x-6"
       >
-        {(assetType === 'stock' || assetType === 'future' || assetType === 'option') && (
+        {(assetType === 'stock' || assetType === 'future' || assetType === 'crypto-future' || assetType === 'option') && (
             <div className="flex items-center space-x-2">
             <RadioGroupItem value="Intraday" id={`intraday-${currentOrderMode}`} />
             <Label htmlFor={`intraday-${currentOrderMode}`} className="font-normal">Intraday <span className="text-muted-foreground text-xs">MIS</span></Label>
@@ -229,7 +239,7 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
         )}
         <div className="flex items-center space-x-2">
           <RadioGroupItem value="Longterm" id={`longterm-${currentOrderMode}`} />
-          <Label htmlFor={`longterm-${currentOrderMode}`} className="font-normal">Longterm <span className="text-muted-foreground text-xs">{(assetType === 'future' || assetType === 'option') ? 'NRML' : 'CNC'}</span></Label>
+          <Label htmlFor={`longterm-${currentOrderMode}`} className="font-normal">Longterm <span className="text-muted-foreground text-xs">{(assetType === 'future' || assetType === 'crypto-future' || assetType === 'option') ? 'NRML' : 'CNC'}</span></Label>
         </div>
       </RadioGroup>
 
@@ -243,7 +253,7 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
             onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
             min="1"
           />
-           {(assetType === 'future' || assetType === 'option') && asset.lotSize && (
+           {(assetType === 'future' || assetType === 'crypto-future' || assetType === 'option') && asset.lotSize && (
             <p className="text-xs text-muted-foreground mt-1">Lot Size: {asset.lotSize}</p>
           )}
         </div>
@@ -313,7 +323,7 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
         })}
       </RadioGroup>
 
-      {(currentOrderMode === 'MTF' && assetType === 'stock') && (
+      {(currentOrderMode === 'MTF' && (assetType === 'stock' || assetType === 'crypto-future')) && (
         <div className="space-y-2 pt-2">
             <Label>Leverage</Label>
             <RadioGroup
@@ -321,7 +331,7 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
                 onValueChange={setMtfLeverage}
                 className="flex flex-wrap gap-x-4 gap-y-2"
             >
-            {['1x', '2x', '3x', '4x'].map(val => (
+            {leverageOptions.map(val => (
                 <div key={val} className="flex items-center space-x-2">
                 <RadioGroupItem value={val} id={`leverage-${val}-${currentOrderMode}`} />
                 <Label htmlFor={`leverage-${val}-${currentOrderMode}`} className="font-normal">{val}</Label>
@@ -420,7 +430,7 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
           <p className="text-sm text-muted-foreground">
             Margin required: <span className="font-semibold text-foreground">₹{displayedMargin.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
           </p>
-          {(currentOrderMode === 'MTF' && assetType === 'stock' && parseInt(mtfLeverage.replace('x','')) > 1) && (
+          {(currentOrderMode === 'MTF' && (assetType === 'stock' || assetType === 'crypto-future') && parseInt(mtfLeverage.replace('x','')) > 1) && (
               <p className="text-xs text-muted-foreground mt-1">
                   (Leverage of {mtfLeverage} applied)
               </p>
@@ -578,7 +588,7 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
         </div>
       )}
 
-      {(assetType !== 'future' && assetType !== 'option') ? ( // Futures and Options typically don't have SIPs in this context
+      {(assetType !== 'future' && assetType !== 'option' && assetType !== 'crypto-future') ? ( 
         <Tabs value={orderMode} onValueChange={setOrderMode} className="w-full">
           <div className="flex justify-between items-center border-b px-1">
               <TabsList className="bg-transparent p-0 justify-start">
@@ -587,7 +597,7 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
                   key={mode}
                   value={mode}
                   className="text-xs sm:text-sm px-2 sm:px-3 py-2.5 data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:shadow-none rounded-none text-muted-foreground hover:text-primary"
-                  disabled={mode === 'MTF' && assetType !== 'stock'}
+                  disabled={mode === 'MTF' && (assetType !== 'stock' && assetType !== 'crypto-future')}
                   >
                   {mode}
                   </TabsTrigger>
@@ -599,17 +609,17 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
             {renderOrderFields("Regular")}
           </TabsContent>
 
-          {assetType === 'stock' && (
-          <TabsContent value="MTF" className="p-4 space-y-4 mt-0">
-              {renderOrderFields("MTF")}
-          </TabsContent>
+          {(assetType === 'stock' || assetType === 'crypto-future') && (
+            <TabsContent value="MTF" className="p-4 space-y-4 mt-0">
+                {renderOrderFields("MTF")}
+            </TabsContent>
           )}
 
           <TabsContent value="SIP" className="p-0 mt-0">
               {renderSipForm()}
           </TabsContent>
         </Tabs>
-      ) : ( // For Futures and Options, only show regular order form
+      ) : ( 
         <div className="p-4 space-y-4 mt-0">
           {renderOrderFields("Regular")}
         </div>
@@ -663,7 +673,7 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
         )}
 
       {/* Action buttons visible for stock and future */}
-        {(assetType === 'stock' || assetType === 'future') && (
+        {(assetType === 'stock' || assetType === 'future' || assetType === 'crypto-future') && (
             <div className="p-4 border-t flex flex-col sm:flex-row gap-2">
                 <Button 
                     variant="outline" 

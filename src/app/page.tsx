@@ -11,7 +11,7 @@ import { PortfolioHoldingsTable } from '@/components/dashboard/PortfolioHoldings
 import { CryptoHoldingsSection } from '@/components/dashboard/CryptoHoldingsSection';
 import { IntradayPositionsSection } from '@/components/dashboard/IntradayPositionsSection';
 import { FoPositionsSection } from '@/components/dashboard/FoPositionsSection';
-import { FoBasketSection } from '@/components/dashboard/FoBasketSection'; // Re-added import
+import { FoBasketSection } from '@/components/dashboard/FoBasketSection';
 import { CryptoFuturesSection } from '@/components/dashboard/CryptoFuturesSection';
 import { OptionChain } from '@/components/dashboard/OptionChain';
 import { ReadymadeStrategiesSection } from '@/components/dashboard/ReadymadeStrategiesSection';
@@ -173,9 +173,7 @@ export default function DashboardPage() {
     secondaryNavTriggerCategories["Portfolio"]?.[0] || ""
   );
   const [cryptoMarketView, setCryptoMarketView] = useState<'spot' | 'futures'>('spot');
-  const [cryptoFuturesLeverage, setCryptoFuturesLeverage] = useState<string>('1x');
-  const leverageOptions = ['1x', '2x', '3x', '4x', '5x', '10x', '20x', '25x', '50x', '100x', '200x'];
-
+  
   const [mainPortfolioCashBalance, setMainPortfolioCashBalance] = useState(50000.00);
 
 
@@ -292,7 +290,7 @@ export default function DashboardPage() {
             <div className="space-y-8">
               <IntradayPositionsSection />
               <FoPositionsSection />
-              <FoBasketSection /> {/* Re-added F&O Basket Section here */}
+              <FoBasketSection />
               <CryptoFuturesSection />
               <NewsSection articles={newsForView} />
             </div>
@@ -363,21 +361,6 @@ export default function DashboardPage() {
                         Futures
                         </Button>
                     </div>
-                    {cryptoMarketView === 'futures' && (
-                        <div className="flex items-center space-x-2">
-                            <span className="text-sm text-muted-foreground">Leverage:</span>
-                            <Select value={cryptoFuturesLeverage} onValueChange={setCryptoFuturesLeverage}>
-                            <SelectTrigger className="w-[90px] h-9 text-xs">
-                                <SelectValue placeholder="Leverage" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {leverageOptions.map(lev => (
-                                <SelectItem key={lev} value={lev} className="text-xs">{lev}</SelectItem>
-                                ))}
-                            </SelectContent>
-                            </Select>
-                        </div>
-                    )}
                 </div>
               <WatchlistSection
                 title={categoryWatchlistTitle}

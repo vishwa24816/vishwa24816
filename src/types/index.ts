@@ -297,6 +297,6 @@ export interface PriceAlert {
   status: 'Active' | 'Triggered' | 'Cancelled' | 'Expired';
   createdDate: string;
   exchange: string;
-  assetType: 'Stock' | 'Mutual Fund' | 'Crypto' | 'Future' | 'Option' | 'ETF' | 'Index';
+  assetType: 'Stock' | 'Mutual Fund' | 'Crypto' | 'Future' | 'Option' | 'ETF' | 'Index' | 'Crypto Future';
   notes?: string;
 }
