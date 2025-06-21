@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState } from 'react';
@@ -5,26 +6,46 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
-import { Mail, Lock, LogIn } from 'lucide-react';
+import { KeyRound, User, LogIn } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
+const DEMO_CREDENTIALS = { ucc: 'DEMO123', mpin: '1234' };
+const REAL_CREDENTIALS = { ucc: 'REAL456', mpin: '5678' };
 
 export function LoginForm() {
-  const [email, setEmail] = useState('user@example.com');
-  const [password, setPassword] = useState('password123');
+  const [loginMode, setLoginMode] = useState<'demo' | 'real'>('demo');
+  const [ucc, setUcc] = useState(DEMO_CREDENTIALS.ucc);
+  const [mpin, setMpin] = useState(DEMO_CREDENTIALS.mpin);
   const [error, setError] = useState('');
   const router = useRouter();
   const { login } = useAuth();
 
+  const handleModeChange = (mode: string) => {
+    setError('');
+    const newMode = mode as 'demo' | 'real';
+    setLoginMode(newMode);
+    if (newMode === 'demo') {
+      setUcc(DEMO_CREDENTIALS.ucc);
+      setMpin(DEMO_CREDENTIALS.mpin);
+    } else {
+      setUcc(REAL_CREDENTIALS.ucc);
+      setMpin(REAL_CREDENTIALS.mpin);
+    }
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    // Mock authentication
-    if (email && password) {
-      login({ id: '1', email });
+
+    const credentials = loginMode === 'demo' ? DEMO_CREDENTIALS : REAL_CREDENTIALS;
+
+    if (ucc === credentials.ucc && mpin === credentials.mpin) {
+      login({ id: ucc, email: `${ucc}@sim.app` }); // Mock user object
       router.push('/');
     } else {
-      setError('Please enter email and password.');
+      setError('Invalid UCC or MPIN. Please try again.');
     }
   };
 
@@ -41,33 +62,41 @@ export function LoginForm() {
         <CardDescription>Sign in to access your stock information dashboard.</CardDescription>
       </CardHeader>
       <CardContent>
+        <Tabs value={loginMode} onValueChange={handleModeChange} className="w-full mb-6">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="demo">Demo Account</TabsTrigger>
+            <TabsTrigger value="real">Real Account</TabsTrigger>
+          </TabsList>
+        </Tabs>
+
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="ucc">UCC (Unique Client Code)</Label>
             <div className="relative">
-              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+              <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
               <Input
-                id="email"
-                type="email"
-                placeholder="you@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                id="ucc"
+                type="text"
+                placeholder="Enter your UCC"
+                value={ucc}
+                onChange={(e) => setUcc(e.target.value.toUpperCase())}
                 required
                 className="pl-10"
               />
             </div>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
+            <Label htmlFor="mpin">4-Digit MPIN</Label>
             <div className="relative">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+              <KeyRound className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
               <Input
-                id="password"
+                id="mpin"
                 type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••"
+                value={mpin}
+                onChange={(e) => setMpin(e.target.value)}
                 required
+                maxLength={4}
                 className="pl-10"
               />
             </div>
@@ -78,9 +107,6 @@ export function LoginForm() {
           </Button>
         </form>
       </CardContent>
-      <CardFooter className="text-center text-sm text-muted-foreground">
-        <p>This is a demo. Use any email/password.</p>
-      </CardFooter>
     </Card>
   );
 }
