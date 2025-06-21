@@ -426,70 +426,6 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
               </p>
           )}
         </div>
-
-        {assetType === 'stock' && marketDepthData && (
-          <div className="mt-4 pt-4 border-t">
-            <h3 className="text-lg font-semibold mb-3 flex items-center">
-              <BarChartHorizontal className="h-5 w-5 mr-2 text-primary" />
-              Market Depth
-            </h3>
-            <div className="grid grid-cols-2 gap-x-4 text-sm">
-              <div>
-                <div className="flex justify-between font-semibold mb-2 text-green-600">
-                  <span>Buy Orders</span>
-                  <span>Total: {marketDepthData.totalBuyQty.toLocaleString()}</span>
-                </div>
-                <div className="space-y-1.5">
-                  {marketDepthData.buy.map((order, index) => (
-                    <div 
-                        key={`buy-${index}`} 
-                        className="flex justify-between p-2 rounded bg-green-500/10 cursor-pointer hover:bg-green-500/20 transition-colors"
-                        onClick={() => handleMarketDepthPriceClick(order.price)}
-                    >
-                      <span className="text-green-700 dark:text-green-400">{order.quantity.toLocaleString()}</span>
-                      <span className="font-medium text-foreground">@{order.price.toFixed(2)}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <div>
-                <div className="flex justify-between font-semibold mb-2 text-red-600">
-                  <span>Sell Orders</span>
-                  <span>Total: {marketDepthData.totalSellQty.toLocaleString()}</span>
-                </div>
-                <div className="space-y-1.5">
-                  {marketDepthData.sell.map((order, index) => (
-                     <div 
-                        key={`sell-${index}`} 
-                        className="flex justify-between p-2 rounded bg-red-500/10 cursor-pointer hover:bg-red-500/20 transition-colors"
-                        onClick={() => handleMarketDepthPriceClick(order.price)}
-                    >
-                       <span className="font-medium text-foreground">@{order.price.toFixed(2)}</span>
-                       <span className="text-red-700 dark:text-red-400">{order.quantity.toLocaleString()}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-            <div className="mt-6 pt-4 border-t flex flex-col sm:flex-row gap-2">
-                <Button 
-                    variant="outline" 
-                    className="flex-1" 
-                    onClick={() => setIsAddToBasketDialogOpen(true)}
-                    disabled={assetType === 'future' || assetType === 'option'} // Disable for F&O as per current basket logic
-                >
-                    <ShoppingBasket className="mr-2 h-4 w-4" /> Add to Basket
-                </Button>
-                <Button 
-                    variant="outline" 
-                    className="flex-1" 
-                    onClick={() => toast({ title: "Add Alert (Feature Coming Soon)", description: `You can set price alerts for ${asset.symbol}.`})}
-                >
-                    <BellPlus className="mr-2 h-4 w-4" /> Add Alert
-                </Button>
-            </div>
-          </div>
-        )}
     </>
   );
 
@@ -678,6 +614,74 @@ export function OrderPlacementForm({ asset, assetType, productType, onProductTyp
           {renderOrderFields("Regular")}
         </div>
       )}
+
+        {assetType === 'stock' && marketDepthData && (
+          <div className="p-4 border-t">
+            <h3 className="text-lg font-semibold mb-3 flex items-center">
+              <BarChartHorizontal className="h-5 w-5 mr-2 text-primary" />
+              Market Depth
+            </h3>
+            <div className="grid grid-cols-2 gap-x-4 text-sm">
+              <div>
+                <div className="flex justify-between font-semibold mb-2 text-green-600">
+                  <span>Buy Orders</span>
+                  <span>Total: {marketDepthData.totalBuyQty.toLocaleString()}</span>
+                </div>
+                <div className="space-y-1.5">
+                  {marketDepthData.buy.map((order, index) => (
+                    <div 
+                        key={`buy-${index}`} 
+                        className="flex justify-between p-2 rounded bg-green-500/10 cursor-pointer hover:bg-green-500/20 transition-colors"
+                        onClick={() => handleMarketDepthPriceClick(order.price)}
+                    >
+                      <span className="text-green-700 dark:text-green-400">{order.quantity.toLocaleString()}</span>
+                      <span className="font-medium text-foreground">@{order.price.toFixed(2)}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <div className="flex justify-between font-semibold mb-2 text-red-600">
+                  <span>Sell Orders</span>
+                  <span>Total: {marketDepthData.totalSellQty.toLocaleString()}</span>
+                </div>
+                <div className="space-y-1.5">
+                  {marketDepthData.sell.map((order, index) => (
+                     <div 
+                        key={`sell-${index}`} 
+                        className="flex justify-between p-2 rounded bg-red-500/10 cursor-pointer hover:bg-red-500/20 transition-colors"
+                        onClick={() => handleMarketDepthPriceClick(order.price)}
+                    >
+                       <span className="font-medium text-foreground">@{order.price.toFixed(2)}</span>
+                       <span className="text-red-700 dark:text-red-400">{order.quantity.toLocaleString()}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+      {/* Action buttons visible for stock and future */}
+        {(assetType === 'stock' || assetType === 'future') && (
+            <div className="p-4 border-t flex flex-col sm:flex-row gap-2">
+                <Button 
+                    variant="outline" 
+                    className="flex-1" 
+                    onClick={() => setIsAddToBasketDialogOpen(true)}
+                >
+                    <ShoppingBasket className="mr-2 h-4 w-4" /> Add to Basket
+                </Button>
+                <Button 
+                    variant="outline" 
+                    className="flex-1" 
+                    onClick={() => toast({ title: "Add Alert (Feature Coming Soon)", description: `You can set price alerts for ${asset.symbol}.`})}
+                >
+                    <BellPlus className="mr-2 h-4 w-4" /> Add Alert
+                </Button>
+            </div>
+        )}
+
     </div>
     <AddToBasketDialog 
         isOpen={isAddToBasketDialogOpen}
