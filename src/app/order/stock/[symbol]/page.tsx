@@ -11,7 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { mockStocks, mockCryptoAssets, mockMutualFunds, mockBonds, mockIndexFuturesForWatchlist, mockStockFuturesForWatchlist, mockOptionsForWatchlist, mockNewsArticles } from '@/lib/mockData';
 import type { Stock, NewsArticle } from '@/types';
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, TrendingUp, TrendingDown, Info, Maximize2, BarChart2, ChevronUp, ChevronDown, ChevronLeftIcon, ChevronRightIcon, Landmark, SearchIcon, LineChart, FileText } from 'lucide-react';
+import { ArrowLeft, TrendingUp, TrendingDown, Info, Maximize2, BarChart2, ChevronUp, ChevronDown, ChevronLeftIcon, ChevronRightIcon, Landmark, SearchIcon, LineChart, FileText, Star } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { NewsSection } from '@/components/dashboard/NewsSection';
 import { OrderPlacementForm } from '@/components/order/OrderPlacementForm';
@@ -372,6 +372,27 @@ export default function StockOrderPage() {
                       <p className="text-muted-foreground">Technical Chart Placeholder</p>
                     </div>
                 </CollapsibleSection>
+
+                <CollapsibleSection title="Scores" icon={Star} defaultOpen>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
+                        <div className="p-3 bg-muted/40 rounded-lg">
+                            <p className="text-sm text-muted-foreground">DVM Score</p>
+                            <p className="text-2xl font-bold text-primary">72</p>
+                            <p className="text-xs text-green-600">Bullish</p>
+                        </div>
+                        <div className="p-3 bg-muted/40 rounded-lg">
+                            <p className="text-sm text-muted-foreground">SWOT Score</p>
+                            <p className="text-2xl font-bold text-primary">65</p>
+                            <p className="text-xs text-yellow-600">Neutral</p>
+                        </div>
+                        <div className="p-3 bg-muted/40 rounded-lg">
+                            <p className="text-sm text-muted-foreground">QVT Score</p>
+                            <p className="text-2xl font-bold text-primary">80</p>
+                            <p className="text-xs text-green-600">Very Bullish</p>
+                        </div>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-2 text-center">Scores are based on mock data and for demonstration purposes only.</p>
+                </CollapsibleSection>
               </TabsContent>
 
               <TabsContent value="news" className="mt-4">
@@ -411,6 +432,7 @@ export default function StockOrderPage() {
     
 
     
+
 
 
 
