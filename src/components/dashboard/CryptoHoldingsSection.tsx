@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState } from 'react';
@@ -17,7 +16,9 @@ import type { PortfolioHolding } from '@/types';
 import { cn } from '@/lib/utils';
 import { Bitcoin, PlusCircle, MinusCircle, XCircle, Coins, Landmark } from 'lucide-react'; 
 import { useToast } from "@/hooks/use-toast";
-import { FundTransferDialog } from '@/components/shared/FundTransferDialog'; // Import the dialog
+import { FundTransferDialog } from '@/components/shared/FundTransferDialog';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Label } from '@/components/ui/label';
 
 interface CryptoHoldingsSectionProps {
   mainPortfolioCashBalance: number;
@@ -31,9 +32,18 @@ export function CryptoHoldingsSection({ mainPortfolioCashBalance, setMainPortfol
   const [cryptoCashBalance, setCryptoCashBalance] = useState(15000.00);
   const [isFundTransferDialogOpen, setIsFundTransferDialogOpen] = useState(false);
   const [transferDirection, setTransferDirection] = useState<'toCrypto' | 'fromCrypto'>('toCrypto');
+  const [currencyMode, setCurrencyMode] = useState<'INR' | 'USDT'>('INR');
+  const INR_TO_USDT_RATE = 83.5;
 
-
-  const formatCurrency = (value: number) => {
+  const formatCurrency = (value: number, mode: 'INR' | 'USDT') => {
+    if (mode === 'USDT') {
+      const usdtValue = value / INR_TO_USDT_RATE;
+      return usdtValue.toLocaleString('en-US', {
+        style: 'decimal',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }) + ' USDT';
+    }
     return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
   };
 
@@ -59,11 +69,11 @@ export function CryptoHoldingsSection({ mainPortfolioCashBalance, setMainPortfol
     if (direction === 'toCrypto') {
       setMainPortfolioCashBalance(prev => prev - amount);
       setCryptoCashBalance(prev => prev + amount);
-      toast({ title: "Transfer Successful", description: `${formatCurrency(amount)} transferred to Crypto Wallet.` });
+      toast({ title: "Transfer Successful", description: `${formatCurrency(amount, 'INR')} transferred to Crypto Wallet.` });
     } else { // fromCrypto
       setMainPortfolioCashBalance(prev => prev + amount);
       setCryptoCashBalance(prev => prev - amount);
-      toast({ title: "Transfer Successful", description: `${formatCurrency(amount)} transferred to Main Portfolio.` });
+      toast({ title: "Transfer Successful", description: `${formatCurrency(amount, 'INR')} transferred to Main Portfolio.` });
     }
   };
 
@@ -95,7 +105,7 @@ export function CryptoHoldingsSection({ mainPortfolioCashBalance, setMainPortfol
                   overallPandL >= 0 ? 'text-green-500' : 'text-red-500'
                 )}
               >
-                {formatCurrency(overallPandL)}
+                {formatCurrency(overallPandL, currencyMode)}
               </p>
               <p className="text-xs text-muted-foreground">
                 Overall Crypto P&L ({overallPandLPercent.toFixed(2)}%)
@@ -108,7 +118,7 @@ export function CryptoHoldingsSection({ mainPortfolioCashBalance, setMainPortfol
                   totalDayChangeAbsolute >= 0 ? 'text-green-500' : 'text-red-500'
                 )}
               >
-                {formatCurrency(totalDayChangeAbsolute)}
+                {formatCurrency(totalDayChangeAbsolute, currencyMode)}
               </p>
               <p className="text-xs text-muted-foreground">
                 Day's Crypto P&L ({totalDayChangePercent.toFixed(2)}%)
@@ -122,28 +132,41 @@ export function CryptoHoldingsSection({ mainPortfolioCashBalance, setMainPortfol
             <div className="flex justify-between items-center text-sm">
               <p className="text-muted-foreground">Total Crypto Investment</p>
               <p className="font-medium text-foreground">
-                {formatCurrency(totalInvestmentValue)}
+                {formatCurrency(totalInvestmentValue, currencyMode)}
               </p>
             </div>
             <div className="flex justify-between items-center text-sm">
               <p className="text-muted-foreground">Current Crypto Value</p>
               <p className="font-medium text-foreground">
-                {formatCurrency(totalCurrentValue)}
+                {formatCurrency(totalCurrentValue, currencyMode)}
               </p>
             </div>
             <div className="flex justify-between items-center text-sm">
               <p className="text-muted-foreground">Cash Balance (Crypto)</p>
               <p className="font-medium text-foreground">
-                {formatCurrency(cryptoCashBalance)}
+                {formatCurrency(cryptoCashBalance, currencyMode)}
               </p>
             </div>
             <div className="pt-2 flex flex-col sm:flex-row gap-2">
-              <Button variant="outline" size="sm" className="flex-1" onClick={() => handleOpenFundTransferDialog('toCrypto')}>
+              <Button variant="outline" size="sm" className="flex-1 h-11" onClick={() => handleOpenFundTransferDialog('toCrypto')}>
                 <Coins className="mr-2 h-4 w-4" /> Add Funds
               </Button>
-              <Button variant="outline" size="sm" className="flex-1" onClick={() => handleOpenFundTransferDialog('fromCrypto')}>
+              <Button variant="outline" size="sm" className="flex-1 h-11" onClick={() => handleOpenFundTransferDialog('fromCrypto')}>
                 <Landmark className="mr-2 h-4 w-4" /> Withdraw Funds
               </Button>
+            </div>
+            <div className="pt-4">
+              <Label className="text-sm font-medium">Display Currency</Label>
+              <RadioGroup value={currencyMode} onValueChange={(v) => setCurrencyMode(v as any)} className="flex space-x-4 mt-2">
+                  <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="INR" id="currency-inr" />
+                      <Label htmlFor="currency-inr" className="font-normal">Rupee (₹)</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="USDT" id="currency-usdt" />
+                      <Label htmlFor="currency-usdt" className="font-normal">USDT ($)</Label>
+                  </div>
+              </RadioGroup>
             </div>
           </div>
         </div>
@@ -173,14 +196,14 @@ export function CryptoHoldingsSection({ mainPortfolioCashBalance, setMainPortfol
                         {holding.symbol && <div className="text-xs text-muted-foreground">{holding.symbol}</div>}
                     </TableCell>
                     <TableCell className="text-right">{holding.quantity.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 8})}</TableCell>
-                    <TableCell className="text-right">{formatCurrency(holding.avgCostPrice)}</TableCell>
-                    <TableCell className="text-right">{formatCurrency(holding.ltp)}</TableCell>
-                    <TableCell className="text-right">{formatCurrency(holding.currentValue)}</TableCell>
+                    <TableCell className="text-right">{formatCurrency(holding.avgCostPrice, currencyMode)}</TableCell>
+                    <TableCell className="text-right">{formatCurrency(holding.ltp, currencyMode)}</TableCell>
+                    <TableCell className="text-right">{formatCurrency(holding.currentValue, currencyMode)}</TableCell>
                     <TableCell className={cn("text-right whitespace-nowrap", holding.profitAndLoss >= 0 ? 'text-green-600' : 'text-red-600')}>
-                        {formatCurrency(holding.profitAndLoss)}<br/>({holding.profitAndLossPercent.toFixed(2)}%)
+                        {formatCurrency(holding.profitAndLoss, currencyMode)}<br/>({holding.profitAndLossPercent.toFixed(2)}%)
                     </TableCell>
                     <TableCell className={cn("text-right whitespace-nowrap", holding.dayChangeAbsolute >= 0 ? 'text-green-600' : 'text-red-600')}>
-                        {formatCurrency(holding.dayChangeAbsolute)}<br/>({holding.dayChangePercent.toFixed(2)}%)
+                        {formatCurrency(holding.dayChangeAbsolute, currencyMode)}<br/>({holding.dayChangePercent.toFixed(2)}%)
                     </TableCell>
                     </TableRow>
                     {expandedRowId === holding.id && (
@@ -246,6 +269,7 @@ export function CryptoHoldingsSection({ mainPortfolioCashBalance, setMainPortfol
         mainPortfolioCashBalance={mainPortfolioCashBalance}
         cryptoCashBalance={cryptoCashBalance}
         onTransferConfirm={handleTransferConfirm}
+        currencyMode={currencyMode}
       />
     </>
   );
