@@ -45,8 +45,8 @@ import {
   mockCryptoFuturesForWatchlist,
   mockCryptoMutualFunds,
   mockCryptoETFs,
-  // mockFoBaskets, // Kept for data integrity, but component removed
 } from '@/lib/mockData';
+import { useAuth } from '@/contexts/AuthContext';
 
 function getRelevantNewsForHoldings(holdings: PortfolioHolding[], allNews: NewsArticle[]): NewsArticle[] {
   if (!holdings.length || !allNews.length) {
@@ -159,7 +159,18 @@ function getRelevantNewsForWatchlistItems(items: Stock[] | MarketIndex[] | undef
 
 
 export default function DashboardPage() {
-  const cryptoNavItems = ["Crypto Spot", "Crypto Futures", "Crypto Mutual Fund"];
+  const { user } = useAuth();
+  const isRealMode = user?.id === 'REAL456';
+
+  const allPrimaryNavItems = [
+    "Portfolio", "Crypto Spot", "Crypto Futures", "Crypto Mutual Fund", "Stocks", "Index Futures", "Stock Futures", "Options", "Stocks Mutual fund", "Bonds", "IPO"
+  ];
+
+  const realModeHiddenItems = new Set(["Stocks", "Index Futures", "Stock Futures", "Options", "Stocks Mutual fund", "Bonds", "IPO"]);
+  
+  const primaryNavItemsForDisplay = isRealMode 
+    ? allPrimaryNavItems.filter(item => !realModeHiddenItems.has(item))
+    : allPrimaryNavItems;
 
   const secondaryNavTriggerCategories: Record<string, string[]> = {
     Portfolio: ["Holdings", "Positions", "Portfolio Watchlist"],
@@ -181,6 +192,12 @@ export default function DashboardPage() {
   );
   
   const [mainPortfolioCashBalance, setMainPortfolioCashBalance] = useState(50000.00);
+  
+  useEffect(() => {
+    if (isRealMode && !primaryNavItemsForDisplay.includes(activePrimaryItem)) {
+      setActivePrimaryItem("Portfolio");
+    }
+  }, [isRealMode, activePrimaryItem, primaryNavItemsForDisplay]);
 
 
   const handlePrimaryNavClick = (item: string) => {
@@ -197,7 +214,6 @@ export default function DashboardPage() {
     setActiveSecondaryItem(item);
   };
   
-  const isCryptoView = cryptoNavItems.includes(activePrimaryItem);
   const isPortfolioHoldingsView = activePrimaryItem === "Portfolio" && activeSecondaryItem === "Holdings";
   const isPortfolioPositionsView = activePrimaryItem === "Portfolio" && activeSecondaryItem === "Positions";
   const isUserPortfolioWatchlistView = activePrimaryItem === "Portfolio" && activeSecondaryItem === "Portfolio Watchlist";
@@ -208,7 +224,9 @@ export default function DashboardPage() {
     "Stock Futures",
     "Stocks Mutual fund",
     "Bonds",
-    ...cryptoNavItems,
+    "Crypto Spot",
+    "Crypto Futures",
+    "Crypto Mutual Fund"
   ];
 
   const isTopWatchlistView = topWatchlistItems.includes(activePrimaryItem) && activeSecondaryItem.startsWith("Top watchlist");
@@ -263,7 +281,7 @@ export default function DashboardPage() {
       <div className="flex flex-col min-h-screen">
         <AppHeader />
         <main className="flex-grow container mx-auto p-4 sm:p-6 lg:p-8 space-y-8">
-          {isCryptoView ? (
+          {isRealMode ? (
             <MarketOverview 
               title="Top Cryptocurrencies" 
               items={mockCryptoAssets.slice(0, 3)} 
@@ -276,6 +294,7 @@ export default function DashboardPage() {
           )}
 
           <SubNav
+            primaryNavItems={primaryNavItemsForDisplay}
             activePrimaryItem={activePrimaryItem}
             activeSecondaryItem={activeSecondaryItem}
             onPrimaryNavClick={handlePrimaryNavClick}

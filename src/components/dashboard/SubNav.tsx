@@ -5,11 +5,8 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
-const primaryNavItems = [
-  "Portfolio", "Crypto Spot", "Crypto Futures", "Crypto Mutual Fund", "Stocks", "Index Futures", "Stock Futures", "Options", "Stocks Mutual fund", "Bonds", "IPO"
-];
-
 interface SubNavProps {
+  primaryNavItems: string[];
   activePrimaryItem: string;
   activeSecondaryItem: string;
   onPrimaryNavClick: (item: string) => void;
@@ -18,6 +15,7 @@ interface SubNavProps {
 }
 
 export function SubNav({ 
+  primaryNavItems,
   activePrimaryItem, 
   activeSecondaryItem, 
   onPrimaryNavClick, 
