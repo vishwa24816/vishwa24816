@@ -310,33 +310,57 @@ export default function FutureOrderPage() {
               </TabsContent>
               
               <TabsContent value="fundamentals" className="mt-4 space-y-6">
-                 {asset.fundamentals ? (
-                  <CollapsibleSection title="Underlying Asset Fundamentals" icon={SearchIcon} defaultOpen>
+                <CollapsibleSection title="Underlying Asset Fundamentals" icon={SearchIcon} defaultOpen>
                     <div className="grid grid-cols-2 gap-x-6 gap-y-3 text-sm">
-                      <div><span className="text-muted-foreground">Mkt Cap</span><p className="font-semibold text-foreground">{asset.fundamentals.marketCap || 'N/A'}</p></div>
-                      <div><span className="text-muted-foreground">ROE</span><p className="font-semibold text-foreground">{asset.fundamentals.roe?.toFixed(2) || 'N/A'}%</p></div>
-                      <div><span className="text-muted-foreground">P/E Ratio (TTM)</span><p className="font-semibold text-foreground">{asset.fundamentals.peRatioTTM?.toFixed(2) || 'N/A'}</p></div>
-                      <div><span className="text-muted-foreground">EPS (TTM)</span><p className="font-semibold text-foreground">{asset.fundamentals.epsTTM?.toFixed(2) || 'N/A'}</p></div>
-                      <div><span className="text-muted-foreground">P/B Ratio</span><p className="font-semibold text-foreground">{asset.fundamentals.pbRatio?.toFixed(2) || 'N/A'}</p></div>
-                      <div><span className="text-muted-foreground">Div Yield</span><p className="font-semibold text-foreground">{asset.fundamentals.divYield?.toFixed(2) || 'N/A'}%</p></div>
-                      <div><span className="text-muted-foreground">Industry P/E</span><p className="font-semibold text-foreground">{asset.fundamentals.industryPe?.toFixed(2) || 'N/A'}</p></div>
-                      <div><span className="text-muted-foreground">Book Value</span><p className="font-semibold text-foreground">{asset.fundamentals.bookValue?.toFixed(2) || 'N/A'}</p></div>
-                      <div><span className="text-muted-foreground">Debt to Equity</span><p className="font-semibold text-foreground">{asset.fundamentals.debtToEquity?.toFixed(2) || 'N/A'}</p></div>
-                      <div><span className="text-muted-foreground">Face Value</span><p className="font-semibold text-foreground">{asset.fundamentals.faceValue?.toFixed(2) || 'N/A'}</p></div>
+                    <div><span className="text-muted-foreground">Mkt Cap</span><p className="font-semibold text-foreground">{asset.fundamentals?.marketCap || 'N/A'}</p></div>
+                    <div><span className="text-muted-foreground">ROE</span><p className="font-semibold text-foreground">{asset.fundamentals?.roe?.toFixed(2) || 'N/A'}%</p></div>
+                    <div><span className="text-muted-foreground">P/E Ratio (TTM)</span><p className="font-semibold text-foreground">{asset.fundamentals?.peRatioTTM?.toFixed(2) || 'N/A'}</p></div>
+                    <div><span className="text-muted-foreground">EPS (TTM)</span><p className="font-semibold text-foreground">{asset.fundamentals?.epsTTM?.toFixed(2) || 'N/A'}</p></div>
+                    <div><span className="text-muted-foreground">P/B Ratio</span><p className="font-semibold text-foreground">{asset.fundamentals?.pbRatio?.toFixed(2) || 'N/A'}</p></div>
+                    <div><span className="text-muted-foreground">Div Yield</span><p className="font-semibold text-foreground">{asset.fundamentals?.divYield?.toFixed(2) || 'N/A'}%</p></div>
+                    <div><span className="text-muted-foreground">Industry P/E</span><p className="font-semibold text-foreground">{asset.fundamentals?.industryPe?.toFixed(2) || 'N/A'}</p></div>
+                    <div><span className="text-muted-foreground">Book Value</span><p className="font-semibold text-foreground">{asset.fundamentals?.bookValue?.toFixed(2) || 'N/A'}</p></div>
+                    <div><span className="text-muted-foreground">Debt to Equity</span><p className="font-semibold text-foreground">{asset.fundamentals?.debtToEquity?.toFixed(2) || 'N/A'}</p></div>
+                    <div><span className="text-muted-foreground">Face Value</span><p className="font-semibold text-foreground">{asset.fundamentals?.faceValue?.toFixed(2) || 'N/A'}</p></div>
+                    </div>
+                </CollapsibleSection>
+
+                 {asset.financials && (
+                  <CollapsibleSection title="Financials" icon={BarChart2} defaultOpen>
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex space-x-1 sm:space-x-2 overflow-x-auto no-scrollbar">
+                        {(['revenue', 'profit', 'netWorth'] as const).map(cat => (
+                          <Button 
+                            key={cat}
+                            variant={activeFinancialsCategory === cat ? 'secondary' : 'ghost'} 
+                            size="sm" 
+                            className="rounded-full text-xs px-3 shrink-0"
+                            onClick={() => setActiveFinancialsCategory(cat)}
+                          >
+                            {cat.charAt(0).toUpperCase() + cat.slice(1)}
+                          </Button>
+                        ))}
+                      </div>
+                      <Button variant="outline" size="sm" className="rounded-full text-xs px-3 shrink-0 flex items-center">
+                        <ChevronLeftIcon className="h-3 w-3 mr-0.5" />
+                        <ChevronRightIcon className="h-3 w-3 mr-1" />
+                        Quarterly
+                      </Button>
+                    </div>
+                    <div className="flex justify-between items-end h-40 bg-muted/20 p-4 rounded-md relative" data-ai-hint="financials bar chart">
+                       {currentFinancialsData.length > 0 ? (
+                        currentFinancialsData.map((data) => (
+                          <FinancialBar key={data.period} value={data.value} maxValue={maxFinancialValue} label={data.period} />
+                        ))
+                      ) : (
+                        <p className="absolute inset-0 flex items-center justify-center text-muted-foreground text-sm">No financial data available for {activeFinancialsCategory}.</p>
+                      )}
+                    </div>
+                    <div className="flex justify-between items-center mt-3 text-xs">
+                      <Link href="#" className="text-primary hover:underline">View details</Link>
+                      <p className="text-muted-foreground">*All values are in crore</p>
                     </div>
                   </CollapsibleSection>
-                ) : (
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="flex items-center"><SearchIcon className="h-5 w-5 mr-2 text-primary" /> Underlying Asset Details</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <p>No fundamental data available for this future's underlying asset.</p>
-                            <div className="h-40 bg-muted rounded-md flex items-center justify-center my-4" data-ai-hint="document details">
-                            <p className="text-muted-foreground">No Details</p>
-                            </div>
-                        </CardContent>
-                    </Card>
                 )}
               </TabsContent>
 
