@@ -242,32 +242,22 @@ export default function FutureOrderPage() {
               <TabsList className="w-full bg-muted/30 flex overflow-x-auto whitespace-nowrap no-scrollbar rounded-none p-0 h-auto border-b mb-1">
                 <TabsTrigger value="underlying" className="flex-shrink-0 px-4 py-3 text-sm rounded-t-md rounded-b-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=inactive]:border-b-2 data-[state=inactive]:border-transparent data-[state=active]:shadow-none hover:text-primary">Underlying</TabsTrigger>
                 <TabsTrigger value="technicals" className="flex-shrink-0 px-4 py-3 text-sm rounded-t-md rounded-b-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=inactive]:border-b-2 data-[state=inactive]:border-transparent data-[state=active]:shadow-none hover:text-primary">Technicals</TabsTrigger>
-                 <TabsTrigger value="optionchain" className="flex-shrink-0 px-4 py-3 text-sm rounded-t-md rounded-b-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=inactive]:border-b-2 data-[state=inactive]:border-transparent data-[state=active]:shadow-none hover:text-primary">Option Chain</TabsTrigger>
+                <TabsTrigger value="fundamentals" className="flex-shrink-0 px-4 py-3 text-sm rounded-t-md rounded-b-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=inactive]:border-b-2 data-[state=inactive]:border-transparent data-[state=active]:shadow-none hover:text-primary">Fundamentals</TabsTrigger>
                 <TabsTrigger value="news" className="flex-shrink-0 px-4 py-3 text-sm rounded-t-md rounded-b-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=inactive]:border-b-2 data-[state=inactive]:border-transparent data-[state=active]:shadow-none hover:text-primary">News</TabsTrigger>
               </TabsList>
               
               <TabsContent value="underlying" className="mt-4 space-y-6">
-                 {asset.fundamentals ? ( // Check if underlying stock fundamentals exist
-                  <CollapsibleSection title="Underlying Asset Fundamentals" icon={SearchIcon} defaultOpen>
-                    <div className="grid grid-cols-2 gap-x-6 gap-y-3 text-sm">
-                      <div><span className="text-muted-foreground">Mkt Cap</span><p className="font-semibold text-foreground">{asset.fundamentals.marketCap || 'N/A'}</p></div>
-                      <div><span className="text-muted-foreground">P/E Ratio (TTM)</span><p className="font-semibold text-foreground">{asset.fundamentals.peRatioTTM?.toFixed(2) || 'N/A'}</p></div>
-                      <div><span className="text-muted-foreground">EPS (TTM)</span><p className="font-semibold text-foreground">{asset.fundamentals.epsTTM?.toFixed(2) || 'N/A'}</p></div>
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center"><FileText className="h-5 w-5 mr-2 text-primary" /> Option Chain for Underlying</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p>Option chain data for the underlying asset will be displayed here.</p>
+                     <div className="h-60 bg-muted rounded-md flex items-center justify-center my-4" data-ai-hint="options table data">
+                      <p className="text-muted-foreground">Option Chain Placeholder</p>
                     </div>
-                  </CollapsibleSection>
-                ) : (
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="flex items-center"><SearchIcon className="h-5 w-5 mr-2 text-primary" /> Underlying Asset Details</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <p>Detailed information about the underlying asset (e.g., NIFTY, RELIANCE) will be shown here if available.</p>
-                            <div className="h-40 bg-muted rounded-md flex items-center justify-center my-4" data-ai-hint="document details">
-                            <p className="text-muted-foreground">Underlying Details Placeholder</p>
-                            </div>
-                        </CardContent>
-                    </Card>
-                )}
+                  </CardContent>
+                </Card>
               </TabsContent>
               
               <TabsContent value="technicals" className="mt-4 space-y-6">
@@ -319,18 +309,35 @@ export default function FutureOrderPage() {
                 </Card>
               </TabsContent>
               
-              <TabsContent value="optionchain" className="mt-4 space-y-6">
-                 <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center"><FileText className="h-5 w-5 mr-2 text-primary" /> Option Chain for Underlying</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p>Option chain data for the underlying asset will be displayed here.</p>
-                     <div className="h-60 bg-muted rounded-md flex items-center justify-center my-4" data-ai-hint="options table data">
-                      <p className="text-muted-foreground">Option Chain Placeholder</p>
+              <TabsContent value="fundamentals" className="mt-4 space-y-6">
+                 {asset.fundamentals ? (
+                  <CollapsibleSection title="Underlying Asset Fundamentals" icon={SearchIcon} defaultOpen>
+                    <div className="grid grid-cols-2 gap-x-6 gap-y-3 text-sm">
+                      <div><span className="text-muted-foreground">Mkt Cap</span><p className="font-semibold text-foreground">{asset.fundamentals.marketCap || 'N/A'}</p></div>
+                      <div><span className="text-muted-foreground">ROE</span><p className="font-semibold text-foreground">{asset.fundamentals.roe?.toFixed(2) || 'N/A'}%</p></div>
+                      <div><span className="text-muted-foreground">P/E Ratio (TTM)</span><p className="font-semibold text-foreground">{asset.fundamentals.peRatioTTM?.toFixed(2) || 'N/A'}</p></div>
+                      <div><span className="text-muted-foreground">EPS (TTM)</span><p className="font-semibold text-foreground">{asset.fundamentals.epsTTM?.toFixed(2) || 'N/A'}</p></div>
+                      <div><span className="text-muted-foreground">P/B Ratio</span><p className="font-semibold text-foreground">{asset.fundamentals.pbRatio?.toFixed(2) || 'N/A'}</p></div>
+                      <div><span className="text-muted-foreground">Div Yield</span><p className="font-semibold text-foreground">{asset.fundamentals.divYield?.toFixed(2) || 'N/A'}%</p></div>
+                      <div><span className="text-muted-foreground">Industry P/E</span><p className="font-semibold text-foreground">{asset.fundamentals.industryPe?.toFixed(2) || 'N/A'}</p></div>
+                      <div><span className="text-muted-foreground">Book Value</span><p className="font-semibold text-foreground">{asset.fundamentals.bookValue?.toFixed(2) || 'N/A'}</p></div>
+                      <div><span className="text-muted-foreground">Debt to Equity</span><p className="font-semibold text-foreground">{asset.fundamentals.debtToEquity?.toFixed(2) || 'N/A'}</p></div>
+                      <div><span className="text-muted-foreground">Face Value</span><p className="font-semibold text-foreground">{asset.fundamentals.faceValue?.toFixed(2) || 'N/A'}</p></div>
                     </div>
-                  </CardContent>
-                </Card>
+                  </CollapsibleSection>
+                ) : (
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center"><SearchIcon className="h-5 w-5 mr-2 text-primary" /> Underlying Asset Details</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <p>No fundamental data available for this future's underlying asset.</p>
+                            <div className="h-40 bg-muted rounded-md flex items-center justify-center my-4" data-ai-hint="document details">
+                            <p className="text-muted-foreground">No Details</p>
+                            </div>
+                        </CardContent>
+                    </Card>
+                )}
               </TabsContent>
 
 
@@ -367,4 +374,3 @@ export default function FutureOrderPage() {
     </ProtectedRoute>
   );
 }
-
