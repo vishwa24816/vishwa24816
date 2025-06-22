@@ -19,6 +19,7 @@ import { useToast } from "@/hooks/use-toast";
 import { FundTransferDialog } from '@/components/shared/FundTransferDialog';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface CryptoHoldingsSectionProps {
   holdings: PortfolioHolding[];
@@ -101,181 +102,203 @@ export function CryptoHoldingsSection({
     );
   }
 
+  const walletCardTitle = title.includes('Web3') ? 'Web3 Wallet' : 'Crypto Wallet';
+  const holdingsCardTitle = title.includes('Web3') ? 'Web3 Holdings' : 'Crypto Holdings';
+
   return (
     <>
-      <section className="space-y-4">
-        <h2 className="text-xl font-semibold font-headline text-primary flex items-center">
-            <Bitcoin className="h-6 w-6 mr-2" /> {title}
-        </h2>
-
-        <div className="space-y-3 pt-2 mb-4">
-          <div className="flex justify-between items-start">
-            <div>
-              <p
-                className={cn(
-                  "text-xl font-semibold",
-                  overallPandL >= 0 ? 'text-green-500' : 'text-red-500'
-                )}
-              >
-                {formatCurrency(overallPandL, currencyMode)}
-              </p>
-              <p className="text-xs text-muted-foreground">
-                Overall P&L ({overallPandLPercent.toFixed(2)}%)
-              </p>
-            </div>
-            <div className="text-right">
-              <p
-                className={cn(
-                  "text-xl font-semibold",
-                  totalDayChangeAbsolute >= 0 ? 'text-green-500' : 'text-red-500'
-                )}
-              >
-                {formatCurrency(totalDayChangeAbsolute, currencyMode)}
-              </p>
-              <p className="text-xs text-muted-foreground">
-                Day's P&L ({totalDayChangePercent.toFixed(2)}%)
-              </p>
-            </div>
-          </div>
-
-          <Separator />
-
-          <div className="space-y-1.5">
-            <div className="flex justify-between items-center text-sm">
-              <p className="text-muted-foreground">Total Investment</p>
-              <p className="font-medium text-foreground">
-                {formatCurrency(totalInvestmentValue, currencyMode)}
-              </p>
-            </div>
-            <div className="flex justify-between items-center text-sm">
-              <p className="text-muted-foreground">Current Value</p>
-              <p className="font-medium text-foreground">
-                {formatCurrency(totalCurrentValue, currencyMode)}
-              </p>
-            </div>
-            <div className="flex justify-between items-center text-sm">
-              <p className="text-muted-foreground">Cash Balance</p>
-              <p className="font-medium text-foreground">
-                {formatCurrency(cashBalance, currencyMode)}
-              </p>
-            </div>
-            {!isRealMode && (
-              <div className="pt-2 flex flex-col sm:flex-row gap-2">
-                <Button variant="outline" size="sm" className="flex-1 h-11" onClick={() => handleOpenFundTransferDialog('toCrypto')}>
-                  <Coins className="mr-2 h-4 w-4" /> Add Funds
-                </Button>
-                <Button variant="outline" size="sm" className="flex-1 h-11" onClick={() => handleOpenFundTransferDialog('fromCrypto')}>
-                  <Landmark className="mr-2 h-4 w-4" /> Withdraw Funds
-                </Button>
-              </div>
-            )}
-            <div className="pt-4">
-              <Label className="text-sm font-medium">Display Currency</Label>
-              <RadioGroup value={currencyMode} onValueChange={(v) => setCurrencyMode(v as any)} className="flex space-x-4 mt-2">
-                  <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="INR" id="currency-inr" />
-                      <Label htmlFor="currency-inr" className="font-normal">Rupee (₹)</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="USDT" id="currency-usdt" />
-                      <Label htmlFor="currency-usdt" className="font-normal">USDT ($)</Label>
-                  </div>
-              </RadioGroup>
-            </div>
-          </div>
-        </div>
-        
-        {cryptoHoldings.length > 0 && (
-            <Table>
-            <TableHeader>
-                <TableRow>
-                <TableHead className="w-[200px] min-w-[150px]">Asset</TableHead>
-                <TableHead className="text-right">Qty.</TableHead>
-                <TableHead className="text-right">Avg. Cost</TableHead>
-                <TableHead className="text-right">LTP</TableHead>
-                <TableHead className="text-right">Current Val.</TableHead>
-                <TableHead className="text-right">P&L (%)</TableHead>
-                <TableHead className="text-right">Day's Chg (%)</TableHead>
-                </TableRow>
-            </TableHeader>
-            <TableBody>
-                {cryptoHoldings.map((holding) => (
-                <React.Fragment key={holding.id}>
-                    <TableRow 
-                    onClick={() => handleRowClick(holding.id)}
-                    className="cursor-pointer"
-                    >
-                    <TableCell className="font-medium">
-                        <div>{holding.name}</div>
-                        {holding.symbol && <div className="text-xs text-muted-foreground">{holding.symbol}</div>}
-                    </TableCell>
-                    <TableCell className="text-right">{holding.quantity.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 8})}</TableCell>
-                    <TableCell className="text-right">{formatCurrency(holding.avgCostPrice, currencyMode)}</TableCell>
-                    <TableCell className="text-right">{formatCurrency(holding.ltp, currencyMode)}</TableCell>
-                    <TableCell className="text-right">{formatCurrency(holding.currentValue, currencyMode)}</TableCell>
-                    <TableCell className={cn("text-right whitespace-nowrap", holding.profitAndLoss >= 0 ? 'text-green-600' : 'text-red-600')}>
-                        {formatCurrency(holding.profitAndLoss, currencyMode)}<br/>({holding.profitAndLossPercent.toFixed(2)}%)
-                    </TableCell>
-                    <TableCell className={cn("text-right whitespace-nowrap", holding.dayChangeAbsolute >= 0 ? 'text-green-600' : 'text-red-600')}>
-                        {formatCurrency(holding.dayChangeAbsolute, currencyMode)}<br/>({holding.dayChangePercent.toFixed(2)}%)
-                    </TableCell>
-                    </TableRow>
-                    {expandedRowId === holding.id && (
-                    <TableRow className="bg-muted/50 hover:bg-muted/60 data-[state=selected]:bg-muted/70">
-                        <TableCell colSpan={7} className="p-0">
-                        <div className="p-4 space-y-3">
-                            <h4 className="font-semibold text-md text-foreground">
-                            {holding.name} ({holding.symbol || holding.type}) - Actions
-                            </h4>
-                            <div className="flex flex-col sm:flex-row gap-2">
-                            <Button 
-                                size="sm" 
-                                variant="outline" 
-                                className="flex-1 justify-center text-green-600 border-green-500 hover:bg-green-500/10 hover:text-green-700" 
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    toast({ title: `Buy More: ${holding.symbol || holding.name}`});
-                                }}
-                            >
-                                <PlusCircle className="mr-2 h-4 w-4" /> Buy More
-                            </Button>
-                            <Button 
-                                size="sm" 
-                                variant="outline" 
-                                className="flex-1 justify-center text-orange-600 border-orange-500 hover:bg-orange-500/10 hover:text-orange-700" 
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    toast({ title: `Sell/Reduce: ${holding.symbol || holding.name}`});
-                                }}
-                            >
-                                <MinusCircle className="mr-2 h-4 w-4" /> Sell/Reduce
-                            </Button>
-                            <Button 
-                                size="sm" 
-                                variant="destructive" 
-                                className="flex-1 justify-center" 
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    toast({ 
-                                        title: `Exit Position: ${holding.symbol || holding.name}`,
-                                        description: "This action would close your entire position.",
-                                        variant: "destructive"
-                                    });
-                                }}
-                            >
-                                <XCircle className="mr-2 h-4 w-4" /> Exit Position
-                            </Button>
-                            </div>
+      <div className="space-y-6">
+        <Card className="w-full shadow-md">
+            <CardHeader>
+                 <CardTitle className="text-xl font-semibold font-headline text-primary flex items-center">
+                    <Bitcoin className="h-6 w-6 mr-2" /> {walletCardTitle}
+                </CardTitle>
+            </CardHeader>
+            <CardContent>
+                <div className="space-y-3 pt-2 mb-4">
+                    <div className="flex justify-between items-start">
+                        <div>
+                        <p
+                            className={cn(
+                            "text-xl font-semibold",
+                            overallPandL >= 0 ? 'text-green-500' : 'text-red-500'
+                            )}
+                        >
+                            {formatCurrency(overallPandL, currencyMode)}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                            Overall P&L ({overallPandLPercent.toFixed(2)}%)
+                        </p>
                         </div>
-                        </TableCell>
-                    </TableRow>
-                    )}
-                </React.Fragment>
-                ))}
-            </TableBody>
-            </Table>
-        )}
-      </section>
+                        <div className="text-right">
+                        <p
+                            className={cn(
+                            "text-xl font-semibold",
+                            totalDayChangeAbsolute >= 0 ? 'text-green-500' : 'text-red-500'
+                            )}
+                        >
+                            {formatCurrency(totalDayChangeAbsolute, currencyMode)}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                            Day's P&L ({totalDayChangePercent.toFixed(2)}%)
+                        </p>
+                        </div>
+                    </div>
+
+                    <Separator />
+
+                    <div className="space-y-1.5">
+                        <div className="flex justify-between items-center text-sm">
+                        <p className="text-muted-foreground">Total Investment</p>
+                        <p className="font-medium text-foreground">
+                            {formatCurrency(totalInvestmentValue, currencyMode)}
+                        </p>
+                        </div>
+                        <div className="flex justify-between items-center text-sm">
+                        <p className="text-muted-foreground">Current Value</p>
+                        <p className="font-medium text-foreground">
+                            {formatCurrency(totalCurrentValue, currencyMode)}
+                        </p>
+                        </div>
+                        <div className="flex justify-between items-center text-sm">
+                        <p className="text-muted-foreground">Cash Balance</p>
+                        <p className="font-medium text-foreground">
+                            {formatCurrency(cashBalance, currencyMode)}
+                        </p>
+                        </div>
+                        {!isRealMode && (
+                        <div className="pt-2 flex flex-col sm:flex-row gap-2">
+                            <Button variant="outline" size="sm" className="flex-1 h-11" onClick={() => handleOpenFundTransferDialog('toCrypto')}>
+                            <Coins className="mr-2 h-4 w-4" /> Add Funds
+                            </Button>
+                            <Button variant="outline" size="sm" className="flex-1 h-11" onClick={() => handleOpenFundTransferDialog('fromCrypto')}>
+                            <Landmark className="mr-2 h-4 w-4" /> Withdraw Funds
+                            </Button>
+                        </div>
+                        )}
+                        <div className="pt-4">
+                        <Label className="text-sm font-medium">Display Currency</Label>
+                        <RadioGroup value={currencyMode} onValueChange={(v) => setCurrencyMode(v as any)} className="flex space-x-4 mt-2">
+                            <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="INR" id="currency-inr" />
+                                <Label htmlFor="currency-inr" className="font-normal">Rupee (₹)</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="USDT" id="currency-usdt" />
+                                <Label htmlFor="currency-usdt" className="font-normal">USDT ($)</Label>
+                            </div>
+                        </RadioGroup>
+                        </div>
+                    </div>
+                </div>
+            </CardContent>
+        </Card>
+
+        <Card className="w-full shadow-md">
+            <CardHeader>
+                <CardTitle className="text-xl font-semibold font-headline text-primary flex items-center">
+                    <Coins className="h-6 w-6 mr-2" /> {holdingsCardTitle}
+                </CardTitle>
+            </CardHeader>
+            <CardContent className="p-0">
+                 {cryptoHoldings.length > 0 ? (
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                            <TableHead className="w-[200px] min-w-[150px]">Asset</TableHead>
+                            <TableHead className="text-right">Qty.</TableHead>
+                            <TableHead className="text-right">Avg. Cost</TableHead>
+                            <TableHead className="text-right">LTP</TableHead>
+                            <TableHead className="text-right">Current Val.</TableHead>
+                            <TableHead className="text-right">P&L (%)</TableHead>
+                            <TableHead className="text-right">Day's Chg (%)</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {cryptoHoldings.map((holding) => (
+                            <React.Fragment key={holding.id}>
+                                <TableRow 
+                                onClick={() => handleRowClick(holding.id)}
+                                className="cursor-pointer"
+                                >
+                                <TableCell className="font-medium">
+                                    <div>{holding.name}</div>
+                                    {holding.symbol && <div className="text-xs text-muted-foreground">{holding.symbol}</div>}
+                                </TableCell>
+                                <TableCell className="text-right">{holding.quantity.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 8})}</TableCell>
+                                <TableCell className="text-right">{formatCurrency(holding.avgCostPrice, currencyMode)}</TableCell>
+                                <TableCell className="text-right">{formatCurrency(holding.ltp, currencyMode)}</TableCell>
+                                <TableCell className="text-right">{formatCurrency(holding.currentValue, currencyMode)}</TableCell>
+                                <TableCell className={cn("text-right whitespace-nowrap", holding.profitAndLoss >= 0 ? 'text-green-600' : 'text-red-600')}>
+                                    {formatCurrency(holding.profitAndLoss, currencyMode)}<br/>({holding.profitAndLossPercent.toFixed(2)}%)
+                                </TableCell>
+                                <TableCell className={cn("text-right whitespace-nowrap", holding.dayChangeAbsolute >= 0 ? 'text-green-600' : 'text-red-600')}>
+                                    {formatCurrency(holding.dayChangeAbsolute, currencyMode)}<br/>({holding.dayChangePercent.toFixed(2)}%)
+                                </TableCell>
+                                </TableRow>
+                                {expandedRowId === holding.id && (
+                                <TableRow className="bg-muted/50 hover:bg-muted/60 data-[state=selected]:bg-muted/70">
+                                    <TableCell colSpan={7} className="p-0">
+                                    <div className="p-4 space-y-3">
+                                        <h4 className="font-semibold text-md text-foreground">
+                                        {holding.name} ({holding.symbol || holding.type}) - Actions
+                                        </h4>
+                                        <div className="flex flex-col sm:flex-row gap-2">
+                                        <Button 
+                                            size="sm" 
+                                            variant="outline" 
+                                            className="flex-1 justify-center text-green-600 border-green-500 hover:bg-green-500/10 hover:text-green-700" 
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                toast({ title: `Buy More: ${holding.symbol || holding.name}`});
+                                            }}
+                                        >
+                                            <PlusCircle className="mr-2 h-4 w-4" /> Buy More
+                                        </Button>
+                                        <Button 
+                                            size="sm" 
+                                            variant="outline" 
+                                            className="flex-1 justify-center text-orange-600 border-orange-500 hover:bg-orange-500/10 hover:text-orange-700" 
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                toast({ title: `Sell/Reduce: ${holding.symbol || holding.name}`});
+                                            }}
+                                        >
+                                            <MinusCircle className="mr-2 h-4 w-4" /> Sell/Reduce
+                                        </Button>
+                                        <Button 
+                                            size="sm" 
+                                            variant="destructive" 
+                                            className="flex-1 justify-center" 
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                toast({ 
+                                                    title: `Exit Position: ${holding.symbol || holding.name}`,
+                                                    description: "This action would close your entire position.",
+                                                    variant: "destructive"
+                                                });
+                                            }}
+                                        >
+                                            <XCircle className="mr-2 h-4 w-4" /> Exit Position
+                                        </Button>
+                                        </div>
+                                    </div>
+                                    </TableCell>
+                                </TableRow>
+                                )}
+                            </React.Fragment>
+                            ))}
+                        </TableBody>
+                    </Table>
+                ) : (
+                    <div className="p-6 text-center text-muted-foreground">
+                        You have no crypto assets in this wallet.
+                    </div>
+                )}
+            </CardContent>
+        </Card>
+      </div>
+
       <FundTransferDialog
         isOpen={isFundTransferDialogOpen}
         onOpenChange={setIsFundTransferDialogOpen}
