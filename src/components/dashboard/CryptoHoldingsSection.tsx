@@ -107,7 +107,7 @@ export function CryptoHoldingsSection({
 
   return (
     <>
-      <div className="space-y-6">
+      <div className="space-y-4">
         <Card className="w-full shadow-md">
             <CardHeader>
                  <CardTitle className="text-xl font-semibold font-headline text-primary flex items-center">
