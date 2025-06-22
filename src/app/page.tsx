@@ -7,15 +7,17 @@ import { DemoDashboard } from '@/components/dashboard/DemoDashboard';
 import { RealDashboard } from '@/components/dashboard/RealDashboard';
 import { AppHeader } from '@/components/shared/AppHeader';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useState } from 'react';
 
 export default function DashboardRouterPage() {
   const { user, loading } = useAuth();
+  const [searchMode, setSearchMode] = useState<'Exchange' | 'Web3'>('Exchange');
   
   if (loading || !user) {
      return (
         <ProtectedRoute>
             <div className="flex flex-col min-h-screen">
-                <AppHeader />
+                <AppHeader searchMode={searchMode} onSearchModeChange={setSearchMode} />
                 <main className="flex-grow container mx-auto p-4 sm:p-6 lg:p-8 space-y-8">
                     <Skeleton className="h-24 w-full" />
                     <Skeleton className="h-12 w-full" />
@@ -34,8 +36,11 @@ export default function DashboardRouterPage() {
   return (
     <ProtectedRoute>
       <div className="flex flex-col min-h-screen">
-        <AppHeader />
-        {isRealMode ? <RealDashboard /> : <DemoDashboard />}
+        <AppHeader 
+          searchMode={searchMode}
+          onSearchModeChange={setSearchMode}
+        />
+        {isRealMode ? <RealDashboard searchMode={searchMode} /> : <DemoDashboard />}
         <footer className="py-6 text-center text-sm text-muted-foreground border-t">
           © {new Date().getFullYear()} SIM - Stock Information &amp; Management. All rights reserved.
         </footer>

@@ -10,7 +10,7 @@ import { CryptoIntradayPositionsSection } from '@/components/dashboard/CryptoInt
 import { CryptoFuturesSection } from '@/components/dashboard/CryptoFuturesSection';
 import { PackageOpen } from 'lucide-react';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import type { PortfolioHolding, NewsArticle, IntradayPosition, FoPosition, CryptoFuturePosition, Stock, MarketIndex } from '@/types';
 import { 
   mockPortfolioHoldings, 
@@ -123,18 +123,34 @@ function getRelevantNewsForWatchlistItems(items: Stock[] | MarketIndex[] | undef
   return relevantNews;
 }
 
+interface RealDashboardProps {
+  searchMode: 'Exchange' | 'Web3';
+}
 
-export function RealDashboard() {
-  const primaryNavItems = [
-    "Portfolio", "Crypto Spot", "Crypto Futures", "Crypto Mutual Fund"
-  ];
+export function RealDashboard({ searchMode }: RealDashboardProps) {
+    const { primaryNavItems, secondaryNavTriggerCategories } = useMemo(() => {
+    if (searchMode === 'Web3') {
+      const web3PrimaryNav = ['Portfolio', 'Gainers', 'Trending', 'Memes', 'DeFi', 'AI'];
+      const web3SecondaryNav = web3PrimaryNav.reduce((acc, item) => {
+        acc[item] = item === 'Portfolio' ? ["Holdings", "Positions", "Portfolio Watchlist"] : ['Top'];
+        return acc;
+      }, {} as Record<string, string[]>);
+      return { primaryNavItems: web3PrimaryNav, secondaryNavTriggerCategories: web3SecondaryNav };
+    }
+    
+    // Default to Exchange mode
+    const exchangePrimaryNav = [
+      "Portfolio", "Crypto Spot", "Crypto Futures", "Crypto Mutual Fund"
+    ];
+    const exchangeSecondaryNav: Record<string, string[]> = {
+      Portfolio: ["Holdings", "Positions", "Portfolio Watchlist"],
+      "Crypto Spot": ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
+      "Crypto Futures": ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
+      "Crypto Mutual Fund": ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
+    };
+    return { primaryNavItems: exchangePrimaryNav, secondaryNavTriggerCategories: exchangeSecondaryNav };
+  }, [searchMode]);
 
-  const secondaryNavTriggerCategories: Record<string, string[]> = {
-    Portfolio: ["Holdings", "Positions", "Portfolio Watchlist"],
-    "Crypto Spot": ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
-    "Crypto Futures": ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
-    "Crypto Mutual Fund": ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
-  };
 
   const [activePrimaryItem, setActivePrimaryItem] = useState("Portfolio");
   const [activeSecondaryItem, setActiveSecondaryItem] = useState(
@@ -142,6 +158,12 @@ export function RealDashboard() {
   );
   
   const [mainPortfolioCashBalance, setMainPortfolioCashBalance] = useState(50000.00);
+
+  React.useEffect(() => {
+    setActivePrimaryItem('Portfolio');
+    const newSecondaryItems = secondaryNavTriggerCategories['Portfolio'] || [];
+    setActiveSecondaryItem(newSecondaryItems[0] || '');
+  }, [searchMode, secondaryNavTriggerCategories]);
 
   const handlePrimaryNavClick = (item: string) => {
     setActivePrimaryItem(item);
@@ -171,6 +193,15 @@ export function RealDashboard() {
   const isCategoryNumberedWatchlistView = 
     [...topWatchlistItems].includes(activePrimaryItem) && 
     !!activeSecondaryItem.match(/^Watchlist \d+$/);
+    
+  const isWeb3PlaceholderView = searchMode === 'Web3' && (
+    activePrimaryItem === 'Gainers' ||
+    activePrimaryItem === 'Trending' ||
+    activePrimaryItem === 'Memes' ||
+    activePrimaryItem === 'DeFi' ||
+    activePrimaryItem === 'AI'
+  );
+
 
   let newsForView: NewsArticle[] = mockNewsArticles; 
   let itemsForTopWatchlist: Stock[] | undefined = undefined;
@@ -258,6 +289,14 @@ export function RealDashboard() {
             defaultInitialItems={[]} 
           />
           <NewsSection articles={newsForView} />
+        </div>
+      ) : isWeb3PlaceholderView ? (
+         <div className="flex flex-col items-center justify-center text-center py-12 text-muted-foreground">
+            <PackageOpen className="h-16 w-16 mb-4" />
+            <h2 className="text-2xl font-semibold mb-2 text-foreground">{activePrimaryItem}</h2>
+            <p className="max-w-md">
+                This section will display the top {activePrimaryItem.toLowerCase()} in the Web3 space.
+            </p>
         </div>
       ) : (
          <div className="flex flex-col items-center justify-center text-center py-12 text-muted-foreground">

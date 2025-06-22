@@ -30,14 +30,18 @@ import {
 } from "@/components/ui/sheet";
 import { useToast } from '@/hooks/use-toast';
 
-export function AppHeader() {
+interface AppHeaderProps {
+  searchMode: 'Exchange' | 'Web3';
+  onSearchModeChange: (mode: 'Exchange' | 'Web3') => void;
+}
+
+export function AppHeader({ searchMode, onSearchModeChange }: AppHeaderProps) {
   const { user, logout } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
   const [searchTerm, setSearchTerm] = useState('');
   const [isMounted, setIsMounted] = useState(false);
-  const [searchMode, setSearchMode] = useState<'Exchange' | 'Web3'>('Exchange');
 
   const isRealMode = user?.id === 'REAL456';
 
@@ -81,7 +85,7 @@ export function AppHeader() {
 
   const handleSearchModeToggle = () => {
     const newMode = searchMode === 'Exchange' ? 'Web3' : 'Exchange';
-    setSearchMode(newMode);
+    onSearchModeChange(newMode);
     toast({
       title: 'Search Mode Switched',
       description: `Now searching within ${newMode}.`,
