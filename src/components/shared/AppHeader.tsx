@@ -119,9 +119,9 @@ export function AppHeader({ searchMode, onSearchModeChange }: AppHeaderProps) {
 
   return (
     <header className="bg-primary text-primary-foreground shadow-md sticky top-0 z-50">
-      <div className="container mx-auto flex h-20 items-center justify-between px-4 sm:px-6 lg:px-8">
+      <div className="container mx-auto flex h-20 items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
         {/* Left Section: Menu and Search */}
-        <div className="flex items-center space-x-2 sm:space-x-4">
+        <div className="flex flex-1 items-center space-x-2 sm:space-x-4">
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="hover:bg-primary-foreground/10 text-accent shrink-0">
@@ -215,20 +215,22 @@ export function AppHeader({ searchMode, onSearchModeChange }: AppHeaderProps) {
             </SheetContent>
           </Sheet>
 
-          <div className="flex items-center space-x-2">
-            <form onSubmit={handleSearchSubmit} className="flex items-center relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-accent pointer-events-none" />
-              <Input
-                type="search"
-                placeholder={searchPlaceholder}
-                className="bg-primary-foreground/10 border-none focus-visible:ring-1 focus-visible:ring-accent focus-visible:ring-offset-0 text-primary-foreground placeholder:text-primary-foreground/70 h-9 pl-10 pr-3 rounded-md w-40 md:w-64 transition-all duration-300 focus:w-48 md:focus:w-72"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                aria-label={searchAriaLabel}
-              />
-            </form>
+          <form onSubmit={handleSearchSubmit} className="flex-1 items-center relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-accent pointer-events-none" />
+            <Input
+              type="search"
+              placeholder={searchPlaceholder}
+              className="bg-primary-foreground/10 border-none focus-visible:ring-1 focus-visible:ring-accent focus-visible:ring-offset-0 text-primary-foreground placeholder:text-primary-foreground/70 h-9 pl-10 pr-3 rounded-md w-full"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              aria-label={searchAriaLabel}
+            />
+          </form>
+        </div>
 
-            {isRealMode && (
+        {/* Right Section: Toggles and Profile */}
+        <div className="flex items-center space-x-1 sm:space-x-2">
+           {isRealMode && (
               <Button
                 variant="ghost"
                 className="h-9 px-3 hover:bg-primary-foreground/20 text-accent shrink-0"
@@ -238,11 +240,6 @@ export function AppHeader({ searchMode, onSearchModeChange }: AppHeaderProps) {
                 {searchMode}
               </Button>
             )}
-          </div>
-        </div>
-
-        {/* Right Section: Profile */}
-        <div className="flex items-center space-x-1 sm:space-x-2">
           <Button variant="ghost" size="icon" onClick={() => router.push('/profile')} className="hover:bg-primary-foreground/10 text-accent shrink-0">
             <User className="h-5 w-5" />
             <span className="sr-only">Open profile</span>
