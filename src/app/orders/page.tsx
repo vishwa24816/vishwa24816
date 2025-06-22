@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState } from 'react';
@@ -36,6 +35,8 @@ const realOrderTabs = [
 export default function OrdersPage() {
   const { user } = useAuth();
   const isRealMode = user?.id === 'REAL456';
+  const [searchMode, setSearchMode] = useState<'Fiat' | 'Exchange' | 'Web3'>(isRealMode ? 'Exchange' : 'Fiat');
+
 
   const orderTabs = isRealMode ? realOrderTabs : demoOrderTabs;
   const [activeTab, setActiveTab] = useState("executed");
@@ -61,11 +62,15 @@ export default function OrdersPage() {
   return (
     <ProtectedRoute>
       <div className="flex flex-col min-h-screen">
-        <AppHeader />
+        <AppHeader
+          searchMode={searchMode}
+          onSearchModeChange={setSearchMode}
+          isRealMode={isRealMode}
+        />
         <main className="flex-grow flex flex-col">
           <Tabs defaultValue="executed" value={activeTab} onValueChange={setActiveTab} className="flex flex-col flex-grow">
             <div className="bg-background border-b">
-              <TabsList className="px-4 sm:px-6 lg:px-8 flex overflow-x-auto whitespace-nowrap no-scrollbar rounded-none h-auto p-0 border-none bg-transparent">
+              <TabsList className="w-full px-4 sm:px-6 lg:px-8 flex overflow-x-auto whitespace-nowrap no-scrollbar rounded-none h-auto p-0 border-none bg-transparent">
                 {orderTabs.map((tab) => (
                   <TabsTrigger
                     key={tab.value}

@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useMemo } from 'react';
@@ -12,6 +11,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MessageSquarePlus } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useAuth } from '@/contexts/AuthContext';
 
 const communityTabs = [
   { value: "hot", label: "Hot" },
@@ -22,6 +22,9 @@ const communityTabs = [
 ];
 
 export default function CommunityPage() {
+  const { user } = useAuth();
+  const isRealMode = user?.id === 'REAL456';
+  const [searchMode, setSearchMode] = useState<'Fiat' | 'Exchange' | 'Web3'>(isRealMode ? 'Exchange' : 'Fiat');
   const [activeTab, setActiveTab] = useState("hot");
   // const [posts, setPosts] = useState<CommunityPost[]>(mockCommunityPosts); // Initialize with mock posts
 
@@ -36,12 +39,16 @@ export default function CommunityPage() {
   return (
     <ProtectedRoute>
       <div className="flex flex-col h-screen bg-background text-foreground">
-        <AppHeader />
+        <AppHeader
+          searchMode={searchMode}
+          onSearchModeChange={setSearchMode}
+          isRealMode={isRealMode}
+        />
 
         <main className="flex-grow flex flex-col overflow-hidden">
           <Tabs defaultValue="hot" value={activeTab} onValueChange={setActiveTab} className="flex flex-col flex-grow overflow-hidden">
             <div className="border-b bg-background">
-              <TabsList className="px-2 sm:px-4 lg:px-6 flex overflow-x-auto whitespace-nowrap no-scrollbar rounded-none h-auto p-0 border-none bg-transparent">
+              <TabsList className="w-full px-2 sm:px-4 lg:px-6 flex overflow-x-auto whitespace-nowrap no-scrollbar rounded-none h-auto p-0 border-none bg-transparent">
                 {communityTabs.map((tab) => (
                   <TabsTrigger
                     key={tab.value}

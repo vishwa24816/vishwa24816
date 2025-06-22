@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useRef, useEffect, FormEvent } from 'react';
@@ -20,6 +19,9 @@ export default function SimbotPage() {
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+
+  const isRealMode = authUser?.id === 'REAL456';
+  const [searchMode, setSearchMode] = useState<'Fiat' | 'Exchange' | 'Web3'>(isRealMode ? 'Exchange' : 'Fiat');
 
   const scrollToBottom = () => {
     if (scrollAreaRef.current) {
@@ -85,10 +87,14 @@ export default function SimbotPage() {
   return (
     <ProtectedRoute>
       <div className="flex flex-col h-full">
-        <AppHeader />
+        <AppHeader
+          searchMode={searchMode}
+          onSearchModeChange={setSearchMode}
+          isRealMode={isRealMode}
+        />
         
         <main className="flex-grow overflow-hidden">
-            <ScrollArea className="h-full p-4" ref={scrollAreaRef}> 
+            <ScrollArea className="h-full px-4 pt-4" ref={scrollAreaRef}> 
               <div className="space-y-6 pb-24">
                 {messages.map((msg) => (
                   <div
@@ -141,7 +147,7 @@ export default function SimbotPage() {
         </main>
         
         <footer className="fixed bottom-16 left-0 right-0 bg-background/80 backdrop-blur-sm border-t z-10">
-          <div className="px-4 py-3">
+          <div className="w-full px-4 py-3">
               <form onSubmit={handleSendMessage} className="flex items-center space-x-2">
                 <Input
                   type="text"
