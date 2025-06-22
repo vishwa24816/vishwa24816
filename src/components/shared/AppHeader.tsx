@@ -8,28 +8,10 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import {
   Search,
-  Sun,
-  Moon,
-  User, 
-  Menu,
-  LogOut,
-  Home as HomeIcon,
-  Info as InfoIcon,
-  TrendingUp,
-  Trophy,
-  LifeBuoy,
+  User,
   Repeat,
   ChevronDown,
-  Puzzle,
 } from 'lucide-react';
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-  SheetClose,
-} from "@/components/ui/sheet";
 import { useToast } from '@/hooks/use-toast';
 import {
   DropdownMenu,
@@ -40,6 +22,7 @@ import {
 import { cn } from '@/lib/utils';
 import { MarketOverview } from '@/components/dashboard/MarketOverview';
 import { mockMarketIndices, mockCryptoAssets } from '@/lib/mockData';
+import { SideMenu } from './SideMenu';
 
 interface AppHeaderProps {
   searchMode: 'Fiat' | 'Exchange' | 'Web3';
@@ -48,42 +31,16 @@ interface AppHeaderProps {
 }
 
 export function AppHeader({ searchMode, onSearchModeChange, isRealMode }: AppHeaderProps) {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
-  const [theme, setTheme] = useState<'light' | 'dark'>('light');
   const [searchTerm, setSearchTerm] = useState('');
   const [isMounted, setIsMounted] = useState(false);
   const [isExpanded, setIsExpanded] = useState(true);
 
   useEffect(() => {
     setIsMounted(true);
-    const storedTheme = localStorage.getItem('sim-theme') as 'light' | 'dark' | null;
-    if (storedTheme) {
-      setTheme(storedTheme);
-      if (storedTheme === 'dark') {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
-    } else {
-        document.documentElement.classList.remove('dark');
-    }
   }, []);
-
-  useEffect(() => {
-    if (!isMounted) return;
-    if (theme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-    localStorage.setItem('sim-theme', theme);
-  }, [theme, isMounted]);
-
-  const toggleTheme = () => {
-    setTheme(currentTheme => (currentTheme === 'light' ? 'dark' : 'light'));
-  };
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -99,11 +56,6 @@ export function AppHeader({ searchMode, onSearchModeChange, isRealMode }: AppHea
         title: 'Mode Switched',
         description: `Now in ${mode} mode.`,
     });
-  };
-
-  const handleLogout = () => {
-    logout();
-    router.push('/login');
   };
   
   const getPlaceholderText = () => {
@@ -157,108 +109,7 @@ export function AppHeader({ searchMode, onSearchModeChange, isRealMode }: AppHea
       >
         <div className="flex h-20 items-center justify-between gap-4">
             <div className="flex items-center space-x-2 sm:space-x-4">
-                 <Sheet>
-                    <SheetTrigger asChild>
-                    <Button variant="ghost" size="icon" className="hover:bg-primary-foreground/10 text-accent shrink-0" onClick={(e) => e.stopPropagation()}>
-                        <Menu className="h-6 w-6" />
-                        <span className="sr-only">Open menu</span>
-                    </Button>
-                    </SheetTrigger>
-                    <SheetContent side="left" className="w-[250px] sm:w-[300px] p-0 flex flex-col">
-                    <SheetHeader className="p-6 pb-4 border-b">
-                        <SheetTitle className="text-xl font-headline text-primary flex items-center">
-                        SIM Menu
-                        </SheetTitle>
-                    </SheetHeader>
-                    <nav className="flex flex-col space-y-1 p-4 flex-grow">
-                        <SheetClose asChild>
-                        <Button
-                            variant="ghost"
-                            className="justify-start text-base p-3 hover:bg-accent/10"
-                            onClick={() => router.push('/')}
-                        >
-                            <HomeIcon className="mr-3 h-5 w-5 text-primary" />
-                            Home
-                        </Button>
-                        </SheetClose>
-                        <SheetClose asChild>
-                        <Button
-                            variant="ghost"
-                            className="justify-start text-base p-3 hover:bg-accent/10"
-                            onClick={() => alert('About page coming soon!')}
-                        >
-                            <InfoIcon className="mr-3 h-5 w-5 text-primary" />
-                            About
-                        </Button>
-                        </SheetClose>
-                        <SheetClose asChild>
-                        <Button
-                            variant="ghost"
-                            className="justify-start text-base p-3 hover:bg-accent/10"
-                            onClick={() => alert('Advanced Analytics feature coming soon!')}
-                        >
-                            <TrendingUp className="mr-3 h-5 w-5 text-primary" />
-                            Advanced Analytics
-                        </Button>
-                        </SheetClose>
-                         <SheetClose asChild>
-                        <Button
-                            variant="ghost"
-                            className="justify-start text-base p-3 hover:bg-accent/10"
-                            onClick={() => alert('No-Code Algo feature coming soon!')}
-                        >
-                            <Puzzle className="mr-3 h-5 w-5 text-primary" />
-                            No-Code Algo
-                        </Button>
-                        </SheetClose>
-                        <SheetClose asChild>
-                        <Button
-                            variant="ghost"
-                            className="justify-start text-base p-3 hover:bg-accent/10"
-                            onClick={() => alert('Stocks Challenge feature coming soon!')}
-                        >
-                            <Trophy className="mr-3 h-5 w-5 text-primary" />
-                            Stocks Challenge
-                        </Button>
-                        </SheetClose>
-                        <SheetClose asChild>
-                        <Button
-                            variant="ghost"
-                            className="justify-start text-base p-3 hover:bg-accent/10"
-                            onClick={() => alert('Support feature coming soon!')}
-                        >
-                            <LifeBuoy className="mr-3 h-5 w-5 text-primary" />
-                            Support
-                        </Button>
-                        </SheetClose>
-                        <Button
-                            variant="ghost"
-                            className="justify-start text-base p-3 hover:bg-accent/10"
-                            onClick={toggleTheme}
-                        >
-                            {theme === 'light' ? <Moon className="mr-3 h-5 w-5 text-primary" /> : <Sun className="mr-3 h-5 w-5 text-primary" />}
-                            Switch to {theme === 'light' ? 'Dark' : 'Light'} Mode
-                        </Button>
-                    </nav>
-                    <div className="p-4 border-t">
-                        {user && (
-                            <div className="mb-4 text-sm text-muted-foreground">
-                                Logged in as: <span className="font-medium text-foreground">{user.email}</span>
-                            </div>
-                        )}
-                        <SheetClose asChild>
-                        <Button
-                            variant="outline"
-                            className="w-full justify-start text-base p-3 text-destructive border-destructive hover:text-destructive hover:bg-destructive/10"
-                            onClick={handleLogout}
-                        >
-                            <LogOut className="mr-3 h-5 w-5" />
-                            Logout
-                        </Button>
-                        </SheetClose>
-                    </div>
-                    </SheetContent>
-                </Sheet>
+                <SideMenu />
             </div>
             <form onSubmit={handleSearchSubmit} className="flex-1 items-center relative" onClick={(e) => e.stopPropagation()}>
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-accent pointer-events-none" />
