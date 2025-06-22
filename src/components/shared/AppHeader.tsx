@@ -37,7 +37,7 @@ export function AppHeader() {
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
   const [searchTerm, setSearchTerm] = useState('');
   const [isMounted, setIsMounted] = useState(false);
-  const [searchMode, setSearchMode] = useState<'Exchange' | 'DeFi'>('Exchange');
+  const [searchMode, setSearchMode] = useState<'Exchange' | 'Web3'>('Exchange');
 
   const isRealMode = user?.id === 'REAL456';
 
@@ -80,7 +80,7 @@ export function AppHeader() {
   };
 
   const handleSearchModeToggle = () => {
-    const newMode = searchMode === 'Exchange' ? 'DeFi' : 'Exchange';
+    const newMode = searchMode === 'Exchange' ? 'Web3' : 'Exchange';
     setSearchMode(newMode);
     toast({
       title: 'Search Mode Switched',
