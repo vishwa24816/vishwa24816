@@ -24,3 +24,4 @@ export * from './mockData/sips';
 export * from './mockData/priceAlerts';
 export * from './mockData/cryptoMutualFunds';
 export * from './mockData/cryptoETFs';
+export * from './mockData/cryptoIntradayPositions';

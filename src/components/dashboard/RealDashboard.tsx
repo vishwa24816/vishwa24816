@@ -1,3 +1,4 @@
+
 "use client";
 
 import { SubNav } from '@/components/dashboard/SubNav';
@@ -5,6 +6,7 @@ import { MarketOverview } from '@/components/dashboard/MarketOverview';
 import { NewsSection } from '@/components/dashboard/NewsSection';
 import { WatchlistSection } from '@/components/dashboard/WatchlistSection';
 import { CryptoHoldingsSection } from '@/components/dashboard/CryptoHoldingsSection';
+import { CryptoIntradayPositionsSection } from '@/components/dashboard/CryptoIntradayPositionsSection';
 import { CryptoFuturesSection } from '@/components/dashboard/CryptoFuturesSection';
 import { PackageOpen } from 'lucide-react';
 
@@ -13,10 +15,8 @@ import type { PortfolioHolding, NewsArticle, IntradayPosition, FoPosition, Crypt
 import { 
   mockPortfolioHoldings, 
   mockNewsArticles, 
-  mockIntradayPositions, 
-  mockFoPositions, 
+  mockCryptoIntradayPositions,
   mockCryptoFutures, 
-  mockStocks, 
   mockCryptoAssets,
   mockCryptoFuturesForWatchlist,
   mockCryptoMutualFunds,
@@ -56,11 +56,10 @@ function getRelevantNewsForHoldings(holdings: PortfolioHolding[], allNews: NewsA
 
 function getRelevantNewsForPositions(
   intraday: IntradayPosition[],
-  fo: FoPosition[],
   cryptoFutures: CryptoFuturePosition[],
   allNews: NewsArticle[]
 ): NewsArticle[] {
-  if ((!intraday.length && !fo.length && !cryptoFutures.length) || !allNews.length) {
+  if ((!intraday.length && !cryptoFutures.length) || !allNews.length) {
     return [];
   }
 
@@ -69,15 +68,6 @@ function getRelevantNewsForPositions(
   intraday.forEach(p => {
     positionKeywords.add(p.name.toLowerCase());
     if (p.symbol) positionKeywords.add(p.symbol.toLowerCase());
-  });
-
-  fo.forEach(p => {
-    const nameLower = p.instrumentName.toLowerCase();
-    if (nameLower.includes("nifty")) positionKeywords.add("nifty");
-    if (nameLower.includes("banknifty")) positionKeywords.add("banknifty");
-    if (nameLower.includes("finnifty")) positionKeywords.add("finnifty");
-    const parts = p.instrumentName.split(" ");
-    if (parts.length > 0) positionKeywords.add(parts[0].toLowerCase());
   });
 
   cryptoFutures.forEach(p => {
@@ -189,7 +179,7 @@ export function RealDashboard() {
   if (isPortfolioHoldingsView) {
     newsForView = getRelevantNewsForHoldings(mockPortfolioHoldings.filter(h => h.type === 'Crypto'), mockNewsArticles);
   } else if (isPortfolioPositionsView) {
-    newsForView = getRelevantNewsForPositions([], [], mockCryptoFutures, mockNewsArticles);
+    newsForView = getRelevantNewsForPositions(mockCryptoIntradayPositions, mockCryptoFutures, mockNewsArticles);
   } else if (isUserPortfolioWatchlistView) {
     newsForView = getRelevantNewsForHoldings(mockPortfolioHoldings.filter(h => h.type === 'Crypto'), mockNewsArticles); 
   } else if (isTopWatchlistView) {
@@ -238,6 +228,7 @@ export function RealDashboard() {
         </>
       ) : isPortfolioPositionsView ? (
         <div className="space-y-8">
+          <CryptoIntradayPositionsSection />
           <CryptoFuturesSection />
           <NewsSection articles={newsForView} />
         </div>
