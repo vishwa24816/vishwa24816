@@ -100,19 +100,13 @@ export function AppHeader({ searchMode, onSearchModeChange, isRealMode }: AppHea
   return (
     <header className="bg-primary text-primary-foreground shadow-lg sticky top-0 z-50 rounded-b-2xl">
       <div 
-        className="container mx-auto px-4 sm:px-6 lg:px-8 relative pb-4 cursor-pointer"
-        onClick={(e) => {
-          // Only toggle if the click is on the container itself, not on its children
-          if (e.target === e.currentTarget) {
-            setIsExpanded(!isExpanded);
-          }
-        }}
+        className="container mx-auto px-4 sm:px-6 lg:px-8"
       >
         <div className="flex h-20 items-center justify-between gap-4">
             <div className="flex items-center space-x-2 sm:space-x-4">
                 <SideMenu />
             </div>
-            <form onSubmit={handleSearchSubmit} className="flex-1 items-center relative" onClick={(e) => e.stopPropagation()}>
+            <form onSubmit={handleSearchSubmit} className="flex-1 items-center relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-accent pointer-events-none" />
                 <Input
                     type="search"
@@ -123,7 +117,7 @@ export function AppHeader({ searchMode, onSearchModeChange, isRealMode }: AppHea
                     aria-label={searchAriaLabel}
                 />
             </form>
-            <div className="flex items-center space-x-1 sm:space-x-2" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center space-x-1 sm:space-x-2">
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button
@@ -147,6 +141,20 @@ export function AppHeader({ searchMode, onSearchModeChange, isRealMode }: AppHea
                     <User className="h-5 w-5" />
                     <span className="sr-only">Open profile</span>
                 </Button>
+                 <Button
+                  variant="ghost"
+                  size="icon"
+                  className="hover:bg-primary-foreground/10 text-accent shrink-0"
+                  onClick={() => setIsExpanded(!isExpanded)}
+                  aria-label="Toggle market overview"
+                >
+                  <ChevronDown
+                    className={cn(
+                      "h-5 w-5 transition-transform duration-300",
+                      isExpanded && "rotate-180"
+                    )}
+                  />
+                </Button>
             </div>
         </div>
 
@@ -162,15 +170,6 @@ export function AppHeader({ searchMode, onSearchModeChange, isRealMode }: AppHea
             </div>
         </div>
         
-        <div 
-          className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-20 h-5 rounded-b-md bg-primary/80 flex items-center justify-center"
-          onClick={(e) => {
-            e.stopPropagation();
-            setIsExpanded(!isExpanded);
-          }}
-        >
-          <div className="w-6 h-1 bg-accent/70 rounded-full"></div>
-        </div>
       </div>
     </header>
   );
