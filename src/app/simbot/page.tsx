@@ -81,69 +81,67 @@ export default function SimbotPage() {
   };
   
   const userEmailInitial = authUser?.email?.[0].toUpperCase() || "U";
-
+  
   return (
     <ProtectedRoute>
-      <div className="flex flex-col h-screen">
+      <div className="flex flex-col h-full">
         <AppHeader />
-        <main className="flex-grow flex flex-col p-0 sm:p-2 md:p-4 overflow-hidden">
-          <div className="bg-card border rounded-lg shadow-xl flex flex-col flex-grow relative h-[calc(100vh-theme(spacing.20)-theme(spacing.16)-theme(spacing.8))] sm:h-[calc(100vh-theme(spacing.20)-theme(spacing.16)-theme(spacing.4))]">
-            <div className="p-4 border-b">
-              <h1 className="text-xl font-semibold text-primary flex items-center">
-                <Bot className="h-6 w-6 mr-2" /> Simbot - AI Assistant
-              </h1>
-            </div>
-
-            <ScrollArea className="flex-grow p-4 space-y-6" ref={scrollAreaRef}> {/* Increased space-y */}
-              {messages.map((msg) => (
-                <div
-                  key={msg.id}
-                  className={cn(
-                    "flex items-end space-x-2 max-w-[85%] sm:max-w-[75%]",
-                    msg.sender === 'user' ? 'ml-auto justify-end' : 'mr-auto justify-start'
-                  )}
-                >
-                  {msg.sender === 'bot' && (
-                    <Avatar className="h-8 w-8 self-start">
-                      <AvatarImage src="https://placehold.co/40x40.png?text=B" alt="Simbot" data-ai-hint="bot avatar" />
-                      <AvatarFallback>B</AvatarFallback>
-                    </Avatar>
-                  )}
+        
+        <main className="flex-grow overflow-hidden">
+            <ScrollArea className="h-full p-4" ref={scrollAreaRef}> 
+              <div className="space-y-6 pb-24">
+                {messages.map((msg) => (
                   <div
+                    key={msg.id}
                     className={cn(
-                      'p-3 rounded-xl shadow',
-                      msg.sender === 'user'
-                        ? 'bg-primary text-primary-foreground rounded-br-none'
-                        : 'bg-muted text-foreground rounded-bl-none'
+                      "flex items-end space-x-2 max-w-[85%] sm:max-w-[75%]",
+                      msg.sender === 'user' ? 'ml-auto justify-end' : 'mr-auto justify-start'
                     )}
                   >
-                    <p className="text-sm whitespace-pre-wrap">{msg.text}</p>
-                    <p className="text-xs text-right mt-1 opacity-70">
-                      {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                    </p>
+                    {msg.sender === 'bot' && (
+                      <Avatar className="h-8 w-8 self-start">
+                        <AvatarImage src="https://placehold.co/40x40.png?text=B" alt="Simbot" data-ai-hint="bot avatar" />
+                        <AvatarFallback>B</AvatarFallback>
+                      </Avatar>
+                    )}
+                    <div
+                      className={cn(
+                        'p-3 rounded-xl shadow',
+                        msg.sender === 'user'
+                          ? 'bg-primary text-primary-foreground rounded-br-none'
+                          : 'bg-muted text-foreground rounded-bl-none'
+                      )}
+                    >
+                      <p className="text-sm whitespace-pre-wrap">{msg.text}</p>
+                      <p className="text-xs text-right mt-1 opacity-70">
+                        {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </p>
+                    </div>
+                    {msg.sender === 'user' && (
+                      <Avatar className="h-8 w-8 self-start">
+                        <AvatarImage src={`https://placehold.co/40x40.png?text=${userEmailInitial}`} alt="User" data-ai-hint="user avatar" />
+                        <AvatarFallback>{userEmailInitial}</AvatarFallback>
+                      </Avatar>
+                    )}
                   </div>
-                   {msg.sender === 'user' && (
+                ))}
+                {isLoading && (
+                  <div className="flex items-center space-x-2 mr-auto justify-start max-w-[85%] sm:max-w-[75%]">
                     <Avatar className="h-8 w-8 self-start">
-                      <AvatarImage src={`https://placehold.co/40x40.png?text=${userEmailInitial}`} alt="User" data-ai-hint="user avatar" />
-                      <AvatarFallback>{userEmailInitial}</AvatarFallback>
+                      <AvatarImage src="https://placehold.co/40x40.png?text=B" alt="Simbot typing" data-ai-hint="bot avatar" />
+                      <AvatarFallback>B</AvatarFallback>
                     </Avatar>
-                  )}
-                </div>
-              ))}
-               {isLoading && (
-                <div className="flex items-center space-x-2 mr-auto justify-start max-w-[85%] sm:max-w-[75%]">
-                  <Avatar className="h-8 w-8 self-start">
-                    <AvatarImage src="https://placehold.co/40x40.png?text=B" alt="Simbot typing" data-ai-hint="bot avatar" />
-                    <AvatarFallback>B</AvatarFallback>
-                  </Avatar>
-                  <div className="p-3 rounded-xl shadow bg-muted text-foreground rounded-bl-none">
-                    <Loader2 className="h-5 w-5 animate-spin text-primary" />
+                    <div className="p-3 rounded-xl shadow bg-muted text-foreground rounded-bl-none">
+                      <Loader2 className="h-5 w-5 animate-spin text-primary" />
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
+              </div>
             </ScrollArea>
-
-            <div className="border-t p-3 sm:p-4 bg-background/80 backdrop-blur-sm">
+        </main>
+        
+        <footer className="fixed bottom-16 left-0 right-0 bg-background/80 backdrop-blur-sm border-t z-10">
+          <div className="px-4 py-3">
               <form onSubmit={handleSendMessage} className="flex items-center space-x-2">
                 <Input
                   type="text"
@@ -170,9 +168,8 @@ export default function SimbotPage() {
                   <span className="sr-only">Send message</span>
                 </Button>
               </form>
-            </div>
           </div>
-        </main>
+        </footer>
       </div>
     </ProtectedRoute>
   );
