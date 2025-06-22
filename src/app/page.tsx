@@ -11,7 +11,7 @@ import { useState } from 'react';
 
 export default function DashboardRouterPage() {
   const { user, loading } = useAuth();
-  const [searchMode, setSearchMode] = useState<'Exchange' | 'Web3'>('Exchange');
+  const [searchMode, setSearchMode] = useState<'Fiat' | 'Exchange' | 'Web3'>('Exchange');
   
   if (loading || !user) {
      return (

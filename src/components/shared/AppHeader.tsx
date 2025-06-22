@@ -31,8 +31,8 @@ import {
 import { useToast } from '@/hooks/use-toast';
 
 interface AppHeaderProps {
-  searchMode: 'Exchange' | 'Web3';
-  onSearchModeChange: (mode: 'Exchange' | 'Web3') => void;
+  searchMode: 'Fiat' | 'Exchange' | 'Web3';
+  onSearchModeChange: (mode: 'Fiat' | 'Exchange' | 'Web3') => void;
 }
 
 export function AppHeader({ searchMode, onSearchModeChange }: AppHeaderProps) {
@@ -56,8 +56,7 @@ export function AppHeader({ searchMode, onSearchModeChange }: AppHeaderProps) {
         document.documentElement.classList.remove('dark');
       }
     } else {
-        // Set default theme if nothing is stored
-        document.documentElement.classList.remove('dark'); // Default to light
+        document.documentElement.classList.remove('dark');
     }
   }, []);
 
@@ -84,11 +83,16 @@ export function AppHeader({ searchMode, onSearchModeChange }: AppHeaderProps) {
   };
 
   const handleSearchModeToggle = () => {
-    const newMode = searchMode === 'Exchange' ? 'Web3' : 'Exchange';
+    const modes: ('Fiat' | 'Exchange' | 'Web3')[] = ['Fiat', 'Exchange', 'Web3'];
+    const currentIndex = modes.indexOf(searchMode);
+    const newIndex = (currentIndex + 1) % modes.length;
+    const newMode = modes[newIndex];
+    
     onSearchModeChange(newMode);
+    
     toast({
-      title: 'Search Mode Switched',
-      description: `Now searching within ${newMode}.`,
+      title: 'Mode Switched',
+      description: `Now in ${newMode} mode.`,
     });
   };
 
@@ -97,8 +101,13 @@ export function AppHeader({ searchMode, onSearchModeChange }: AppHeaderProps) {
     router.push('/login');
   };
   
-  const searchPlaceholder = isRealMode ? `Search ${searchMode}...` : "Search stocks, mutual funds, crypto...";
-  const searchAriaLabel = isRealMode ? `Search ${searchMode}` : "Search stocks, mutual funds, crypto";
+  const searchPlaceholder = isRealMode 
+    ? (searchMode === 'Fiat' ? "Search stocks, futures..." : `Search ${searchMode}...`)
+    : "Search stocks, mutual funds, crypto...";
+  
+  const searchAriaLabel = isRealMode 
+    ? `Search ${searchMode}` 
+    : "Search stocks, mutual funds, crypto";
 
   if (!isMounted) {
     return (
@@ -106,7 +115,7 @@ export function AppHeader({ searchMode, onSearchModeChange }: AppHeaderProps) {
         <div className="container mx-auto flex h-20 items-center justify-between px-4 sm:px-6 lg:px-8">
           <div className="flex items-center space-x-2 sm:space-x-4">
             <div className="h-9 w-9 bg-primary-foreground/10 rounded-md animate-pulse"></div>
-            <div className="h-9 w-40 md:w-64 bg-primary-foreground/10 rounded-md animate-pulse"></div>
+            <div className="h-9 w-full bg-primary-foreground/10 rounded-md animate-pulse"></div>
           </div>
           <div className="flex items-center space-x-1 sm:space-x-2">
             <div className="h-9 w-9 bg-primary-foreground/10 rounded-md animate-pulse"></div>
@@ -120,7 +129,6 @@ export function AppHeader({ searchMode, onSearchModeChange }: AppHeaderProps) {
   return (
     <header className="bg-primary text-primary-foreground shadow-md sticky top-0 z-50">
       <div className="container mx-auto flex h-20 items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
-        {/* Left Section: Menu and Search */}
         <div className="flex flex-1 items-center space-x-2 sm:space-x-4">
           <Sheet>
             <SheetTrigger asChild>
@@ -228,7 +236,6 @@ export function AppHeader({ searchMode, onSearchModeChange }: AppHeaderProps) {
           </form>
         </div>
 
-        {/* Right Section: Toggles and Profile */}
         <div className="flex items-center space-x-1 sm:space-x-2">
            {isRealMode && (
               <Button
