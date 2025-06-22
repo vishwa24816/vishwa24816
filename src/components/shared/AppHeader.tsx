@@ -36,7 +36,7 @@ export function AppHeader({ searchMode, onSearchModeChange, isRealMode }: AppHea
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
   const [isMounted, setIsMounted] = useState(false);
-  const [isExpanded, setIsExpanded] = useState(true);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
