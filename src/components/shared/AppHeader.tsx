@@ -18,6 +18,7 @@ import {
   Trophy,
   LifeBuoy,
   Repeat,
+  ChevronDown,
 } from 'lucide-react';
 import {
   Sheet,
@@ -28,6 +29,12 @@ import {
   SheetClose,
 } from "@/components/ui/sheet";
 import { useToast } from '@/hooks/use-toast';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface AppHeaderProps {
   searchMode: 'Fiat' | 'Exchange' | 'Web3';
@@ -80,17 +87,12 @@ export function AppHeader({ searchMode, onSearchModeChange, isRealMode }: AppHea
     }
   };
 
-  const handleSearchModeToggle = () => {
-    const modes: ('Fiat' | 'Exchange' | 'Web3')[] = ['Fiat', 'Exchange', 'Web3'];
-    const currentIndex = modes.indexOf(searchMode);
-    const newIndex = (currentIndex + 1) % modes.length;
-    const newMode = modes[newIndex];
-    
-    onSearchModeChange(newMode);
-    
+  const handleModeChange = (mode: 'Fiat' | 'Exchange' | 'Web3') => {
+    if (mode === searchMode) return;
+    onSearchModeChange(mode);
     toast({
-      title: 'Mode Switched',
-      description: `Now in ${newMode} mode.`,
+        title: 'Mode Switched',
+        description: `Now in ${mode} mode.`,
     });
   };
 
@@ -99,13 +101,15 @@ export function AppHeader({ searchMode, onSearchModeChange, isRealMode }: AppHea
     router.push('/login');
   };
   
-  const searchPlaceholder = isRealMode 
-    ? "Search crypto assets..."
-    : (searchMode === 'Fiat' ? "Search stocks, futures..." : `Search ${searchMode}...`);
-  
-  const searchAriaLabel = isRealMode 
-    ? `Search crypto assets` 
-    : `Search ${searchMode}`;
+  const getPlaceholderText = () => {
+    if (searchMode === 'Fiat') return "Search stocks, futures...";
+    if (searchMode === 'Exchange') return "Search crypto spot, futures...";
+    if (searchMode === 'Web3') return "Search Web3 assets...";
+    return "Search...";
+  };
+
+  const searchPlaceholder = getPlaceholderText();
+  const searchAriaLabel = `Search ${searchMode}`;
 
   if (!isMounted) {
     return (
@@ -232,20 +236,27 @@ export function AppHeader({ searchMode, onSearchModeChange, isRealMode }: AppHea
         </div>
 
         <div className="flex items-center space-x-1 sm:space-x-2">
-           {!isRealMode && (
-              <Button
-                variant="ghost"
-                className="h-9 px-3 hover:bg-primary-foreground/20 text-accent shrink-0"
-                onClick={handleSearchModeToggle}
-              >
-                <Repeat className="h-4 w-4 mr-2" />
-                {searchMode}
-              </Button>
-            )}
-          <Button variant="ghost" size="icon" onClick={() => router.push('/profile')} className="hover:bg-primary-foreground/10 text-accent shrink-0">
-            <User className="h-5 w-5" />
-            <span className="sr-only">Open profile</span>
-          </Button>
+            <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                    <Button
+                        variant="ghost"
+                        className="h-9 px-3 hover:bg-primary-foreground/20 text-accent shrink-0"
+                    >
+                        <Repeat className="h-4 w-4 mr-2" />
+                        {searchMode}
+                        <ChevronDown className="h-4 w-4 ml-1 opacity-75" />
+                    </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={() => handleModeChange('Fiat')}>Fiat</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleModeChange('Exchange')}>Exchange</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleModeChange('Web3')}>Web3</DropdownMenuItem>
+                </DropdownMenuContent>
+            </DropdownMenu>
+            <Button variant="ghost" size="icon" onClick={() => router.push('/profile')} className="hover:bg-primary-foreground/10 text-accent shrink-0">
+                <User className="h-5 w-5" />
+                <span className="sr-only">Open profile</span>
+            </Button>
         </div>
       </div>
     </header>
