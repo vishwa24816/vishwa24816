@@ -370,8 +370,8 @@ export function DemoDashboard({ searchMode }: DemoDashboardProps) {
           </>
         ) : isPortfolioPositionsView ? (
           <div className="space-y-8">
-            <CryptoIntradayPositionsSection />
-            <CryptoFuturesSection />
+            <CryptoIntradayPositionsSection positions={mockCryptoIntradayPositions} />
+            <CryptoFuturesSection positions={mockCryptoFutures} />
             <NewsSection articles={newsForView} />
           </div>
         ) : isUserPortfolioWatchlistView ? (

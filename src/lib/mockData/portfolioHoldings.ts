@@ -86,3 +86,48 @@ export const mockPortfolioHoldings: PortfolioHolding[] = [
     dayChangePercent: (5.00 / ((2.77 * 180.00) - 5.00)) * 100, // approx 1.01%
   },
 ];
+
+export const mockRealPortfolioHoldings: PortfolioHolding[] = [
+  {
+    id: 'real_holding_eth',
+    name: 'Ethereum',
+    symbol: 'ETH',
+    type: 'Crypto',
+    quantity: 5.5,
+    avgCostPrice: 165000.00,
+    ltp: 180000.00,
+    currentValue: 5.5 * 180000.00,
+    profitAndLoss: (180000.00 - 165000.00) * 5.5,
+    profitAndLossPercent: ((180000.00 - 165000.00) / 165000.00) * 100,
+    dayChangeAbsolute: 12000.00,
+    dayChangePercent: 1.22,
+  },
+  {
+    id: 'real_holding_sol',
+    name: 'Solana',
+    symbol: 'SOL',
+    type: 'Crypto',
+    quantity: 50,
+    avgCostPrice: 1500.00,
+    ltp: 1665.00,
+    currentValue: 50 * 1665.00,
+    profitAndLoss: (1665.00 - 1500.00) * 50,
+    profitAndLossPercent: ((1665.00 - 1500.00) / 1500.00) * 100,
+    dayChangeAbsolute: 3100.00,
+    dayChangePercent: 3.89,
+  },
+  {
+    id: 'real_holding_btc',
+    name: 'Bitcoin',
+    symbol: 'BTC',
+    type: 'Crypto',
+    quantity: 0.25,
+    avgCostPrice: 2200000.00,
+    ltp: 2400000.00,
+    currentValue: 0.25 * 2400000.00,
+    profitAndLoss: (2400000.00 - 2200000.00) * 0.25,
+    profitAndLossPercent: ((2400000.00 - 2200000.00) / 2200000.00) * 100,
+    dayChangeAbsolute: 40000 * 0.25,
+    dayChangePercent: 1.69,
+  },
+];

@@ -25,3 +25,28 @@ export const mockCryptoIntradayPositions: IntradayPosition[] = [
     pAndLPercent: 0.43,
   },
 ];
+
+export const mockRealCryptoIntradayPositions: IntradayPosition[] = [
+    {
+        id: 'c-intra-real1',
+        name: 'Solana',
+        symbol: 'SOLINR',
+        transactionType: 'BUY',
+        quantity: 10,
+        avgPrice: 1650.00,
+        ltp: 1665.00,
+        pAndL: (1665.00 - 1650.00) * 10,
+        pAndLPercent: ((1665.00 - 1650.00) / 1650.00) * 100,
+    },
+    {
+        id: 'c-intra-real2',
+        name: 'XRP',
+        symbol: 'XRPINR',
+        transactionType: 'SELL',
+        quantity: 500,
+        avgPrice: 40.00,
+        ltp: 39.10,
+        pAndL: (40.00 - 39.10) * 500,
+        pAndLPercent: ((40.00 - 39.10) / 40.00) * 100,
+    }
+];

@@ -11,14 +11,16 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { mockCryptoFutures } from '@/lib/mockData';
 import type { CryptoFuturePosition } from '@/types';
 import { cn } from '@/lib/utils';
 import { Repeat, PlusCircle, MinusCircle, XCircle } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 
-export function CryptoFuturesSection() {
-  const positions = mockCryptoFutures;
+interface CryptoFuturesSectionProps {
+  positions: CryptoFuturePosition[];
+}
+
+export function CryptoFuturesSection({ positions }: CryptoFuturesSectionProps) {
   const [expandedRowId, setExpandedRowId] = useState<string | null>(null);
   const { toast } = useToast();
 
