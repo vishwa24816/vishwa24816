@@ -1,6 +1,7 @@
+
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useAuth } from '@/contexts/AuthContext';
@@ -19,6 +20,7 @@ import {
   LifeBuoy,
   Repeat,
   ChevronDown,
+  ChevronUp,
 } from 'lucide-react';
 import {
   Sheet,
@@ -35,6 +37,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { cn } from '@/lib/utils';
+import { MarketOverview } from '@/components/dashboard/MarketOverview';
+import { mockMarketIndices, mockCryptoAssets } from '@/lib/mockData';
 
 interface AppHeaderProps {
   searchMode: 'Fiat' | 'Exchange' | 'Web3';
@@ -49,6 +54,7 @@ export function AppHeader({ searchMode, onSearchModeChange, isRealMode }: AppHea
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
   const [searchTerm, setSearchTerm] = useState('');
   const [isMounted, setIsMounted] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(true);
 
   useEffect(() => {
     setIsMounted(true);
@@ -83,7 +89,6 @@ export function AppHeader({ searchMode, onSearchModeChange, isRealMode }: AppHea
     e.preventDefault();
     if (searchTerm.trim()) {
       alert(`Searching for: ${searchTerm}`);
-      // Implement actual search logic here
     }
   };
 
@@ -110,6 +115,21 @@ export function AppHeader({ searchMode, onSearchModeChange, isRealMode }: AppHea
 
   const searchPlaceholder = getPlaceholderText();
   const searchAriaLabel = `Search ${searchMode}`;
+  
+  const { marketOverviewTitle, marketOverviewItems } = useMemo(() => {
+    let isCryptoView = false;
+    if (isRealMode) {
+        isCryptoView = true;
+    } else {
+        isCryptoView = searchMode === 'Exchange' || searchMode === 'Web3';
+    }
+    
+    return {
+      marketOverviewTitle: isCryptoView ? "Top Cryptocurrencies" : "Market Overview",
+      marketOverviewItems: isCryptoView ? mockCryptoAssets.slice(0, 5) : mockMarketIndices,
+    };
+  }, [searchMode, isRealMode]);
+
 
   if (!isMounted) {
     return (
@@ -126,136 +146,160 @@ export function AppHeader({ searchMode, onSearchModeChange, isRealMode }: AppHea
   }
 
   return (
-    <header className="bg-primary text-primary-foreground shadow-md sticky top-0 z-50">
-      <div className="container mx-auto flex h-20 items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-1 items-center space-x-2 sm:space-x-4">
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="hover:bg-primary-foreground/10 text-accent shrink-0">
-                <Menu className="h-6 w-6" />
-                <span className="sr-only">Open menu</span>
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="left" className="w-[250px] sm:w-[300px] p-0 flex flex-col">
-              <SheetHeader className="p-6 pb-4 border-b">
-                <SheetTitle className="text-xl font-headline text-primary flex items-center">
-                  SIM Menu
-                </SheetTitle>
-              </SheetHeader>
-              <nav className="flex flex-col space-y-1 p-4 flex-grow">
-                <SheetClose asChild>
-                  <Button
-                    variant="ghost"
-                    className="justify-start text-base p-3 hover:bg-accent/10"
-                    onClick={() => router.push('/')}
-                  >
-                    <HomeIcon className="mr-3 h-5 w-5 text-primary" />
-                    Home
-                  </Button>
-                </SheetClose>
-                <SheetClose asChild>
-                  <Button
-                    variant="ghost"
-                    className="justify-start text-base p-3 hover:bg-accent/10"
-                    onClick={() => alert('About page coming soon!')}
-                  >
-                    <InfoIcon className="mr-3 h-5 w-5 text-primary" />
-                    About
-                  </Button>
-                </SheetClose>
-                <SheetClose asChild>
-                  <Button
-                    variant="ghost"
-                    className="justify-start text-base p-3 hover:bg-accent/10"
-                    onClick={() => alert('Advanced Analytics feature coming soon!')}
-                  >
-                    <TrendingUp className="mr-3 h-5 w-5 text-primary" />
-                    Advanced Analytics
-                  </Button>
-                </SheetClose>
-                <SheetClose asChild>
-                  <Button
-                    variant="ghost"
-                    className="justify-start text-base p-3 hover:bg-accent/10"
-                    onClick={() => alert('Stocks Challenge feature coming soon!')}
-                  >
-                    <Trophy className="mr-3 h-5 w-5 text-primary" />
-                    Stocks Challenge
-                  </Button>
-                </SheetClose>
-                <SheetClose asChild>
-                  <Button
-                    variant="ghost"
-                    className="justify-start text-base p-3 hover:bg-accent/10"
-                    onClick={() => alert('Support feature coming soon!')}
-                  >
-                    <LifeBuoy className="mr-3 h-5 w-5 text-primary" />
-                    Support
-                  </Button>
-                </SheetClose>
-                <Button
-                  variant="ghost"
-                  className="justify-start text-base p-3 hover:bg-accent/10"
-                  onClick={toggleTheme}
-                >
-                  {theme === 'light' ? <Moon className="mr-3 h-5 w-5 text-primary" /> : <Sun className="mr-3 h-5 w-5 text-primary" />}
-                  Switch to {theme === 'light' ? 'Dark' : 'Light'} Mode
-                </Button>
-              </nav>
-              <div className="p-4 border-t">
-                {user && (
-                    <div className="mb-4 text-sm text-muted-foreground">
-                        Logged in as: <span className="font-medium text-foreground">{user.email}</span>
+    <header className="bg-primary text-primary-foreground shadow-lg sticky top-0 z-50 rounded-b-2xl">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative pb-4">
+        <div className="flex h-20 items-center justify-between gap-4">
+            <div className="flex items-center space-x-2 sm:space-x-4">
+                 <Sheet>
+                    <SheetTrigger asChild>
+                    <Button variant="ghost" size="icon" className="hover:bg-primary-foreground/10 text-accent shrink-0">
+                        <Menu className="h-6 w-6" />
+                        <span className="sr-only">Open menu</span>
+                    </Button>
+                    </SheetTrigger>
+                    <SheetContent side="left" className="w-[250px] sm:w-[300px] p-0 flex flex-col">
+                    <SheetHeader className="p-6 pb-4 border-b">
+                        <SheetTitle className="text-xl font-headline text-primary flex items-center">
+                        SIM Menu
+                        </SheetTitle>
+                    </SheetHeader>
+                    <nav className="flex flex-col space-y-1 p-4 flex-grow">
+                        <SheetClose asChild>
+                        <Button
+                            variant="ghost"
+                            className="justify-start text-base p-3 hover:bg-accent/10"
+                            onClick={() => router.push('/')}
+                        >
+                            <HomeIcon className="mr-3 h-5 w-5 text-primary" />
+                            Home
+                        </Button>
+                        </SheetClose>
+                        <SheetClose asChild>
+                        <Button
+                            variant="ghost"
+                            className="justify-start text-base p-3 hover:bg-accent/10"
+                            onClick={() => alert('About page coming soon!')}
+                        >
+                            <InfoIcon className="mr-3 h-5 w-5 text-primary" />
+                            About
+                        </Button>
+                        </SheetClose>
+                        <SheetClose asChild>
+                        <Button
+                            variant="ghost"
+                            className="justify-start text-base p-3 hover:bg-accent/10"
+                            onClick={() => alert('Advanced Analytics feature coming soon!')}
+                        >
+                            <TrendingUp className="mr-3 h-5 w-5 text-primary" />
+                            Advanced Analytics
+                        </Button>
+                        </SheetClose>
+                        <SheetClose asChild>
+                        <Button
+                            variant="ghost"
+                            className="justify-start text-base p-3 hover:bg-accent/10"
+                            onClick={() => alert('Stocks Challenge feature coming soon!')}
+                        >
+                            <Trophy className="mr-3 h-5 w-5 text-primary" />
+                            Stocks Challenge
+                        </Button>
+                        </SheetClose>
+                        <SheetClose asChild>
+                        <Button
+                            variant="ghost"
+                            className="justify-start text-base p-3 hover:bg-accent/10"
+                            onClick={() => alert('Support feature coming soon!')}
+                        >
+                            <LifeBuoy className="mr-3 h-5 w-5 text-primary" />
+                            Support
+                        </Button>
+                        </SheetClose>
+                        <Button
+                            variant="ghost"
+                            className="justify-start text-base p-3 hover:bg-accent/10"
+                            onClick={toggleTheme}
+                        >
+                            {theme === 'light' ? <Moon className="mr-3 h-5 w-5 text-primary" /> : <Sun className="mr-3 h-5 w-5 text-primary" />}
+                            Switch to {theme === 'light' ? 'Dark' : 'Light'} Mode
+                        </Button>
+                    </nav>
+                    <div className="p-4 border-t">
+                        {user && (
+                            <div className="mb-4 text-sm text-muted-foreground">
+                                Logged in as: <span className="font-medium text-foreground">{user.email}</span>
+                            </div>
+                        )}
+                        <SheetClose asChild>
+                        <Button
+                            variant="outline"
+                            className="w-full justify-start text-base p-3 text-destructive border-destructive hover:text-destructive hover:bg-destructive/10"
+                            onClick={handleLogout}
+                        >
+                            <LogOut className="mr-3 h-5 w-5" />
+                            Logout
+                        </Button>
+                        </SheetClose>
                     </div>
-                )}
-                <SheetClose asChild>
-                  <Button
-                    variant="outline"
-                    className="w-full justify-start text-base p-3 text-destructive border-destructive hover:text-destructive hover:bg-destructive/10"
-                    onClick={handleLogout}
-                  >
-                    <LogOut className="mr-3 h-5 w-5" />
-                    Logout
-                  </Button>
-                </SheetClose>
-              </div>
-            </SheetContent>
-          </Sheet>
-
-          <form onSubmit={handleSearchSubmit} className="flex-1 items-center relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-accent pointer-events-none" />
-            <Input
-              type="search"
-              placeholder={searchPlaceholder}
-              className="bg-primary-foreground/10 border-none focus-visible:ring-1 focus-visible:ring-accent focus-visible:ring-offset-0 text-primary-foreground placeholder:text-primary-foreground/70 h-9 pl-10 pr-3 rounded-md w-full"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              aria-label={searchAriaLabel}
-            />
-          </form>
+                    </SheetContent>
+                </Sheet>
+            </div>
+            <form onSubmit={handleSearchSubmit} className="flex-1 items-center relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-accent pointer-events-none" />
+                <Input
+                    type="search"
+                    placeholder={searchPlaceholder}
+                    className="bg-primary-foreground/10 border-none focus-visible:ring-1 focus-visible:ring-accent focus-visible:ring-offset-0 text-primary-foreground placeholder:text-primary-foreground/70 h-9 pl-10 pr-3 rounded-md w-full"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    aria-label={searchAriaLabel}
+                />
+            </form>
+            <div className="flex items-center space-x-1 sm:space-x-2">
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button
+                            variant="ghost"
+                            className="h-9 px-3 hover:bg-primary-foreground/20 text-accent shrink-0"
+                        >
+                            <Repeat className="h-4 w-4 mr-2" />
+                            {searchMode}
+                            <ChevronDown className="h-4 w-4 ml-1 opacity-75" />
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={() => handleModeChange('Fiat')}>Fiat</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleModeChange('Exchange')}>Exchange</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleModeChange('Web3')}>Web3</DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+                <Button variant="ghost" size="icon" onClick={() => router.push('/profile')} className="hover:bg-primary-foreground/10 text-accent shrink-0">
+                    <User className="h-5 w-5" />
+                    <span className="sr-only">Open profile</span>
+                </Button>
+            </div>
         </div>
 
-        <div className="flex items-center space-x-1 sm:space-x-2">
-            <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                    <Button
-                        variant="ghost"
-                        className="h-9 px-3 hover:bg-primary-foreground/20 text-accent shrink-0"
-                    >
-                        <Repeat className="h-4 w-4 mr-2" />
-                        {searchMode}
-                        <ChevronDown className="h-4 w-4 ml-1 opacity-75" />
-                    </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => handleModeChange('Fiat')}>Fiat</DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => handleModeChange('Exchange')}>Exchange</DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => handleModeChange('Web3')}>Web3</DropdownMenuItem>
-                </DropdownMenuContent>
-            </DropdownMenu>
-            <Button variant="ghost" size="icon" onClick={() => router.push('/profile')} className="hover:bg-primary-foreground/10 text-accent shrink-0">
-                <User className="h-5 w-5" />
-                <span className="sr-only">Open profile</span>
+        <div className={cn(
+            "transition-all duration-500 ease-in-out overflow-hidden",
+            isExpanded ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+        )}>
+            <div className="pt-2 pb-4">
+                <MarketOverview 
+                    title={marketOverviewTitle}
+                    items={marketOverviewItems}
+                />
+            </div>
+        </div>
+        
+        <div className="absolute -bottom-4 left-1/2 -translate-x-1/2">
+            <Button
+                variant="secondary"
+                size="icon"
+                className="rounded-full h-8 w-8 shadow-lg border"
+                onClick={() => setIsExpanded(!isExpanded)}
+                aria-label={isExpanded ? "Collapse header" : "Expand header"}
+            >
+                {isExpanded ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
             </Button>
         </div>
       </div>

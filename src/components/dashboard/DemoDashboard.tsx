@@ -1,7 +1,7 @@
+
 "use client";
 
 import { SubNav } from '@/components/dashboard/SubNav';
-import { MarketOverview } from '@/components/dashboard/MarketOverview';
 import { NewsSection } from '@/components/dashboard/NewsSection';
 import { WatchlistSection } from '@/components/dashboard/WatchlistSection';
 import { CryptoHoldingsSection } from '@/components/dashboard/CryptoHoldingsSection';
@@ -17,7 +17,7 @@ import { ReadymadeStrategiesSection } from '@/components/dashboard/ReadymadeStra
 import { StrategyBuilder } from '@/components/dashboard/StrategyBuilder';
 
 import React, { useState, useMemo } from 'react';
-import type { PortfolioHolding, NewsArticle, IntradayPosition, FoPosition, CryptoFuturePosition, Stock, MarketIndex } from '@/types';
+import type { PortfolioHolding, NewsArticle, IntradayPosition, FoPosition, CryptoFuturePosition, Stock } from '@/types';
 import { 
   mockPortfolioHoldings, 
   mockNewsArticles, 
@@ -29,7 +29,6 @@ import {
   mockStocks,
   mockIndexFuturesForWatchlist,
   mockStockFuturesForWatchlist,
-  mockMarketIndices,
   mockMutualFunds,
   mockBonds,
   mockCryptoFuturesForWatchlist,
@@ -118,7 +117,7 @@ function getRelevantNewsForPositions(
   return relevantNews;
 }
 
-function getRelevantNewsForWatchlistItems(items: Stock[] | MarketIndex[] | undefined, allNews: NewsArticle[]): NewsArticle[] {
+function getRelevantNewsForWatchlistItems(items: Stock[] | undefined, allNews: NewsArticle[]): NewsArticle[] {
   if (!items || !items.length || !allNews.length) {
     return [];
   }
@@ -247,9 +246,6 @@ export function DemoDashboard({ searchMode }: DemoDashboardProps) {
   const WEB3_CATEGORIES = ['Gainers', 'Trending', 'Memes', 'DeFi', 'AI'];
   const isWeb3CategoryView = searchMode === 'Web3' && WEB3_CATEGORIES.includes(activePrimaryItem);
 
-  const marketOverviewTitle = searchMode === 'Fiat' ? "Market Overview" : "Top Cryptocurrencies";
-  const marketOverviewItems = searchMode === 'Fiat' ? mockMarketIndices : mockCryptoAssets.slice(0, 5);
-  
   const exchangeHoldings = useMemo(() => mockPortfolioHoldings.filter(h => h.type === 'Crypto'), []);
   const web3PortfolioWatchlistItems = useMemo(() => [...mockWeb3Trending.slice(0, 3), ...mockWeb3DeFi.slice(0, 2)], []);
   const fiatHoldings = useMemo(() => mockPortfolioHoldings.filter(h => h.type !== 'Crypto'), []);
@@ -313,11 +309,6 @@ export function DemoDashboard({ searchMode }: DemoDashboardProps) {
 
   return (
     <main className="flex-grow container mx-auto p-4 sm:p-6 lg:p-8 space-y-8">
-      <MarketOverview 
-        title={marketOverviewTitle}
-        items={marketOverviewItems} 
-      />
-
       <SubNav
         primaryNavItems={primaryNavItems}
         activePrimaryItem={activePrimaryItem}
