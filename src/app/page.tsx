@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useAuth } from '@/contexts/AuthContext';
@@ -11,6 +10,7 @@ import { useState } from 'react';
 
 export default function DashboardRouterPage() {
   const { user, loading } = useAuth();
+  // Default to 'Exchange' for the three-way toggle
   const [searchMode, setSearchMode] = useState<'Fiat' | 'Exchange' | 'Web3'>('Exchange');
   
   if (loading || !user) {

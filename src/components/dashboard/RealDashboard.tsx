@@ -1,4 +1,3 @@
-
 "use client";
 
 import { SubNav } from '@/components/dashboard/SubNav';
@@ -178,7 +177,11 @@ export function RealDashboard({ searchMode }: RealDashboardProps) {
     if (searchMode === 'Web3') {
       const web3PrimaryNav = ['Portfolio', 'Gainers', 'Trending', 'Memes', 'DeFi', 'AI'];
       const web3SecondaryNav = web3PrimaryNav.reduce((acc, item) => {
-        acc[item] = item === 'Portfolio' ? ["Holdings", "Portfolio Watchlist"] : ['Top'];
+        if (item === 'Portfolio') {
+          acc[item] = ["Holdings", "Portfolio Watchlist"];
+        } else {
+          acc[item] = ['Top'];
+        }
         return acc;
       }, {} as Record<string, string[]>);
       return { primaryNavItems: web3PrimaryNav, secondaryNavTriggerCategories: web3SecondaryNav };
