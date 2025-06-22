@@ -287,12 +287,12 @@ const CommonOrderFields = ({
                 {(assetType === 'stock' || assetType === 'future' || assetType === 'crypto-future' || assetType === 'option') && (
                     <div className="flex items-center space-x-2">
                         <RadioGroupItem value="Intraday" id={`intraday-common`} />
-                        <Label htmlFor={`intraday-common`} className="font-normal">Intraday <span className="text-muted-foreground text-xs">MIS</span></Label>
+                        <Label htmlFor={`intraday-common`} className="font-normal">Intraday</Label>
                     </div>
                 )}
                 <div className="flex items-center space-x-2">
                     <RadioGroupItem value="Longterm" id={`longterm-common`} />
-                    <Label htmlFor={`longterm-common`} className="font-normal">Longterm <span className="text-muted-foreground text-xs">{(assetType === 'future' || assetType === 'crypto-future' || assetType === 'option') ? 'NRML' : 'CNC'}</span></Label>
+                    <Label htmlFor={`longterm-common`} className="font-normal">Longterm</Label>
                 </div>
                  {assetType === 'stock' && (
                     <div className="flex items-center space-x-2">
@@ -307,23 +307,19 @@ const CommonOrderFields = ({
                     <Label htmlFor={`qty-common`}>{quantityInputLabel}</Label>
                     <Input
                         id={`qty-common`}
-                        type="number"
+                        type="text"
                         value={quantity}
-                        onChange={(e) => {
-                            if (isCrypto) {
-                                setQuantity(e.target.value); // Allow any string for decimal input
-                            } else {
-                                // For non-crypto, enforce integer >= 1
-                                const intValue = parseInt(e.target.value, 10);
-                                if (!isNaN(intValue) && intValue >= 1) {
-                                    setQuantity(intValue);
-                                } else if (e.target.value === '') {
-                                    setQuantity(1);
-                                }
-                            }
+                        onChange={(e) => setQuantity(e.target.value)}
+                        onBlur={(e) => {
+                             const numValue = parseFloat(e.target.value);
+                             if (isCrypto) {
+                                if (isNaN(numValue) || numValue < 0) setQuantity('0');
+                                else setQuantity(String(numValue));
+                             } else {
+                                if (isNaN(numValue) || numValue < 1) setQuantity('1');
+                                else setQuantity(String(Math.round(numValue)));
+                             }
                         }}
-                        min={isCrypto ? "0" : "1"}
-                        step={isCrypto ? "any" : "1"}
                     />
                     {(assetType === 'future' || assetType === 'crypto-future' || assetType === 'option') && asset.lotSize && (
                         <p className="text-xs text-muted-foreground mt-1">Lot Size: {asset.lotSize}</p>
@@ -331,16 +327,16 @@ const CommonOrderFields = ({
                 </div>
                 <div>
                     <Label htmlFor={`price-common`}>Price</Label>
-                    <Input id={`price-common`} type="number" value={price} onChange={(e) => setPrice(e.target.value)} disabled={orderType === 'Market'} step="any" />
+                    <Input id={`price-common`} type="text" value={price} onChange={(e) => setPrice(e.target.value)} disabled={orderType === 'Market'} />
                 </div>
                 <div className="hidden sm:block">
                     <Label htmlFor={`trigger_price-common`} className={cn(orderType !== 'SL' && orderType !== 'SL-M' && "text-muted-foreground/50")}>Trigger price</Label>
-                    <Input id={`trigger_price-common`} type="number" value={triggerPrice} onChange={(e) => setTriggerPrice(e.target.value)} disabled={orderType !== 'SL' && orderType !== 'SL-M'} className={cn(orderType !== 'SL' && orderType !== 'SL-M' && "bg-muted/30 border-dashed")} placeholder="0" step="any" />
+                    <Input id={`trigger_price-common`} type="text" value={triggerPrice} onChange={(e) => setTriggerPrice(e.target.value)} disabled={orderType !== 'SL' && orderType !== 'SL-M'} className={cn(orderType !== 'SL' && orderType !== 'SL-M' && "bg-muted/30 border-dashed")} placeholder="0" />
                 </div>
             </div>
              <div className="sm:hidden mt-4">
                 <Label htmlFor={`trigger_price_sm-common`} className={cn(orderType !== 'SL' && orderType !== 'SL-M' && "text-muted-foreground/50")}>Trigger price</Label>
-                <Input id={`trigger_price_sm-common`} type="number" value={triggerPrice} onChange={(e) => setTriggerPrice(e.target.value)} disabled={orderType !== 'SL' && orderType !== 'SL-M'} className={cn(orderType !== 'SL' && orderType !== 'SL-M' && "bg-muted/30 border-dashed")} placeholder="0" step="any"/>
+                <Input id={`trigger_price_sm-common`} type="text" value={triggerPrice} onChange={(e) => setTriggerPrice(e.target.value)} disabled={orderType !== 'SL' && orderType !== 'SL-M'} className={cn(orderType !== 'SL' && orderType !== 'SL-M' && "bg-muted/30 border-dashed")} placeholder="0" />
             </div>
 
             <RadioGroup value={orderType} onValueChange={(value) => setOrderType(value)} className="flex flex-wrap gap-x-4 gap-y-2">
@@ -401,9 +397,9 @@ const CommonOrderFields = ({
 
 const StockOrderForm = ({ asset, assetType, productType, onProductTypeChange }: any) => {
     const { toast } = useToast();
-    const [quantity, setQuantity] = useState(1);
-    const [price, setPrice] = useState<number | string>(asset.price);
-    const [triggerPrice, setTriggerPrice] = useState<number | string>(0);
+    const [quantity, setQuantity] = useState<number | string>(1);
+    const [price, setPrice] = useState<number | string>(asset.price.toFixed(2));
+    const [triggerPrice, setTriggerPrice] = useState<number | string>('0');
     const [selectedExchange, setSelectedExchange] = useState<'BSE' | 'NSE'>('NSE');
     const [orderMode, setOrderMode] = useState('Regular');
     const [orderType, setOrderType] = useState('Limit');
@@ -427,14 +423,18 @@ const StockOrderForm = ({ asset, assetType, productType, onProductTypeChange }: 
         const currentPrice = selectedExchange === 'BSE' ? asset.price * 0.995 : asset.price;
         if (orderType === 'Market') {
             setPrice(currentPrice.toFixed(2));
-        } else if (price === 0 || price === asset.price || price === asset.price * 0.995) {
-            setPrice(currentPrice.toFixed(2));
+        } else {
+            const currentPriceNum = parseFloat(String(price));
+            if(isNaN(currentPriceNum) || currentPriceNum === 0 || currentPriceNum === asset.price || currentPriceNum === asset.price * 0.995){
+                setPrice(currentPrice.toFixed(2));
+            }
         }
     }, [selectedExchange, orderType, asset.price]);
 
     useEffect(() => {
+        const numQty = parseFloat(String(quantity)) || 0;
         const priceForCalc = orderType === 'Market' ? (selectedExchange === 'BSE' ? asset.price * 0.995 : asset.price) : (parseFloat(String(price)) || 0);
-        let baseMargin = (parseFloat(String(quantity)) || 0) * priceForCalc;
+        let baseMargin = numQty * priceForCalc;
         if (orderMode === 'MTF') {
             const leverageFactor = parseInt(mtfLeverage.replace('x', ''), 10) || 1;
             if (leverageFactor > 0) baseMargin /= leverageFactor;
@@ -508,9 +508,9 @@ const StockOrderForm = ({ asset, assetType, productType, onProductTypeChange }: 
 };
 
 const CryptoOrderForm = ({ asset, assetType, productType, onProductTypeChange }: any) => {
-    const [quantity, setQuantity] = useState<number | string>(1);
-    const [price, setPrice] = useState<number | string>(asset.price);
-    const [triggerPrice, setTriggerPrice] = useState<number | string>(0);
+    const [quantity, setQuantity] = useState<number | string>('1');
+    const [price, setPrice] = useState<number | string>(asset.price.toFixed(2));
+    const [triggerPrice, setTriggerPrice] = useState<number | string>('0');
     const [orderMode, setOrderMode] = useState('Regular');
     const [orderType, setOrderType] = useState('Limit');
     const [showMoreOptions, setShowMoreOptions] = useState(false);
@@ -560,9 +560,9 @@ const CryptoOrderForm = ({ asset, assetType, productType, onProductTypeChange }:
 
 const FutureOrderForm = ({ asset, assetType, productType, onProductTypeChange }: any) => {
     const { toast } = useToast();
-    const [quantity, setQuantity] = useState(1);
-    const [price, setPrice] = useState<number | string>(asset.price);
-    const [triggerPrice, setTriggerPrice] = useState<number | string>(0);
+    const [quantity, setQuantity] = useState<number | string>(1);
+    const [price, setPrice] = useState<number | string>(asset.price.toFixed(2));
+    const [triggerPrice, setTriggerPrice] = useState<number | string>('0');
     const [orderType, setOrderType] = useState('Limit');
     const [showMoreOptions, setShowMoreOptions] = useState(false);
     const [selectedExpiryDate, setSelectedExpiryDate] = useState<string>('');
@@ -627,9 +627,9 @@ const FutureOrderForm = ({ asset, assetType, productType, onProductTypeChange }:
 
 const CryptoFutureOrderForm = ({ asset, assetType, productType, onProductTypeChange }: any) => {
     const { toast } = useToast();
-    const [quantity, setQuantity] = useState<number | string>(1);
-    const [price, setPrice] = useState<number | string>(asset.price);
-    const [triggerPrice, setTriggerPrice] = useState<number | string>(0);
+    const [quantity, setQuantity] = useState<number | string>('1');
+    const [price, setPrice] = useState<number | string>(asset.price.toFixed(2));
+    const [triggerPrice, setTriggerPrice] = useState<number | string>('0');
     const [orderMode, setOrderMode] = useState('MTF');
     const [orderType, setOrderType] = useState('Limit');
     const [showMoreOptions, setShowMoreOptions] = useState(false);
