@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState } from 'react';
@@ -11,7 +12,6 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { mockPortfolioHoldings } from '@/lib/mockData';
 import type { PortfolioHolding } from '@/types';
 import { cn } from '@/lib/utils';
 import { Bitcoin, PlusCircle, MinusCircle, XCircle, Coins, Landmark } from 'lucide-react'; 
@@ -21,16 +21,27 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 
 interface CryptoHoldingsSectionProps {
+  holdings: PortfolioHolding[];
+  title: string;
+  cashBalance: number;
+  setCashBalance: React.Dispatch<React.SetStateAction<number>>;
   mainPortfolioCashBalance: number;
   setMainPortfolioCashBalance: React.Dispatch<React.SetStateAction<number>>;
   isRealMode?: boolean;
 }
 
-export function CryptoHoldingsSection({ mainPortfolioCashBalance, setMainPortfolioCashBalance, isRealMode = false }: CryptoHoldingsSectionProps) {
-  const cryptoHoldings = mockPortfolioHoldings.filter(holding => holding.type === 'Crypto');
+export function CryptoHoldingsSection({ 
+  holdings,
+  title,
+  cashBalance,
+  setCashBalance,
+  mainPortfolioCashBalance,
+  setMainPortfolioCashBalance,
+  isRealMode = false 
+}: CryptoHoldingsSectionProps) {
+  const cryptoHoldings = holdings;
   const [expandedRowId, setExpandedRowId] = useState<string | null>(null);
   const { toast } = useToast();
-  const [cryptoCashBalance, setCryptoCashBalance] = useState(15000.00);
   const [isFundTransferDialogOpen, setIsFundTransferDialogOpen] = useState(false);
   const [transferDirection, setTransferDirection] = useState<'toCrypto' | 'fromCrypto'>('toCrypto');
   const [currencyMode, setCurrencyMode] = useState<'INR' | 'USDT'>('INR');
@@ -69,23 +80,23 @@ export function CryptoHoldingsSection({ mainPortfolioCashBalance, setMainPortfol
   const handleTransferConfirm = (amount: number, direction: 'toCrypto' | 'fromCrypto') => {
     if (direction === 'toCrypto') {
       setMainPortfolioCashBalance(prev => prev - amount);
-      setCryptoCashBalance(prev => prev + amount);
-      toast({ title: "Transfer Successful", description: `${formatCurrency(amount, 'INR')} transferred to Crypto Wallet.` });
+      setCashBalance(prev => prev + amount);
+      toast({ title: "Transfer Successful", description: `${formatCurrency(amount, 'INR')} transferred to ${title}.` });
     } else { // fromCrypto
       setMainPortfolioCashBalance(prev => prev + amount);
-      setCryptoCashBalance(prev => prev - amount);
+      setCashBalance(prev => prev - amount);
       toast({ title: "Transfer Successful", description: `${formatCurrency(amount, 'INR')} transferred to Main Portfolio.` });
     }
   };
 
 
-  if (cryptoHoldings.length === 0 && cryptoCashBalance === 0) { // Condition to hide section if no assets and no balance
+  if (cryptoHoldings.length === 0 && cashBalance === 0) {
     return (
       <section className="space-y-4">
         <h2 className="text-xl font-semibold font-headline text-primary flex items-center">
-            <Bitcoin className="h-6 w-6 mr-2" /> Crypto Wallet & Holdings
+            <Bitcoin className="h-6 w-6 mr-2" /> {title}
         </h2>
-        <p className="text-muted-foreground text-center py-4">You have no crypto assets or balance in your wallet.</p>
+        <p className="text-muted-foreground text-center py-4">You have no crypto assets or balance in this wallet.</p>
       </section>
     );
   }
@@ -94,7 +105,7 @@ export function CryptoHoldingsSection({ mainPortfolioCashBalance, setMainPortfol
     <>
       <section className="space-y-4">
         <h2 className="text-xl font-semibold font-headline text-primary flex items-center">
-            <Bitcoin className="h-6 w-6 mr-2" /> Crypto Wallet & Holdings
+            <Bitcoin className="h-6 w-6 mr-2" /> {title}
         </h2>
 
         <div className="space-y-3 pt-2 mb-4">
@@ -109,7 +120,7 @@ export function CryptoHoldingsSection({ mainPortfolioCashBalance, setMainPortfol
                 {formatCurrency(overallPandL, currencyMode)}
               </p>
               <p className="text-xs text-muted-foreground">
-                Overall Crypto P&L ({overallPandLPercent.toFixed(2)}%)
+                Overall P&L ({overallPandLPercent.toFixed(2)}%)
               </p>
             </div>
             <div className="text-right">
@@ -122,7 +133,7 @@ export function CryptoHoldingsSection({ mainPortfolioCashBalance, setMainPortfol
                 {formatCurrency(totalDayChangeAbsolute, currencyMode)}
               </p>
               <p className="text-xs text-muted-foreground">
-                Day's Crypto P&L ({totalDayChangePercent.toFixed(2)}%)
+                Day's P&L ({totalDayChangePercent.toFixed(2)}%)
               </p>
             </div>
           </div>
@@ -131,21 +142,21 @@ export function CryptoHoldingsSection({ mainPortfolioCashBalance, setMainPortfol
 
           <div className="space-y-1.5">
             <div className="flex justify-between items-center text-sm">
-              <p className="text-muted-foreground">Total Crypto Investment</p>
+              <p className="text-muted-foreground">Total Investment</p>
               <p className="font-medium text-foreground">
                 {formatCurrency(totalInvestmentValue, currencyMode)}
               </p>
             </div>
             <div className="flex justify-between items-center text-sm">
-              <p className="text-muted-foreground">Current Crypto Value</p>
+              <p className="text-muted-foreground">Current Value</p>
               <p className="font-medium text-foreground">
                 {formatCurrency(totalCurrentValue, currencyMode)}
               </p>
             </div>
             <div className="flex justify-between items-center text-sm">
-              <p className="text-muted-foreground">Cash Balance (Crypto)</p>
+              <p className="text-muted-foreground">Cash Balance</p>
               <p className="font-medium text-foreground">
-                {formatCurrency(cryptoCashBalance, currencyMode)}
+                {formatCurrency(cashBalance, currencyMode)}
               </p>
             </div>
             {!isRealMode && (
@@ -270,7 +281,7 @@ export function CryptoHoldingsSection({ mainPortfolioCashBalance, setMainPortfol
         onOpenChange={setIsFundTransferDialogOpen}
         transferDirection={transferDirection}
         mainPortfolioCashBalance={mainPortfolioCashBalance}
-        cryptoCashBalance={cryptoCashBalance}
+        cryptoCashBalance={cashBalance}
         onTransferConfirm={handleTransferConfirm}
         currencyMode={currencyMode}
       />

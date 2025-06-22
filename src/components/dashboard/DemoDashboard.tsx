@@ -1,3 +1,4 @@
+
 "use client";
 
 import { SubNav } from '@/components/dashboard/SubNav';
@@ -93,10 +94,10 @@ function getRelevantNewsForPositions(
   });
 
   cryptoFutures.forEach(p => {
-    if (p.symbol.includes("USDT")) {
-      positionKeywords.add(p.symbol.replace("USDT", "").toLowerCase());
+    if (p.symbol.includes("USDT") || p.symbol.includes("INR")) { // Handle both USDT and INR pairs
+        positionKeywords.add(p.symbol.replace(/USDT|INR/g, "").toLowerCase());
     } else {
-      positionKeywords.add(p.symbol.toLowerCase());
+        positionKeywords.add(p.symbol.toLowerCase());
     }
   });
 
@@ -170,6 +171,7 @@ export function DemoDashboard() {
   );
   
   const [mainPortfolioCashBalance, setMainPortfolioCashBalance] = useState(50000.00);
+  const [cryptoCashBalance, setCryptoCashBalance] = useState(15000.00);
 
   const handlePrimaryNavClick = (item: string) => {
     setActivePrimaryItem(item);
@@ -263,7 +265,11 @@ export function DemoDashboard() {
       
       {isPortfolioHoldingsView ? (
         <>
-          <CryptoHoldingsSection 
+          <CryptoHoldingsSection
+            title="Crypto Wallet & Holdings"
+            holdings={mockPortfolioHoldings.filter(h => h.type === 'Crypto')}
+            cashBalance={cryptoCashBalance}
+            setCashBalance={setCryptoCashBalance}
             mainPortfolioCashBalance={mainPortfolioCashBalance}
             setMainPortfolioCashBalance={setMainPortfolioCashBalance}
             isRealMode={false}

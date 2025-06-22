@@ -26,6 +26,7 @@ import {
   mockWeb3Memes,
   mockWeb3DeFi,
   mockWeb3AI,
+  mockWeb3Holdings,
 } from '@/lib/mockData';
 
 // Helper functions
@@ -76,8 +77,8 @@ function getRelevantNewsForPositions(
   });
 
   cryptoFutures.forEach(p => {
-    if (p.symbol.includes("USDT")) {
-      positionKeywords.add(p.symbol.replace("USDT", "").toLowerCase());
+    if (p.symbol.includes("USDT") || p.symbol.includes("INR")) { // Handle both USDT and INR pairs
+      positionKeywords.add(p.symbol.replace(/USDT|INR/g, "").toLowerCase());
     } else {
       positionKeywords.add(p.symbol.toLowerCase());
     }
@@ -163,6 +164,8 @@ export function RealDashboard({ searchMode }: RealDashboardProps) {
   );
   
   const [mainPortfolioCashBalance, setMainPortfolioCashBalance] = useState(50000.00);
+  const [exchangeCashBalance, setExchangeCashBalance] = useState(15000.00);
+  const [web3CashBalance, setWeb3CashBalance] = useState(20000.00);
 
   React.useEffect(() => {
     setActivePrimaryItem('Portfolio');
@@ -207,12 +210,16 @@ export function RealDashboard({ searchMode }: RealDashboardProps) {
   let itemsForWatchlist: Stock[] | undefined = undefined;
   let categoryWatchlistTitle: string = "";
 
+  const exchangeHoldings = useMemo(() => mockPortfolioHoldings.filter(h => h.type === 'Crypto'), []);
+
   if (isPortfolioHoldingsView) {
-    newsForView = getRelevantNewsForHoldings(mockPortfolioHoldings.filter(h => h.type === 'Crypto'), mockNewsArticles);
+    const currentHoldings = searchMode === 'Web3' ? mockWeb3Holdings : exchangeHoldings;
+    newsForView = getRelevantNewsForHoldings(currentHoldings, mockNewsArticles);
   } else if (isPortfolioPositionsView) {
     newsForView = getRelevantNewsForPositions(mockCryptoIntradayPositions, mockCryptoFutures, mockNewsArticles);
   } else if (isUserPortfolioWatchlistView) {
-    newsForView = getRelevantNewsForHoldings(mockPortfolioHoldings.filter(h => h.type === 'Crypto'), mockNewsArticles); 
+    const currentHoldings = searchMode === 'Web3' ? mockWeb3Holdings : exchangeHoldings;
+    newsForView = getRelevantNewsForHoldings(currentHoldings, mockNewsArticles); 
   } else if (isTopWatchlistView) {
       categoryWatchlistTitle = `${activePrimaryItem} - ${activeSecondaryItem}`;
       if (activePrimaryItem === "Crypto Spot") {
@@ -270,11 +277,27 @@ export function RealDashboard({ searchMode }: RealDashboardProps) {
       
       {isPortfolioHoldingsView ? (
         <>
-          <CryptoHoldingsSection 
-            mainPortfolioCashBalance={mainPortfolioCashBalance}
-            setMainPortfolioCashBalance={setMainPortfolioCashBalance}
-            isRealMode={true}
-          />
+          {searchMode === 'Exchange' ? (
+             <CryptoHoldingsSection 
+                title="Crypto Wallet & Holdings"
+                holdings={exchangeHoldings}
+                cashBalance={exchangeCashBalance}
+                setCashBalance={setExchangeCashBalance}
+                mainPortfolioCashBalance={mainPortfolioCashBalance}
+                setMainPortfolioCashBalance={setMainPortfolioCashBalance}
+                isRealMode={true}
+              />
+          ) : (
+             <CryptoHoldingsSection 
+                title="Web3 Wallet & Holdings"
+                holdings={mockWeb3Holdings}
+                cashBalance={web3CashBalance}
+                setCashBalance={setWeb3CashBalance}
+                mainPortfolioCashBalance={mainPortfolioCashBalance}
+                setMainPortfolioCashBalance={setMainPortfolioCashBalance}
+                isRealMode={true}
+              />
+          )}
           <div className="mt-8">
             <NewsSection articles={newsForView} />
           </div>
@@ -288,8 +311,9 @@ export function RealDashboard({ searchMode }: RealDashboardProps) {
       ) : isUserPortfolioWatchlistView ? (
         <div className="space-y-8">
           <WatchlistSection 
-            title="My Crypto Watchlist" 
-            defaultInitialItems={mockCryptoAssets.slice(0, 5)}
+            title={searchMode === 'Web3' ? "My Web3 Watchlist" : "My Crypto Watchlist"} 
+            defaultInitialItems={searchMode === 'Web3' ? mockWeb3Trending.slice(0,5) : mockCryptoAssets.slice(0, 5)}
+            localStorageKeyOverride={searchMode === 'Web3' ? 'simWeb3Watchlist' : 'simCryptoWatchlist'}
           />
           <NewsSection articles={newsForView} />
         </div>
