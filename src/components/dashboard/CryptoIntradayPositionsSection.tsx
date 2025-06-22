@@ -23,7 +23,7 @@ export function CryptoIntradayPositionsSection() {
   const { toast } = useToast();
 
   const formatCurrency = (value: number) => {
-    return value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 4 }) + ' USDT';
+     return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
   };
 
   const handleRowClick = (positionId: string) => {
@@ -79,8 +79,8 @@ export function CryptoIntradayPositionsSection() {
                     {pos.transactionType}
                   </TableCell>
                   <TableCell className="text-right">{pos.quantity.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 4})}</TableCell>
-                  <TableCell className="text-right">{pos.avgPrice.toFixed(4)}</TableCell>
-                  <TableCell className="text-right">{pos.ltp.toFixed(4)}</TableCell>
+                  <TableCell className="text-right">{formatCurrency(pos.avgPrice)}</TableCell>
+                  <TableCell className="text-right">{formatCurrency(pos.ltp)}</TableCell>
                   <TableCell className={cn("text-right whitespace-nowrap", pos.pAndL >= 0 ? 'text-green-600' : 'text-red-600')}>
                     {formatCurrency(pos.pAndL)}<br/>({pos.pAndLPercent.toFixed(2)}%)
                   </TableCell>

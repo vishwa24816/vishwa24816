@@ -22,8 +22,8 @@ export function CryptoFuturesSection() {
   const [expandedRowId, setExpandedRowId] = useState<string | null>(null);
   const { toast } = useToast();
 
-  const formatQuoteCurrency = (value: number) => {
-    return value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 4 }) + ' USDT';
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
   };
    const formatPrice = (value: number) => {
     return value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -44,7 +44,7 @@ export function CryptoFuturesSection() {
         <div className="text-left sm:text-right">
             <p className="text-sm text-muted-foreground">Total Unrealized P&L</p>
             <p className={cn("text-lg font-semibold", totalUnrealizedPnL >= 0 ? 'text-green-600' : 'text-red-600')}>
-                {formatQuoteCurrency(totalUnrealizedPnL)}
+                {formatCurrency(totalUnrealizedPnL)}
             </p>
         </div>
       </div>
@@ -62,7 +62,7 @@ export function CryptoFuturesSection() {
               <TableHead className="text-right">Mark Price</TableHead>
               <TableHead className="text-right">Liq. Price</TableHead>
               <TableHead className="text-right">Unrealized P&L</TableHead>
-              <TableHead className="text-right">Margin (USDT)</TableHead>
+              <TableHead className="text-right">Margin (INR)</TableHead>
               <TableHead className="text-right">Leverage</TableHead>
             </TableRow>
           </TableHeader>
@@ -82,7 +82,7 @@ export function CryptoFuturesSection() {
                   <TableCell className="text-right">{formatPrice(pos.markPrice)}</TableCell>
                   <TableCell className="text-right">{pos.liquidationPrice ? formatPrice(pos.liquidationPrice) : '-'}</TableCell>
                   <TableCell className={cn("text-right", pos.unrealizedPnL >= 0 ? 'text-green-600' : 'text-red-600')}>
-                    {formatQuoteCurrency(pos.unrealizedPnL)}
+                    {formatCurrency(pos.unrealizedPnL)}
                   </TableCell>
                   <TableCell className="text-right">{formatPrice(pos.margin)}</TableCell>
                   <TableCell className="text-right">{pos.leverage}x</TableCell>
