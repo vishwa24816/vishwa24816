@@ -10,14 +10,13 @@ import { useState } from 'react';
 
 export default function DashboardRouterPage() {
   const { user, loading } = useAuth();
-  // Default to 'Exchange' for the three-way toggle
   const [searchMode, setSearchMode] = useState<'Fiat' | 'Exchange' | 'Web3'>('Exchange');
   
   if (loading || !user) {
      return (
         <ProtectedRoute>
             <div className="flex flex-col min-h-screen">
-                <AppHeader searchMode={searchMode} onSearchModeChange={setSearchMode} />
+                <AppHeader searchMode={searchMode} onSearchModeChange={setSearchMode} isRealMode={false} />
                 <main className="flex-grow container mx-auto p-4 sm:p-6 lg:p-8 space-y-8">
                     <Skeleton className="h-24 w-full" />
                     <Skeleton className="h-12 w-full" />
@@ -39,8 +38,9 @@ export default function DashboardRouterPage() {
         <AppHeader 
           searchMode={searchMode}
           onSearchModeChange={setSearchMode}
+          isRealMode={isRealMode}
         />
-        {isRealMode ? <RealDashboard searchMode={searchMode} /> : <DemoDashboard />}
+        {isRealMode ? <RealDashboard /> : <DemoDashboard searchMode={searchMode} />}
         <footer className="py-6 text-center text-sm text-muted-foreground border-t">
           © {new Date().getFullYear()} SIM - Stock Information &amp; Management. All rights reserved.
         </footer>

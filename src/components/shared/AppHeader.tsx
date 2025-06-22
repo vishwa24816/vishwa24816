@@ -32,17 +32,16 @@ import { useToast } from '@/hooks/use-toast';
 interface AppHeaderProps {
   searchMode: 'Fiat' | 'Exchange' | 'Web3';
   onSearchModeChange: (mode: 'Fiat' | 'Exchange' | 'Web3') => void;
+  isRealMode: boolean;
 }
 
-export function AppHeader({ searchMode, onSearchModeChange }: AppHeaderProps) {
+export function AppHeader({ searchMode, onSearchModeChange, isRealMode }: AppHeaderProps) {
   const { user, logout } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
   const [searchTerm, setSearchTerm] = useState('');
   const [isMounted, setIsMounted] = useState(false);
-
-  const isRealMode = user?.id === 'REAL456';
 
   useEffect(() => {
     setIsMounted(true);
@@ -101,23 +100,20 @@ export function AppHeader({ searchMode, onSearchModeChange }: AppHeaderProps) {
   };
   
   const searchPlaceholder = isRealMode 
-    ? (searchMode === 'Fiat' ? "Search stocks, futures..." : `Search ${searchMode}...`)
-    : "Search stocks, mutual funds, crypto...";
+    ? "Search crypto assets..."
+    : (searchMode === 'Fiat' ? "Search stocks, futures..." : `Search ${searchMode}...`);
   
   const searchAriaLabel = isRealMode 
-    ? `Search ${searchMode}` 
-    : "Search stocks, mutual funds, crypto";
+    ? `Search crypto assets` 
+    : `Search ${searchMode}`;
 
   if (!isMounted) {
     return (
       <header className="bg-primary text-primary-foreground shadow-md sticky top-0 z-50">
         <div className="container mx-auto flex h-20 items-center justify-between px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center space-x-2 sm:space-x-4">
-            <div className="h-9 w-9 bg-primary-foreground/10 rounded-md animate-pulse"></div>
-            <div className="h-9 w-full bg-primary-foreground/10 rounded-md animate-pulse"></div>
-          </div>
-          <div className="flex items-center space-x-1 sm:space-x-2">
-            <div className="h-9 w-9 bg-primary-foreground/10 rounded-md animate-pulse"></div>
+          <div className="h-9 w-9 bg-primary-foreground/10 rounded-md animate-pulse"></div>
+          <div className="flex-1 h-9 bg-primary-foreground/10 rounded-md animate-pulse ml-4"></div>
+          <div className="flex items-center space-x-1 sm:space-x-2 ml-4">
             <div className="h-9 w-9 bg-primary-foreground/10 rounded-md animate-pulse"></div>
           </div>
         </div>
@@ -236,7 +232,7 @@ export function AppHeader({ searchMode, onSearchModeChange }: AppHeaderProps) {
         </div>
 
         <div className="flex items-center space-x-1 sm:space-x-2">
-           {isRealMode && (
+           {!isRealMode && (
               <Button
                 variant="ghost"
                 className="h-9 px-3 hover:bg-primary-foreground/20 text-accent shrink-0"
