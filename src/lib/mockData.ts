@@ -25,3 +25,8 @@ export * from './mockData/priceAlerts';
 export * from './mockData/cryptoMutualFunds';
 export * from './mockData/cryptoETFs';
 export * from './mockData/cryptoIntradayPositions';
+export * from './mockData/web3AI';
+export * from './mockData/web3DeFi';
+export * from './mockData/web3Gainers';
+export * from './mockData/web3Memes';
+export * from './mockData/web3Trending';

@@ -14,4 +14,8 @@ export const mockNewsArticles: NewsArticle[] = [
   { id: 'news10', headline: 'BNB Chain announces new DeFi initiatives. TRX network activity up.', source: 'DeFi Pulse', timestamp: '2024-01-22T09:00:00Z', url: '#'},
   { id: 'news11', headline: 'XRP lawsuit developments continue to impact price. Dogecoin sees social media buzz.', source: 'CoinTelegraph', timestamp: '2024-01-23T14:00:00Z', url: '#'},
   { id: 'news12', headline: 'Cardano (ADA) prepares for next major network upgrade.', source: 'Cardano Journal', timestamp: '2024-01-24T10:00:00Z', url: '#'},
+  { id: 'news13', headline: 'Fetch.ai (FET), SingularityNET (AGIX), and Ocean Protocol (OCEAN) announce AI super alliance.', source: 'The AI Crypto Post', timestamp: '2024-07-20T10:00:00Z', url: '#' },
+  { id: 'news14', headline: 'Uniswap (UNI) foundation delays vote on fee switch, LINK price remains stable.', source: 'DeFiWire', timestamp: '2024-07-21T11:00:00Z', url: '#' },
+  { id: 'news15', headline: 'Meme coins like PEPE and WIF see massive surge in trading volume.', source: 'MemeCoin Times', timestamp: '2024-07-22T12:00:00Z', url: '#' },
+  { id: 'news16', headline: 'Telegram-linked Notcoin (NOT) and Toncoin (TON) gain traction among users.', source: 'Web3 Weekly', timestamp: '2024-07-23T13:00:00Z', url: '#' },
 ];

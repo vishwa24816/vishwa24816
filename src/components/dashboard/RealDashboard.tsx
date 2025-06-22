@@ -11,7 +11,7 @@ import { CryptoFuturesSection } from '@/components/dashboard/CryptoFuturesSectio
 import { PackageOpen } from 'lucide-react';
 
 import React, { useState, useMemo } from 'react';
-import type { PortfolioHolding, NewsArticle, IntradayPosition, FoPosition, CryptoFuturePosition, Stock, MarketIndex } from '@/types';
+import type { PortfolioHolding, NewsArticle, IntradayPosition, CryptoFuturePosition, Stock, MarketIndex } from '@/types';
 import { 
   mockPortfolioHoldings, 
   mockNewsArticles, 
@@ -21,6 +21,11 @@ import {
   mockCryptoFuturesForWatchlist,
   mockCryptoMutualFunds,
   mockCryptoETFs,
+  mockWeb3Gainers,
+  mockWeb3Trending,
+  mockWeb3Memes,
+  mockWeb3DeFi,
+  mockWeb3AI,
 } from '@/lib/mockData';
 
 // Helper functions
@@ -194,17 +199,12 @@ export function RealDashboard({ searchMode }: RealDashboardProps) {
     [...topWatchlistItems].includes(activePrimaryItem) && 
     !!activeSecondaryItem.match(/^Watchlist \d+$/);
     
-  const isWeb3PlaceholderView = searchMode === 'Web3' && (
-    activePrimaryItem === 'Gainers' ||
-    activePrimaryItem === 'Trending' ||
-    activePrimaryItem === 'Memes' ||
-    activePrimaryItem === 'DeFi' ||
-    activePrimaryItem === 'AI'
-  );
+  const WEB3_CATEGORIES = ['Gainers', 'Trending', 'Memes', 'DeFi', 'AI'];
+  const isWeb3CategoryView = searchMode === 'Web3' && WEB3_CATEGORIES.includes(activePrimaryItem);
 
 
   let newsForView: NewsArticle[] = mockNewsArticles; 
-  let itemsForTopWatchlist: Stock[] | undefined = undefined;
+  let itemsForWatchlist: Stock[] | undefined = undefined;
   let categoryWatchlistTitle: string = "";
 
   if (isPortfolioHoldingsView) {
@@ -216,18 +216,40 @@ export function RealDashboard({ searchMode }: RealDashboardProps) {
   } else if (isTopWatchlistView) {
       categoryWatchlistTitle = `${activePrimaryItem} - ${activeSecondaryItem}`;
       if (activePrimaryItem === "Crypto Spot") {
-        itemsForTopWatchlist = mockCryptoAssets;
+        itemsForWatchlist = mockCryptoAssets;
       } else if (activePrimaryItem === "Crypto Futures") {
-        itemsForTopWatchlist = mockCryptoFuturesForWatchlist;
+        itemsForWatchlist = mockCryptoFuturesForWatchlist;
       } else if (activePrimaryItem === "Crypto Mutual Fund") {
-        itemsForTopWatchlist = [...mockCryptoMutualFunds, ...mockCryptoETFs];
+        itemsForWatchlist = [...mockCryptoMutualFunds, ...mockCryptoETFs];
       } else {
-        itemsForTopWatchlist = []; 
+        itemsForWatchlist = []; 
       }
-      newsForView = getRelevantNewsForWatchlistItems(itemsForTopWatchlist, mockNewsArticles);
+      newsForView = getRelevantNewsForWatchlistItems(itemsForWatchlist, mockNewsArticles);
   } else if (isCategoryNumberedWatchlistView) {
     categoryWatchlistTitle = `${activePrimaryItem} - ${activeSecondaryItem}`;
     newsForView = mockNewsArticles; 
+  } else if (isWeb3CategoryView) {
+    categoryWatchlistTitle = `Top ${activePrimaryItem}`;
+    switch (activePrimaryItem) {
+        case 'Gainers':
+            itemsForWatchlist = mockWeb3Gainers;
+            break;
+        case 'Trending':
+            itemsForWatchlist = mockWeb3Trending;
+            break;
+        case 'Memes':
+            itemsForWatchlist = mockWeb3Memes;
+            break;
+        case 'DeFi':
+            itemsForWatchlist = mockWeb3DeFi;
+            break;
+        case 'AI':
+            itemsForWatchlist = mockWeb3AI;
+            break;
+        default:
+            itemsForWatchlist = [];
+    }
+    newsForView = getRelevantNewsForWatchlistItems(itemsForWatchlist, mockNewsArticles);
   }
 
   return (
@@ -271,11 +293,20 @@ export function RealDashboard({ searchMode }: RealDashboardProps) {
           />
           <NewsSection articles={newsForView} />
         </div>
+      ) : isWeb3CategoryView ? (
+         <div className="space-y-8">
+          <WatchlistSection
+            title={categoryWatchlistTitle}
+            displayItems={itemsForWatchlist}
+            isPredefinedList={true}
+          />
+          <NewsSection articles={newsForView} />
+        </div>
       ) : isTopWatchlistView ? ( 
         <div className="space-y-8">
           <WatchlistSection
             title={categoryWatchlistTitle}
-            displayItems={itemsForTopWatchlist}
+            displayItems={itemsForWatchlist}
             isPredefinedList={true}
           />
           <NewsSection articles={newsForView} />
@@ -289,14 +320,6 @@ export function RealDashboard({ searchMode }: RealDashboardProps) {
             defaultInitialItems={[]} 
           />
           <NewsSection articles={newsForView} />
-        </div>
-      ) : isWeb3PlaceholderView ? (
-         <div className="flex flex-col items-center justify-center text-center py-12 text-muted-foreground">
-            <PackageOpen className="h-16 w-16 mb-4" />
-            <h2 className="text-2xl font-semibold mb-2 text-foreground">{activePrimaryItem}</h2>
-            <p className="max-w-md">
-                This section will display the top {activePrimaryItem.toLowerCase()} in the Web3 space.
-            </p>
         </div>
       ) : (
          <div className="flex flex-col items-center justify-center text-center py-12 text-muted-foreground">
