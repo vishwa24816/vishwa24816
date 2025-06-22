@@ -20,7 +20,7 @@ import {
   LifeBuoy,
   Repeat,
   ChevronDown,
-  ChevronUp,
+  Puzzle,
 } from 'lucide-react';
 import {
   Sheet,
@@ -147,12 +147,19 @@ export function AppHeader({ searchMode, onSearchModeChange, isRealMode }: AppHea
 
   return (
     <header className="bg-primary text-primary-foreground shadow-lg sticky top-0 z-50 rounded-b-2xl">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative pb-4">
+      <div 
+        className="container mx-auto px-4 sm:px-6 lg:px-8 relative pb-4 cursor-pointer"
+        onClick={(e) => {
+          if (e.target === e.currentTarget) {
+            setIsExpanded(!isExpanded);
+          }
+        }}
+      >
         <div className="flex h-20 items-center justify-between gap-4">
             <div className="flex items-center space-x-2 sm:space-x-4">
                  <Sheet>
                     <SheetTrigger asChild>
-                    <Button variant="ghost" size="icon" className="hover:bg-primary-foreground/10 text-accent shrink-0">
+                    <Button variant="ghost" size="icon" className="hover:bg-primary-foreground/10 text-accent shrink-0" onClick={(e) => e.stopPropagation()}>
                         <Menu className="h-6 w-6" />
                         <span className="sr-only">Open menu</span>
                     </Button>
@@ -192,6 +199,16 @@ export function AppHeader({ searchMode, onSearchModeChange, isRealMode }: AppHea
                         >
                             <TrendingUp className="mr-3 h-5 w-5 text-primary" />
                             Advanced Analytics
+                        </Button>
+                        </SheetClose>
+                         <SheetClose asChild>
+                        <Button
+                            variant="ghost"
+                            className="justify-start text-base p-3 hover:bg-accent/10"
+                            onClick={() => alert('No-Code Algo feature coming soon!')}
+                        >
+                            <Puzzle className="mr-3 h-5 w-5 text-primary" />
+                            No-Code Algo
                         </Button>
                         </SheetClose>
                         <SheetClose asChild>
@@ -243,7 +260,7 @@ export function AppHeader({ searchMode, onSearchModeChange, isRealMode }: AppHea
                     </SheetContent>
                 </Sheet>
             </div>
-            <form onSubmit={handleSearchSubmit} className="flex-1 items-center relative">
+            <form onSubmit={handleSearchSubmit} className="flex-1 items-center relative" onClick={(e) => e.stopPropagation()}>
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-accent pointer-events-none" />
                 <Input
                     type="search"
@@ -254,7 +271,7 @@ export function AppHeader({ searchMode, onSearchModeChange, isRealMode }: AppHea
                     aria-label={searchAriaLabel}
                 />
             </form>
-            <div className="flex items-center space-x-1 sm:space-x-2">
+            <div className="flex items-center space-x-1 sm:space-x-2" onClick={(e) => e.stopPropagation()}>
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button
@@ -291,16 +308,14 @@ export function AppHeader({ searchMode, onSearchModeChange, isRealMode }: AppHea
             </div>
         </div>
         
-        <div className="absolute -bottom-4 left-1/2 -translate-x-1/2">
-            <Button
-                variant="secondary"
-                size="icon"
-                className="rounded-full h-8 w-8 shadow-lg border"
-                onClick={() => setIsExpanded(!isExpanded)}
-                aria-label={isExpanded ? "Collapse header" : "Expand header"}
-            >
-                {isExpanded ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
-            </Button>
+        <div 
+          className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-20 h-5 rounded-b-md bg-primary/80 flex items-center justify-center"
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsExpanded(!isExpanded);
+          }}
+        >
+          <div className="w-6 h-1 bg-accent/70 rounded-full"></div>
         </div>
       </div>
     </header>
