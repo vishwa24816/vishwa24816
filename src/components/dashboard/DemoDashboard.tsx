@@ -160,14 +160,14 @@ export function DemoDashboard({ searchMode }: DemoDashboardProps) {
     const { primaryNavItems, secondaryNavTriggerCategories } = useMemo(() => {
     if (searchMode === 'Fiat') {
         return {
-            primaryNavItems: ["Portfolio", "Stocks", "Index Futures", "Stock Futures", "Options", "Stocks Mutual fund", "Bonds", "IPO"],
+            primaryNavItems: ["Portfolio", "Stocks", "Index Futures", "Stock Futures", "Options", "Mutual Fund", "Bonds", "IPO"],
             secondaryNavTriggerCategories: {
                 Portfolio: ["Holdings", "Positions", "Portfolio Watchlist"],
                 Stocks: ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
                 "Index Futures": ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
                 "Stock Futures": ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
                 Options: ["Custom", "Strategy Builder", "Readymade"],
-                "Stocks Mutual fund": ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
+                "Mutual Fund": ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
                 Bonds: ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
                 IPO: [],
             }
@@ -234,7 +234,7 @@ export function DemoDashboard({ searchMode }: DemoDashboardProps) {
   const isUserPortfolioWatchlistView = activePrimaryItem === "Portfolio" && activeSecondaryItem === "Portfolio Watchlist";
 
   const topWatchlistItems = useMemo(() => {
-    if (searchMode === 'Fiat') return ["Stocks", "Index Futures", "Stock Futures", "Stocks Mutual fund", "Bonds"];
+    if (searchMode === 'Fiat') return ["Stocks", "Index Futures", "Stock Futures", "Mutual Fund", "Bonds"];
     return ["Crypto Spot", "Crypto Futures", "Crypto Mutual Fund"];
   }, [searchMode]);
 
@@ -285,7 +285,7 @@ export function DemoDashboard({ searchMode }: DemoDashboardProps) {
       else if (activePrimaryItem === "Stocks") itemsForWatchlist = mockStocks.map(s => ({...s, exchange: s.exchange || (Math.random() > 0.5 ? "NSE" : "BSE")}));
       else if (activePrimaryItem === "Index Futures") itemsForWatchlist = mockIndexFuturesForWatchlist;
       else if (activePrimaryItem === "Stock Futures") itemsForWatchlist = mockStockFuturesForWatchlist;
-      else if (activePrimaryItem === "Stocks Mutual fund") itemsForWatchlist = mockMutualFunds;
+      else if (activePrimaryItem === "Mutual Fund") itemsForWatchlist = mockMutualFunds;
       else if (activePrimaryItem === "Bonds") itemsForWatchlist = mockBonds;
       else itemsForWatchlist = [];
       newsForView = getRelevantNewsForWatchlistItems(itemsForWatchlist, mockNewsArticles);
