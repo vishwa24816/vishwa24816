@@ -102,6 +102,7 @@ export function AppHeader({ searchMode, onSearchModeChange, isRealMode }: AppHea
       <div 
         className="container mx-auto px-4 sm:px-6 lg:px-8 relative pb-4 cursor-pointer"
         onClick={(e) => {
+          // Only toggle if the click is on the container itself, not on its children
           if (e.target === e.currentTarget) {
             setIsExpanded(!isExpanded);
           }
@@ -135,7 +136,9 @@ export function AppHeader({ searchMode, onSearchModeChange, isRealMode }: AppHea
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => handleModeChange('Fiat')}>Fiat</DropdownMenuItem>
+                        {!isRealMode && (
+                            <DropdownMenuItem onClick={() => handleModeChange('Fiat')}>Fiat</DropdownMenuItem>
+                        )}
                         <DropdownMenuItem onClick={() => handleModeChange('Exchange')}>Exchange</DropdownMenuItem>
                         <DropdownMenuItem onClick={() => handleModeChange('Web3')}>Web3</DropdownMenuItem>
                     </DropdownMenuContent>
