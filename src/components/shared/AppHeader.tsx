@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useEffect, useMemo } from 'react';
@@ -36,7 +35,7 @@ export function AppHeader({ searchMode, onSearchModeChange, isRealMode }: AppHea
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
   const [isMounted, setIsMounted] = useState(false);
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false); // Default to collapsed
 
   useEffect(() => {
     setIsMounted(true);
@@ -84,6 +83,7 @@ export function AppHeader({ searchMode, onSearchModeChange, isRealMode }: AppHea
 
 
   if (!isMounted) {
+    // Skeleton loader
     return (
       <header className="bg-primary text-primary-foreground shadow-md sticky top-0 z-50">
         <div className="container mx-auto flex h-20 items-center justify-between px-4 sm:px-6 lg:px-8">
@@ -99,9 +99,7 @@ export function AppHeader({ searchMode, onSearchModeChange, isRealMode }: AppHea
 
   return (
     <header className="bg-primary text-primary-foreground shadow-lg sticky top-0 z-50 rounded-b-2xl">
-      <div 
-        className="container mx-auto px-4 sm:px-6 lg:px-8"
-      >
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex h-20 items-center justify-between gap-4">
             <div className="flex items-center space-x-2 sm:space-x-4">
                 <SideMenu />
@@ -141,20 +139,6 @@ export function AppHeader({ searchMode, onSearchModeChange, isRealMode }: AppHea
                     <User className="h-5 w-5" />
                     <span className="sr-only">Open profile</span>
                 </Button>
-                 <Button
-                  variant="ghost"
-                  size="icon"
-                  className="hover:bg-primary-foreground/10 text-accent shrink-0"
-                  onClick={() => setIsExpanded(!isExpanded)}
-                  aria-label="Toggle market overview"
-                >
-                  <ChevronDown
-                    className={cn(
-                      "h-5 w-5 transition-transform duration-300",
-                      isExpanded && "rotate-180"
-                    )}
-                  />
-                </Button>
             </div>
         </div>
 
@@ -170,6 +154,13 @@ export function AppHeader({ searchMode, onSearchModeChange, isRealMode }: AppHea
             </div>
         </div>
         
+        <div 
+          className="w-full h-4 flex justify-center items-center cursor-pointer group"
+          onClick={() => setIsExpanded(!isExpanded)}
+          aria-label={isExpanded ? 'Collapse header' : 'Expand header'}
+        >
+          <div className="w-8 h-1 bg-primary-foreground/30 rounded-full group-hover:bg-primary-foreground/60 transition-colors"></div>
+        </div>
       </div>
     </header>
   );
