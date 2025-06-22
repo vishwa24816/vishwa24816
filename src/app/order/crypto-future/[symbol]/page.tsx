@@ -128,7 +128,7 @@ export default function CryptoFutureOrderPage() {
     return (
       <ProtectedRoute>
         <div className="flex flex-col min-h-screen bg-background text-foreground">
-          <main className="flex-grow container mx-auto p-4 flex items-center justify-center">
+          <main className="flex-grow w-full p-4 flex items-center justify-center">
             <p>Loading asset details...</p>
           </main>
         </div>
@@ -149,7 +149,7 @@ export default function CryptoFutureOrderPage() {
         </header>
 
         <main className="flex-grow overflow-y-auto pb-20">
-          <div className="container mx-auto px-4 py-4 space-y-4">
+          <div className="w-full px-4 py-4 space-y-4">
             <div className="flex justify-between items-start">
               <div>
                 <h1 className="text-xl font-semibold">{asset.name}</h1>
@@ -255,7 +255,7 @@ export default function CryptoFutureOrderPage() {
         </main>
         
         <div className="fixed bottom-16 left-0 right-0 bg-background border-t border-border p-3 shadow-md_ z-20">
-          <div className="container mx-auto flex space-x-3">
+          <div className="flex space-x-3">
             <Button 
               onClick={handleSellAction} 
               variant="destructive" 

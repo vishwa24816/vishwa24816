@@ -86,7 +86,7 @@ export default function SimbotPage() {
     <ProtectedRoute>
       <div className="flex flex-col h-screen">
         <AppHeader />
-        <main className="flex-grow flex flex-col container mx-auto p-0 sm:p-2 md:p-4 overflow-hidden">
+        <main className="flex-grow flex flex-col p-0 sm:p-2 md:p-4 overflow-hidden">
           <div className="bg-card border rounded-lg shadow-xl flex flex-col flex-grow relative h-[calc(100vh-theme(spacing.20)-theme(spacing.16)-theme(spacing.8))] sm:h-[calc(100vh-theme(spacing.20)-theme(spacing.16)-theme(spacing.4))]">
             <div className="p-4 border-b">
               <h1 className="text-xl font-semibold text-primary flex items-center">

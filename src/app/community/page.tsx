@@ -41,7 +41,7 @@ export default function CommunityPage() {
         <main className="flex-grow flex flex-col overflow-hidden">
           <Tabs defaultValue="hot" value={activeTab} onValueChange={setActiveTab} className="flex flex-col flex-grow overflow-hidden">
             <div className="border-b bg-background">
-              <TabsList className="container mx-auto px-2 sm:px-4 lg:px-6 flex overflow-x-auto whitespace-nowrap no-scrollbar rounded-none h-auto p-0 border-none bg-transparent">
+              <TabsList className="px-2 sm:px-4 lg:px-6 flex overflow-x-auto whitespace-nowrap no-scrollbar rounded-none h-auto p-0 border-none bg-transparent">
                 {communityTabs.map((tab) => (
                   <TabsTrigger
                     key={tab.value}
@@ -58,7 +58,7 @@ export default function CommunityPage() {
             </div>
             
             <ScrollArea className="flex-grow">
-              <div className="container mx-auto px-0 sm:px-2 md:px-4 py-4 space-y-0">
+              <div className="px-0 sm:px-2 md:px-4 py-4 space-y-0">
                   {communityTabs.map((tab) => (
                     <TabsContent key={tab.value} value={tab.value} className="mt-0 data-[state=inactive]:hidden">
                       {displayedPosts.length > 0 ? (

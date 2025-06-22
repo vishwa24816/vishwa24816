@@ -65,7 +65,7 @@ export default function OrdersPage() {
         <main className="flex-grow flex flex-col">
           <Tabs defaultValue="executed" value={activeTab} onValueChange={setActiveTab} className="flex flex-col flex-grow">
             <div className="bg-background border-b">
-              <TabsList className="container mx-auto px-4 sm:px-6 lg:px-8 flex overflow-x-auto whitespace-nowrap no-scrollbar rounded-none h-auto p-0 border-none bg-transparent">
+              <TabsList className="px-4 sm:px-6 lg:px-8 flex overflow-x-auto whitespace-nowrap no-scrollbar rounded-none h-auto p-0 border-none bg-transparent">
                 {orderTabs.map((tab) => (
                   <TabsTrigger
                     key={tab.value}
@@ -79,7 +79,7 @@ export default function OrdersPage() {
             </div>
 
             <div className="border-b bg-background">
-                <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between py-3">
+                <div className="w-full px-4 sm:px-6 lg:px-8 flex items-center justify-between py-3">
                     <div className="flex items-center space-x-4">
                         <Search className="h-5 w-5 text-muted-foreground cursor-pointer hover:text-primary" />
                         <SlidersHorizontal className="h-5 w-5 text-muted-foreground cursor-pointer hover:text-primary" />
@@ -93,7 +93,7 @@ export default function OrdersPage() {
                 </div>
             </div>
 
-            <div className="container mx-auto px-0 sm:px-2 md:px-4 py-4 flex-grow flex flex-col">
+            <div className="w-full px-0 sm:px-2 md:px-4 py-4 flex-grow flex flex-col">
               <TabsContent value="executed" className="flex-grow flex flex-col mt-0 data-[state=inactive]:hidden">
                 <OpenPositionsDisplay isRealMode={isRealMode} />
               </TabsContent>

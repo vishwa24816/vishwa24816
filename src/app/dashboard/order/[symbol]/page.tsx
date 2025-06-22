@@ -157,7 +157,7 @@ export default function StockDetailPage() {
     return (
       <ProtectedRoute>
         <div className="flex flex-col min-h-screen bg-background text-foreground">
-          <main className="flex-grow container mx-auto p-4 flex items-center justify-center">
+          <main className="flex-grow w-full p-4 flex items-center justify-center">
             <p>Loading asset details...</p>
           </main>
         </div>
@@ -182,7 +182,7 @@ export default function StockDetailPage() {
         </header>
 
         <main className="flex-grow overflow-y-auto pb-20">
-          <div className="container mx-auto px-4 py-4 space-y-4">
+          <div className="w-full px-4 py-4 space-y-4">
             <div className="flex justify-between items-start">
               <div>
                 <h1 className="text-xl font-semibold">{stock.name}</h1>
@@ -373,7 +373,7 @@ export default function StockDetailPage() {
         </main>
 
         <div className="fixed bottom-0 left-0 right-0 bg-background border-t border-border p-3 shadow-md_ z-20">
-          <div className="container mx-auto flex space-x-3">
+          <div className="w-full flex space-x-3 px-4">
             <Button onClick={handleSell} variant="destructive" className="flex-1 text-base py-3 bg-red-600 hover:bg-red-700">
               Sell
             </Button>
@@ -386,4 +386,3 @@ export default function StockDetailPage() {
     </ProtectedRoute>
   );
 }
-
