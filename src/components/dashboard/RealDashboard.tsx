@@ -138,7 +138,7 @@ export function RealDashboard({ searchMode }: RealDashboardProps) {
     if (searchMode === 'Web3') {
       const web3PrimaryNav = ['Portfolio', 'Gainers', 'Trending', 'Memes', 'DeFi', 'AI'];
       const web3SecondaryNav = web3PrimaryNav.reduce((acc, item) => {
-        acc[item] = item === 'Portfolio' ? ["Holdings", "Positions", "Portfolio Watchlist"] : ['Top'];
+        acc[item] = item === 'Portfolio' ? ["Holdings", "Portfolio Watchlist"] : ['Top'];
         return acc;
       }, {} as Record<string, string[]>);
       return { primaryNavItems: web3PrimaryNav, secondaryNavTriggerCategories: web3SecondaryNav };
@@ -211,6 +211,7 @@ export function RealDashboard({ searchMode }: RealDashboardProps) {
   let categoryWatchlistTitle: string = "";
 
   const exchangeHoldings = useMemo(() => mockPortfolioHoldings.filter(h => h.type === 'Crypto'), []);
+  const web3PortfolioWatchlistItems = useMemo(() => [...mockWeb3Trending.slice(0, 3), ...mockWeb3DeFi.slice(0, 2)], []);
 
   if (isPortfolioHoldingsView) {
     const currentHoldings = searchMode === 'Web3' ? mockWeb3Holdings : exchangeHoldings;
@@ -218,8 +219,13 @@ export function RealDashboard({ searchMode }: RealDashboardProps) {
   } else if (isPortfolioPositionsView) {
     newsForView = getRelevantNewsForPositions(mockCryptoIntradayPositions, mockCryptoFutures, mockNewsArticles);
   } else if (isUserPortfolioWatchlistView) {
-    const currentHoldings = searchMode === 'Web3' ? mockWeb3Holdings : exchangeHoldings;
-    newsForView = getRelevantNewsForHoldings(currentHoldings, mockNewsArticles); 
+    if (searchMode === 'Web3') {
+        itemsForWatchlist = web3PortfolioWatchlistItems;
+        newsForView = getRelevantNewsForWatchlistItems(itemsForWatchlist, mockNewsArticles);
+    } else { // Exchange mode
+        itemsForWatchlist = mockCryptoAssets.slice(0, 5);
+        newsForView = getRelevantNewsForWatchlistItems(itemsForWatchlist, mockNewsArticles);
+    }
   } else if (isTopWatchlistView) {
       categoryWatchlistTitle = `${activePrimaryItem} - ${activeSecondaryItem}`;
       if (activePrimaryItem === "Crypto Spot") {
@@ -312,7 +318,7 @@ export function RealDashboard({ searchMode }: RealDashboardProps) {
         <div className="space-y-8">
           <WatchlistSection 
             title={searchMode === 'Web3' ? "My Web3 Watchlist" : "My Crypto Watchlist"} 
-            defaultInitialItems={searchMode === 'Web3' ? mockWeb3Trending.slice(0,5) : mockCryptoAssets.slice(0, 5)}
+            defaultInitialItems={itemsForWatchlist}
             localStorageKeyOverride={searchMode === 'Web3' ? 'simWeb3Watchlist' : 'simCryptoWatchlist'}
           />
           <NewsSection articles={newsForView} />
