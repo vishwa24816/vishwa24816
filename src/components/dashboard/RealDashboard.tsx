@@ -1,4 +1,3 @@
-
 "use client";
 
 import { SubNav } from '@/components/dashboard/SubNav';
@@ -150,7 +149,7 @@ export function RealDashboard({ searchMode }: RealDashboardProps) {
   }
   
   return (
-    <main className="flex-grow container mx-auto p-4 sm:p-6 lg:p-8 space-y-8">
+    <main className="flex-grow p-4 sm:p-6 lg:p-8 space-y-8">
       <SubNav
         primaryNavItems={primaryNavItems}
         activePrimaryItem={activePrimaryItem}
