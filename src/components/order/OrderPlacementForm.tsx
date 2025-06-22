@@ -30,6 +30,65 @@ import { AddToBasketDialog } from './AddToBasketDialog';
 
 // #region Helper Components
 
+const AdvancedOptionInput = ({
+  label,
+  id,
+  isEnabled,
+  onToggle,
+  value,
+  onValueChange,
+  unit,
+  onUnitChange,
+}: {
+  label: string;
+  id: string;
+  isEnabled: boolean;
+  onToggle: (checked: boolean) => void;
+  value: string;
+  onValueChange: (value: string) => void;
+  unit: 'price' | 'percent';
+  onUnitChange: (unit: 'price' | 'percent') => void;
+}) => {
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center space-x-2">
+        <Checkbox id={`${id}-check`} checked={isEnabled} onCheckedChange={onToggle} />
+        <Label htmlFor={`${id}-check`} className="font-normal">{label}</Label>
+      </div>
+      {isEnabled && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pl-6 items-center">
+          <Input
+            id={id}
+            type="number"
+            placeholder="0"
+            value={value}
+            onChange={(e) => onValueChange(e.target.value)}
+            className="w-full"
+          />
+          <div className="flex">
+            <Button
+              type="button"
+              variant={unit === 'price' ? 'secondary' : 'ghost'}
+              onClick={() => onUnitChange('price')}
+              className="h-9 rounded-r-none flex-1 text-xs px-2"
+            >
+              ₹
+            </Button>
+            <Button
+              type="button"
+              variant={unit === 'percent' ? 'secondary' : 'ghost'}
+              onClick={() => onUnitChange('percent')}
+              className="h-9 rounded-l-none flex-1 text-xs px-2"
+            >
+              %
+            </Button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
 const MarketDepth = ({ asset, selectedExchange, onPriceClick }: { asset: Stock; selectedExchange: 'BSE' | 'NSE'; onPriceClick: (price: number) => void; }) => {
     const marketDepthData = useMemo(() => {
         const basePrice = selectedExchange === 'NSE' ? asset.price : asset.price * 0.995;
@@ -205,39 +264,6 @@ const SipForm = ({ asset, assetType }: { asset: Stock, assetType: string }) => {
 
 // #region Common Logic Hooks and Functions
 
-const useOrderFormLogic = (asset: Stock, assetType: string) => {
-    const { toast } = useToast();
-    const [productType, setProductType] = useState('Longterm');
-    const [quantity, setQuantity] = useState(1);
-    const [price, setPrice] = useState(asset.price);
-    const [triggerPrice, setTriggerPrice] = useState(0);
-    const [orderMode, setOrderMode] = useState('Regular');
-    const [orderType, setOrderType] = useState('Limit');
-    const [showMoreOptions, setShowMoreOptions] = useState(false);
-    const [isAddToBasketDialogOpen, setIsAddToBasketDialogOpen] = useState(false);
-
-    const handleOrderAction = (action: 'BUY' | 'SELL') => {
-        const quantityLabel = (assetType === 'future' || assetType === 'crypto-future' || assetType === 'option') ? 'Lots' : 'Qty.';
-        const priceDisplay = orderType === 'Market' ? 'Market' : `₹${price}`;
-        toast({
-            title: `Order Action (Mock - ${orderMode})`,
-            description: `${action} ${quantity} ${quantityLabel} x ${asset.symbol} @ ${priceDisplay} (${productType})`,
-        });
-    };
-    
-    return {
-        productType, setProductType,
-        quantity, setQuantity,
-        price, setPrice,
-        triggerPrice, setTriggerPrice,
-        orderMode, setOrderMode,
-        orderType, setOrderType,
-        showMoreOptions, setShowMoreOptions,
-        isAddToBasketDialogOpen, setIsAddToBasketDialogOpen,
-        handleOrderAction,
-    };
-};
-
 const CommonOrderFields = ({
     orderProps
 }: {
@@ -246,14 +272,17 @@ const CommonOrderFields = ({
     const {
         asset, assetType, productType, onProductTypeChange, quantity, setQuantity,
         price, setPrice, triggerPrice, setTriggerPrice, orderType, setOrderType,
-        showMoreOptions, setShowMoreOptions
+        showMoreOptions, setShowMoreOptions,
+        isStopLossEnabled, setIsStopLossEnabled, stopLossValue, setStopLossValue, stopLossUnit, setStopLossUnit,
+        isTrailingSlEnabled, setIsTrailingSlEnabled, trailingSlValue, setTrailingSlValue, trailingSlUnit, setTrailingSlUnit,
+        isTargetProfitEnabled, setIsTargetProfitEnabled, targetProfitValue, setTargetProfitValue, targetProfitUnit, setTargetProfitUnit
     } = orderProps;
 
     const quantityInputLabel = (assetType === 'future' || assetType === 'crypto-future' || assetType === 'option') ? 'Lots' : 'Qty.';
 
     return (
         <div className="space-y-4">
-             <RadioGroup value={productType} onValueChange={onProductTypeChange} className="flex space-x-6">
+             <RadioGroup value={productType} onValueChange={onProductTypeChange} className="flex flex-wrap gap-x-4 sm:gap-x-6 gap-y-2">
                 {(assetType === 'stock' || assetType === 'future' || assetType === 'crypto-future' || assetType === 'option') && (
                     <div className="flex items-center space-x-2">
                         <RadioGroupItem value="Intraday" id={`intraday-common`} />
@@ -264,6 +293,12 @@ const CommonOrderFields = ({
                     <RadioGroupItem value="Longterm" id={`longterm-common`} />
                     <Label htmlFor={`longterm-common`} className="font-normal">Longterm <span className="text-muted-foreground text-xs">{(assetType === 'future' || assetType === 'crypto-future' || assetType === 'option') ? 'NRML' : 'CNC'}</span></Label>
                 </div>
+                 {assetType === 'stock' && (
+                    <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="HODL" id="hodl-common" />
+                        <Label htmlFor="hodl-common" className="font-normal">HODL</Label>
+                    </div>
+                )}
             </RadioGroup>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 items-end">
@@ -300,7 +335,41 @@ const CommonOrderFields = ({
             <Button variant="link" size="sm" className="p-0 h-auto text-primary text-xs flex items-center" onClick={() => setShowMoreOptions(!showMoreOptions)}>
                 More options <ChevronDown className={cn("h-3 w-3 ml-0.5 transition-transform duration-200", showMoreOptions && "rotate-180")} />
             </Button>
-            {/* Advanced options could be a separate component if needed */}
+            
+            {showMoreOptions && (
+              <div className="space-y-4 pt-4 border-t border-dashed animate-accordion-down">
+                <AdvancedOptionInput
+                  label="Stop Loss"
+                  id="stop-loss"
+                  isEnabled={isStopLossEnabled}
+                  onToggle={setIsStopLossEnabled}
+                  value={stopLossValue}
+                  onValueChange={setStopLossValue}
+                  unit={stopLossUnit}
+                  onUnitChange={setStopLossUnit}
+                />
+                <AdvancedOptionInput
+                  label="Trailing Stop Loss"
+                  id="trailing-sl"
+                  isEnabled={isTrailingSlEnabled}
+                  onToggle={setIsTrailingSlEnabled}
+                  value={trailingSlValue}
+                  onValueChange={setTrailingSlValue}
+                  unit={trailingSlUnit}
+                  onUnitChange={setTrailingSlUnit}
+                />
+                <AdvancedOptionInput
+                  label="Target Profit"
+                  id="target-profit"
+                  isEnabled={isTargetProfitEnabled}
+                  onToggle={setIsTargetProfitEnabled}
+                  value={targetProfitValue}
+                  onValueChange={setTargetProfitValue}
+                  unit={targetProfitUnit}
+                  onUnitChange={setTargetProfitUnit}
+                />
+              </div>
+            )}
         </div>
     );
 };
@@ -322,6 +391,17 @@ const StockOrderForm = ({ asset, assetType, productType, onProductTypeChange }: 
     const [mtfLeverage, setMtfLeverage] = useState('1x');
     const [displayedMargin, setDisplayedMargin] = useState(0);
     const [isAddToBasketDialogOpen, setIsAddToBasketDialogOpen] = useState(false);
+
+    // Advanced options state
+    const [isStopLossEnabled, setIsStopLossEnabled] = useState(false);
+    const [stopLossValue, setStopLossValue] = useState('');
+    const [stopLossUnit, setStopLossUnit] = useState<'price' | 'percent'>('price');
+    const [isTrailingSlEnabled, setIsTrailingSlEnabled] = useState(false);
+    const [trailingSlValue, setTrailingSlValue] = useState('');
+    const [trailingSlUnit, setTrailingSlUnit] = useState<'price' | 'percent'>('price');
+    const [isTargetProfitEnabled, setIsTargetProfitEnabled] = useState(false);
+    const [targetProfitValue, setTargetProfitValue] = useState('');
+    const [targetProfitUnit, setTargetProfitUnit] = useState<'price' | 'percent'>('price');
 
     useEffect(() => {
         const currentPrice = selectedExchange === 'BSE' ? asset.price * 0.995 : asset.price;
@@ -347,6 +427,15 @@ const StockOrderForm = ({ asset, assetType, productType, onProductTypeChange }: 
         setOrderType('Limit');
     };
 
+    const commonOrderProps = {
+        asset, assetType, productType, onProductTypeChange, quantity, setQuantity,
+        price, setPrice, triggerPrice, setTriggerPrice, orderType, setOrderType,
+        showMoreOptions, setShowMoreOptions,
+        isStopLossEnabled, setIsStopLossEnabled, stopLossValue, setStopLossValue, stopLossUnit, setStopLossUnit,
+        isTrailingSlEnabled, setIsTrailingSlEnabled, trailingSlValue, setTrailingSlValue, trailingSlUnit, setTrailingSlUnit,
+        isTargetProfitEnabled, setIsTargetProfitEnabled, targetProfitValue, setTargetProfitValue, targetProfitUnit, setTargetProfitUnit
+    };
+
     return (
         <div className="bg-card shadow-md rounded-lg mt-4">
             <div className="bg-card text-card-foreground p-3 rounded-t-lg border-b">
@@ -368,11 +457,11 @@ const StockOrderForm = ({ asset, assetType, productType, onProductTypeChange }: 
                     <TabsTrigger value="SIP" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">SIP</TabsTrigger>
                 </TabsList>
                 <TabsContent value="Regular" className="p-4 mt-0">
-                    <CommonOrderFields orderProps={{ asset, assetType, productType, onProductTypeChange, quantity, setQuantity, price, setPrice, triggerPrice, setTriggerPrice, orderType, setOrderType, showMoreOptions, setShowMoreOptions }} />
+                    <CommonOrderFields orderProps={commonOrderProps} />
                      <div className="mt-4 pt-4 border-t"><p className="text-sm text-muted-foreground">Margin required: <span className="font-semibold text-foreground">₹{displayedMargin.toLocaleString('en-IN')}</span></p></div>
                 </TabsContent>
                 <TabsContent value="MTF" className="p-4 mt-0 space-y-4">
-                    <CommonOrderFields orderProps={{ asset, assetType, productType, onProductTypeChange, quantity, setQuantity, price, setPrice, triggerPrice, setTriggerPrice, orderType, setOrderType, showMoreOptions, setShowMoreOptions }} />
+                    <CommonOrderFields orderProps={commonOrderProps} />
                     <div className="space-y-2 pt-2">
                          <Label>Leverage</Label>
                          <RadioGroup value={mtfLeverage} onValueChange={setMtfLeverage} className="flex flex-wrap gap-x-4 gap-y-2">
@@ -407,9 +496,28 @@ const CryptoOrderForm = ({ asset, assetType, productType, onProductTypeChange }:
     const [showMoreOptions, setShowMoreOptions] = useState(false);
     const [displayedMargin, setDisplayedMargin] = useState(0);
 
+    const [isStopLossEnabled, setIsStopLossEnabled] = useState(false);
+    const [stopLossValue, setStopLossValue] = useState('');
+    const [stopLossUnit, setStopLossUnit] = useState<'price' | 'percent'>('price');
+    const [isTrailingSlEnabled, setIsTrailingSlEnabled] = useState(false);
+    const [trailingSlValue, setTrailingSlValue] = useState('');
+    const [trailingSlUnit, setTrailingSlUnit] = useState<'price' | 'percent'>('price');
+    const [isTargetProfitEnabled, setIsTargetProfitEnabled] = useState(false);
+    const [targetProfitValue, setTargetProfitValue] = useState('');
+    const [targetProfitUnit, setTargetProfitUnit] = useState<'price' | 'percent'>('price');
+
     useEffect(() => {
         setDisplayedMargin(quantity * price);
     }, [quantity, price]);
+
+    const commonOrderProps = {
+        asset, assetType, productType, onProductTypeChange, quantity, setQuantity,
+        price, setPrice, triggerPrice, setTriggerPrice, orderType, setOrderType,
+        showMoreOptions, setShowMoreOptions,
+        isStopLossEnabled, setIsStopLossEnabled, stopLossValue, setStopLossValue, stopLossUnit, setStopLossUnit,
+        isTrailingSlEnabled, setIsTrailingSlEnabled, trailingSlValue, setTrailingSlValue, trailingSlUnit, setTrailingSlUnit,
+        isTargetProfitEnabled, setIsTargetProfitEnabled, targetProfitValue, setTargetProfitValue, targetProfitUnit, setTargetProfitUnit
+    };
 
     return (
         <div className="bg-card shadow-md rounded-lg mt-4">
@@ -419,7 +527,7 @@ const CryptoOrderForm = ({ asset, assetType, productType, onProductTypeChange }:
                     <TabsTrigger value="SIP" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">SIP</TabsTrigger>
                 </TabsList>
                 <TabsContent value="Regular" className="p-4 mt-0">
-                     <CommonOrderFields orderProps={{ asset, assetType, productType, onProductTypeChange, quantity, setQuantity, price, setPrice, triggerPrice, setTriggerPrice, orderType, setOrderType, showMoreOptions, setShowMoreOptions }} />
+                     <CommonOrderFields orderProps={commonOrderProps} />
                      <div className="mt-4 pt-4 border-t"><p className="text-sm text-muted-foreground">Margin required: <span className="font-semibold text-foreground">₹{displayedMargin.toLocaleString('en-IN')}</span></p></div>
                 </TabsContent>
                 <TabsContent value="SIP" className="p-0 mt-0"><SipForm asset={asset} assetType="crypto" /></TabsContent>
@@ -439,6 +547,16 @@ const FutureOrderForm = ({ asset, assetType, productType, onProductTypeChange }:
     const [displayedMargin, setDisplayedMargin] = useState(0);
     const [isAddToBasketDialogOpen, setIsAddToBasketDialogOpen] = useState(false);
 
+    const [isStopLossEnabled, setIsStopLossEnabled] = useState(false);
+    const [stopLossValue, setStopLossValue] = useState('');
+    const [stopLossUnit, setStopLossUnit] = useState<'price' | 'percent'>('price');
+    const [isTrailingSlEnabled, setIsTrailingSlEnabled] = useState(false);
+    const [trailingSlValue, setTrailingSlValue] = useState('');
+    const [trailingSlUnit, setTrailingSlUnit] = useState<'price' | 'percent'>('price');
+    const [isTargetProfitEnabled, setIsTargetProfitEnabled] = useState(false);
+    const [targetProfitValue, setTargetProfitValue] = useState('');
+    const [targetProfitUnit, setTargetProfitUnit] = useState<'price' | 'percent'>('price');
+
     useEffect(() => {
         if (asset.availableExpiries && asset.availableExpiries.length > 0) {
           setSelectedExpiryDate(asset.availableExpiries[0]);
@@ -449,6 +567,15 @@ const FutureOrderForm = ({ asset, assetType, productType, onProductTypeChange }:
         const margin = quantity * price * (asset.lotSize || 1) * (asset.marginFactor || 0.1);
         setDisplayedMargin(margin);
     }, [quantity, price, asset]);
+
+     const commonOrderProps = {
+        asset, assetType, productType, onProductTypeChange, quantity, setQuantity,
+        price, setPrice, triggerPrice, setTriggerPrice, orderType, setOrderType,
+        showMoreOptions, setShowMoreOptions,
+        isStopLossEnabled, setIsStopLossEnabled, stopLossValue, setStopLossValue, stopLossUnit, setStopLossUnit,
+        isTrailingSlEnabled, setIsTrailingSlEnabled, trailingSlValue, setTrailingSlValue, trailingSlUnit, setTrailingSlUnit,
+        isTargetProfitEnabled, setIsTargetProfitEnabled, targetProfitValue, setTargetProfitValue, targetProfitUnit, setTargetProfitUnit
+    };
 
     return (
         <div className="bg-card shadow-md rounded-lg mt-4">
@@ -462,7 +589,7 @@ const FutureOrderForm = ({ asset, assetType, productType, onProductTypeChange }:
                         </Select>
                     </div>
                 )}
-                 <CommonOrderFields orderProps={{ asset, assetType, productType, onProductTypeChange, quantity, setQuantity, price, setPrice, triggerPrice, setTriggerPrice, orderType, setOrderType, showMoreOptions, setShowMoreOptions }} />
+                 <CommonOrderFields orderProps={commonOrderProps} />
                  <div className="mt-4 pt-4 border-t"><p className="text-sm text-muted-foreground">Margin required: <span className="font-semibold text-foreground">₹{displayedMargin.toLocaleString('en-IN')}</span></p></div>
             </div>
              <div className="p-4 border-t flex flex-col sm:flex-row gap-2">
@@ -486,6 +613,16 @@ const CryptoFutureOrderForm = ({ asset, assetType, productType, onProductTypeCha
     const [displayedMargin, setDisplayedMargin] = useState(0);
     const [isAddToBasketDialogOpen, setIsAddToBasketDialogOpen] = useState(false);
 
+    const [isStopLossEnabled, setIsStopLossEnabled] = useState(false);
+    const [stopLossValue, setStopLossValue] = useState('');
+    const [stopLossUnit, setStopLossUnit] = useState<'price' | 'percent'>('price');
+    const [isTrailingSlEnabled, setIsTrailingSlEnabled] = useState(false);
+    const [trailingSlValue, setTrailingSlValue] = useState('');
+    const [trailingSlUnit, setTrailingSlUnit] = useState<'price' | 'percent'>('price');
+    const [isTargetProfitEnabled, setIsTargetProfitEnabled] = useState(false);
+    const [targetProfitValue, setTargetProfitValue] = useState('');
+    const [targetProfitUnit, setTargetProfitUnit] = useState<'price' | 'percent'>('price');
+
     useEffect(() => {
         const leverageFactor = parseInt(mtfLeverage.replace('x', ''), 10) || 1;
         const margin = (quantity * price * (asset.lotSize || 1)) / leverageFactor;
@@ -493,6 +630,15 @@ const CryptoFutureOrderForm = ({ asset, assetType, productType, onProductTypeCha
     }, [quantity, price, asset, mtfLeverage]);
 
     const leverageOptions = ['1x', '2x', '3x', '4x', '5x', '10x', '20x', '25x', '50x', '100x', '200x'];
+    
+     const commonOrderProps = {
+        asset, assetType, productType, onProductTypeChange, quantity, setQuantity,
+        price, setPrice, triggerPrice, setTriggerPrice, orderType, setOrderType,
+        showMoreOptions, setShowMoreOptions,
+        isStopLossEnabled, setIsStopLossEnabled, stopLossValue, setStopLossValue, stopLossUnit, setStopLossUnit,
+        isTrailingSlEnabled, setIsTrailingSlEnabled, trailingSlValue, setTrailingSlValue, trailingSlUnit, setTrailingSlUnit,
+        isTargetProfitEnabled, setIsTargetProfitEnabled, targetProfitValue, setTargetProfitValue, targetProfitUnit, setTargetProfitUnit
+    };
 
     return (
          <div className="bg-card shadow-md rounded-lg mt-4">
@@ -502,7 +648,7 @@ const CryptoFutureOrderForm = ({ asset, assetType, productType, onProductTypeCha
                     <TabsTrigger value="SIP" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">SIP</TabsTrigger>
                 </TabsList>
                  <TabsContent value="MTF" className="p-4 mt-0 space-y-4">
-                     <CommonOrderFields orderProps={{ asset, assetType, productType, onProductTypeChange, quantity, setQuantity, price, setPrice, triggerPrice, setTriggerPrice, orderType, setOrderType, showMoreOptions, setShowMoreOptions }} />
+                     <CommonOrderFields orderProps={commonOrderProps} />
                      <div className="space-y-2 pt-2">
                         <Label htmlFor={`leverage-cf`}>Leverage</Label>
                         <Select value={mtfLeverage} onValueChange={setMtfLeverage}>
