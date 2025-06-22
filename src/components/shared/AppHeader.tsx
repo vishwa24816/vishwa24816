@@ -186,6 +186,14 @@ export function AppHeader({ searchMode, onSearchModeChange }: AppHeaderProps) {
                     Support
                   </Button>
                 </SheetClose>
+                <Button
+                  variant="ghost"
+                  className="justify-start text-base p-3 hover:bg-accent/10"
+                  onClick={toggleTheme}
+                >
+                  {theme === 'light' ? <Moon className="mr-3 h-5 w-5 text-primary" /> : <Sun className="mr-3 h-5 w-5 text-primary" />}
+                  Switch to {theme === 'light' ? 'Dark' : 'Light'} Mode
+                </Button>
               </nav>
               <div className="p-4 border-t">
                 {user && (
@@ -213,7 +221,7 @@ export function AppHeader({ searchMode, onSearchModeChange }: AppHeaderProps) {
               <Input
                 type="search"
                 placeholder={searchPlaceholder}
-                className="bg-primary-foreground/10 border-none focus-visible:ring-1 focus-visible:ring-accent focus-visible:ring-offset-0 text-primary-foreground placeholder:text-primary-foreground/70 h-9 pl-10 pr-3 rounded-md w-32 md:w-56 transition-all duration-300 focus:w-40 md:focus:w-64"
+                className="bg-primary-foreground/10 border-none focus-visible:ring-1 focus-visible:ring-accent focus-visible:ring-offset-0 text-primary-foreground placeholder:text-primary-foreground/70 h-9 pl-10 pr-3 rounded-md w-40 md:w-64 transition-all duration-300 focus:w-48 md:focus:w-72"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 aria-label={searchAriaLabel}
@@ -233,13 +241,8 @@ export function AppHeader({ searchMode, onSearchModeChange }: AppHeaderProps) {
           </div>
         </div>
 
-        {/* Right Section: Theme and Profile */}
+        {/* Right Section: Profile */}
         <div className="flex items-center space-x-1 sm:space-x-2">
-          <Button variant="ghost" size="icon" onClick={toggleTheme} className="hover:bg-primary-foreground/10 text-accent shrink-0">
-            {theme === 'light' ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
-            <span className="sr-only">Toggle theme</span>
-          </Button>
-
           <Button variant="ghost" size="icon" onClick={() => router.push('/profile')} className="hover:bg-primary-foreground/10 text-accent shrink-0">
             <User className="h-5 w-5" />
             <span className="sr-only">Open profile</span>
