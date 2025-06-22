@@ -18,6 +18,7 @@ import {
   TrendingUp,
   Trophy,
   LifeBuoy,
+  Repeat,
 } from 'lucide-react';
 import {
   Sheet,
@@ -27,13 +28,18 @@ import {
   SheetTrigger,
   SheetClose,
 } from "@/components/ui/sheet";
+import { useToast } from '@/hooks/use-toast';
 
 export function AppHeader() {
   const { user, logout } = useAuth();
   const router = useRouter();
+  const { toast } = useToast();
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
   const [searchTerm, setSearchTerm] = useState('');
   const [isMounted, setIsMounted] = useState(false);
+  const [searchMode, setSearchMode] = useState<'Exchange' | 'DeFi'>('Exchange');
+
+  const isRealMode = user?.id === 'REAL456';
 
   useEffect(() => {
     setIsMounted(true);
@@ -73,10 +79,22 @@ export function AppHeader() {
     }
   };
 
+  const handleSearchModeToggle = () => {
+    const newMode = searchMode === 'Exchange' ? 'DeFi' : 'Exchange';
+    setSearchMode(newMode);
+    toast({
+      title: 'Search Mode Switched',
+      description: `Now searching within ${newMode}.`,
+    });
+  };
+
   const handleLogout = () => {
     logout();
     router.push('/login');
   };
+  
+  const searchPlaceholder = isRealMode ? `Search ${searchMode}...` : "Search stocks, mutual funds, crypto...";
+  const searchAriaLabel = isRealMode ? `Search ${searchMode}` : "Search stocks, mutual funds, crypto";
 
   if (!isMounted) {
     return (
@@ -185,17 +203,30 @@ export function AppHeader() {
             </SheetContent>
           </Sheet>
 
-          <form onSubmit={handleSearchSubmit} className="flex items-center relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-accent pointer-events-none" />
-            <Input
-              type="search"
-              placeholder="Search stocks, mutual funds, crypto..."
-              className="bg-primary-foreground/10 border-none focus-visible:ring-1 focus-visible:ring-accent focus-visible:ring-offset-0 text-primary-foreground placeholder:text-primary-foreground/70 h-9 pl-10 pr-3 rounded-md w-40 md:w-64 transition-all duration-300 focus:w-48 md:focus:w-72"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              aria-label="Search stocks, mutual funds, crypto"
-            />
-          </form>
+          <div className="flex items-center space-x-2">
+            <form onSubmit={handleSearchSubmit} className="flex items-center relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-accent pointer-events-none" />
+              <Input
+                type="search"
+                placeholder={searchPlaceholder}
+                className="bg-primary-foreground/10 border-none focus-visible:ring-1 focus-visible:ring-accent focus-visible:ring-offset-0 text-primary-foreground placeholder:text-primary-foreground/70 h-9 pl-10 pr-3 rounded-md w-32 md:w-56 transition-all duration-300 focus:w-40 md:focus:w-64"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                aria-label={searchAriaLabel}
+              />
+            </form>
+
+            {isRealMode && (
+              <Button
+                variant="ghost"
+                className="h-9 px-3 hover:bg-primary-foreground/20 text-accent shrink-0"
+                onClick={handleSearchModeToggle}
+              >
+                <Repeat className="h-4 w-4 mr-2" />
+                {searchMode}
+              </Button>
+            )}
+          </div>
         </div>
 
         {/* Right Section: Theme and Profile */}
