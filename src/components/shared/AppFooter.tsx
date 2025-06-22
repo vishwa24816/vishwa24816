@@ -51,7 +51,7 @@ export function AppFooter() {
   ];
 
   return (
-    <footer className="fixed bottom-0 left-0 right-0 z-40 bg-card border-t border-border shadow-t-lg">
+    <footer className="fixed bottom-0 left-0 right-0 z-40 bg-card border-t border-border rounded-t-2xl shadow-lg">
       <nav className="mx-auto flex h-16 items-stretch justify-around">
         {navItems.map((item) => (
           <NavItem key={item.label} {...item} />
