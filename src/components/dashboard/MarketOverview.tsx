@@ -23,7 +23,7 @@ const IndexCard: React.FC<IndexCardProps> = ({ itemData }) => {
   const isPositive = change >= 0;
 
   return (
-    <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300 w-36 h-24 flex flex-col shrink-0">
+    <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300 w-48 h-24 flex flex-col shrink-0">
       <CardHeader className="p-1.5 pb-0 flex flex-row items-start justify-between space-y-0">
         <CardTitle className="text-xs font-medium font-headline">{name}</CardTitle>
         <Activity className="h-2.5 w-2.5 text-muted-foreground" />
