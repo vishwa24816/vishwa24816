@@ -40,6 +40,8 @@ interface CryptoHoldingsSectionProps {
   isRealMode?: boolean;
 }
 
+const slugify = (str: string) => str.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+
 export function CryptoHoldingsSection({
   holdings,
   title,
@@ -102,7 +104,7 @@ export function CryptoHoldingsSection({
 
   const chartConfig = useMemo(() => {
     const config = holdings.reduce((acc, holding, index) => {
-      const key = holding.name;
+      const key = slugify(holding.name);
       acc[key] = {
         label: holding.name,
         color: `hsl(var(--chart-${(index % 4) + 1}))`,
@@ -110,7 +112,7 @@ export function CryptoHoldingsSection({
       return acc;
     }, {} as ChartConfig);
 
-    config["Cash"] = {
+    config["cash"] = {
       label: "Cash",
       color: `hsl(var(--chart-5))`,
     }
@@ -120,22 +122,23 @@ export function CryptoHoldingsSection({
 
   const chartData = useMemo(() => {
     const holdingsData = holdings.map(h => ({
-      name: h.name,
+      name: slugify(h.name),
       value: parseFloat(h.currentValue.toFixed(2)),
-      fill: `var(--color-${h.name})`
     }));
     
     if (cashBalance > 0) {
       holdingsData.push({
-          name: 'Cash',
+          name: 'cash',
           value: parseFloat(cashBalance.toFixed(2)),
-          fill: `var(--color-Cash)`
       });
     }
 
     return holdingsData;
   }, [holdings, cashBalance]);
 
+  const tickFormatter = (value: string) => {
+    return chartConfig[value]?.label || value;
+  }
 
   if (cryptoHoldings.length === 0 && cashBalance === 0) {
     return (
@@ -296,10 +299,14 @@ export function CryptoHoldingsSection({
                     <ChartContainer config={chartConfig} className="h-[300px] w-full">
                       <ResponsiveContainer>
                         <BarChart layout="vertical" data={chartData} margin={{ right: 20 }}>
-                          <YAxis dataKey="name" type="category" tickLine={false} axisLine={false} tickMargin={10} width={80} tick={{ fill: "hsl(var(--muted-foreground))" }} />
+                          <YAxis dataKey="name" type="category" tickLine={false} axisLine={false} tickMargin={10} width={80} tick={{ fill: "hsl(var(--muted-foreground))" }} tickFormatter={tickFormatter} />
                           <XAxis type="number" hide />
                           <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
-                          <Bar dataKey="value" layout="vertical" radius={5} />
+                          <Bar dataKey="value" layout="vertical" radius={5}>
+                             {chartData.map((entry) => (
+                                <Cell key={`cell-${entry.name}`} fill={`var(--color-${entry.name})`} />
+                            ))}
+                          </Bar>
                           <ChartLegend content={<ChartLegendContent nameKey="name" />} />
                         </BarChart>
                       </ResponsiveContainer>
@@ -314,7 +321,7 @@ export function CryptoHoldingsSection({
                           <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
                           <Pie data={chartData} dataKey="value" nameKey="name" innerRadius={60} strokeWidth={5}>
                             {chartData.map((entry) => (
-                                <Cell key={`cell-${entry.name}`} fill={entry.fill} />
+                                <Cell key={`cell-${entry.name}`} fill={`var(--color-${entry.name})`} />
                             ))}
                           </Pie>
                           <ChartLegend content={<ChartLegendContent nameKey="name" />} />
@@ -345,3 +352,5 @@ export function CryptoHoldingsSection({
     </>
   );
 }
+
+    
