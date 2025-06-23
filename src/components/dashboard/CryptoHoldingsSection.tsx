@@ -300,10 +300,10 @@ export function CryptoHoldingsSection({
                           <XAxis type="number" hide />
                           <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
                           <Bar dataKey="value" layout="vertical" radius={5} />
+                          <ChartLegend content={<ChartLegendContent nameKey="name" className="flex-wrap" />} />
                         </BarChart>
                       </ResponsiveContainer>
                     </ChartContainer>
-                     <ChartLegend content={<ChartLegendContent nameKey="name" />} className="flex-wrap" />
                   </div>
                 )}
                 {viewType === 'pie' && (
