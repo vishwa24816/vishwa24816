@@ -12,11 +12,12 @@ import { Mail, Edit3, Shield, LogOut } from 'lucide-react';
 
 export default function ProfilePage() {
   const { user, logout } = useAuth();
+  const isRealMode = user?.id === 'REAL456';
 
   return (
     <ProtectedRoute>
       <div className="flex flex-col min-h-screen">
-        <AppHeader />
+        <AppHeader isRealMode={isRealMode} />
         <main className="flex-grow container mx-auto p-4 sm:p-6 lg:p-8 flex items-center justify-center">
           <Card className="w-full max-w-lg shadow-xl">
             <CardHeader className="items-center text-center">
