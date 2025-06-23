@@ -6,12 +6,13 @@ import { DemoDashboard } from '@/components/dashboard/DemoDashboard';
 import { RealDashboard } from '@/components/dashboard/RealDashboard';
 import { AppHeader } from '@/components/shared/AppHeader';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useState } from 'react';
+import React, { useState } from 'react';
 
 export default function DashboardRouterPage() {
   const { user, loading } = useAuth();
-  
-  const [searchMode, setSearchMode] = useState<'Fiat' | 'Exchange' | 'Web3'>('Exchange');
+  const isRealMode = user?.id === 'REAL456';
+
+  const [searchMode, setSearchMode] = useState<'Fiat' | 'Exchange' | 'Web3'>(isRealMode ? 'Exchange' : 'Fiat');
   
   if (loading || !user) {
      return (
@@ -30,8 +31,6 @@ export default function DashboardRouterPage() {
         </ProtectedRoute>
       );
   }
-
-  const isRealMode = user.id === 'REAL456';
   
   if (isRealMode && searchMode === 'Fiat') {
     setSearchMode('Exchange');

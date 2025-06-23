@@ -13,6 +13,7 @@ import { runScreenerAction } from '@/app/actions';
 import type { Stock } from '@/types';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/contexts/AuthContext';
 
 const suggestionQueries = [
     "IT stocks with P/E less than 30",
@@ -24,11 +25,19 @@ const suggestionQueries = [
 export default function ScreenerPage() {
     const { toast } = useToast();
     const router = useRouter();
+    const { user } = useAuth();
     const [query, setQuery] = useState('');
     const [results, setResults] = useState<Stock[]>([]);
     const [analysis, setAnalysis] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
+
+    const isRealMode = user?.id === 'REAL456';
+    const [searchMode, setSearchMode] = useState<'Fiat' | 'Exchange' | 'Web3'>(isRealMode ? 'Exchange' : 'Fiat');
+
+    if (isRealMode && searchMode === 'Fiat') {
+        setSearchMode('Exchange');
+    }
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -73,7 +82,11 @@ export default function ScreenerPage() {
     return (
         <ProtectedRoute>
             <div className="flex flex-col h-screen bg-background text-foreground">
-                <AppHeader />
+                <AppHeader 
+                    searchMode={searchMode}
+                    onSearchModeChange={setSearchMode}
+                    isRealMode={isRealMode}
+                />
                 <main className="flex-grow p-4 sm:p-6 lg:p-8 space-y-6 overflow-y-auto">
                     <Card>
                         <CardHeader>
