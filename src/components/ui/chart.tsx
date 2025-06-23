@@ -1,3 +1,4 @@
+
 "use client"
 
 import * as React from "react"
@@ -286,8 +287,8 @@ const ChartLegendContent = React.forwardRef<
         )}
       >
         {payload.map((item) => {
-          const key = `${nameKey || item.dataKey || "value"}`
-          const itemConfig = getPayloadConfigFromPayload(config, item, key)
+          const key = item.value as string
+          const itemConfig = config[key]
 
           return (
             <div
@@ -306,7 +307,7 @@ const ChartLegendContent = React.forwardRef<
                   }}
                 />
               )}
-              {itemConfig?.label}
+              {itemConfig?.label || item.value}
             </div>
           )
         })}
