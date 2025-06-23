@@ -8,10 +8,10 @@ export const mockCryptoIntradayPositions: IntradayPosition[] = [
     symbol: 'BTCINR',
     transactionType: 'BUY',
     quantity: 0.05,
-    avgPrice: 3590500.00,
-    ltp: 3600891.75,
-    pAndL: 519.59,
-    pAndLPercent: 0.23,
+    avgPrice: 2390000.00,
+    ltp: 2400000.00,
+    pAndL: 500,
+    pAndLPercent: 0.42,
   },
   {
     id: 'c-intra2',
@@ -19,10 +19,10 @@ export const mockCryptoIntradayPositions: IntradayPosition[] = [
     symbol: 'ETHINR',
     transactionType: 'SELL',
     quantity: 1.5,
-    avgPrice: 180360.00,
-    ltp: 179588.13,
-    pAndL: 1157.81,
-    pAndLPercent: 0.43,
+    avgPrice: 151000.00,
+    ltp: 150000.00,
+    pAndL: 1500.00,
+    pAndLPercent: 0.66,
   },
 ];
 
@@ -35,8 +35,8 @@ export const mockRealCryptoIntradayPositions: IntradayPosition[] = [
         quantity: 10,
         avgPrice: 1650.00,
         ltp: 1665.00,
-        pAndL: (1665.00 - 1650.00) * 10,
-        pAndLPercent: ((1665.00 - 1650.00) / 1650.00) * 100,
+        pAndL: 150.00,
+        pAndLPercent: 0.91,
     },
     {
         id: 'c-intra-real2',
@@ -46,7 +46,7 @@ export const mockRealCryptoIntradayPositions: IntradayPosition[] = [
         quantity: 500,
         avgPrice: 40.00,
         ltp: 39.10,
-        pAndL: (40.00 - 39.10) * 500,
-        pAndLPercent: ((40.00 - 39.10) / 40.00) * 100,
+        pAndL: 450.00,
+        pAndLPercent: 2.25,
     }
 ];

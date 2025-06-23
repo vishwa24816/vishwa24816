@@ -116,7 +116,7 @@ export const mockStocks: Stock[] = [
     id: 'hul', symbol: 'HUL', name: 'Hindustan Unilever Ltd.', price: 2550.00, change: 10.25, changePercent: 0.40, exchange: 'NSE', sector: 'FMCG', 
     todayLow: 2530.00, todayHigh: 2560.00, fiftyTwoWeekLow: 2200.00, fiftyTwoWeekHigh: 2800.00, openPrice: 2540.00, prevClosePrice: 2539.75, volume: 800000,
     lowerCircuit: 2295.00, upperCircuit: 2805.00,
-    fundamentals: { marketCap: '6,00,000Cr', peRatioTTM: 60.5, pbRatio: 12.3, industryPe: 55.0, debtToEquity: 0.03, roe: 20.5, epsTTM: 42.15, divYield: 1.2, bookValue: 207.31, faceValue: 1 },
+    fundamentals: { marketCap: '6,00,000Cr', peRatioTTM: 60.5, pbRatio: 12.3, industryPe: 55.0, debtToEquity: 0.01, roe: 20.5, epsTTM: 42.15, divYield: 1.2, bookValue: 207.31, faceValue: 1 },
     financials: { revenue: generateFinancialData(12000), profit: generateFinancialData(2500), netWorth: generateFinancialData(50000) }
   },
   { 
@@ -181,5 +181,12 @@ export const mockStocks: Stock[] = [
     lowerCircuit: 1035.18, upperCircuit: 1265.22,
     fundamentals: { marketCap: '2,76,000Cr', peRatioTTM: 30.5, pbRatio: 4.8, industryPe: 25.0, debtToEquity: 0.1, roe: 15.7, epsTTM: 37.71, divYield: 0.9, bookValue: 239.63, faceValue: 1 },
     financials: { revenue: generateFinancialData(10000), profit: generateFinancialData(2000), netWorth: generateFinancialData(60000) }
+  },
+  { 
+    id: 'tatamotors', symbol: 'TATAMOTORS', name: 'Tata Motors Ltd.', price: 655.75, change: 5.50, changePercent: 0.85, exchange: 'NSE', sector: 'Automobile',
+    todayLow: 650.00, todayHigh: 660.00, fiftyTwoWeekLow: 400.00, fiftyTwoWeekHigh: 700.00, openPrice: 650.25, prevClosePrice: 650.25, volume: 15000000,
+    lowerCircuit: 585.23, upperCircuit: 715.27,
+    fundamentals: { marketCap: '2,18,000Cr', peRatioTTM: 15.8, pbRatio: 2.9, industryPe: 25.0, debtToEquity: 1.2, roe: 18.2, epsTTM: 41.50, divYield: 0.0, bookValue: 226.12, faceValue: 2 },
+    financials: { revenue: generateFinancialData(80000), profit: generateFinancialData(5000), netWorth: generateFinancialData(75000) }
   },
 ];

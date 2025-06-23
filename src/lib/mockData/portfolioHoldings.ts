@@ -76,14 +76,14 @@ export const mockPortfolioHoldings: PortfolioHolding[] = [
     name: 'Ethereum',
     symbol: 'ETH',
     type: 'Crypto',
-    quantity: 2.77, // Approx to reach ~500 INR current value
-    avgCostPrice: 170.00,
-    ltp: 180.00, // Mock LTP
-    currentValue: 2.77 * 180.00, // Roughly 498.60
-    profitAndLoss: (180.00 - 170.00) * 2.77, // 27.70
-    profitAndLossPercent: (((180.00 - 170.00) * 2.77) / (170.00 * 2.77)) * 100, // 5.88%
-    dayChangeAbsolute: 5.00,
-    dayChangePercent: (5.00 / ((2.77 * 180.00) - 5.00)) * 100, // approx 1.01%
+    quantity: 0.1,
+    avgCostPrice: 140000.00,
+    ltp: 150000.00,
+    currentValue: 15000.00,
+    profitAndLoss: 1000.00,
+    profitAndLossPercent: 7.14,
+    dayChangeAbsolute: -164.00,
+    dayChangePercent: -1.12,
   },
 ];
 
@@ -95,12 +95,12 @@ export const mockRealPortfolioHoldings: PortfolioHolding[] = [
     type: 'Crypto',
     quantity: 5.5,
     avgCostPrice: 165000.00,
-    ltp: 180000.00,
-    currentValue: 5.5 * 180000.00,
-    profitAndLoss: (180000.00 - 165000.00) * 5.5,
-    profitAndLossPercent: ((180000.00 - 165000.00) / 165000.00) * 100,
-    dayChangeAbsolute: 12000.00,
-    dayChangePercent: 1.22,
+    ltp: 150000.00,
+    currentValue: 825000.00,
+    profitAndLoss: -82500.00,
+    profitAndLossPercent: -9.09,
+    dayChangeAbsolute: -9020.00,
+    dayChangePercent: -1.12,
   },
   {
     id: 'real_holding_sol',
@@ -110,11 +110,11 @@ export const mockRealPortfolioHoldings: PortfolioHolding[] = [
     quantity: 50,
     avgCostPrice: 1500.00,
     ltp: 1665.00,
-    currentValue: 50 * 1665.00,
-    profitAndLoss: (1665.00 - 1500.00) * 50,
-    profitAndLossPercent: ((1665.00 - 1500.00) / 1500.00) * 100,
-    dayChangeAbsolute: 3100.00,
-    dayChangePercent: 3.89,
+    currentValue: 83250.00,
+    profitAndLoss: 8250.00,
+    profitAndLossPercent: 11.00,
+    dayChangeAbsolute: 3112.50,
+    dayChangePercent: 3.90,
   },
   {
     id: 'real_holding_btc',
@@ -124,10 +124,10 @@ export const mockRealPortfolioHoldings: PortfolioHolding[] = [
     quantity: 0.25,
     avgCostPrice: 2200000.00,
     ltp: 2400000.00,
-    currentValue: 0.25 * 2400000.00,
-    profitAndLoss: (2400000.00 - 2200000.00) * 0.25,
-    profitAndLossPercent: ((2400000.00 - 2200000.00) / 2200000.00) * 100,
-    dayChangeAbsolute: 40000 * 0.25,
+    currentValue: 600000.00,
+    profitAndLoss: 50000.00,
+    profitAndLossPercent: 9.09,
+    dayChangeAbsolute: 10000.00,
     dayChangePercent: 1.69,
   },
 ];

@@ -20,9 +20,9 @@ export const mockIntradayPositions: IntradayPosition[] = [
     transactionType: 'SELL',
     quantity: 50,
     avgPrice: 1355.00,
-    ltp: 1350.50,
-    pAndL: 225.00,
-    pAndLPercent: 0.33,
+    ltp: 1350.00,
+    pAndL: 250.00,
+    pAndLPercent: 0.37,
   },
   {
     id: 'intra3',
