@@ -1,3 +1,4 @@
+
 "use client";
 
 import { SubNav } from '@/components/dashboard/SubNav';
@@ -169,7 +170,7 @@ export function RealDashboard() {
       
       {activePrimaryItem === 'Portfolio' && activeSecondaryItem === 'Positions' && !isWeb3 && (
         <div className="space-y-8">
-          <CryptoFuturesSection positions={mockRealCryptoFutures} />
+          <CryptoFuturesSection positions={mockRealCryptoFutures} cashBalance={exchangeCashBalance} />
           <CryptoBasketSection />
           <NewsSection articles={newsForView} />
         </div>
