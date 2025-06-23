@@ -510,6 +510,7 @@ const StockOrderForm = ({ asset, assetType, productType, onProductTypeChange }: 
 };
 
 const CryptoOrderForm = ({ asset, assetType, productType, onProductTypeChange }: any) => {
+    const { toast } = useToast();
     const [quantity, setQuantity] = useState<number | string>('1');
     const [price, setPrice] = useState<number | string>(asset.price.toFixed(2));
     const [triggerPrice, setTriggerPrice] = useState<number | string>('0');
@@ -517,6 +518,7 @@ const CryptoOrderForm = ({ asset, assetType, productType, onProductTypeChange }:
     const [orderType, setOrderType] = useState('Limit');
     const [showMoreOptions, setShowMoreOptions] = useState(false);
     const [displayedMargin, setDisplayedMargin] = useState(0);
+    const [isAddToBasketDialogOpen, setIsAddToBasketDialogOpen] = useState(false);
 
     const [isStopLossEnabled, setIsStopLossEnabled] = useState(false);
     const [stopLossValue, setStopLossValue] = useState('');
@@ -556,6 +558,11 @@ const CryptoOrderForm = ({ asset, assetType, productType, onProductTypeChange }:
                 </TabsContent>
                 <TabsContent value="SIP" className="p-0 mt-0"><SipForm asset={asset} assetType="crypto" /></TabsContent>
             </Tabs>
+             <div className="p-4 border-t flex flex-col sm:flex-row gap-2">
+                <Button variant="outline" className="flex-1" onClick={() => setIsAddToBasketDialogOpen(true)}><ShoppingBasket className="mr-2 h-4 w-4" /> Add to Basket</Button>
+                <Button variant="outline" className="flex-1" onClick={() => toast({ title: "Add Alert (WIP)" })}><BellPlus className="mr-2 h-4 w-4" /> Add Alert</Button>
+            </div>
+             <AddToBasketDialog isOpen={isAddToBasketDialogOpen} onOpenChange={setIsAddToBasketDialogOpen} asset={asset} assetType={assetType} />
         </div>
     );
 };
