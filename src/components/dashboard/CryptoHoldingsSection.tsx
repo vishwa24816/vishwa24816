@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useMemo } from 'react';
@@ -27,7 +28,7 @@ import {
   ChartLegendContent,
   type ChartConfig,
 } from "@/components/ui/chart";
-import { Bar, BarChart, Pie, PieChart, ResponsiveContainer } from "recharts"
+import { Bar, BarChart, Pie, PieChart, ResponsiveContainer, YAxis, XAxis } from "recharts"
 
 interface CryptoHoldingsSectionProps {
   holdings: PortfolioHolding[];
@@ -121,12 +122,14 @@ export function CryptoHoldingsSection({
     const holdingsData = holdings.map(h => ({
       name: h.name,
       value: parseFloat(h.currentValue.toFixed(2)),
+      fill: `var(--color-${h.name})`
     }));
     
     if (cashBalance > 0) {
       holdingsData.push({
           name: 'Cash',
           value: parseFloat(cashBalance.toFixed(2)),
+          fill: `var(--color-Cash)`
       });
     }
 
