@@ -9,6 +9,7 @@ export const mockCryptoFuturesForWatchlist: Stock[] = [
     todayLow: 2521700.00, todayHigh: 2571841.75, fiftyTwoWeekLow: 1252500.00, fiftyTwoWeekHigh: 3757500.00,
     openPrice: 2534225.00, prevClosePrice: 2534225.00, 
     volume: 50000, lotSize: 1,
+    aboutCompany: 'Bitcoin is a decentralized digital currency, without a central bank or single administrator, that can be sent from user to user on the peer-to-peer bitcoin network without the need for intermediaries.'
   },
   { 
     id: 'ethinrperp', symbol: 'ETHINR.P', name: 'Ethereum Perpetual (INR)', 
@@ -17,6 +18,7 @@ export const mockCryptoFuturesForWatchlist: Stock[] = [
     todayLow: 150717.50, todayHigh: 153640.00, fiftyTwoWeekLow: 75150.00, fiftyTwoWeekHigh: 208750.00,
     openPrice: 152867.63, prevClosePrice: 152867.63, 
     volume: 150000, lotSize: 1,
+    aboutCompany: 'Ethereum is a decentralized, open-source blockchain with smart contract functionality. Ether (ETH) is the native cryptocurrency of the platform. Amongst cryptocurrencies, Ether is second only to Bitcoin in market capitalization.'
   },
   { 
     id: 'solinrperp', symbol: 'SOLINR.P', name: 'Solana Perpetual (INR)', 

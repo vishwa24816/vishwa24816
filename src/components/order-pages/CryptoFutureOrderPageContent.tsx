@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState } from 'react';
@@ -11,7 +12,7 @@ import { ArrowLeft, TrendingUp, TrendingDown, Info, Maximize2, BarChart2 } from 
 import { cn } from '@/lib/utils';
 import { NewsSection } from '@/components/dashboard/NewsSection';
 import { OrderPlacementForm } from '@/components/order/OrderPlacementForm';
-import { PerformanceBar } from './shared/OrderPageComponents';
+import { PerformanceBar, CollapsibleSection } from './shared/OrderPageComponents';
 
 interface CryptoFutureOrderPageContentProps {
   asset: Stock;
@@ -93,12 +94,22 @@ export function CryptoFutureOrderPageContent({ asset, assetSpecificNews }: Crypt
           
           <OrderPlacementForm asset={asset} productType={productTypeForOrder} onProductTypeChange={setProductTypeForOrder} assetType="crypto-future"/>
 
-          <Tabs defaultValue="technicals" className="w-full">
+          <Tabs defaultValue="overview" className="w-full">
             <TabsList className="w-full bg-muted/30 flex overflow-x-auto whitespace-nowrap no-scrollbar rounded-none p-0 h-auto border-b mb-1">
+              <TabsTrigger value="overview" className="flex-shrink-0 px-4 py-3 text-sm rounded-t-md rounded-b-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=inactive]:border-b-2 data-[state=inactive]:border-transparent data-[state=active]:shadow-none hover:text-primary">Overview</TabsTrigger>
               <TabsTrigger value="technicals" className="flex-shrink-0 px-4 py-3 text-sm rounded-t-md rounded-b-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=inactive]:border-b-2 data-[state=inactive]:border-transparent data-[state=active]:shadow-none hover:text-primary">Technicals</TabsTrigger>
               <TabsTrigger value="news" className="flex-shrink-0 px-4 py-3 text-sm rounded-t-md rounded-b-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=inactive]:border-b-2 data-[state=inactive]:border-transparent data-[state=active]:shadow-none hover:text-primary">News</TabsTrigger>
             </TabsList>
             
+            <TabsContent value="overview" className="mt-4 space-y-6">
+              {asset.aboutCompany && (
+                <CollapsibleSection title="About Project" icon={Info} defaultOpen>
+                  <p className="text-sm text-foreground leading-relaxed">{asset.aboutCompany}</p>
+                </CollapsibleSection>
+              )}
+              <div className="text-center py-4 text-muted-foreground">More overview details coming soon.</div>
+            </TabsContent>
+
             <TabsContent value="technicals" className="mt-4 space-y-6">
               <div>
                 <h3 className="text-md font-semibold flex items-center mb-2">

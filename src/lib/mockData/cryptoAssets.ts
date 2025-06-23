@@ -5,12 +5,14 @@ export const mockCryptoAssets: Stock[] = [
   { 
     id: 'btc', symbol: 'BTC', name: 'Bitcoin', price: 2400000.00, change: 40000.00, changePercent: 1.69, exchange: 'Crypto', 
     todayLow: 2350000.00, todayHigh: 2420000.00, fiftyTwoWeekLow: 1300000.00, fiftyTwoWeekHigh: 3500000.00,
-    openPrice: 2360000.00, prevClosePrice: 2360000.00, volume: 5000, marketCap: '46.5T'
+    openPrice: 2360000.00, prevClosePrice: 2360000.00, volume: 5000, marketCap: '46.5T',
+    aboutCompany: 'Bitcoin is a decentralized digital currency, without a central bank or single administrator, that can be sent from user to user on the peer-to-peer bitcoin network without the need for intermediaries.'
   },
   { 
     id: 'eth', symbol: 'ETH', name: 'Ethereum', price: 150000.00, change: -1640.00, changePercent: -1.12, exchange: 'Crypto',
     todayLow: 148000.00, todayHigh: 152000.00, fiftyTwoWeekLow: 80000.00, fiftyTwoWeekHigh: 250000.00,
-    openPrice: 151640.00, prevClosePrice: 151640.00, volume: 75000, marketCap: '18.1T'
+    openPrice: 151640.00, prevClosePrice: 151640.00, volume: 75000, marketCap: '18.1T',
+    aboutCompany: 'Ethereum is a decentralized, open-source blockchain with smart contract functionality. Ether (ETH) is the native cryptocurrency of the platform. Amongst cryptocurrencies, Ether is second only to Bitcoin in market capitalization.'
   },
   { 
     id: 'usdt', symbol: 'USDT', name: 'Tether', price: 83.15, change: 0.01, changePercent: 0.01, exchange: 'Crypto',

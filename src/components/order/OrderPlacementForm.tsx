@@ -283,24 +283,26 @@ const CommonOrderFields = ({
 
     return (
         <div className="space-y-4">
-             <RadioGroup value={productType} onValueChange={onProductTypeChange} className="flex flex-wrap gap-x-4 sm:gap-x-6 gap-y-2">
-                {(assetType === 'stock' || assetType === 'future' || assetType === 'crypto-future' || assetType === 'option') && (
+             {(assetType !== 'crypto' && assetType !== 'crypto-future') && (
+                <RadioGroup value={productType} onValueChange={onProductTypeChange} className="flex flex-wrap gap-x-4 sm:gap-x-6 gap-y-2">
+                    {(assetType === 'stock' || assetType === 'future' || assetType === 'option') && (
+                        <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="Intraday" id={`intraday-common`} />
+                            <Label htmlFor={`intraday-common`} className="font-normal">Intraday</Label>
+                        </div>
+                    )}
                     <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="Intraday" id={`intraday-common`} />
-                        <Label htmlFor={`intraday-common`} className="font-normal">Intraday</Label>
+                        <RadioGroupItem value="Longterm" id={`longterm-common`} />
+                        <Label htmlFor={`longterm-common`} className="font-normal">Longterm</Label>
                     </div>
-                )}
-                <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="Longterm" id={`longterm-common`} />
-                    <Label htmlFor={`longterm-common`} className="font-normal">Longterm</Label>
-                </div>
-                 {assetType === 'stock' && (
-                    <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="HODL" id="hodl-common" />
-                        <Label htmlFor="hodl-common" className="font-normal">HODL</Label>
-                    </div>
-                )}
-            </RadioGroup>
+                    {assetType === 'stock' && (
+                        <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="HODL" id="hodl-common" />
+                            <Label htmlFor="hodl-common" className="font-normal">HODL</Label>
+                        </div>
+                    )}
+                </RadioGroup>
+            )}
 
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 items-end">
                 <div>
