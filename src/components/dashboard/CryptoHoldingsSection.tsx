@@ -27,7 +27,7 @@ import {
   ChartLegendContent,
   type ChartConfig,
 } from "@/components/ui/chart";
-import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from "recharts";
+import { Bar, BarChart, Pie, PieChart, ResponsiveContainer } from "recharts"
 
 interface CryptoHoldingsSectionProps {
   holdings: PortfolioHolding[];
@@ -100,23 +100,38 @@ export function CryptoHoldingsSection({
   };
 
   const chartConfig = useMemo(() => {
-    return holdings.reduce((acc, holding, index) => {
-      const key = holding.name; // Use original name as key
+    const config = holdings.reduce((acc, holding, index) => {
+      const key = holding.name;
       acc[key] = {
         label: holding.name,
-        color: `hsl(var(--chart-${(index % 5) + 1}))`,
+        color: `hsl(var(--chart-${(index % 4) + 1}))`,
       };
       return acc;
     }, {} as ChartConfig);
-  }, [holdings]) satisfies ChartConfig;
+
+    config["Cash"] = {
+      label: "Cash",
+      color: `hsl(var(--chart-5))`,
+    }
+    
+    return config
+  }, [holdings])
 
   const chartData = useMemo(() => {
-    return holdings.map(h => ({
+    const holdingsData = holdings.map(h => ({
       name: h.name,
       value: parseFloat(h.currentValue.toFixed(2)),
-      fill: chartConfig[h.name]?.color,
     }));
-  }, [holdings, chartConfig]);
+    
+    if (cashBalance > 0) {
+      holdingsData.push({
+          name: 'Cash',
+          value: parseFloat(cashBalance.toFixed(2)),
+      });
+    }
+
+    return holdingsData;
+  }, [holdings, cashBalance]);
 
 
   if (cryptoHoldings.length === 0 && cashBalance === 0) {
@@ -214,7 +229,7 @@ export function CryptoHoldingsSection({
             </div>
           </CardHeader>
           <CardContent className="p-0">
-            {cryptoHoldings.length > 0 ? (
+            {chartData.length > 0 ? (
               <>
                 {viewType === 'table' && (
                   <Table>
@@ -281,22 +296,11 @@ export function CryptoHoldingsSection({
                           <YAxis dataKey="name" type="category" tickLine={false} axisLine={false} tickMargin={10} width={80} tick={{ fill: "hsl(var(--muted-foreground))" }} />
                           <XAxis type="number" hide />
                           <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
-                          <Bar dataKey="value" layout="vertical" radius={5}>
-                            {chartData.map((entry) => (
-                              <Cell key={`cell-${entry.name}`} fill={entry.fill} />
-                            ))}
-                          </Bar>
+                          <Bar dataKey="value" layout="vertical" radius={5} />
                         </BarChart>
                       </ResponsiveContainer>
                     </ChartContainer>
-                    <div className="flex items-center justify-center flex-wrap gap-x-4 gap-y-2 mt-4 text-xs">
-                        {chartData.map((entry) => (
-                            <div key={entry.name} className="flex items-center gap-1.5">
-                                <span className="h-2.5 w-2.5 shrink-0 rounded-[2px]" style={{ backgroundColor: entry.fill }} />
-                                <span>{entry.name}</span>
-                            </div>
-                        ))}
-                    </div>
+                     <ChartLegend content={<ChartLegendContent nameKey="name" />} className="flex-wrap" />
                   </div>
                 )}
                 {viewType === 'pie' && (
@@ -305,11 +309,7 @@ export function CryptoHoldingsSection({
                       <ResponsiveContainer>
                         <PieChart>
                           <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
-                          <Pie data={chartData} dataKey="value" nameKey="name" innerRadius={60} strokeWidth={5}>
-                            {chartData.map((entry) => (
-                              <Cell key={`cell-${entry.name}`} fill={entry.fill} />
-                            ))}
-                            </Pie>
+                          <Pie data={chartData} dataKey="value" nameKey="name" innerRadius={60} strokeWidth={5} />
                           <ChartLegend content={<ChartLegendContent nameKey="name" />} />
                         </PieChart>
                       </ResponsiveContainer>
