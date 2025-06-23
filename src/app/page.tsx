@@ -45,7 +45,7 @@ export default function DashboardRouterPage() {
           onSearchModeChange={setSearchMode}
           isRealMode={isRealMode}
         />
-        {isRealMode ? <RealDashboard /> : <DemoDashboard searchMode={searchMode} />}
+        {isRealMode ? <RealDashboard searchMode={searchMode} /> : <DemoDashboard searchMode={searchMode} />}
         <footer className="py-6 text-center text-sm text-muted-foreground border-t">
           © {new Date().getFullYear()} SIM - Stock Information &amp; Management. All rights reserved.
         </footer>

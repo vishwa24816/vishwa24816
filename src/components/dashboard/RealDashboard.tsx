@@ -1,11 +1,9 @@
-
 "use client";
 
 import { SubNav } from '@/components/dashboard/SubNav';
 import { NewsSection } from '@/components/dashboard/NewsSection';
 import { WatchlistSection } from '@/components/dashboard/WatchlistSection';
 import { CryptoHoldingsSection } from '@/components/dashboard/CryptoHoldingsSection';
-import { CryptoIntradayPositionsSection } from '@/components/dashboard/CryptoIntradayPositionsSection';
 import { CryptoFuturesSection } from '@/components/dashboard/CryptoFuturesSection';
 import { CryptoBasketSection } from '@/components/dashboard/CryptoBasketSection';
 
@@ -53,8 +51,11 @@ function getRelevantNewsForWatchlistItems(items: Stock[] | undefined, allNews: N
   return allNews.filter(news => Array.from(keywords).some(keyword => news.headline.toLowerCase().includes(keyword as string)));
 }
 
-export function RealDashboard() {
-  const [searchMode, setSearchMode] = useState<'Fiat' | 'Exchange' | 'Web3'>('Exchange');
+interface RealDashboardProps {
+  searchMode: 'Fiat' | 'Exchange' | 'Web3';
+}
+
+export function RealDashboard({ searchMode }: RealDashboardProps) {
   const { primaryNavItems, secondaryNavTriggerCategories } = useMemo(() => {
     if (searchMode === 'Web3') {
       const web3PrimaryNav = ['Portfolio', 'Gainers', 'Trending', 'Memes', 'DeFi', 'AI'];
