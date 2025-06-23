@@ -61,6 +61,15 @@ export interface Stock {
     changePercent: number;
     marketCap?: string;
   }>;
+  // Mutual Fund specific fields
+  riskLevel?: 'Low' | 'Moderately Low' | 'Moderate' | 'Moderately High' | 'High' | 'Very High';
+  category?: string;
+  annualisedReturn?: number;
+  navDate?: string;
+  rating?: string | number;
+  minSipAmount?: number;
+  fundSize?: string;
+  holdingsCount?: number;
 }
 
 export interface MarketIndex {

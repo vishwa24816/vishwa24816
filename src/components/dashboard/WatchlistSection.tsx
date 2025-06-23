@@ -105,6 +105,8 @@ const StockListItem: React.FC<StockListItemProps> = ({ stock, isPredefinedList, 
     itemLink = `/order/mutual-fund/${stock.symbol}`;
   } else if (stock.exchange === 'Crypto') {
     itemLink = `/order/crypto/${stock.symbol}`;
+  } else if (stock.exchange === 'Crypto MF') {
+    itemLink = `/order/crypto-mutual-fund/${stock.symbol}`;
   } else if (stock.exchange === 'NFO') {
     if (stock.symbol.includes('FUT') || stock.name.toLowerCase().includes('future')) {
       itemLink = `/order/future/${stock.symbol}`;
