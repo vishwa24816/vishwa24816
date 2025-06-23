@@ -8,16 +8,8 @@ import { useRouter } from 'next/navigation';
 import {
   Search,
   User,
-  Repeat,
-  ChevronDown,
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { cn } from '@/lib/utils';
 import { MarketOverview } from '@/components/dashboard/MarketOverview';
 import { mockMarketIndices, mockCryptoAssets } from '@/lib/mockData';
@@ -105,6 +97,7 @@ export function AppHeader({ searchMode, onSearchModeChange, isRealMode }: AppHea
             <div className="flex items-center space-x-2 sm:space-x-4">
                 <SideMenu />
             </div>
+            
             <form onSubmit={handleSearchSubmit} className="flex-1 items-center relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-accent pointer-events-none" />
                 <Input
@@ -116,34 +109,59 @@ export function AppHeader({ searchMode, onSearchModeChange, isRealMode }: AppHea
                     aria-label={searchAriaLabel}
                 />
             </form>
-            <div className="flex items-center space-x-1 sm:space-x-2">
-                {onSearchModeChange && (
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button
-                                variant="ghost"
-                                className="h-9 px-3 hover:bg-primary-foreground/20 text-accent shrink-0"
-                            >
-                                <Repeat className="h-4 w-4 mr-2" />
-                                {searchMode}
-                                <ChevronDown className="h-4 w-4 ml-1 opacity-75" />
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                            {isRealMode === false && (
-                                <DropdownMenuItem onClick={() => handleModeChange('Fiat')}>Fiat</DropdownMenuItem>
-                            )}
-                            <DropdownMenuItem onClick={() => handleModeChange('Exchange')}>Exchange</DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => handleModeChange('Web3')}>Web3</DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-                )}
+            
+            <div className="flex items-center">
                 <Button variant="ghost" size="icon" onClick={() => router.push('/profile')} className="hover:bg-primary-foreground/10 text-accent shrink-0">
                     <User className="h-5 w-5" />
                     <span className="sr-only">Open profile</span>
                 </Button>
             </div>
         </div>
+
+        {onSearchModeChange && (
+            <div className="flex items-center justify-center pb-2">
+                <div className="flex items-center rounded-md bg-primary-foreground/10 p-1 space-x-1">
+                    {isRealMode === false && (
+                        <Button 
+                            onClick={() => handleModeChange('Fiat')}
+                            variant="ghost"
+                            className={cn(
+                                "h-7 px-3 text-xs rounded-md border-none",
+                                searchMode === 'Fiat' 
+                                    ? 'bg-primary-foreground/20 text-white shadow-sm' 
+                                    : 'bg-transparent text-primary-foreground/70 hover:bg-primary-foreground/15'
+                            )}
+                        >
+                            Fiat
+                        </Button>
+                    )}
+                    <Button 
+                        onClick={() => handleModeChange('Exchange')}
+                        variant="ghost"
+                        className={cn(
+                            "h-7 px-3 text-xs rounded-md border-none",
+                            searchMode === 'Exchange' 
+                                ? 'bg-primary-foreground/20 text-white shadow-sm' 
+                                : 'bg-transparent text-primary-foreground/70 hover:bg-primary-foreground/15'
+                        )}
+                    >
+                        Exchange
+                    </Button>
+                    <Button 
+                        onClick={() => handleModeChange('Web3')}
+                        variant="ghost"
+                        className={cn(
+                            "h-7 px-3 text-xs rounded-md border-none",
+                            searchMode === 'Web3' 
+                                ? 'bg-primary-foreground/20 text-white shadow-sm' 
+                                : 'bg-transparent text-primary-foreground/70 hover:bg-primary-foreground/15'
+                        )}
+                    >
+                        Web3
+                    </Button>
+                </div>
+            </div>
+        )}
 
         <div className={cn(
             "transition-all duration-500 ease-in-out overflow-hidden",
