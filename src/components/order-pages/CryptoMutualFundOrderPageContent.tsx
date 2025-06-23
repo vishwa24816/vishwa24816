@@ -11,6 +11,7 @@ import { ArrowLeft, TrendingUp, ShoppingCart, Bookmark, Search, Info } from 'luc
 import { cn } from '@/lib/utils';
 import { MutualFundOrderForm } from '@/components/order/MutualFundOrderForm';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ReturnCalculator } from '@/components/order/ReturnCalculator';
 
 interface CryptoMutualFundOrderPageContentProps {
   asset: Stock;
@@ -139,7 +140,7 @@ export function CryptoMutualFundOrderPageContent({ asset, assetSpecificNews }: C
                 )}
             </TabsContent>
             <TabsContent value="calculator" className="mt-4">
-              <div className="text-center text-muted-foreground py-4">Return Calculator component coming soon.</div>
+              <ReturnCalculator />
             </TabsContent>
             <TabsContent value="holdings" className="mt-4">
               <div className="text-center text-muted-foreground py-4">Holdings details for {asset.name} ({asset.holdingsCount || 0} holdings) will be displayed here.</div>
