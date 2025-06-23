@@ -1,4 +1,3 @@
-
 "use client";
 
 import React from 'react';
@@ -55,14 +54,27 @@ const AlertItem: React.FC<AlertItemProps> = ({ alert }) => {
   );
 };
 
-export function AlertsDisplay() {
-  const alerts = mockPriceAlerts;
+interface AlertsDisplayProps {
+  isRealMode?: boolean;
+}
+
+export function AlertsDisplay({ isRealMode = false }: AlertsDisplayProps) {
+  const cryptoAssetTypes = ['Crypto', 'Crypto Future'];
+  
+  const alerts = React.useMemo(() => {
+    if (isRealMode) {
+      return mockPriceAlerts.filter(alert => cryptoAssetTypes.includes(alert.assetType));
+    }
+    return mockPriceAlerts.filter(alert => !cryptoAssetTypes.includes(alert.assetType));
+  }, [isRealMode]);
 
   if (alerts.length === 0) {
     return (
       <div className="text-center py-10">
         <BellRing className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-        <p className="text-muted-foreground">No price alerts set.</p>
+        <p className="text-muted-foreground">
+          {isRealMode ? "No crypto price alerts set." : "No price alerts set for stocks or F&O."}
+        </p>
       </div>
     );
   }
@@ -75,4 +87,3 @@ export function AlertsDisplay() {
     </ScrollArea>
   );
 }
-

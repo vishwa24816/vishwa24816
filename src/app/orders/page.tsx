@@ -119,7 +119,7 @@ export default function OrdersPage() {
                 <SipsDisplay isRealMode={isRealMode} />
               </TabsContent>
               <TabsContent value="alerts" className="flex-grow flex flex-col mt-0 data-[state=inactive]:hidden">
-                <AlertsDisplay />
+                <AlertsDisplay isRealMode={isRealMode} />
               </TabsContent>
             </div>
           </Tabs>
