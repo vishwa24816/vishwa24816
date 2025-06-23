@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect, useMemo } from 'react';
@@ -120,13 +121,13 @@ export function AppHeader({ searchMode, onSearchModeChange, isRealMode }: AppHea
 
         {onSearchModeChange && (
             <div className="flex items-center justify-center pb-2">
-                <div className="flex items-center rounded-md bg-primary-foreground/10 p-1 space-x-1">
+                <div className="flex items-center rounded-md bg-primary-foreground/10 p-1 space-x-1 w-full">
                     {isRealMode === false && (
                         <Button 
                             onClick={() => handleModeChange('Fiat')}
                             variant="ghost"
                             className={cn(
-                                "h-7 px-3 text-xs rounded-md border-none",
+                                "h-7 px-3 text-xs rounded-md border-none flex-1",
                                 searchMode === 'Fiat' 
                                     ? 'bg-primary-foreground/20 text-white shadow-sm' 
                                     : 'bg-transparent text-primary-foreground/70 hover:bg-primary-foreground/15'
@@ -139,7 +140,7 @@ export function AppHeader({ searchMode, onSearchModeChange, isRealMode }: AppHea
                         onClick={() => handleModeChange('Exchange')}
                         variant="ghost"
                         className={cn(
-                            "h-7 px-3 text-xs rounded-md border-none",
+                            "h-7 px-3 text-xs rounded-md border-none flex-1",
                             searchMode === 'Exchange' 
                                 ? 'bg-primary-foreground/20 text-white shadow-sm' 
                                 : 'bg-transparent text-primary-foreground/70 hover:bg-primary-foreground/15'
@@ -151,7 +152,7 @@ export function AppHeader({ searchMode, onSearchModeChange, isRealMode }: AppHea
                         onClick={() => handleModeChange('Web3')}
                         variant="ghost"
                         className={cn(
-                            "h-7 px-3 text-xs rounded-md border-none",
+                            "h-7 px-3 text-xs rounded-md border-none flex-1",
                             searchMode === 'Web3' 
                                 ? 'bg-primary-foreground/20 text-white shadow-sm' 
                                 : 'bg-transparent text-primary-foreground/70 hover:bg-primary-foreground/15'
