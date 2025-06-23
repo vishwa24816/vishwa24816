@@ -70,6 +70,14 @@ export interface Stock {
   minSipAmount?: number;
   fundSize?: string;
   holdingsCount?: number;
+  topHoldings?: Array<{ name: string; percentage: number }>;
+  marketTrends?: {
+    shortTerm: 'Positive' | 'Negative' | 'Neutral';
+    longTerm: 'Positive' | 'Negative' | 'Neutral';
+    analystRating?: string;
+  };
+  pros?: string[];
+  cons?: string[];
 }
 
 export interface MarketIndex {

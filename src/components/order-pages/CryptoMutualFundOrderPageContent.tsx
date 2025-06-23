@@ -7,11 +7,12 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import type { Stock, NewsArticle } from '@/types';
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, TrendingUp, ShoppingCart, Bookmark, Search, Info } from 'lucide-react';
+import { ArrowLeft, TrendingUp, ShoppingCart, Bookmark, Search, Info, CheckCircle2, XCircle, TrendingDown, Star, WalletCards } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { MutualFundOrderForm } from '@/components/order/MutualFundOrderForm';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ReturnCalculator } from '@/components/order/ReturnCalculator';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 
 interface CryptoMutualFundOrderPageContentProps {
   asset: Stock;
@@ -140,13 +141,87 @@ export function CryptoMutualFundOrderPageContent({ asset, assetSpecificNews }: C
                 )}
             </TabsContent>
             <TabsContent value="calculator" className="mt-4">
-              <ReturnCalculator />
+              {asset.annualisedReturn ? (
+                  <ReturnCalculator defaultReturnRate={asset.annualisedReturn} />
+              ) : (
+                  <div className="text-center text-muted-foreground py-4">Return rate not available for this fund.</div>
+              )}
             </TabsContent>
             <TabsContent value="holdings" className="mt-4">
-              <div className="text-center text-muted-foreground py-4">Holdings details for {asset.name} ({asset.holdingsCount || 0} holdings) will be displayed here.</div>
+              {asset.topHoldings && asset.topHoldings.length > 0 ? (
+                <div className="space-y-3">
+                  <h3 className="text-lg font-semibold flex items-center">
+                    <WalletCards className="h-5 w-5 mr-2 text-primary"/>
+                    Top Holdings ({asset.holdingsCount || asset.topHoldings.length})
+                  </h3>
+                  <Card>
+                    <CardContent className="p-0">
+                      <ul className="divide-y">
+                        {asset.topHoldings.map((holding, index) => (
+                          <li key={index} className="flex justify-between items-center text-sm p-3">
+                            <span className="font-medium text-foreground">{holding.name}</span>
+                            <span className="text-muted-foreground">{holding.percentage.toFixed(2)}%</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </CardContent>
+                  </Card>
+                </div>
+              ) : (
+                <div className="text-center text-muted-foreground py-4">Top holdings information is not available for this fund.</div>
+              )}
             </TabsContent>
-            <TabsContent value="rankings" className="mt-4">
-               <div className="text-center text-muted-foreground py-4">Returns & Rankings details component coming soon.</div>
+            <TabsContent value="rankings" className="mt-4 space-y-6">
+               {asset.marketTrends && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg flex items-center"><TrendingUp className="h-5 w-5 mr-2 text-primary"/>Market Trends & Rating</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Short-term Trend</span>
+                      <span className={cn("font-semibold", asset.marketTrends.shortTerm === 'Positive' ? 'text-green-600' : asset.marketTrends.shortTerm === 'Negative' ? 'text-red-600' : 'text-yellow-600')}>{asset.marketTrends.shortTerm}</span>
+                    </div>
+                     <div className="flex justify-between">
+                      <span className="text-muted-foreground">Long-term Trend</span>
+                      <span className={cn("font-semibold", asset.marketTrends.longTerm === 'Positive' ? 'text-green-600' : asset.marketTrends.longTerm === 'Negative' ? 'text-red-600' : 'text-yellow-600')}>{asset.marketTrends.longTerm}</span>
+                    </div>
+                    {asset.marketTrends.analystRating && (
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Analyst Rating</span>
+                        <span className="font-semibold text-primary flex items-center gap-1"><Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />{asset.marketTrends.analystRating}</span>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+               )}
+               {asset.pros && asset.pros.length > 0 && (
+                <Card>
+                   <CardHeader>
+                    <CardTitle className="text-lg flex items-center text-green-600"><CheckCircle2 className="h-5 w-5 mr-2"/>Pros</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ul className="space-y-2 text-sm text-foreground">
+                      {asset.pros.map((pro, index) => <li key={`pro-${index}`} className="flex items-start"><CheckCircle2 className="h-4 w-4 mr-2 mt-1 text-green-600 shrink-0"/><span>{pro}</span></li>)}
+                    </ul>
+                  </CardContent>
+                </Card>
+               )}
+                {asset.cons && asset.cons.length > 0 && (
+                <Card>
+                   <CardHeader>
+                    <CardTitle className="text-lg flex items-center text-red-600"><XCircle className="h-5 w-5 mr-2"/>Cons</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ul className="space-y-2 text-sm text-foreground">
+                      {asset.cons.map((con, index) => <li key={`con-${index}`} className="flex items-start"><XCircle className="h-4 w-4 mr-2 mt-1 text-red-600 shrink-0"/><span>{con}</span></li>)}
+                    </ul>
+                  </CardContent>
+                </Card>
+               )}
+              {(!asset.marketTrends && !asset.pros && !asset.cons) && (
+                  <div className="text-center text-muted-foreground py-4">Ranking and analysis information is not available.</div>
+              )}
             </TabsContent>
           </Tabs>
 

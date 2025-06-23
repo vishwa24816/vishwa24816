@@ -16,7 +16,11 @@ interface CalculationResult {
   totalValue: number;
 }
 
-export function ReturnCalculator() {
+interface ReturnCalculatorProps {
+  defaultReturnRate: number;
+}
+
+export function ReturnCalculator({ defaultReturnRate }: ReturnCalculatorProps) {
   const [investmentMode, setInvestmentMode] = useState<'lumpsum' | 'sip'>('lumpsum');
 
   // Lumpsum state
@@ -26,13 +30,12 @@ export function ReturnCalculator() {
   const [sipAmount, setSipAmount] = useState('10000');
 
   // Common state
-  const [expectedReturnRate, setExpectedReturnRate] = useState(12);
   const [timePeriod, setTimePeriod] = useState(10);
   
   const [result, setResult] = useState<CalculationResult | null>(null);
 
   const handleCalculate = () => {
-    const rate = expectedReturnRate / 100;
+    const rate = defaultReturnRate / 100;
     const years = timePeriod;
     
     let investedAmount = 0;
@@ -97,10 +100,10 @@ export function ReturnCalculator() {
         <div className="space-y-6 pt-6">
             <div className="space-y-2">
               <div className="flex justify-between">
-                <Label htmlFor="return-rate">Expected return rate (p.a.)</Label>
-                <span className="font-semibold">{expectedReturnRate}%</span>
+                <Label>Annual Return Rate (p.a.)</Label>
+                <span className="font-semibold text-primary">{defaultReturnRate.toFixed(2)}%</span>
               </div>
-              <Slider id="return-rate" min={1} max={30} step={1} value={[expectedReturnRate]} onValueChange={([val]) => setExpectedReturnRate(val)} />
+              <p className="text-xs text-muted-foreground">Based on the fund's historical performance. Not guaranteed.</p>
             </div>
             
             <div className="space-y-2">
