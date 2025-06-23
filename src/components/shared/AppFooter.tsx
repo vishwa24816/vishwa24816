@@ -14,7 +14,7 @@ interface NavItemProps {
 
 const NavItem: React.FC<NavItemProps> = ({ href, icon: Icon, label }) => {
   const pathname = usePathname();
-  const isActive = pathname === href;
+  const isActive = pathname === href || (href === "/screener" && pathname.startsWith("/screener"));
 
   const isPlaceholderAction = href.startsWith("#"); 
 
@@ -46,7 +46,7 @@ export function AppFooter() {
     { href: "/", icon: Home, label: "Home" },
     { href: "/orders", icon: ClipboardList, label: "Orders" },
     { href: "/simbot", icon: Bot, label: "Simbot" },
-    { href: "#screener", icon: Filter, label: "Screener" },
+    { href: "/screener", icon: Filter, label: "Screener" },
     { href: "/community", icon: Users, label: "Community" }, 
   ];
 
