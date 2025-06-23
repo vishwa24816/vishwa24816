@@ -45,7 +45,7 @@ export function CryptoMutualFundOrderPageContent({ asset, assetSpecificNews }: C
         </div>
       </header>
 
-      <main className="flex-grow overflow-y-auto pb-20">
+      <main className="flex-grow overflow-y-auto pb-8">
         <div className="w-full px-4 py-4 space-y-4">
           <div className="flex items-center space-x-3 mb-2">
               <div className="w-12 h-12 bg-muted rounded-lg flex items-center justify-center">
@@ -95,6 +95,10 @@ export function CryptoMutualFundOrderPageContent({ asset, assetSpecificNews }: C
             ))}
           </div>
 
+          <div className="py-4">
+             <MutualFundOrderForm asset={asset} assetType="mutual-fund" />
+          </div>
+
           <div className="grid grid-cols-2 gap-y-4 gap-x-2 text-sm py-4">
               <div>
                   <p className="text-muted-foreground">NAV: {asset.navDate || "N/A"}</p>
@@ -126,10 +130,6 @@ export function CryptoMutualFundOrderPageContent({ asset, assetSpecificNews }: C
 
         </div>
       </main>
-      
-      <div className="fixed bottom-0 left-0 right-0 bg-background border-t border-border p-3 shadow-lg z-20 rounded-t-xl">
-        <MutualFundOrderForm asset={asset} assetType="mutual-fund" />
-      </div>
     </div>
   );
 }
