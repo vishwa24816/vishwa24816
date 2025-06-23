@@ -28,7 +28,7 @@ import {
   ChartLegendContent,
   type ChartConfig,
 } from "@/components/ui/chart";
-import { Bar, BarChart, Pie, PieChart, ResponsiveContainer, YAxis, XAxis } from "recharts"
+import { Bar, BarChart, Pie, PieChart, ResponsiveContainer, YAxis, XAxis, Cell } from "recharts"
 
 interface CryptoHoldingsSectionProps {
   holdings: PortfolioHolding[];
@@ -300,7 +300,7 @@ export function CryptoHoldingsSection({
                           <XAxis type="number" hide />
                           <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
                           <Bar dataKey="value" layout="vertical" radius={5} />
-                          <ChartLegend content={<ChartLegendContent nameKey="name" className="flex-wrap" />} />
+                          <ChartLegend content={<ChartLegendContent nameKey="name" />} />
                         </BarChart>
                       </ResponsiveContainer>
                     </ChartContainer>
@@ -312,7 +312,11 @@ export function CryptoHoldingsSection({
                       <ResponsiveContainer>
                         <PieChart>
                           <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
-                          <Pie data={chartData} dataKey="value" nameKey="name" innerRadius={60} strokeWidth={5} />
+                          <Pie data={chartData} dataKey="value" nameKey="name" innerRadius={60} strokeWidth={5}>
+                            {chartData.map((entry) => (
+                                <Cell key={`cell-${entry.name}`} fill={entry.fill} />
+                            ))}
+                          </Pie>
                           <ChartLegend content={<ChartLegendContent nameKey="name" />} />
                         </PieChart>
                       </ResponsiveContainer>
