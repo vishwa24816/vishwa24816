@@ -24,9 +24,13 @@ const communityTabs = [
 export default function CommunityPage() {
   const { user } = useAuth();
   const isRealMode = user?.id === 'REAL456';
+  
   const [searchMode, setSearchMode] = useState<'Fiat' | 'Exchange' | 'Web3'>(isRealMode ? 'Exchange' : 'Fiat');
   const [activeTab, setActiveTab] = useState("hot");
-  // const [posts, setPosts] = useState<CommunityPost[]>(mockCommunityPosts); // Initialize with mock posts
+
+  if (isRealMode && searchMode === 'Fiat') {
+    setSearchMode('Exchange');
+  }
 
   const displayedPosts = useMemo(() => {
     if (activeTab === 'research') {

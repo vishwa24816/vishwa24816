@@ -10,6 +10,7 @@ import { useState } from 'react';
 
 export default function DashboardRouterPage() {
   const { user, loading } = useAuth();
+  
   const [searchMode, setSearchMode] = useState<'Fiat' | 'Exchange' | 'Web3'>('Exchange');
   
   if (loading || !user) {
@@ -31,6 +32,10 @@ export default function DashboardRouterPage() {
   }
 
   const isRealMode = user.id === 'REAL456';
+  
+  if (isRealMode && searchMode === 'Fiat') {
+    setSearchMode('Exchange');
+  }
 
   return (
     <ProtectedRoute>

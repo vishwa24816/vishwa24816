@@ -24,9 +24,9 @@ import { mockMarketIndices, mockCryptoAssets } from '@/lib/mockData';
 import { SideMenu } from './SideMenu';
 
 interface AppHeaderProps {
-  searchMode: 'Fiat' | 'Exchange' | 'Web3';
-  onSearchModeChange: (mode: 'Fiat' | 'Exchange' | 'Web3') => void;
-  isRealMode: boolean;
+  searchMode?: 'Fiat' | 'Exchange' | 'Web3';
+  onSearchModeChange?: (mode: 'Fiat' | 'Exchange' | 'Web3') => void;
+  isRealMode?: boolean;
 }
 
 export function AppHeader({ searchMode, onSearchModeChange, isRealMode }: AppHeaderProps) {
@@ -49,12 +49,13 @@ export function AppHeader({ searchMode, onSearchModeChange, isRealMode }: AppHea
   };
 
   const handleModeChange = (mode: 'Fiat' | 'Exchange' | 'Web3') => {
-    if (mode === searchMode) return;
-    onSearchModeChange(mode);
-    toast({
-        title: 'Mode Switched',
-        description: `Now in ${mode} mode.`,
-    });
+    if (onSearchModeChange && mode !== searchMode) {
+        onSearchModeChange(mode);
+        toast({
+            title: 'Mode Switched',
+            description: `Now in ${mode} mode.`,
+        });
+    }
   };
   
   const getPlaceholderText = () => {
@@ -116,25 +117,27 @@ export function AppHeader({ searchMode, onSearchModeChange, isRealMode }: AppHea
                 />
             </form>
             <div className="flex items-center space-x-1 sm:space-x-2">
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button
-                            variant="ghost"
-                            className="h-9 px-3 hover:bg-primary-foreground/20 text-accent shrink-0"
-                        >
-                            <Repeat className="h-4 w-4 mr-2" />
-                            {searchMode}
-                            <ChevronDown className="h-4 w-4 ml-1 opacity-75" />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        {!isRealMode && (
-                            <DropdownMenuItem onClick={() => handleModeChange('Fiat')}>Fiat</DropdownMenuItem>
-                        )}
-                        <DropdownMenuItem onClick={() => handleModeChange('Exchange')}>Exchange</DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleModeChange('Web3')}>Web3</DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
+                {onSearchModeChange && (
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button
+                                variant="ghost"
+                                className="h-9 px-3 hover:bg-primary-foreground/20 text-accent shrink-0"
+                            >
+                                <Repeat className="h-4 w-4 mr-2" />
+                                {searchMode}
+                                <ChevronDown className="h-4 w-4 ml-1 opacity-75" />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            {isRealMode === false && (
+                                <DropdownMenuItem onClick={() => handleModeChange('Fiat')}>Fiat</DropdownMenuItem>
+                            )}
+                            <DropdownMenuItem onClick={() => handleModeChange('Exchange')}>Exchange</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleModeChange('Web3')}>Web3</DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                )}
                 <Button variant="ghost" size="icon" onClick={() => router.push('/profile')} className="hover:bg-primary-foreground/10 text-accent shrink-0">
                     <User className="h-5 w-5" />
                     <span className="sr-only">Open profile</span>

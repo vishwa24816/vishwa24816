@@ -35,8 +35,12 @@ const realOrderTabs = [
 export default function OrdersPage() {
   const { user } = useAuth();
   const isRealMode = user?.id === 'REAL456';
+  
   const [searchMode, setSearchMode] = useState<'Fiat' | 'Exchange' | 'Web3'>(isRealMode ? 'Exchange' : 'Fiat');
 
+  if (isRealMode && searchMode === 'Fiat') {
+    setSearchMode('Exchange');
+  }
 
   const orderTabs = isRealMode ? realOrderTabs : demoOrderTabs;
   const [activeTab, setActiveTab] = useState("executed");

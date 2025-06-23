@@ -21,7 +21,12 @@ export default function SimbotPage() {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   const isRealMode = authUser?.id === 'REAL456';
+  
   const [searchMode, setSearchMode] = useState<'Fiat' | 'Exchange' | 'Web3'>(isRealMode ? 'Exchange' : 'Fiat');
+  
+  if (isRealMode && searchMode === 'Fiat') {
+    setSearchMode('Exchange');
+  }
 
   const scrollToBottom = () => {
     if (scrollAreaRef.current) {

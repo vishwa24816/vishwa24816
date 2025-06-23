@@ -6,6 +6,7 @@ import { WatchlistSection } from '@/components/dashboard/WatchlistSection';
 import { CryptoHoldingsSection } from '@/components/dashboard/CryptoHoldingsSection';
 import { CryptoIntradayPositionsSection } from '@/components/dashboard/CryptoIntradayPositionsSection';
 import { CryptoFuturesSection } from '@/components/dashboard/CryptoFuturesSection';
+import { CryptoBasketSection } from '@/components/dashboard/CryptoBasketSection';
 
 import React, { useState, useMemo } from 'react';
 import type { PortfolioHolding, NewsArticle, IntradayPosition, FoPosition, CryptoFuturePosition, Stock } from '@/types';
@@ -34,20 +35,15 @@ function getRelevantNewsForHoldings(holdings: PortfolioHolding[], allNews: NewsA
 }
 
 function getRelevantNewsForPositions(
-  intraday: IntradayPosition[],
   cryptoFutures: CryptoFuturePosition[],
   allNews: NewsArticle[]
 ): NewsArticle[] {
-  if ((!intraday.length && !cryptoFutures.length) || !allNews.length) return [];
+  if (!cryptoFutures.length || !allNews.length) return [];
   const keywords = new Set<string>();
-  intraday.forEach(p => {
-    keywords.add(p.name.toLowerCase());
-    if (p.symbol) keywords.add(p.symbol.toLowerCase());
-  });
   cryptoFutures.forEach(p => {
     keywords.add(p.symbol.replace(/USDT|INR/g, "").toLowerCase());
   });
-  return allNews.filter(news => Array.from(keywords).some(keyword => news.headline.toLowerCase().includes(keyword)));
+  return allNews.filter(news => Array.from(keywords).some(keyword => news.headline.toLowerCase().includes(keyword as string)));
 }
 
 function getRelevantNewsForWatchlistItems(items: Stock[] | undefined, allNews: NewsArticle[]): NewsArticle[] {
@@ -56,11 +52,8 @@ function getRelevantNewsForWatchlistItems(items: Stock[] | undefined, allNews: N
   return allNews.filter(news => Array.from(keywords).some(keyword => news.headline.toLowerCase().includes(keyword as string)));
 }
 
-interface RealDashboardProps {
-  searchMode: 'Fiat' | 'Exchange' | 'Web3';
-}
-
-export function RealDashboard({ searchMode }: RealDashboardProps) {
+export function RealDashboard() {
+  const [searchMode, setSearchMode] = useState<'Fiat' | 'Exchange' | 'Web3'>('Exchange');
   const { primaryNavItems, secondaryNavTriggerCategories } = useMemo(() => {
     if (searchMode === 'Web3') {
       const web3PrimaryNav = ['Portfolio', 'Gainers', 'Trending', 'Memes', 'DeFi', 'AI'];
@@ -124,7 +117,7 @@ export function RealDashboard({ searchMode }: RealDashboardProps) {
           const holdings = isWeb3 ? mockWeb3Holdings : exchangeHoldings;
           newsForView = getRelevantNewsForHoldings(holdings, mockNewsArticles);
       } else if (activeSecondaryItem === "Positions") {
-          newsForView = getRelevantNewsForPositions(mockRealCryptoIntradayPositions, mockRealCryptoFutures, mockNewsArticles);
+          newsForView = getRelevantNewsForPositions(mockRealCryptoFutures, mockNewsArticles);
       } else if (activeSecondaryItem === "Portfolio Watchlist") {
           itemsForWatchlist = isWeb3 ? web3PortfolioWatchlistItems : mockCryptoAssets.slice(0, 5);
           newsForView = getRelevantNewsForWatchlistItems(itemsForWatchlist, mockNewsArticles);
@@ -176,8 +169,8 @@ export function RealDashboard({ searchMode }: RealDashboardProps) {
       
       {activePrimaryItem === 'Portfolio' && activeSecondaryItem === 'Positions' && !isWeb3 && (
         <div className="space-y-8">
-          <CryptoIntradayPositionsSection positions={mockRealCryptoIntradayPositions} />
           <CryptoFuturesSection positions={mockRealCryptoFutures} />
+          <CryptoBasketSection />
           <NewsSection articles={newsForView} />
         </div>
       )}
