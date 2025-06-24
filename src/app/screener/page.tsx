@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Loader2, Zap, TrendingUp, Rocket, Star, PiggyBank, ListTodo, CandlestickChart, Newspaper, Briefcase, Bell } from 'lucide-react';
+import { Loader2, Zap, TrendingUp, Rocket, Star, PiggyBank, CandlestickChart, Bell } from 'lucide-react';
 import { runScreenerAction } from '@/app/actions';
 import type { Stock } from '@/types';
 import { useToast } from '@/hooks/use-toast';
@@ -54,27 +54,9 @@ const fiatScreenerItems = [
     hasDot: true,
   },
   {
-    title: 'Watchlist',
-    icon: ListTodo,
-    content: 'Manage and view your watchlists.',
-    hasDot: false,
-  },
-  {
     title: 'Futures and Options',
     icon: CandlestickChart,
     content: 'Access F&O data, option chain, and analysis tools.',
-    hasDot: false,
-  },
-  {
-    title: 'News',
-    icon: Newspaper,
-    content: 'Latest market news and headlines.',
-    hasDot: false,
-  },
-  {
-    title: 'Portfolio',
-    icon: Briefcase,
-    content: 'View your portfolio holdings and performance.',
     hasDot: false,
   },
   {
