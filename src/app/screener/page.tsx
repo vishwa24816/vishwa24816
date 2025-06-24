@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState } from 'react';
@@ -28,11 +27,22 @@ const suggestionQueries = [
     "FMCG stocks with low debt",
 ];
 
+const marketSubItems = [
+  'Stocks',
+  'Sectors',
+  'Events Calendar',
+  'FII & DII',
+  'Insider Trades',
+  'Bulk Block Deals',
+  'Insights',
+  'Earnings Calls',
+];
+
 const fiatScreenerItems = [
   {
     title: 'Markets',
     icon: TrendingUp,
-    content: 'Market overview, indices, and performance.',
+    content: marketSubItems,
     hasDot: false,
   },
   {
@@ -79,7 +89,13 @@ export default function ScreenerPage() {
     const [error, setError] = useState('');
 
     const isRealMode = user?.id === 'REAL456';
-    const [searchMode, setSearchMode] = useState<'Fiat' | 'Exchange' | 'Web3'>('Fiat');
+    const [searchMode, setSearchMode] = useState<'Fiat' | 'Exchange' | 'Web3'>(isRealMode ? 'Exchange' : 'Fiat');
+    
+    React.useEffect(() => {
+        if (!isRealMode && searchMode !== 'Fiat') {
+            setSearchMode('Fiat');
+        }
+    }, [isRealMode]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -184,8 +200,29 @@ export default function ScreenerPage() {
                                                     {item.hasDot && <div className="h-2.5 w-2.5 rounded-full bg-green-500" />}
                                                 </div>
                                             </AccordionTrigger>
-                                            <AccordionContent className="px-2 pl-12 text-muted-foreground">
-                                                {item.content}
+                                            <AccordionContent className="px-4 pb-2 pt-0 text-muted-foreground">
+                                                {Array.isArray(item.content) ? (
+                                                    <ul className="space-y-1">
+                                                        {item.content.map((subItem) => (
+                                                            <li key={subItem}>
+                                                            <Button
+                                                                variant="ghost"
+                                                                className="w-full justify-start p-2 h-auto font-normal text-muted-foreground hover:text-primary text-sm"
+                                                                onClick={() =>
+                                                                toast({
+                                                                    title: `${subItem}`,
+                                                                    description: 'This feature is coming soon!',
+                                                                })
+                                                                }
+                                                            >
+                                                                {subItem}
+                                                            </Button>
+                                                            </li>
+                                                        ))}
+                                                    </ul>
+                                                ) : (
+                                                    item.content
+                                                )}
                                             </AccordionContent>
                                         </AccordionItem>
                                     ))}
