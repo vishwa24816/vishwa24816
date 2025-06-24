@@ -176,7 +176,7 @@ export default function ScreenerPage() {
     
     React.useEffect(() => {
         if (isRealMode && searchMode === 'Fiat') {
-            setSearchMode('Exchange');
+            // No longer forcing mode change, allows all 3 modes
         }
     }, [isRealMode, searchMode]);
 
@@ -273,7 +273,7 @@ export default function ScreenerPage() {
                     {searchMode === 'Fiat' && (
                          <Card>
                             <CardContent className="p-2">
-                                <Accordion type="single" collapsible className="w-full" defaultValue="item-1">
+                                <Accordion type="single" collapsible className="w-full">
                                     {fiatScreenerItems.map((item, index) => (
                                         <AccordionItem value={`item-${index}`} key={item.title}>
                                             <AccordionTrigger className="text-base font-medium hover:no-underline px-2">

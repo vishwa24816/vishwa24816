@@ -115,7 +115,7 @@ const stockScreenerFlow = ai.defineFlow(
       }
     });
 
-    return llmResponse.output()!;
+    return llmResponse.output!;
   }
 );
 
