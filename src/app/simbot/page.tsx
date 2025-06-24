@@ -23,8 +23,6 @@ export default function SimbotPage() {
 
   const isRealMode = authUser?.id === 'REAL456';
   
-  const [searchMode, setSearchMode] = useState<'Fiat' | 'Exchange' | 'Web3'>(isRealMode ? 'Exchange' : 'Fiat');
-  
   const scrollToBottom = () => {
     if (scrollAreaRef.current) {
       const scrollableViewport = scrollAreaRef.current.querySelector('[data-radix-scroll-area-viewport]');
@@ -90,8 +88,6 @@ export default function SimbotPage() {
     <ProtectedRoute>
       <div className="flex flex-col h-full">
         <AppHeader
-          searchMode={searchMode}
-          onSearchModeChange={setSearchMode}
           isRealMode={isRealMode}
         />
         
