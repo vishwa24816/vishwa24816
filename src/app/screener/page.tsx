@@ -268,12 +268,6 @@ export default function ScreenerPage() {
     const isRealMode = user?.id === 'REAL456';
     const [searchMode, setSearchMode] = useState<'Fiat' | 'Exchange' | 'Web3'>(isRealMode ? 'Exchange' : 'Fiat');
     
-    React.useEffect(() => {
-        if (isRealMode && searchMode === 'Fiat') {
-            setSearchMode('Exchange');
-        }
-    }, [isRealMode, searchMode]);
-
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!query.trim()) {
@@ -469,5 +463,7 @@ export default function ScreenerPage() {
         </ProtectedRoute>
     );
 }
+
+    
 
     
