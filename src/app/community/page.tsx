@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { AppHeader } from '@/components/shared/AppHeader';
 import { ProtectedRoute } from '@/components/shared/ProtectedRoute';
 import { PostCard } from '@/components/community/PostCard';
@@ -14,20 +14,32 @@ import { MessageSquarePlus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
 
-const communityTabs = [
-  { value: "hot", label: "Hot" },
-  { value: "new", label: "New" },
-  { value: "top", label: "Top" },
-  { value: "foryou", label: "For You" },
-  { value: "research", label: "Research" },
-];
-
 export default function CommunityPage() {
   const { user } = useAuth();
   const isRealMode = user?.id === 'REAL456';
   
   const [searchMode, setSearchMode] = useState<'Fiat' | 'Exchange' | 'Web3'>(isRealMode ? 'Exchange' : 'Fiat');
   const [activeTab, setActiveTab] = useState("hot");
+
+  const displayedTabs = useMemo(() => {
+    const allTabs = [
+      { value: "hot", label: "Hot" },
+      { value: "new", label: "New" },
+      { value: "top", label: "Top" },
+      { value: "foryou", label: "For You" },
+      { value: "research", label: "Research" },
+    ];
+    if (searchMode === 'Fiat') {
+      return allTabs;
+    }
+    return allTabs.filter(tab => tab.value !== 'research');
+  }, [searchMode]);
+
+  useEffect(() => {
+    if (searchMode !== 'Fiat' && activeTab === 'research') {
+      setActiveTab('hot');
+    }
+  }, [searchMode, activeTab]);
 
   const displayedPosts = useMemo(() => {
     if (activeTab === 'research') {
@@ -49,13 +61,16 @@ export default function CommunityPage() {
         <main className="flex-grow flex flex-col overflow-hidden">
           <Tabs defaultValue="hot" value={activeTab} onValueChange={setActiveTab} className="flex flex-col flex-grow overflow-hidden">
             <div className="border-b bg-background">
-              <TabsList className="w-full px-2 sm:px-4 lg:px-6 flex overflow-x-auto whitespace-nowrap no-scrollbar rounded-none h-auto p-0 border-none bg-transparent">
-                {communityTabs.map((tab) => (
+              <TabsList 
+                className="grid w-full p-0 border-none bg-transparent"
+                style={{ gridTemplateColumns: `repeat(${displayedTabs.length}, 1fr)` }}
+              >
+                {displayedTabs.map((tab) => (
                   <TabsTrigger
                     key={tab.value}
                     value={tab.value}
                     className={cn(
-                      "py-3 px-3 sm:px-4 text-sm font-medium rounded-none focus-visible:ring-0 focus-visible:ring-offset-0",
+                      "py-3 px-3 sm:px-4 text-sm font-medium rounded-none focus-visible:ring-0 focus-visible:ring-offset-0 justify-center",
                       "data-[state=active]:text-primary data-[state=active]:border-primary border-b-2 border-transparent hover:text-primary hover:border-primary/70 transition-colors duration-150 text-muted-foreground"
                     )}
                   >
@@ -67,7 +82,7 @@ export default function CommunityPage() {
             
             <ScrollArea className="flex-grow">
               <div className="px-0 sm:px-2 md:px-4 py-4 space-y-0">
-                  {communityTabs.map((tab) => (
+                  {displayedTabs.map((tab) => (
                     <TabsContent key={tab.value} value={tab.value} className="mt-0 data-[state=inactive]:hidden">
                       {displayedPosts.length > 0 ? (
                           displayedPosts.map(post => <PostCard key={post.id} post={post} />)
