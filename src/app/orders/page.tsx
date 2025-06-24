@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { AppHeader } from '@/components/shared/AppHeader';
 import { ProtectedRoute } from '@/components/shared/ProtectedRoute';
@@ -38,6 +38,12 @@ export default function OrdersPage() {
   const isRealMode = user?.id === 'REAL456';
   
   const [searchMode, setSearchMode] = useState<'Fiat' | 'Exchange' | 'Web3'>(isRealMode ? 'Exchange' : 'Fiat');
+
+  useEffect(() => {
+    if (isRealMode && searchMode === 'Fiat') {
+      setSearchMode('Exchange');
+    }
+  }, [isRealMode, searchMode]);
 
   const orderTabs = isRealMode ? realOrderTabs : demoOrderTabs;
   const [activeTab, setActiveTab] = useState("executed");

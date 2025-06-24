@@ -5,7 +5,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useAuth } from '@/contexts/AuthContext';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import {
   Search,
   User,
@@ -25,6 +25,7 @@ interface AppHeaderProps {
 export function AppHeader({ searchMode, onSearchModeChange, isRealMode }: AppHeaderProps) {
   const { user } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
   const [isMounted, setIsMounted] = useState(false);
@@ -75,6 +76,7 @@ export function AppHeader({ searchMode, onSearchModeChange, isRealMode }: AppHea
     };
   }, [searchMode, isRealMode]);
 
+  const hideFiatButton = isRealMode && (pathname === '/' || pathname === '/orders');
 
   if (!isMounted) {
     // Skeleton loader
@@ -122,18 +124,20 @@ export function AppHeader({ searchMode, onSearchModeChange, isRealMode }: AppHea
         {onSearchModeChange && (
             <div className="flex items-center justify-center pb-2">
                 <div className="flex items-center rounded-md bg-primary-foreground/10 p-1 space-x-1 w-full">
-                    <Button 
-                        onClick={() => handleModeChange('Fiat')}
-                        variant="ghost"
-                        className={cn(
-                            "h-7 px-3 text-xs rounded-md border-none flex-1",
-                            searchMode === 'Fiat' 
-                                ? 'bg-primary-foreground/20 text-white shadow-sm' 
-                                : 'bg-transparent text-primary-foreground/70 hover:bg-primary-foreground/15'
-                        )}
-                    >
-                        Fiat
-                    </Button>
+                    {!hideFiatButton && (
+                        <Button 
+                            onClick={() => handleModeChange('Fiat')}
+                            variant="ghost"
+                            className={cn(
+                                "h-7 px-3 text-xs rounded-md border-none flex-1",
+                                searchMode === 'Fiat' 
+                                    ? 'bg-primary-foreground/20 text-white shadow-sm' 
+                                    : 'bg-transparent text-primary-foreground/70 hover:bg-primary-foreground/15'
+                            )}
+                        >
+                            Fiat
+                        </Button>
+                    )}
                     <Button 
                         onClick={() => handleModeChange('Exchange')}
                         variant="ghost"

@@ -7,7 +7,7 @@ import { DemoDashboard } from '@/components/dashboard/DemoDashboard';
 import { RealDashboard } from '@/components/dashboard/RealDashboard';
 import { AppHeader } from '@/components/shared/AppHeader';
 import { Skeleton } from '@/components/ui/skeleton';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 export default function DashboardRouterPage() {
   const { user, loading } = useAuth();
@@ -15,6 +15,12 @@ export default function DashboardRouterPage() {
 
   const [searchMode, setSearchMode] = useState<'Fiat' | 'Exchange' | 'Web3'>(isRealMode ? 'Exchange' : 'Fiat');
   
+  useEffect(() => {
+    if (isRealMode && searchMode === 'Fiat') {
+      setSearchMode('Exchange');
+    }
+  }, [isRealMode, searchMode]);
+
   if (loading || !user) {
      return (
         <ProtectedRoute>
