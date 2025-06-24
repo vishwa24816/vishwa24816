@@ -1,13 +1,15 @@
+
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
+import Link from 'next/link';
 import { AppHeader } from '@/components/shared/AppHeader';
 import { ProtectedRoute } from '@/components/shared/ProtectedRoute';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Loader2, Zap, TrendingUp, Rocket, Star, PiggyBank, CandlestickChart, Bell } from 'lucide-react';
+import { Loader2, Zap, TrendingUp, Rocket, Star, PiggyBank, CandlestickChart, Bell, ArrowUpDown } from 'lucide-react';
 import { runScreenerAction } from '@/app/actions';
 import type { Stock } from '@/types';
 import { useToast } from '@/hooks/use-toast';
@@ -19,6 +21,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { cn } from '@/lib/utils';
 
 const suggestionQueries = [
     "IT stocks with P/E less than 30",
@@ -77,6 +80,86 @@ const fiatScreenerItems = [
   },
 ];
 
+// IPO Table Component
+type IpoInfo = {
+  companyName: string;
+  openDate: string;
+  closeDate: string;
+  lotSize: number;
+  issuePrice: number;
+  type: 'SME' | 'Mainboard';
+};
+
+const ipoData: IpoInfo[] = [
+  { companyName: 'SambhV Steel Tubes', openDate: "25 Jun '25", closeDate: "27 Jun '25", lotSize: 182, issuePrice: 82, type: 'SME' },
+  { companyName: 'HDB Financial Services', openDate: "25 Jun '25", closeDate: "27 Jun '25", lotSize: 20, issuePrice: 740, type: 'Mainboard' },
+  { companyName: 'Suntech Infra Solutions', openDate: "25 Jun '25", closeDate: "27 Jun '25", lotSize: 1600, issuePrice: 86, type: 'SME' },
+  { companyName: 'Supertech EV', openDate: "25 Jun '25", closeDate: "27 Jun '25", lotSize: 1200, issuePrice: 92, type: 'SME' },
+  { companyName: 'Rama Telecom', openDate: "25 Jun '25", closeDate: "27 Jun '25", lotSize: 2000, issuePrice: 68, type: 'SME' },
+  { companyName: 'Kalpataru', openDate: "24 Jun '25", closeDate: "26 Jun '25", lotSize: 36, issuePrice: 414, type: 'Mainboard' },
+  { companyName: 'Ellenbarrie Industrial Gases', openDate: "24 Jun '25", closeDate: "26 Jun '25", lotSize: 37, issuePrice: 400, type: 'Mainboard' },
+  { companyName: 'Globe Civil Projects', openDate: "24 Jun '25", closeDate: "26 Jun '25", lotSize: 211, issuePrice: 71, type: 'SME' },
+];
+
+const SortableHeader = ({ children, className }: { children: React.ReactNode; className?: string }) => (
+    <TableHead className={cn(className)}>
+        <Button variant="ghost" size="sm" className="p-1 h-auto -ml-2">
+            {children}
+            <ArrowUpDown className="ml-2 h-3 w-3" />
+        </Button>
+    </TableHead>
+);
+
+const IpoTable = () => {
+    const [filter, setFilter] = useState<'Both' | 'SME' | 'Mainboard'>('Both');
+
+    const filteredData = useMemo(() => {
+        if (filter === 'Both') return ipoData;
+        return ipoData.filter(ipo => ipo.type === filter);
+    }, [filter]);
+
+    return (
+        <div className="w-full">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-4">
+                <div>
+                    <h3 className="text-lg font-semibold">UPCOMING/OPEN IPOS</h3>
+                    <p className="text-sm text-muted-foreground">New and upcoming IPOs tracker</p>
+                </div>
+                <div className="flex items-center space-x-1 border p-1 rounded-md bg-muted/50 self-end sm:self-center">
+                    <Button variant={filter === 'Both' ? 'secondary' : 'ghost'} size="sm" onClick={() => setFilter('Both')} className="px-3">Both</Button>
+                    <Button variant={filter === 'SME' ? 'secondary' : 'ghost'} size="sm" onClick={() => setFilter('SME')} className="px-3">SME</Button>
+                    <Button variant={filter === 'Mainboard' ? 'secondary' : 'ghost'} size="sm" onClick={() => setFilter('Mainboard')} className="px-3">Mainboard</Button>
+                </div>
+            </div>
+            <div className="overflow-x-auto">
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <SortableHeader>Company Name</SortableHeader>
+                            <SortableHeader>Issue Open Date</SortableHeader>
+                            <SortableHeader>Issue Close Date</SortableHeader>
+                            <SortableHeader className="text-right">Lot Size</SortableHeader>
+                            <TableHead className="text-right">Issue Price Per Share</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {filteredData.map((ipo) => (
+                            <TableRow key={ipo.companyName}>
+                                <TableCell className="font-medium text-primary hover:underline">
+                                    <Link href="#">{ipo.companyName}</Link>
+                                </TableCell>
+                                <TableCell>{ipo.openDate}</TableCell>
+                                <TableCell>{ipo.closeDate}</TableCell>
+                                <TableCell className="text-right">{ipo.lotSize}</TableCell>
+                                <TableCell className="text-right">₹ {ipo.issuePrice}</TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </div>
+        </div>
+    );
+}
 
 export default function ScreenerPage() {
     const { toast } = useToast();
@@ -92,10 +175,10 @@ export default function ScreenerPage() {
     const [searchMode, setSearchMode] = useState<'Fiat' | 'Exchange' | 'Web3'>(isRealMode ? 'Exchange' : 'Fiat');
     
     React.useEffect(() => {
-        if (!isRealMode && searchMode !== 'Fiat') {
-            setSearchMode('Fiat');
+        if (isRealMode && searchMode === 'Fiat') {
+            setSearchMode('Exchange');
         }
-    }, [isRealMode]);
+    }, [isRealMode, searchMode]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -190,7 +273,7 @@ export default function ScreenerPage() {
                     {searchMode === 'Fiat' && (
                          <Card>
                             <CardContent className="p-2">
-                                <Accordion type="single" collapsible className="w-full">
+                                <Accordion type="single" collapsible className="w-full" defaultValue="item-1">
                                     {fiatScreenerItems.map((item, index) => (
                                         <AccordionItem value={`item-${index}`} key={item.title}>
                                             <AccordionTrigger className="text-base font-medium hover:no-underline px-2">
@@ -201,7 +284,9 @@ export default function ScreenerPage() {
                                                 </div>
                                             </AccordionTrigger>
                                             <AccordionContent className="px-4 pb-2 pt-0 text-muted-foreground">
-                                                {Array.isArray(item.content) ? (
+                                                {item.title === 'IPO' ? (
+                                                    <IpoTable />
+                                                ) : Array.isArray(item.content) ? (
                                                     <ul className="space-y-1">
                                                         {item.content.map((subItem) => (
                                                             <li key={subItem}>
