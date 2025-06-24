@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Loader2, Zap, TrendingUp, Rocket, Star, PiggyBank, CandlestickChart, Bell, ArrowUpDown } from 'lucide-react';
+import { Loader2, Zap, TrendingUp, Rocket, Star, PiggyBank, CandlestickChart, Bell, ArrowUpDown, FileText } from 'lucide-react';
 import { runScreenerAction } from '@/app/actions';
 import type { Stock } from '@/types';
 import { useToast } from '@/hooks/use-toast';
@@ -88,18 +88,23 @@ type IpoInfo = {
   lotSize: number;
   issuePrice: number;
   type: 'SME' | 'Mainboard';
+  qib: string;
+  hni: string;
+  retail: string;
+  totalSubscription: string;
 };
 
 const ipoData: IpoInfo[] = [
-  { companyName: 'SambhV Steel Tubes', openDate: "25 Jun '25", closeDate: "27 Jun '25", lotSize: 182, issuePrice: 82, type: 'SME' },
-  { companyName: 'HDB Financial Services', openDate: "25 Jun '25", closeDate: "27 Jun '25", lotSize: 20, issuePrice: 740, type: 'Mainboard' },
-  { companyName: 'Suntech Infra Solutions', openDate: "25 Jun '25", closeDate: "27 Jun '25", lotSize: 1600, issuePrice: 86, type: 'SME' },
-  { companyName: 'Supertech EV', openDate: "25 Jun '25", closeDate: "27 Jun '25", lotSize: 1200, issuePrice: 92, type: 'SME' },
-  { companyName: 'Rama Telecom', openDate: "25 Jun '25", closeDate: "27 Jun '25", lotSize: 2000, issuePrice: 68, type: 'SME' },
-  { companyName: 'Kalpataru', openDate: "24 Jun '25", closeDate: "26 Jun '25", lotSize: 36, issuePrice: 414, type: 'Mainboard' },
-  { companyName: 'Ellenbarrie Industrial Gases', openDate: "24 Jun '25", closeDate: "26 Jun '25", lotSize: 37, issuePrice: 400, type: 'Mainboard' },
-  { companyName: 'Globe Civil Projects', openDate: "24 Jun '25", closeDate: "26 Jun '25", lotSize: 211, issuePrice: 71, type: 'SME' },
+  { companyName: 'SambhV Steel Tubes', openDate: "25 Jun '25", closeDate: "27 Jun '25", lotSize: 182, issuePrice: 82, type: 'SME', qib: '15.2x', hni: '45.1x', retail: '22.8x', totalSubscription: '27.7x' },
+  { companyName: 'HDB Financial Services', openDate: "25 Jun '25", closeDate: "27 Jun '25", lotSize: 20, issuePrice: 740, type: 'Mainboard', qib: '90.5x', hni: '150.2x', retail: '40.1x', totalSubscription: '95.3x' },
+  { companyName: 'Suntech Infra Solutions', openDate: "25 Jun '25", closeDate: "27 Jun '25", lotSize: 1600, issuePrice: 86, type: 'SME', qib: '12.1x', hni: '33.4x', retail: '18.9x', totalSubscription: '21.5x' },
+  { companyName: 'Supertech EV', openDate: "25 Jun '25", closeDate: "27 Jun '25", lotSize: 1200, issuePrice: 92, type: 'SME', qib: '20.8x', hni: '60.7x', retail: '30.2x', totalSubscription: '37.2x' },
+  { companyName: 'Rama Telecom', openDate: "25 Jun '25", closeDate: "27 Jun '25", lotSize: 2000, issuePrice: 68, type: 'SME', qib: '8.9x', hni: '25.6x', retail: '15.3x', totalSubscription: '16.6x' },
+  { companyName: 'Kalpataru', openDate: "24 Jun '25", closeDate: "26 Jun '25", lotSize: 36, issuePrice: 414, type: 'Mainboard', qib: '75.3x', hni: '110.8x', retail: '32.6x', totalSubscription: '72.1x' },
+  { companyName: 'Ellenbarrie Industrial Gases', openDate: "24 Jun '25", closeDate: "26 Jun '25", lotSize: 37, issuePrice: 400, type: 'Mainboard', qib: '55.1x', hni: '80.2x', retail: '25.9x', totalSubscription: '53.7x' },
+  { companyName: 'Globe Civil Projects', openDate: "24 Jun '25", closeDate: "26 Jun '25", lotSize: 211, issuePrice: 71, type: 'SME', qib: '18.4x', hni: '55.9x', retail: '28.1x', totalSubscription: '34.1x' },
 ];
+
 
 const SortableHeader = ({ children, className }: { children: React.ReactNode; className?: string }) => (
     <TableHead className={cn(className)}>
@@ -111,12 +116,57 @@ const SortableHeader = ({ children, className }: { children: React.ReactNode; cl
 );
 
 const IpoTable = () => {
-    const [filter, setFilter] = useState<'Both' | 'SME' | 'Mainboard'>('Both');
+    const mainboardIpos = ipoData.filter((ipo) => ipo.type === 'Mainboard');
+    const smeIpos = ipoData.filter((ipo) => ipo.type === 'SME');
 
-    const filteredData = useMemo(() => {
-        if (filter === 'Both') return ipoData;
-        return ipoData.filter(ipo => ipo.type === filter);
-    }, [filter]);
+    const renderTable = (data: IpoInfo[], title: string) => {
+        if (data.length === 0) {
+            return <p className="text-sm text-muted-foreground mt-4">No {title.toLowerCase()} found.</p>;
+        }
+
+        return (
+            <div className="mb-8">
+                <h4 className="text-md font-semibold mb-2">{title}</h4>
+                <div className="overflow-x-auto">
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <SortableHeader>Company Name</SortableHeader>
+                                <SortableHeader>Close Date</SortableHeader>
+                                <SortableHeader className="text-right">Price</SortableHeader>
+                                <SortableHeader className="text-right">QIB</SortableHeader>
+                                <SortableHeader className="text-right">HNI</SortableHeader>
+                                <SortableHeader className="text-right">Retail</SortableHeader>
+                                <SortableHeader className="text-right">Total</SortableHeader>
+                                <TableHead className="text-center">PDF</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {data.map((ipo) => (
+                                <TableRow key={ipo.companyName}>
+                                    <TableCell className="font-medium">
+                                        <Link href="#" className="text-primary hover:underline">{ipo.companyName}</Link>
+                                        <p className="text-xs text-muted-foreground">Lot: {ipo.lotSize}</p>
+                                    </TableCell>
+                                    <TableCell>{ipo.closeDate}</TableCell>
+                                    <TableCell className="text-right">₹{ipo.issuePrice}</TableCell>
+                                    <TableCell className="text-right">{ipo.qib}</TableCell>
+                                    <TableCell className="text-right">{ipo.hni}</TableCell>
+                                    <TableCell className="text-right">{ipo.retail}</TableCell>
+                                    <TableCell className="text-right font-semibold">{ipo.totalSubscription}</TableCell>
+                                    <TableCell className="text-center">
+                                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => alert(`Downloading PDF for ${ipo.companyName}`)}>
+                                            <FileText className="h-4 w-4 text-destructive" />
+                                        </Button>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="w-full">
@@ -125,41 +175,12 @@ const IpoTable = () => {
                     <h3 className="text-lg font-semibold">UPCOMING/OPEN IPOS</h3>
                     <p className="text-sm text-muted-foreground">New and upcoming IPOs tracker</p>
                 </div>
-                <div className="flex items-center space-x-1 border p-1 rounded-md bg-muted/50 self-end sm:self-center">
-                    <Button variant={filter === 'Both' ? 'secondary' : 'ghost'} size="sm" onClick={() => setFilter('Both')} className="px-3">Both</Button>
-                    <Button variant={filter === 'SME' ? 'secondary' : 'ghost'} size="sm" onClick={() => setFilter('SME')} className="px-3">SME</Button>
-                    <Button variant={filter === 'Mainboard' ? 'secondary' : 'ghost'} size="sm" onClick={() => setFilter('Mainboard')} className="px-3">Mainboard</Button>
-                </div>
             </div>
-            <div className="overflow-x-auto">
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <SortableHeader>Company Name</SortableHeader>
-                            <SortableHeader>Issue Open Date</SortableHeader>
-                            <SortableHeader>Issue Close Date</SortableHeader>
-                            <SortableHeader className="text-right">Lot Size</SortableHeader>
-                            <TableHead className="text-right">Issue Price Per Share</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {filteredData.map((ipo) => (
-                            <TableRow key={ipo.companyName}>
-                                <TableCell className="font-medium text-primary hover:underline">
-                                    <Link href="#">{ipo.companyName}</Link>
-                                </TableCell>
-                                <TableCell>{ipo.openDate}</TableCell>
-                                <TableCell>{ipo.closeDate}</TableCell>
-                                <TableCell className="text-right">{ipo.lotSize}</TableCell>
-                                <TableCell className="text-right">₹ {ipo.issuePrice}</TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </div>
+            {renderTable(mainboardIpos, 'Mainboard IPOs')}
+            {renderTable(smeIpos, 'SME IPOs')}
         </div>
     );
-}
+};
 
 export default function ScreenerPage() {
     const { toast } = useToast();
@@ -175,8 +196,8 @@ export default function ScreenerPage() {
     const [searchMode, setSearchMode] = useState<'Fiat' | 'Exchange' | 'Web3'>(isRealMode ? 'Exchange' : 'Fiat');
     
     React.useEffect(() => {
-        if (isRealMode && searchMode === 'Fiat') {
-            // No longer forcing mode change, allows all 3 modes
+        if (isRealMode && searchMode !== 'Exchange' && searchMode !== 'Web3') {
+             // Allow all 3 modes
         }
     }, [isRealMode, searchMode]);
 
@@ -373,3 +394,5 @@ export default function ScreenerPage() {
         </ProtectedRoute>
     );
 }
+
+    
