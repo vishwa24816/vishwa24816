@@ -318,3 +318,18 @@ export interface PriceAlert {
   assetType: 'Stock' | 'Mutual Fund' | 'Crypto' | 'Future' | 'Option' | 'ETF' | 'Index' | 'Crypto Future';
   notes?: string;
 }
+
+export interface HeatmapItem {
+  name: string;
+  change: number;
+  size: number; // Represents relative size for the treemap
+}
+
+export interface SummaryCardItem {
+  name: string;
+  companies: number;
+  change: number;
+  advances?: number;
+  declines?: number;
+  ltp?: number;
+}

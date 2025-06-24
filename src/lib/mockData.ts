@@ -1,4 +1,3 @@
-
 // This file now acts as an index for the mockData directory.
 // It imports and re-exports all mock data arrays.
 
@@ -31,3 +30,4 @@ export * from './mockData/web3Gainers';
 export * from './mockData/web3Memes';
 export * from './mockData/web3Trending';
 export * from './mockData/web3Holdings';
+export * from './mockData/marketSectorData';
