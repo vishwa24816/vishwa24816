@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useRef, useEffect, FormEvent } from 'react';
@@ -24,10 +25,6 @@ export default function SimbotPage() {
   
   const [searchMode, setSearchMode] = useState<'Fiat' | 'Exchange' | 'Web3'>(isRealMode ? 'Exchange' : 'Fiat');
   
-  if (isRealMode && searchMode === 'Fiat') {
-    setSearchMode('Exchange');
-  }
-
   const scrollToBottom = () => {
     if (scrollAreaRef.current) {
       const scrollableViewport = scrollAreaRef.current.querySelector('[data-radix-scroll-area-viewport]');

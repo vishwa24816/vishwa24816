@@ -17,10 +17,6 @@ export default function ProfilePage() {
   
   const [searchMode, setSearchMode] = useState<'Fiat' | 'Exchange' | 'Web3'>(isRealMode ? 'Exchange' : 'Fiat');
   
-  if (isRealMode && searchMode === 'Fiat') {
-    setSearchMode('Exchange');
-  }
-
   return (
     <ProtectedRoute>
       <div className="flex flex-col min-h-screen">

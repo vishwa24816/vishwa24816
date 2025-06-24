@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useAuth } from '@/contexts/AuthContext';
@@ -32,10 +33,6 @@ export default function DashboardRouterPage() {
       );
   }
   
-  if (isRealMode && searchMode === 'Fiat') {
-    setSearchMode('Exchange');
-  }
-
   return (
     <ProtectedRoute>
       <div className="flex flex-col min-h-screen">

@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useMemo } from 'react';
@@ -27,10 +28,6 @@ export default function CommunityPage() {
   
   const [searchMode, setSearchMode] = useState<'Fiat' | 'Exchange' | 'Web3'>(isRealMode ? 'Exchange' : 'Fiat');
   const [activeTab, setActiveTab] = useState("hot");
-
-  if (isRealMode && searchMode === 'Fiat') {
-    setSearchMode('Exchange');
-  }
 
   const displayedPosts = useMemo(() => {
     if (activeTab === 'research') {
