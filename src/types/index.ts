@@ -261,6 +261,7 @@ export interface CommunityPost {
   targetPrice?: number;
   researchFirm?: string;
   analystName?: string;
+  category?: 'Fiat' | 'Exchange' | 'Web3';
 }
 
 export interface GttOrder {

@@ -32,22 +32,34 @@ export default function CommunityPage() {
     if (searchMode === 'Fiat') {
       return allTabs;
     }
+    // For Exchange and Web3, hide the 'Research' tab for now.
     return allTabs.filter(tab => tab.value !== 'research');
   }, [searchMode]);
 
   useEffect(() => {
+    // If searchMode changes and the active tab is 'research' (which might now be hidden),
+    // switch to a default tab like 'hot'.
     if (searchMode !== 'Fiat' && activeTab === 'research') {
       setActiveTab('hot');
     }
   }, [searchMode, activeTab]);
 
   const displayedPosts = useMemo(() => {
+    // First, filter by the current mode (Fiat, Exchange, Web3)
+    const modeFilteredPosts = mockCommunityPosts.filter(post => {
+      // Default to Fiat if category is missing
+      const postCategory = post.category || 'Fiat'; 
+      return postCategory === searchMode;
+    });
+
+    // Then, apply the tab-specific filter (e.g., for 'research')
     if (activeTab === 'research') {
-      return mockCommunityPosts.filter(post => post.researchFirm || post.recommendationType);
+      return modeFilteredPosts.filter(post => post.researchFirm || post.recommendationType);
     }
-    // For other tabs, return all posts (or implement specific filtering later)
-    return mockCommunityPosts;
-  }, [activeTab]);
+    
+    // For other tabs, return all posts from the selected mode
+    return modeFilteredPosts;
+  }, [activeTab, searchMode]);
 
   return (
     <ProtectedRoute>
