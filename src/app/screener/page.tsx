@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import { AppHeader } from '@/components/shared/AppHeader';
 import { ProtectedRoute } from '@/components/shared/ProtectedRoute';
@@ -189,24 +189,26 @@ const IpoTable = () => {
 };
 
 // Superstars Table Component
-type InvestorType = 'Individual' | 'Institutional' | 'FII';
+type InvestorType = 'Individual' | 'DII' | 'FII';
 
 type SuperstarInvestor = {
   name: string;
   stocks: number;
-  netWorth: string; // Keep as string to match format "X,XX,XXX.XXX Cr"
+  netWorth: string; 
   type: InvestorType;
 };
 
 const superstarData: SuperstarInvestor[] = [
   { name: 'Mukesh Ambani and Family', stocks: 2, netWorth: '4,02,775.592 Cr', type: 'Individual' },
-  { name: 'Premji and Associates', stocks: 1, netWorth: '2,00,299.585 Cr', type: 'Institutional' },
   { name: 'Radhakishan Damani', stocks: 12, netWorth: '1,95,517.365 Cr', type: 'Individual' },
-  { name: 'Rakesh Jhunjhunwala and Associates', stocks: 27, netWorth: '62,562.585 Cr', type: 'Institutional' },
   { name: 'Rekha Jhunjhunwala', stocks: 26, netWorth: '40,687.162 Cr', type: 'Individual' },
   { name: 'Mukul Agrawal', stocks: 60, netWorth: '6,343.217 Cr', type: 'Individual' },
   { name: 'Akash Bhanshali', stocks: 18, netWorth: '5,787.057 Cr', type: 'Individual' },
-  // Add some dummy FII data
+  // DII Data
+  { name: 'LIC India', stocks: 275, netWorth: '12,50,000.000 Cr', type: 'DII'},
+  { name: 'HDFC Mutual Fund', stocks: 350, netWorth: '5,20,000.000 Cr', type: 'DII'},
+  { name: 'SBI Mutual Fund', stocks: 400, netWorth: '6,00,000.000 Cr', type: 'DII' },
+  // FII Data
   { name: 'Government Pension Fund Global', stocks: 150, netWorth: '1,50,000.000 Cr', type: 'FII' },
   { name: 'Vanguard Group', stocks: 200, netWorth: '1,20,000.000 Cr', type: 'FII' },
 ];
@@ -219,7 +221,7 @@ const SuperstarsTable = () => {
     return (
         <div className="w-full">
             <div className="flex items-center gap-2 mb-4">
-                {(['Individual', 'Institutional', 'FII'] as InvestorType[]).map(filter => (
+                {(['Individual', 'DII', 'FII'] as InvestorType[]).map(filter => (
                     <Button
                         key={filter}
                         variant={activeFilter === filter ? 'default' : 'outline'}
@@ -463,7 +465,3 @@ export default function ScreenerPage() {
         </ProtectedRoute>
     );
 }
-
-    
-
-    
