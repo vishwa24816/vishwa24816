@@ -182,6 +182,73 @@ const IpoTable = () => {
     );
 };
 
+// Superstars Table Component
+type InvestorType = 'Individual' | 'Institutional' | 'FII';
+
+type SuperstarInvestor = {
+  name: string;
+  stocks: number;
+  netWorth: string; // Keep as string to match format "X,XX,XXX.XXX Cr"
+  type: InvestorType;
+};
+
+const superstarData: SuperstarInvestor[] = [
+  { name: 'Mukesh Ambani and Family', stocks: 2, netWorth: '4,02,775.592 Cr', type: 'Individual' },
+  { name: 'Premji and Associates', stocks: 1, netWorth: '2,00,299.585 Cr', type: 'Institutional' },
+  { name: 'Radhakishan Damani', stocks: 12, netWorth: '1,95,517.365 Cr', type: 'Individual' },
+  { name: 'Rakesh Jhunjhunwala and Associates', stocks: 27, netWorth: '62,562.585 Cr', type: 'Institutional' },
+  { name: 'Rekha Jhunjhunwala', stocks: 26, netWorth: '40,687.162 Cr', type: 'Individual' },
+  { name: 'Mukul Agrawal', stocks: 60, netWorth: '6,343.217 Cr', type: 'Individual' },
+  { name: 'Akash Bhanshali', stocks: 18, netWorth: '5,787.057 Cr', type: 'Individual' },
+  // Add some dummy FII data
+  { name: 'Government Pension Fund Global', stocks: 150, netWorth: '1,50,000.000 Cr', type: 'FII' },
+  { name: 'Vanguard Group', stocks: 200, netWorth: '1,20,000.000 Cr', type: 'FII' },
+];
+
+const SuperstarsTable = () => {
+    const [activeFilter, setActiveFilter] = useState<InvestorType>('Individual');
+
+    const filteredData = superstarData.filter(investor => investor.type === activeFilter);
+
+    return (
+        <div className="w-full">
+            <div className="flex items-center gap-2 mb-4">
+                {(['Individual', 'Institutional', 'FII'] as InvestorType[]).map(filter => (
+                    <Button
+                        key={filter}
+                        variant={activeFilter === filter ? 'default' : 'outline'}
+                        size="sm"
+                        onClick={() => setActiveFilter(filter)}
+                        className="rounded-full px-4"
+                    >
+                        {filter}
+                    </Button>
+                ))}
+            </div>
+            <Table>
+                <TableHeader>
+                    <TableRow>
+                        <TableHead>INVESTOR</TableHead>
+                        <TableHead className="text-right"># STOCKS</TableHead>
+                        <TableHead className="text-right">NET WORTH</TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    {filteredData.map((investor) => (
+                        <TableRow key={investor.name}>
+                            <TableCell className="font-medium">
+                                <Link href="#" className="text-primary hover:underline">{investor.name}</Link>
+                            </TableCell>
+                            <TableCell className="text-right">{investor.stocks}</TableCell>
+                            <TableCell className="text-right font-semibold">{investor.netWorth}</TableCell>
+                        </TableRow>
+                    ))}
+                </TableBody>
+            </Table>
+        </div>
+    );
+};
+
 export default function ScreenerPage() {
     const { toast } = useToast();
     const router = useRouter();
@@ -196,9 +263,7 @@ export default function ScreenerPage() {
     const [searchMode, setSearchMode] = useState<'Fiat' | 'Exchange' | 'Web3'>(isRealMode ? 'Exchange' : 'Fiat');
     
     React.useEffect(() => {
-        if (isRealMode && searchMode !== 'Exchange' && searchMode !== 'Web3') {
-             // Allow all 3 modes
-        }
+        // No auto-switching logic needed anymore as per recent changes
     }, [isRealMode, searchMode]);
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -307,6 +372,8 @@ export default function ScreenerPage() {
                                             <AccordionContent className="px-4 pb-2 pt-0 text-muted-foreground">
                                                 {item.title === 'IPO' ? (
                                                     <IpoTable />
+                                                ) : item.title === 'Superstars' ? (
+                                                    <SuperstarsTable />
                                                 ) : Array.isArray(item.content) ? (
                                                     <ul className="space-y-1">
                                                         {item.content.map((subItem) => (
