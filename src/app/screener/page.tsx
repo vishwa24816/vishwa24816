@@ -8,12 +8,18 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Loader2, Zap } from 'lucide-react';
+import { Loader2, Zap, TrendingUp, Rocket, Star, PiggyBank, ListTodo, CandlestickChart, Newspaper, Briefcase, Bell } from 'lucide-react';
 import { runScreenerAction } from '@/app/actions';
 import type { Stock } from '@/types';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 const suggestionQueries = [
     "IT stocks with P/E less than 30",
@@ -21,6 +27,64 @@ const suggestionQueries = [
     "Large cap stocks over 5,00,000Cr market cap",
     "FMCG stocks with low debt",
 ];
+
+const fiatScreenerItems = [
+  {
+    title: 'Markets',
+    icon: TrendingUp,
+    content: 'Market overview, indices, and performance.',
+    hasDot: false,
+  },
+  {
+    title: 'IPO',
+    icon: Rocket,
+    content: 'Information on upcoming and recent Initial Public Offerings.',
+    hasDot: true,
+  },
+  {
+    title: 'Superstars',
+    icon: Star,
+    content: 'Track portfolios of well-known investors and superstar funds.',
+    hasDot: false,
+  },
+  {
+    title: 'Mutual Funds',
+    icon: PiggyBank,
+    content: 'Explore and analyze mutual funds.',
+    hasDot: true,
+  },
+  {
+    title: 'Watchlist',
+    icon: ListTodo,
+    content: 'Manage and view your watchlists.',
+    hasDot: false,
+  },
+  {
+    title: 'Futures and Options',
+    icon: CandlestickChart,
+    content: 'Access F&O data, option chain, and analysis tools.',
+    hasDot: false,
+  },
+  {
+    title: 'News',
+    icon: Newspaper,
+    content: 'Latest market news and headlines.',
+    hasDot: false,
+  },
+  {
+    title: 'Portfolio',
+    icon: Briefcase,
+    content: 'View your portfolio holdings and performance.',
+    hasDot: false,
+  },
+  {
+    title: 'Alerts',
+    icon: Bell,
+    content: 'Manage your price and news alerts.',
+    hasDot: false,
+  },
+];
+
 
 export default function ScreenerPage() {
     const { toast } = useToast();
@@ -33,7 +97,7 @@ export default function ScreenerPage() {
     const [error, setError] = useState('');
 
     const isRealMode = user?.id === 'REAL456';
-    const [searchMode, setSearchMode] = useState<'Fiat' | 'Exchange' | 'Web3'>(isRealMode ? 'Exchange' : 'Fiat');
+    const [searchMode, setSearchMode] = useState<'Fiat' | 'Exchange' | 'Web3'>('Fiat');
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -124,6 +188,29 @@ export default function ScreenerPage() {
                             </form>
                         </CardContent>
                     </Card>
+
+                    {searchMode === 'Fiat' && (
+                         <Card>
+                            <CardContent className="p-2">
+                                <Accordion type="single" collapsible className="w-full">
+                                    {fiatScreenerItems.map((item, index) => (
+                                        <AccordionItem value={`item-${index}`} key={item.title}>
+                                            <AccordionTrigger className="text-base font-medium hover:no-underline px-2">
+                                                <div className="flex items-center gap-4">
+                                                    <item.icon className="h-6 w-6 text-primary" />
+                                                    <span>{item.title}</span>
+                                                    {item.hasDot && <div className="h-2.5 w-2.5 rounded-full bg-green-500" />}
+                                                </div>
+                                            </AccordionTrigger>
+                                            <AccordionContent className="px-2 pl-12 text-muted-foreground">
+                                                {item.content}
+                                            </AccordionContent>
+                                        </AccordionItem>
+                                    ))}
+                                </Accordion>
+                            </CardContent>
+                        </Card>
+                    )}
 
                     {isLoading && (
                         <div className="text-center py-10">
