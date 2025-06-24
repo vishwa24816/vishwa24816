@@ -94,11 +94,6 @@ const getStockScreenerResults = ai.defineTool(
   }
 );
 
-export async function runScreenerFlow(input: StockScreenerInput): Promise<StockScreenerOutput> {
-  return stockScreenerFlow(input);
-}
-
-
 const stockScreenerFlow = ai.defineFlow(
   {
     name: 'stockScreenerFlow',
@@ -123,3 +118,7 @@ const stockScreenerFlow = ai.defineFlow(
     return llmResponse.output()!;
   }
 );
+
+export async function runScreenerFlow(input: StockScreenerInput): Promise<StockScreenerOutput> {
+  return stockScreenerFlow(input);
+}
