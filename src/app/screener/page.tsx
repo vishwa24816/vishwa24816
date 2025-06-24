@@ -69,7 +69,13 @@ const fiatScreenerItems = [
   {
     title: 'Futures and Options',
     icon: CandlestickChart,
-    content: 'Access F&O data, option chain, and analysis tools.',
+    content: [
+      'Dashboard',
+      'Options Screeners',
+      'Futures Heatmap',
+      'Futures Screeners',
+      'FnO Participants OI',
+    ],
     hasDot: false,
   },
   {
@@ -263,7 +269,9 @@ export default function ScreenerPage() {
     const [searchMode, setSearchMode] = useState<'Fiat' | 'Exchange' | 'Web3'>(isRealMode ? 'Exchange' : 'Fiat');
     
     React.useEffect(() => {
-        // No auto-switching logic needed anymore as per recent changes
+        if (isRealMode && searchMode === 'Fiat') {
+            setSearchMode('Exchange');
+        }
     }, [isRealMode, searchMode]);
 
     const handleSubmit = async (e: React.FormEvent) => {
