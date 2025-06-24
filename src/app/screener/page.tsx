@@ -31,7 +31,6 @@ const suggestionQueries = [
 ];
 
 const marketSubItems = [
-  'Stocks',
   'Sectors',
   'Events Calendar',
   'FII & DII',
@@ -374,7 +373,35 @@ export default function ScreenerPage() {
                                                 </div>
                                             </AccordionTrigger>
                                             <AccordionContent className="px-4 pb-2 pt-0 text-muted-foreground">
-                                                {item.title === 'IPO' ? (
+                                                {item.title === 'Markets' ? (
+                                                    <ul className="space-y-1">
+                                                        <li key="Stocks">
+                                                            <Button
+                                                                variant="ghost"
+                                                                className="w-full justify-start p-2 h-auto font-normal text-muted-foreground hover:text-primary text-sm"
+                                                                onClick={() => router.push('/markets')}
+                                                            >
+                                                                Stocks
+                                                            </Button>
+                                                        </li>
+                                                        {item.content.map((subItem) => (
+                                                            <li key={subItem}>
+                                                            <Button
+                                                                variant="ghost"
+                                                                className="w-full justify-start p-2 h-auto font-normal text-muted-foreground hover:text-primary text-sm"
+                                                                onClick={() =>
+                                                                toast({
+                                                                    title: `${subItem}`,
+                                                                    description: 'This feature is coming soon!',
+                                                                })
+                                                                }
+                                                            >
+                                                                {subItem}
+                                                            </Button>
+                                                            </li>
+                                                        ))}
+                                                    </ul>
+                                                ) : item.title === 'IPO' ? (
                                                     <IpoTable />
                                                 ) : item.title === 'Superstars' ? (
                                                     <SuperstarsTable />
