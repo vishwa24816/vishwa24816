@@ -18,7 +18,7 @@ export default function CommunityPage() {
   const { user } = useAuth();
   const isRealMode = user?.id === 'REAL456';
   
-  const [searchMode, setSearchMode] = useState<'Fiat' | 'Exchange' | 'Web3'>(isRealMode ? 'Exchange' : 'Fiat');
+  const [activeMode, setActiveMode] = useState<'Fiat' | 'Crypto' | 'Web3'>(isRealMode ? 'Crypto' : 'Fiat');
   const [activeTab, setActiveTab] = useState("hot");
 
   const displayedTabs = useMemo(() => {
@@ -29,27 +29,27 @@ export default function CommunityPage() {
       { value: "foryou", label: "For You" },
       { value: "research", label: "Research" },
     ];
-    if (searchMode === 'Fiat') {
+    if (activeMode === 'Fiat') {
       return allTabs;
     }
-    // For Exchange and Web3, hide the 'Research' tab for now.
+    // For Crypto and Web3, hide the 'Research' tab for now.
     return allTabs.filter(tab => tab.value !== 'research');
-  }, [searchMode]);
+  }, [activeMode]);
 
   useEffect(() => {
-    // If searchMode changes and the active tab is 'research' (which might now be hidden),
+    // If activeMode changes and the active tab is 'research' (which might now be hidden),
     // switch to a default tab like 'hot'.
-    if (searchMode !== 'Fiat' && activeTab === 'research') {
+    if (activeMode !== 'Fiat' && activeTab === 'research') {
       setActiveTab('hot');
     }
-  }, [searchMode, activeTab]);
+  }, [activeMode, activeTab]);
 
   const displayedPosts = useMemo(() => {
-    // First, filter by the current mode (Fiat, Exchange, Web3)
+    // First, filter by the current mode (Fiat, Crypto, Web3)
     const modeFilteredPosts = mockCommunityPosts.filter(post => {
       // Default to Fiat if category is missing
       const postCategory = post.category || 'Fiat'; 
-      return postCategory === searchMode;
+      return postCategory === activeMode;
     });
 
     // Then, apply the tab-specific filter (e.g., for 'research')
@@ -59,14 +59,14 @@ export default function CommunityPage() {
     
     // For other tabs, return all posts from the selected mode
     return modeFilteredPosts;
-  }, [activeTab, searchMode]);
+  }, [activeTab, activeMode]);
 
   return (
     <ProtectedRoute>
       <div className="flex flex-col h-screen bg-background text-foreground">
         <AppHeader
-          searchMode={searchMode}
-          onSearchModeChange={setSearchMode}
+          activeMode={activeMode}
+          onModeChange={setActiveMode}
           isRealMode={isRealMode}
         />
 

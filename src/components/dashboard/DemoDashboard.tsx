@@ -153,17 +153,17 @@ function getRelevantNewsForWatchlistItems(items: Stock[] | undefined, allNews: N
 }
 
 interface DemoDashboardProps {
-  activeMode: 'Portfolio' | 'Fiat' | 'Exchange' | 'Web3';
+  activeMode: 'Portfolio' | 'Fiat' | 'Crypto' | 'Web3';
 }
 
 export function DemoDashboard({ activeMode }: DemoDashboardProps) {
     const { primaryNavItems, secondaryNavTriggerCategories } = useMemo(() => {
     if (activeMode === 'Portfolio') {
         return {
-            primaryNavItems: ["Fiat", "Exchange", "Web3"],
+            primaryNavItems: ["Fiat", "Crypto", "Web3"],
             secondaryNavTriggerCategories: {
                 Fiat: ["Holdings", "Positions", "Portfolio Watchlist"],
-                Exchange: ["Holdings", "Positions", "Portfolio Watchlist"],
+                Crypto: ["Holdings", "Positions", "Portfolio Watchlist"],
                 Web3: ["Holdings", "Portfolio Watchlist"],
             }
         }
@@ -190,16 +190,16 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
       return { primaryNavItems: web3PrimaryNav, secondaryNavTriggerCategories: web3SecondaryNav };
     }
     
-    // Exchange mode
-    const exchangePrimaryNav = [
+    // Crypto mode
+    const cryptoPrimaryNav = [
       "Crypto Spot", "Crypto Futures", "Crypto Mutual Fund"
     ];
-    const exchangeSecondaryNav: Record<string, string[]> = {
+    const cryptoSecondaryNav: Record<string, string[]> = {
       "Crypto Spot": ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
       "Crypto Futures": ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
       "Crypto Mutual Fund": ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
     };
-    return { primaryNavItems: exchangePrimaryNav, secondaryNavTriggerCategories: exchangeSecondaryNav };
+    return { primaryNavItems: cryptoPrimaryNav, secondaryNavTriggerCategories: cryptoSecondaryNav };
   }, [activeMode]);
 
 
@@ -209,7 +209,7 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
   );
   
   const [mainPortfolioCashBalance, setMainPortfolioCashBalance] = useState(50000.00);
-  const [exchangeCashBalance, setExchangeCashBalance] = useState(15000.00);
+  const [cryptoCashBalance, setCryptoCashBalance] = useState(15000.00);
   const [web3CashBalance, setWeb3CashBalance] = useState(20000.00);
 
   React.useEffect(() => {
@@ -234,7 +234,7 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
   };
   
   const fiatHoldings = useMemo(() => mockPortfolioHoldings.filter(h => h.type !== 'Crypto'), []);
-  const exchangeHoldings = useMemo(() => mockPortfolioHoldings.filter(h => h.type === 'Crypto'), []);
+  const cryptoHoldings = useMemo(() => mockPortfolioHoldings.filter(h => h.type === 'Crypto'), []);
   const web3PortfolioWatchlistItems = useMemo(() => [...mockWeb3Trending.slice(0, 3), ...mockWeb3DeFi.slice(0, 2)], []);
 
   let newsForView: NewsArticle[] = mockNewsArticles; 
@@ -253,8 +253,8 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
             itemsForWatchlist = mockStocks.slice(0, 5);
             newsForView = getRelevantNewsForWatchlistItems(itemsForWatchlist, mockNewsArticles);
           }
-      } else if (activePrimaryItem === 'Exchange') {
-          if (isHoldingsView) newsForView = getRelevantNewsForHoldings(exchangeHoldings, mockNewsArticles);
+      } else if (activePrimaryItem === 'Crypto') {
+          if (isHoldingsView) newsForView = getRelevantNewsForHoldings(cryptoHoldings, mockNewsArticles);
           if (isPositionsView) newsForView = getRelevantNewsForPositions(mockCryptoIntradayPositions, mockCryptoFutures, [], mockNewsArticles);
           if (isWatchlistView) {
               itemsForWatchlist = mockCryptoAssets.slice(0, 5);
@@ -293,7 +293,7 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
     } else {
       newsForView = mockNewsArticles;
     }
-  } else if (activeMode === 'Exchange') {
+  } else if (activeMode === 'Crypto') {
     categoryWatchlistTitle = `${activePrimaryItem} - ${activeSecondaryItem}`;
     if (activePrimaryItem === "Crypto Spot") itemsForWatchlist = mockCryptoAssets;
     else if (activePrimaryItem === "Crypto Futures") itemsForWatchlist = mockCryptoFuturesForWatchlist;
@@ -324,9 +324,9 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
             if (isPositionsView) return <div className="space-y-8"><IntradayPositionsSection /><FoPositionsSection /><FoBasketSection /><NewsSection articles={newsForView} /></div>;
             if (isWatchlistView) return <div className="space-y-8"><WatchlistSection title="My Fiat Watchlist" defaultInitialItems={itemsForWatchlist} localStorageKeyOverride="simFiatWatchlist"/><NewsSection articles={newsForView} /></div>;
             return null;
-        case 'Exchange':
-            if (isHoldingsView) return <><CryptoHoldingsSection title="Crypto Wallet & Holdings" holdings={exchangeHoldings} cashBalance={exchangeCashBalance} setCashBalance={setExchangeCashBalance} mainPortfolioCashBalance={mainPortfolioCashBalance} setMainPortfolioCashBalance={setMainPortfolioCashBalance} isRealMode={false} /><NewsSection articles={newsForView} /></>;
-            if (isPositionsView) return <div className="space-y-8"><CryptoIntradayPositionsSection positions={mockCryptoIntradayPositions} /><CryptoFuturesSection positions={mockCryptoFutures} cashBalance={exchangeCashBalance} /><NewsSection articles={newsForView} /></div>;
+        case 'Crypto':
+            if (isHoldingsView) return <><CryptoHoldingsSection title="Crypto Wallet & Holdings" holdings={cryptoHoldings} cashBalance={cryptoCashBalance} setCashBalance={setCryptoCashBalance} mainPortfolioCashBalance={mainPortfolioCashBalance} setMainPortfolioCashBalance={setMainPortfolioCashBalance} isRealMode={false} /><NewsSection articles={newsForView} /></>;
+            if (isPositionsView) return <div className="space-y-8"><CryptoIntradayPositionsSection positions={mockCryptoIntradayPositions} /><CryptoFuturesSection positions={mockCryptoFutures} cashBalance={cryptoCashBalance} /><NewsSection articles={newsForView} /></div>;
             if (isWatchlistView) return <div className="space-y-8"><WatchlistSection title="My Crypto Watchlist" defaultInitialItems={itemsForWatchlist} localStorageKeyOverride={'simCryptoWatchlist'}/><NewsSection articles={newsForView} /></div>;
             return null;
         case 'Web3':
@@ -357,7 +357,7 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
         if(isTopWatchlistView) return <div className="space-y-8"><WatchlistSection title={categoryWatchlistTitle} displayItems={itemsForWatchlist} isPredefinedList={true} /><NewsSection articles={newsForView} /></div>
         if(isCategoryNumberedWatchlistView) return <div className="space-y-8"><WatchlistSection title={categoryWatchlistTitle} isPredefinedList={false} localStorageKeyOverride={`simAppWatchlist_Fiat_${activePrimaryItem.replace(/\s+/g, '_')}_${activeSecondaryItem.replace(/\s+/g, '_')}`} defaultInitialItems={[]}/><NewsSection articles={newsForView} /></div>
     
-    } else if (activeMode === 'Exchange') {
+    } else if (activeMode === 'Crypto') {
         return <div className="space-y-8"><WatchlistSection title={categoryWatchlistTitle} displayItems={itemsForWatchlist} isPredefinedList={true}/><NewsSection articles={newsForView} /></div>
     } else if (activeMode === 'Web3') {
         return <div className="space-y-8"><WatchlistSection title={categoryWatchlistTitle} displayItems={itemsForWatchlist} isPredefinedList={true} /><NewsSection articles={newsForView} /></div>

@@ -53,16 +53,16 @@ function getRelevantNewsForWatchlistItems(items: Stock[] | undefined, allNews: N
 }
 
 interface RealDashboardProps {
-  activeMode: 'Portfolio' | 'Fiat' | 'Exchange' | 'Web3';
+  activeMode: 'Portfolio' | 'Fiat' | 'Crypto' | 'Web3';
 }
 
 export function RealDashboard({ activeMode }: RealDashboardProps) {
   const { primaryNavItems, secondaryNavTriggerCategories } = useMemo(() => {
     if (activeMode === 'Portfolio') {
        return {
-            primaryNavItems: ["Exchange", "Web3"],
+            primaryNavItems: ["Crypto", "Web3"],
             secondaryNavTriggerCategories: {
-                Exchange: ["Holdings", "Positions", "Portfolio Watchlist"],
+                Crypto: ["Holdings", "Positions", "Portfolio Watchlist"],
                 Web3: ["Holdings", "Portfolio Watchlist"],
             }
         }
@@ -76,16 +76,16 @@ export function RealDashboard({ activeMode }: RealDashboardProps) {
       return { primaryNavItems: web3PrimaryNav, secondaryNavTriggerCategories: web3SecondaryNav };
     }
     
-    // Default to Exchange mode
-    const exchangePrimaryNav = [
+    // Default to Crypto mode
+    const cryptoPrimaryNav = [
       "Crypto Spot", "Crypto Futures", "Crypto Mutual Fund"
     ];
-    const exchangeSecondaryNav: Record<string, string[]> = {
+    const cryptoSecondaryNav: Record<string, string[]> = {
       "Crypto Spot": ["Top watchlist"],
       "Crypto Futures": ["Top watchlist"],
       "Crypto Mutual Fund": ["Top watchlist"],
     };
-    return { primaryNavItems: exchangePrimaryNav, secondaryNavTriggerCategories: exchangeSecondaryNav };
+    return { primaryNavItems: cryptoPrimaryNav, secondaryNavTriggerCategories: cryptoSecondaryNav };
   }, [activeMode]);
 
 
@@ -95,7 +95,7 @@ export function RealDashboard({ activeMode }: RealDashboardProps) {
   );
   
   const [mainPortfolioCashBalance, setMainPortfolioCashBalance] = useState(50000.00); 
-  const [exchangeCashBalance, setExchangeCashBalance] = useState(15000.00);
+  const [cryptoCashBalance, setCryptoCashBalance] = useState(15000.00);
   const [web3CashBalance, setWeb3CashBalance] = useState(20000.00);
 
   React.useEffect(() => {
@@ -111,7 +111,7 @@ export function RealDashboard({ activeMode }: RealDashboardProps) {
     setActiveSecondaryItem(newSecondaryItems[0] || "");
   };
   
-  const exchangeHoldings = useMemo(() => mockRealPortfolioHoldings, []);
+  const cryptoHoldings = useMemo(() => mockRealPortfolioHoldings, []);
   const web3PortfolioWatchlistItems = useMemo(() => [...mockWeb3Trending.slice(0, 3), ...mockWeb3DeFi.slice(0, 2)], []);
 
   // Determine what news and watchlist items to show
@@ -124,8 +124,8 @@ export function RealDashboard({ activeMode }: RealDashboardProps) {
       const isPositionsView = activeSecondaryItem === "Positions";
       const isWatchlistView = activeSecondaryItem === "Portfolio Watchlist";
 
-      if (activePrimaryItem === 'Exchange') {
-          if (isHoldingsView) newsForView = getRelevantNewsForHoldings(exchangeHoldings, mockNewsArticles);
+      if (activePrimaryItem === 'Crypto') {
+          if (isHoldingsView) newsForView = getRelevantNewsForHoldings(cryptoHoldings, mockNewsArticles);
           if (isPositionsView) newsForView = getRelevantNewsForPositions(mockRealCryptoFutures, mockNewsArticles);
           if (isWatchlistView) {
               itemsForWatchlist = mockCryptoAssets.slice(0, 5);
@@ -138,7 +138,7 @@ export function RealDashboard({ activeMode }: RealDashboardProps) {
               newsForView = getRelevantNewsForWatchlistItems(itemsForWatchlist, mockNewsArticles);
           }
       }
-  } else if (activeMode === 'Exchange') { // Exchange Mode Watchlists
+  } else if (activeMode === 'Crypto') { // Crypto Mode Watchlists
     categoryWatchlistTitle = `${activePrimaryItem} - ${activeSecondaryItem}`;
     if (activePrimaryItem === "Crypto Spot") itemsForWatchlist = mockCryptoAssets;
     else if (activePrimaryItem === "Crypto Futures") itemsForWatchlist = mockCryptoFuturesForWatchlist;
@@ -162,9 +162,9 @@ export function RealDashboard({ activeMode }: RealDashboardProps) {
     const isPositionsView = activeSecondaryItem === "Positions";
     const isWatchlistView = activeSecondaryItem === "Portfolio Watchlist";
 
-    if (activePrimaryItem === 'Exchange') {
-      if (isHoldingsView) return <><CryptoHoldingsSection title="Crypto Wallet & Holdings" holdings={exchangeHoldings} cashBalance={exchangeCashBalance} setCashBalance={setExchangeCashBalance} mainPortfolioCashBalance={mainPortfolioCashBalance} setMainPortfolioCashBalance={setMainPortfolioCashBalance} isRealMode={true} /><NewsSection articles={newsForView} /></>;
-      if (isPositionsView) return <div className="space-y-8"><CryptoFuturesSection positions={mockRealCryptoFutures} cashBalance={exchangeCashBalance} /><CryptoBasketSection /><NewsSection articles={newsForView} /></div>;
+    if (activePrimaryItem === 'Crypto') {
+      if (isHoldingsView) return <><CryptoHoldingsSection title="Crypto Wallet & Holdings" holdings={cryptoHoldings} cashBalance={cryptoCashBalance} setCashBalance={setCryptoCashBalance} mainPortfolioCashBalance={mainPortfolioCashBalance} setMainPortfolioCashBalance={setMainPortfolioCashBalance} isRealMode={true} /><NewsSection articles={newsForView} /></>;
+      if (isPositionsView) return <div className="space-y-8"><CryptoFuturesSection positions={mockRealCryptoFutures} cashBalance={cryptoCashBalance} /><CryptoBasketSection /><NewsSection articles={newsForView} /></div>;
       if (isWatchlistView) return <div className="space-y-8"><WatchlistSection title="My Crypto Watchlist" defaultInitialItems={itemsForWatchlist} localStorageKeyOverride={'simCryptoWatchlist_real'}/><NewsSection articles={newsForView} /></div>;
     } else if (activePrimaryItem === 'Web3') {
       if (isHoldingsView) return <><CryptoHoldingsSection title="Web3 Wallet & Holdings" holdings={mockWeb3Holdings} cashBalance={web3CashBalance} setCashBalance={setWeb3CashBalance} mainPortfolioCashBalance={mainPortfolioCashBalance} setMainPortfolioCashBalance={setMainPortfolioCashBalance} isRealMode={true} /><NewsSection articles={newsForView} /></>;
@@ -174,7 +174,7 @@ export function RealDashboard({ activeMode }: RealDashboardProps) {
   }
   
   const renderMarketContent = () => {
-      if(activeMode === 'Exchange') {
+      if(activeMode === 'Crypto') {
           return <div className="space-y-8"><WatchlistSection title={categoryWatchlistTitle} displayItems={itemsForWatchlist} isPredefinedList={true}/><NewsSection articles={newsForView} /></div>
       } else if (activeMode === 'Web3') {
            return <div className="space-y-8"><WatchlistSection title={categoryWatchlistTitle} displayItems={itemsForWatchlist} isPredefinedList={true} /><NewsSection articles={newsForView} /></div>

@@ -37,13 +37,13 @@ export default function OrdersPage() {
   const { user } = useAuth();
   const isRealMode = user?.id === 'REAL456';
   
-  const [searchMode, setSearchMode] = useState<'Fiat' | 'Exchange' | 'Web3'>(isRealMode ? 'Exchange' : 'Fiat');
+  const [activeMode, setActiveMode] = useState<'Fiat' | 'Crypto' | 'Web3'>(isRealMode ? 'Crypto' : 'Fiat');
 
   useEffect(() => {
-    if (isRealMode && searchMode === 'Fiat') {
-      setSearchMode('Exchange');
+    if (isRealMode && activeMode === 'Fiat') {
+      setActiveMode('Crypto');
     }
-  }, [isRealMode, searchMode]);
+  }, [isRealMode, activeMode]);
 
   const orderTabs = isRealMode ? realOrderTabs : demoOrderTabs;
   const [activeTab, setActiveTab] = useState("executed");
@@ -70,8 +70,8 @@ export default function OrdersPage() {
     <ProtectedRoute>
       <div className="flex flex-col min-h-screen">
         <AppHeader
-          searchMode={searchMode}
-          onSearchModeChange={setSearchMode}
+          activeMode={activeMode}
+          onModeChange={setActiveMode}
           isRealMode={isRealMode}
         />
         <main className="flex-grow flex flex-col">

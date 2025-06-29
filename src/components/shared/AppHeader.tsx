@@ -17,8 +17,8 @@ import { mockMarketIndices, mockCryptoAssets } from '@/lib/mockData';
 import { SideMenu } from './SideMenu';
 
 interface AppHeaderProps {
-  activeMode?: 'Portfolio' | 'Fiat' | 'Exchange' | 'Web3';
-  onModeChange?: (mode: 'Portfolio' | 'Fiat' | 'Exchange' | 'Web3') => void;
+  activeMode?: 'Portfolio' | 'Fiat' | 'Crypto' | 'Web3';
+  onModeChange?: (mode: 'Portfolio' | 'Fiat' | 'Crypto' | 'Web3') => void;
   isRealMode?: boolean;
 }
 
@@ -42,7 +42,7 @@ export function AppHeader({ activeMode, onModeChange, isRealMode }: AppHeaderPro
     }
   };
 
-  const handleModeChange = (mode: 'Portfolio' | 'Fiat' | 'Exchange' | 'Web3') => {
+  const handleModeChange = (mode: 'Portfolio' | 'Fiat' | 'Crypto' | 'Web3') => {
     if (onModeChange && mode !== activeMode) {
         onModeChange(mode);
         toast({
@@ -55,7 +55,7 @@ export function AppHeader({ activeMode, onModeChange, isRealMode }: AppHeaderPro
   const getPlaceholderText = () => {
     if (activeMode === 'Portfolio') return "Search in all portfolios...";
     if (activeMode === 'Fiat') return "Search stocks, futures...";
-    if (activeMode === 'Exchange') return "Search crypto spot, futures...";
+    if (activeMode === 'Crypto') return "Search crypto spot, futures...";
     if (activeMode === 'Web3') return "Search Web3 assets...";
     return "Search...";
   };
@@ -68,7 +68,7 @@ export function AppHeader({ activeMode, onModeChange, isRealMode }: AppHeaderPro
     if (isRealMode) {
         isCryptoView = true;
     } else {
-        isCryptoView = activeMode === 'Exchange' || activeMode === 'Web3' || activeMode === 'Portfolio';
+        isCryptoView = activeMode === 'Crypto' || activeMode === 'Web3' || activeMode === 'Portfolio';
     }
     
     return {
@@ -152,16 +152,16 @@ export function AppHeader({ activeMode, onModeChange, isRealMode }: AppHeaderPro
                         </Button>
                     )}
                     <Button 
-                        onClick={() => handleModeChange('Exchange')}
+                        onClick={() => handleModeChange('Crypto')}
                         variant="ghost"
                         className={cn(
                             "h-7 px-3 text-xs rounded-md border-none flex-1",
-                            activeMode === 'Exchange' 
+                            activeMode === 'Crypto' 
                                 ? 'bg-primary-foreground/20 text-white shadow-sm' 
                                 : 'bg-transparent text-primary-foreground/70 hover:bg-primary-foreground/15'
                         )}
                     >
-                        Exchange
+                        Crypto
                     </Button>
                     <Button 
                         onClick={() => handleModeChange('Web3')}

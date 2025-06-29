@@ -38,7 +38,7 @@ export const mockCommunityPosts: CommunityPost[] = [
     likes: 289,
     comments: 45,
     reposts: 60,
-    category: 'Exchange',
+    category: 'Crypto',
   },
   {
     id: 'post3',
@@ -177,7 +177,7 @@ export const mockCommunityPosts: CommunityPost[] = [
     category: 'Fiat',
   },
   {
-    id: 'post_exchange_1',
+    id: 'post_crypto_1',
     user: {
       name: 'Crypto Trader Pro',
       username: '@CT_Pro',
@@ -194,10 +194,10 @@ export const mockCommunityPosts: CommunityPost[] = [
     likes: 180,
     comments: 25,
     reposts: 35,
-    category: 'Exchange',
+    category: 'Crypto',
   },
   {
-    id: 'post_exchange_2',
+    id: 'post_crypto_2',
     user: {
       name: 'DeFi Degen',
       username: '@DeFiDegenLife',
@@ -210,7 +210,7 @@ export const mockCommunityPosts: CommunityPost[] = [
     likes: 250,
     comments: 60,
     reposts: 55,
-    category: 'Exchange',
+    category: 'Crypto',
   },
   {
     id: 'post_web3_1',

@@ -15,15 +15,15 @@ export default function ProfilePage() {
   const { user, logout } = useAuth();
   const isRealMode = user?.id === 'REAL456';
   
-  const [searchMode, setSearchMode] = useState<'Fiat' | 'Exchange' | 'Web3'>(isRealMode ? 'Exchange' : 'Fiat');
+  const [activeMode, setActiveMode] = useState<'Fiat' | 'Crypto' | 'Web3'>(isRealMode ? 'Crypto' : 'Fiat');
   
   return (
     <ProtectedRoute>
       <div className="flex flex-col min-h-screen">
         <AppHeader 
             isRealMode={isRealMode} 
-            searchMode={searchMode} 
-            onSearchModeChange={setSearchMode} 
+            activeMode={activeMode} 
+            onModeChange={setActiveMode} 
         />
         <main className="flex-grow container mx-auto p-4 sm:p-6 lg:p-8 flex items-center justify-center">
           <Card className="w-full max-w-lg shadow-xl">

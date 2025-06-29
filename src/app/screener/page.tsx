@@ -267,7 +267,7 @@ export default function ScreenerPage() {
     const [error, setError] = useState('');
 
     const isRealMode = user?.id === 'REAL456';
-    const [searchMode, setSearchMode] = useState<'Fiat' | 'Exchange' | 'Web3'>(isRealMode ? 'Exchange' : 'Fiat');
+    const [activeMode, setActiveMode] = useState<'Fiat' | 'Crypto' | 'Web3'>(isRealMode ? 'Crypto' : 'Fiat');
     
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -313,8 +313,8 @@ export default function ScreenerPage() {
         <ProtectedRoute>
             <div className="flex flex-col h-screen bg-background text-foreground">
                 <AppHeader 
-                    searchMode={searchMode}
-                    onSearchModeChange={setSearchMode}
+                    activeMode={activeMode}
+                    onModeChange={setActiveMode}
                     isRealMode={isRealMode}
                 />
                 <main className="flex-grow p-4 sm:p-6 lg:p-8 space-y-6 overflow-y-auto">
@@ -359,7 +359,7 @@ export default function ScreenerPage() {
                         </CardContent>
                     </Card>
 
-                    {searchMode === 'Fiat' && (
+                    {activeMode === 'Fiat' && (
                          <Card>
                             <CardContent className="p-2">
                                 <Accordion type="single" collapsible className="w-full">
@@ -384,7 +384,7 @@ export default function ScreenerPage() {
                                                                 Stocks
                                                             </Button>
                                                         </li>
-                                                        {item.content.map((subItem) => (
+                                                        {Array.isArray(item.content) && item.content.map((subItem) => (
                                                             <li key={subItem}>
                                                             <Button
                                                                 variant="ghost"
@@ -425,7 +425,7 @@ export default function ScreenerPage() {
                                                         ))}
                                                     </ul>
                                                 ) : (
-                                                    item.content
+                                                    typeof item.content === 'string' ? item.content : ''
                                                 )}
                                             </AccordionContent>
                                         </AccordionItem>
