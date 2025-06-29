@@ -46,8 +46,21 @@ const BondBidItem: React.FC<BondBidItemProps> = ({ bid }) => {
   );
 };
 
-export function BondBidsDisplay() {
+interface BondBidsDisplayProps {
+  activeMode: 'Fiat' | 'Crypto' | 'Web3';
+}
+
+export function BondBidsDisplay({ activeMode }: BondBidsDisplayProps) {
   const bids = mockBondBids;
+
+  if (activeMode !== 'Fiat') {
+    return (
+      <div className="text-center py-10">
+        <LandPlot className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+        <p className="text-muted-foreground">Bond bids are only available in Fiat mode.</p>
+      </div>
+    );
+  }
 
   if (bids.length === 0) {
     return (
@@ -66,4 +79,3 @@ export function BondBidsDisplay() {
     </ScrollArea>
   );
 }
-

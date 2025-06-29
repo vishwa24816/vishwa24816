@@ -1,3 +1,4 @@
+
 "use client";
 
 import React from 'react';
@@ -56,24 +57,38 @@ const AlertItem: React.FC<AlertItemProps> = ({ alert }) => {
 
 interface AlertsDisplayProps {
   isRealMode?: boolean;
+  activeMode: 'Fiat' | 'Crypto' | 'Web3';
 }
 
-export function AlertsDisplay({ isRealMode = false }: AlertsDisplayProps) {
-  const cryptoAssetTypes = ['Crypto', 'Crypto Future'];
-  
+export function AlertsDisplay({ isRealMode = false, activeMode }: AlertsDisplayProps) {
   const alerts = React.useMemo(() => {
-    if (isRealMode) {
-      return mockPriceAlerts.filter(alert => cryptoAssetTypes.includes(alert.assetType));
+    const fiatAssetTypes: PriceAlert['assetType'][] = ['Stock', 'Future', 'Option', 'ETF', 'Index'];
+    const cryptoAssetTypes: PriceAlert['assetType'][] = ['Crypto', 'Crypto Future'];
+    // No Web3 alerts in mock data
+
+    let filteredAlerts: PriceAlert[] = [];
+
+    if(activeMode === 'Fiat') {
+        filteredAlerts = mockPriceAlerts.filter(alert => fiatAssetTypes.includes(alert.assetType));
+    } else if (activeMode === 'Crypto') {
+        filteredAlerts = mockPriceAlerts.filter(alert => cryptoAssetTypes.includes(alert.assetType));
     }
-    return mockPriceAlerts.filter(alert => !cryptoAssetTypes.includes(alert.assetType));
-  }, [isRealMode]);
+    // No alerts for Web3 mode
+
+    if (isRealMode) {
+      return filteredAlerts.filter(alert => cryptoAssetTypes.includes(alert.assetType));
+    }
+    
+    return filteredAlerts;
+  }, [isRealMode, activeMode]);
+
 
   if (alerts.length === 0) {
     return (
       <div className="text-center py-10">
         <BellRing className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
         <p className="text-muted-foreground">
-          {isRealMode ? "No crypto price alerts set." : "No price alerts set for stocks or F&O."}
+          No price alerts set for {activeMode} mode.
         </p>
       </div>
     );

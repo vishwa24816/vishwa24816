@@ -10,6 +10,7 @@ export const mockFoBaskets: FoBasket[] = [
     instrumentsCount: 2,
     createdDate: '2024-07-15',
     pnl: 1250.50,
+    category: 'Fiat',
     instruments: [
       { id: 'instr1-1', action: 'BUY', name: 'NIFTY 25JUL24 22000 CE', price: 150.50, lots: 1, quantityPerLot: 50, ltp: 160.00 },
       { id: 'instr1-2', action: 'SELL', name: 'NIFTY 25JUL24 22200 CE', price: 80.25, lots: 1, quantityPerLot: 50, ltp: 70.00 },
@@ -29,6 +30,7 @@ export const mockFoBaskets: FoBasket[] = [
     requiredMargin: 45780.00,
     instrumentsCount: 4,
     createdDate: '2024-07-20',
+    category: 'Fiat',
     instruments: [
       { id: 'instr2-1', action: 'SELL', name: 'BANKNIFTY 29AUG24 47000 PE', price: 120.00, lots: 1, quantityPerLot: 15, ltp: 125.00 },
       { id: 'instr2-2', action: 'BUY', name: 'BANKNIFTY 29AUG24 46800 PE', price: 90.00, lots: 1, quantityPerLot: 15, ltp: 95.00 },
@@ -51,6 +53,7 @@ export const mockFoBaskets: FoBasket[] = [
     instrumentsCount: 2,
     createdDate: '2024-07-10',
     pnl: -350.80,
+    category: 'Fiat',
     instruments: [
       { id: 'instr3-1', action: 'BUY', name: 'RELIANCE JAN25 FUT', price: 2900.00, lots: 1, quantityPerLot: 250, ltp: 2880.00 },
       { id: 'instr3-2', action: 'BUY', name: 'RELIANCE JAN25 2800 PE', price: 50.75, lots: 1, quantityPerLot: 250, ltp: 60.25 },
@@ -71,6 +74,7 @@ export const mockFoBaskets: FoBasket[] = [
     instrumentsCount: 3,
     createdDate: '2024-05-10',
     pnl: 12500.00,
+    category: 'Fiat',
     instruments: [
       { id: 'bs1-1', action: 'BUY', name: 'RELIANCE', price: 2800, lots: 20, quantityPerLot: 1, ltp: 2950 },
       { id: 'bs1-2', action: 'BUY', name: 'HDFCBANK', price: 1500, lots: 30, quantityPerLot: 1, ltp: 1550 },
@@ -92,6 +96,7 @@ export const mockFoBaskets: FoBasket[] = [
     instrumentsCount: 2,
     createdDate: '2024-06-01',
     pnl: 3200.00,
+    category: 'Fiat',
     instruments: [
         { id: 'bs2-1', action: 'BUY', name: 'TCS', price: 3800, lots: 10, quantityPerLot: 1, ltp: 3850 },
         { id: 'bs2-2', action: 'BUY', name: 'WIPRO', price: 450, lots: 80, quantityPerLot: 1, ltp: 460 },
@@ -112,6 +117,7 @@ export const mockFoBaskets: FoBasket[] = [
     instrumentsCount: 2, 
     createdDate: '2024-04-15',
     pnl: 8500.00,
+    category: 'Crypto',
     instruments: [
         { id: 'bc1-1', action: 'BUY', name: 'BTC', price: 2500000, lots: 0.01, quantityPerLot: 1, ltp: 2800000 }, 
         { id: 'bc1-2', action: 'BUY', name: 'ETH', price: 180000, lots: 0.138, quantityPerLot: 1, ltp: 200000 }, 
@@ -131,6 +137,7 @@ export const mockFoBaskets: FoBasket[] = [
     requiredMargin: 25000.00,
     instrumentsCount: 2,
     createdDate: '2024-07-22',
+    category: 'Crypto',
      instruments: [
         { id: 'bc2-1', action: 'BUY', name: 'SOL', price: 15000, lots: 1, quantityPerLot: 1, ltp: 15500 }, 
         { id: 'bc2-2', action: 'BUY', name: 'ADA', price: 100, lots: 100, quantityPerLot: 1, ltp: 105 },
@@ -151,6 +158,7 @@ export const mockFoBaskets: FoBasket[] = [
     instrumentsCount: 2, 
     createdDate: '2024-03-01',
     pnl: 15000.00,
+    category: 'Fiat',
     instruments: [ 
         { id: 'bmf1-1', action: 'BUY', name: 'Parag Parikh Flexi Cap', price: 60, lots: 1000, quantityPerLot: 1, ltp: 65 },
         { id: 'bmf1-2', action: 'BUY', name: 'Mirae Asset ELSS', price: 30, lots: 2000, quantityPerLot: 1, ltp: 33 },
@@ -171,6 +179,7 @@ export const mockFoBaskets: FoBasket[] = [
     instrumentsCount: 1,
     createdDate: '2024-02-10',
     pnl: 4500.00,
+    category: 'Fiat',
     instruments: [
         { id: 'bmf2-1', action: 'BUY', name: 'Axis Long Term Equity', price: 50, lots: 1000, quantityPerLot: 1, ltp: 55 },
     ],

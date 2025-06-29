@@ -64,19 +64,38 @@ const SipItem: React.FC<SipItemProps> = ({ sip }) => {
 
 interface SipsDisplayProps {
   isRealMode?: boolean;
+  activeMode: 'Fiat' | 'Crypto' | 'Web3';
 }
 
-export function SipsDisplay({ isRealMode = false }: SipsDisplayProps) {
-  const sips = isRealMode
-    ? mockSips.filter(sip => sip.assetType === 'Crypto')
-    : mockSips.filter(sip => sip.assetType !== 'Crypto');
+export function SipsDisplay({ isRealMode = false, activeMode }: SipsDisplayProps) {
+  const sips = React.useMemo(() => {
+    const fiatAssetTypes = ['Stock', 'Mutual Fund', 'ETF', 'Gold Bond'];
+    const cryptoAssetTypes = ['Crypto'];
+    // No web3 sips in mock data
+
+    let filteredSips: SipOrder[] = [];
+    
+    if (activeMode === 'Fiat') {
+        filteredSips = mockSips.filter(sip => fiatAssetTypes.includes(sip.assetType));
+    } else if (activeMode === 'Crypto') {
+        filteredSips = mockSips.filter(sip => cryptoAssetTypes.includes(sip.assetType));
+    } else {
+        filteredSips = []; // No Web3 sips
+    }
+
+    if (isRealMode) {
+        return filteredSips.filter(sip => cryptoAssetTypes.includes(sip.assetType));
+    }
+
+    return filteredSips;
+  }, [isRealMode, activeMode]);
 
   if (sips.length === 0) {
     return (
       <div className="text-center py-10">
         <CalendarClock className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
         <p className="text-muted-foreground">
-          {isRealMode ? "No crypto SIPs found." : "No SIPs found for stocks or mutual funds."}
+          No SIPs found for {activeMode} mode.
         </p>
       </div>
     );

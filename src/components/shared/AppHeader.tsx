@@ -35,6 +35,8 @@ export function AppHeader({ activeMode, onModeChange, isRealMode }: AppHeaderPro
     setIsMounted(true);
   }, []);
 
+  const isPortfolioDisabled = pathname === '/orders' || pathname === '/screener' || pathname === '/community';
+
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchTerm.trim()) {
@@ -45,10 +47,12 @@ export function AppHeader({ activeMode, onModeChange, isRealMode }: AppHeaderPro
   const handleModeChange = (mode: 'Portfolio' | 'Fiat' | 'Crypto' | 'Web3') => {
     if (onModeChange && mode !== activeMode) {
         onModeChange(mode);
-        toast({
-            title: 'Mode Switched',
-            description: `Now in ${mode} mode.`,
-        });
+        if(!isPortfolioDisabled || mode !== 'Portfolio') {
+            toast({
+                title: 'Mode Switched',
+                description: `Now in ${mode} mode.`,
+            });
+        }
     }
   };
   
@@ -77,7 +81,7 @@ export function AppHeader({ activeMode, onModeChange, isRealMode }: AppHeaderPro
     };
   }, [activeMode, isRealMode]);
 
-  const hideFiatButton = isRealMode && (pathname === '/' || pathname === '/orders');
+  const hideFiatButton = isRealMode && (pathname === '/' || pathname === '/orders' || pathname === '/screener' || pathname === '/community');
 
   if (!isMounted) {
     // Skeleton loader
@@ -134,6 +138,7 @@ export function AppHeader({ activeMode, onModeChange, isRealMode }: AppHeaderPro
                                 ? 'bg-primary-foreground/20 text-white shadow-sm' 
                                 : 'bg-transparent text-primary-foreground/70 hover:bg-primary-foreground/15'
                         )}
+                        disabled={isPortfolioDisabled}
                     >
                         Portfolio
                     </Button>

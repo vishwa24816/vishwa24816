@@ -49,8 +49,21 @@ const GttOrderItem: React.FC<GttOrderItemProps> = ({ order }) => {
   );
 };
 
-export function GttOrdersDisplay() {
+interface GttOrdersDisplayProps {
+  activeMode: 'Fiat' | 'Crypto' | 'Web3';
+}
+
+export function GttOrdersDisplay({ activeMode }: GttOrdersDisplayProps) {
   const orders = mockGttOrders;
+
+  if (activeMode !== 'Fiat') {
+    return (
+      <div className="text-center py-10">
+        <Target className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+        <p className="text-muted-foreground">GTT orders are only available in Fiat mode.</p>
+      </div>
+    );
+  }
 
   if (orders.length === 0) {
     return (
@@ -69,4 +82,3 @@ export function GttOrdersDisplay() {
     </ScrollArea>
   );
 }
-

@@ -224,7 +224,8 @@ export interface FoBasket {
   riskRewardRatio?: string; 
   breakEvenPoints?: string; 
   totalMargin?: number; 
-  marginBenefits?: number; 
+  marginBenefits?: number;
+  category?: 'Fiat' | 'Crypto';
 }
 
 export interface SelectedOptionLeg {

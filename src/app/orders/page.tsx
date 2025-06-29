@@ -107,22 +107,22 @@ export default function OrdersPage() {
 
             <div className="w-full px-0 sm:px-2 md:px-4 py-4 flex-grow flex flex-col">
               <TabsContent value="executed" className="flex-grow flex flex-col mt-0 data-[state=inactive]:hidden">
-                <OpenPositionsDisplay isRealMode={isRealMode} />
+                <OpenPositionsDisplay isRealMode={isRealMode} activeMode={activeMode} />
               </TabsContent>
               <TabsContent value="gtt" className="flex-grow flex flex-col mt-0 data-[state=inactive]:hidden">
-                <GttOrdersDisplay />
+                <GttOrdersDisplay activeMode={activeMode} />
               </TabsContent>
               <TabsContent value="bids" className="flex-grow flex flex-col mt-0 data-[state=inactive]:hidden">
-                <BondBidsDisplay />
+                <BondBidsDisplay activeMode={activeMode} />
               </TabsContent>
               <TabsContent value="baskets" className="flex-grow flex flex-col mt-0 data-[state=inactive]:hidden">
-                <BasketsDisplay isRealMode={isRealMode} />
+                <BasketsDisplay isRealMode={isRealMode} activeMode={activeMode} />
               </TabsContent>
               <TabsContent value="sips" className="flex-grow flex flex-col mt-0 data-[state=inactive]:hidden">
-                <SipsDisplay isRealMode={isRealMode} />
+                <SipsDisplay isRealMode={isRealMode} activeMode={activeMode} />
               </TabsContent>
               <TabsContent value="alerts" className="flex-grow flex flex-col mt-0 data-[state=inactive]:hidden">
-                <AlertsDisplay isRealMode={isRealMode} />
+                <AlertsDisplay isRealMode={isRealMode} activeMode={activeMode} />
               </TabsContent>
             </div>
           </Tabs>

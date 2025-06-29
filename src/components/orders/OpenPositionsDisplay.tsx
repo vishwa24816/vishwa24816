@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import type { PortfolioHolding, IntradayPosition, FoPosition, CryptoFuturePosition } from '@/types';
-import { mockPortfolioHoldings, mockIntradayPositions, mockFoPositions, mockCryptoFutures } from '@/lib/mockData';
+import { mockPortfolioHoldings, mockIntradayPositions, mockFoPositions, mockCryptoFutures, mockWeb3Holdings } from '@/lib/mockData';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { Briefcase, InfoIcon, XCircle } from 'lucide-react';
@@ -66,7 +66,7 @@ const PositionItemCard: React.FC<PositionItemProps> = ({ item, type }) => {
     pnl = `${cryptoFutItem.unrealizedPnL.toFixed(2)} USDT`;
     isProfit = cryptoFutItem.unrealizedPnL >= 0;
     details = `Leverage: ${cryptoFutItem.leverage}x`;
-  } else if (type === 'Crypto') { // Explicitly handling 'Crypto' passed as type prop
+  } else if (type === 'Crypto' || type === 'Web3') { // Explicitly handling 'Crypto' passed as type prop
     const cryptoItem = item as PortfolioHolding; // Assuming it's from portfolio holdings
     name = cryptoItem.name;
     symbolDisplay = cryptoItem.symbol || '';
@@ -113,6 +113,10 @@ const PositionItemCard: React.FC<PositionItemProps> = ({ item, type }) => {
       const cryptoItem = item as PortfolioHolding; 
       routerSymbolForPath = cryptoItem.symbol;
       if (routerSymbolForPath) path = `/order/crypto/${encodeURIComponent(routerSymbolForPath)}`;
+    } else if (type === "Web3") {
+      const web3Item = item as PortfolioHolding;
+      routerSymbolForPath = web3Item.symbol;
+      if (routerSymbolForPath) path = `/order/crypto/${encodeURIComponent(routerSymbolForPath)}`; // Web3 assets use the crypto order page for now
     } else if (type === "Crypto Future") {
       const cryptoFutItem = item as CryptoFuturePosition;
       routerSymbolForPath = cryptoFutItem.symbol;
@@ -170,29 +174,39 @@ const PositionItemCard: React.FC<PositionItemProps> = ({ item, type }) => {
 
 interface OpenPositionsDisplayProps {
   isRealMode?: boolean;
+  activeMode: 'Fiat' | 'Crypto' | 'Web3';
 }
 
-export function OpenPositionsDisplay({ isRealMode = false }: OpenPositionsDisplayProps) {
-  const allDemoPositions = [
-    ...mockPortfolioHoldings.filter(h => h.type === 'Stock' || h.type === 'ETF').map(item => ({ item, typeLabel: "Holding" })),
-    ...mockIntradayPositions.map(item => ({ item, typeLabel: "Intraday" })),
-    ...mockFoPositions.map(item => ({ item, typeLabel: "F&O" })),
-    ...mockPortfolioHoldings.filter(h => h.type === 'Crypto').map(item => ({ item, typeLabel: "Crypto" })),
-    ...mockCryptoFutures.map(item => ({ item, typeLabel: "Crypto Future" })),
-  ];
-  
-  const allRealPositions = [
-    ...mockPortfolioHoldings.filter(h => h.type === 'Crypto').map(item => ({ item, typeLabel: "Crypto" })),
-    ...mockCryptoFutures.map(item => ({ item, typeLabel: "Crypto Future" })),
-  ];
-  
-  const allPositions = isRealMode ? allRealPositions : allDemoPositions;
+export function OpenPositionsDisplay({ isRealMode = false, activeMode }: OpenPositionsDisplayProps) {
+  const allPositions = React.useMemo(() => {
+    // Demo mode includes a mix of all types
+    const demoPositions = [
+      ...mockPortfolioHoldings.filter(h => h.type === 'Stock' || h.type === 'ETF').map(item => ({ item, typeLabel: "Holding", category: 'Fiat' as const })),
+      ...mockIntradayPositions.map(item => ({ item, typeLabel: "Intraday", category: 'Fiat' as const })),
+      ...mockFoPositions.map(item => ({ item, typeLabel: "F&O", category: 'Fiat' as const })),
+      ...mockPortfolioHoldings.filter(h => h.type === 'Crypto').map(item => ({ item, typeLabel: "Crypto", category: 'Crypto' as const })),
+      ...mockCryptoFutures.map(item => ({ item, typeLabel: "Crypto Future", category: 'Crypto' as const })),
+      ...mockWeb3Holdings.map(item => ({ item, typeLabel: "Web3", category: 'Web3' as const })),
+    ];
+    
+    // Real mode is focused on crypto/web3
+    const realPositions = [
+      ...mockPortfolioHoldings.filter(h => h.type === 'Crypto').map(item => ({ item, typeLabel: "Crypto", category: 'Crypto' as const })),
+      ...mockCryptoFutures.map(item => ({ item, typeLabel: "Crypto Future", category: 'Crypto' as const })),
+      ...mockWeb3Holdings.map(item => ({ item, typeLabel: "Web3", category: 'Web3' as const })),
+    ];
+    
+    const basePositions = isRealMode ? realPositions : demoPositions;
+
+    return basePositions.filter(p => p.category === activeMode);
+
+  }, [isRealMode, activeMode]);
 
   if (allPositions.length === 0) {
     return (
       <div className="text-center py-10">
         <Briefcase className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-        <p className="text-muted-foreground">No open positions or holdings found.</p>
+        <p className="text-muted-foreground">No open positions or holdings found for {activeMode} mode.</p>
       </div>
     );
   }

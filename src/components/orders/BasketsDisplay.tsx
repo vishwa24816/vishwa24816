@@ -130,19 +130,27 @@ const BasketItem: React.FC<BasketItemProps> = ({ basket }) => {
 
 interface BasketsDisplayProps {
   isRealMode?: boolean;
+  activeMode: 'Fiat' | 'Crypto' | 'Web3';
 }
 
-export function BasketsDisplay({ isRealMode = false }: BasketsDisplayProps) {
-  const baskets = isRealMode
-    ? mockFoBaskets.filter(basket => basket.name.toLowerCase().includes('crypto') || basket.name.toLowerCase().includes('defi'))
-    : mockFoBaskets.filter(basket => !basket.name.toLowerCase().includes('stock') && !basket.name.toLowerCase().includes('crypto') && !basket.name.toLowerCase().includes('mf'));
+export function BasketsDisplay({ isRealMode = false, activeMode }: BasketsDisplayProps) {
+  const baskets = React.useMemo(() => {
+    let filteredBaskets = mockFoBaskets.filter(basket => basket.category === activeMode);
+
+    if (isRealMode) {
+      return filteredBaskets.filter(basket => basket.category === 'Crypto');
+    }
+
+    return filteredBaskets;
+  }, [isRealMode, activeMode]);
+
 
   if (baskets.length === 0) {
     return (
       <div className="text-center py-10">
         <ShoppingBasket className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
         <p className="text-muted-foreground">
-          {isRealMode ? "No crypto basket orders found." : "No stock or F&O basket orders found."}
+          No basket orders found for {activeMode} mode.
         </p>
       </div>
     );
