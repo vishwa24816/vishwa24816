@@ -17,12 +17,12 @@ import { mockMarketIndices, mockCryptoAssets } from '@/lib/mockData';
 import { SideMenu } from './SideMenu';
 
 interface AppHeaderProps {
-  searchMode?: 'Fiat' | 'Exchange' | 'Web3';
-  onSearchModeChange?: (mode: 'Fiat' | 'Exchange' | 'Web3') => void;
+  activeMode?: 'Portfolio' | 'Fiat' | 'Exchange' | 'Web3';
+  onModeChange?: (mode: 'Portfolio' | 'Fiat' | 'Exchange' | 'Web3') => void;
   isRealMode?: boolean;
 }
 
-export function AppHeader({ searchMode, onSearchModeChange, isRealMode }: AppHeaderProps) {
+export function AppHeader({ activeMode, onModeChange, isRealMode }: AppHeaderProps) {
   const { user } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
@@ -42,9 +42,9 @@ export function AppHeader({ searchMode, onSearchModeChange, isRealMode }: AppHea
     }
   };
 
-  const handleModeChange = (mode: 'Fiat' | 'Exchange' | 'Web3') => {
-    if (onSearchModeChange && mode !== searchMode) {
-        onSearchModeChange(mode);
+  const handleModeChange = (mode: 'Portfolio' | 'Fiat' | 'Exchange' | 'Web3') => {
+    if (onModeChange && mode !== activeMode) {
+        onModeChange(mode);
         toast({
             title: 'Mode Switched',
             description: `Now in ${mode} mode.`,
@@ -53,28 +53,29 @@ export function AppHeader({ searchMode, onSearchModeChange, isRealMode }: AppHea
   };
   
   const getPlaceholderText = () => {
-    if (searchMode === 'Fiat') return "Search stocks, futures...";
-    if (searchMode === 'Exchange') return "Search crypto spot, futures...";
-    if (searchMode === 'Web3') return "Search Web3 assets...";
+    if (activeMode === 'Portfolio') return "Search in all portfolios...";
+    if (activeMode === 'Fiat') return "Search stocks, futures...";
+    if (activeMode === 'Exchange') return "Search crypto spot, futures...";
+    if (activeMode === 'Web3') return "Search Web3 assets...";
     return "Search...";
   };
 
   const searchPlaceholder = getPlaceholderText();
-  const searchAriaLabel = `Search ${searchMode}`;
+  const searchAriaLabel = `Search ${activeMode}`;
   
   const { marketOverviewTitle, marketOverviewItems } = useMemo(() => {
     let isCryptoView = false;
     if (isRealMode) {
         isCryptoView = true;
     } else {
-        isCryptoView = searchMode === 'Exchange' || searchMode === 'Web3';
+        isCryptoView = activeMode === 'Exchange' || activeMode === 'Web3' || activeMode === 'Portfolio';
     }
     
     return {
       marketOverviewTitle: isCryptoView ? "Top Cryptocurrencies" : "Market Overview",
       marketOverviewItems: isCryptoView ? mockCryptoAssets.slice(0, 5) : mockMarketIndices,
     };
-  }, [searchMode, isRealMode]);
+  }, [activeMode, isRealMode]);
 
   const hideFiatButton = isRealMode && (pathname === '/' || pathname === '/orders');
 
@@ -121,16 +122,28 @@ export function AppHeader({ searchMode, onSearchModeChange, isRealMode }: AppHea
             </div>
         </div>
 
-        {onSearchModeChange && (
+        {onModeChange && (
             <div className="flex items-center justify-center pb-2">
                 <div className="flex items-center rounded-md bg-primary-foreground/10 p-1 space-x-1 w-full">
+                    <Button 
+                        onClick={() => handleModeChange('Portfolio')}
+                        variant="ghost"
+                        className={cn(
+                            "h-7 px-3 text-xs rounded-md border-none flex-1",
+                            activeMode === 'Portfolio' 
+                                ? 'bg-primary-foreground/20 text-white shadow-sm' 
+                                : 'bg-transparent text-primary-foreground/70 hover:bg-primary-foreground/15'
+                        )}
+                    >
+                        Portfolio
+                    </Button>
                     {!hideFiatButton && (
                         <Button 
                             onClick={() => handleModeChange('Fiat')}
                             variant="ghost"
                             className={cn(
                                 "h-7 px-3 text-xs rounded-md border-none flex-1",
-                                searchMode === 'Fiat' 
+                                activeMode === 'Fiat' 
                                     ? 'bg-primary-foreground/20 text-white shadow-sm' 
                                     : 'bg-transparent text-primary-foreground/70 hover:bg-primary-foreground/15'
                             )}
@@ -143,7 +156,7 @@ export function AppHeader({ searchMode, onSearchModeChange, isRealMode }: AppHea
                         variant="ghost"
                         className={cn(
                             "h-7 px-3 text-xs rounded-md border-none flex-1",
-                            searchMode === 'Exchange' 
+                            activeMode === 'Exchange' 
                                 ? 'bg-primary-foreground/20 text-white shadow-sm' 
                                 : 'bg-transparent text-primary-foreground/70 hover:bg-primary-foreground/15'
                         )}
@@ -155,7 +168,7 @@ export function AppHeader({ searchMode, onSearchModeChange, isRealMode }: AppHea
                         variant="ghost"
                         className={cn(
                             "h-7 px-3 text-xs rounded-md border-none flex-1",
-                            searchMode === 'Web3' 
+                            activeMode === 'Web3' 
                                 ? 'bg-primary-foreground/20 text-white shadow-sm' 
                                 : 'bg-transparent text-primary-foreground/70 hover:bg-primary-foreground/15'
                         )}

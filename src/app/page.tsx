@@ -13,19 +13,19 @@ export default function DashboardRouterPage() {
   const { user, loading } = useAuth();
   const isRealMode = user?.id === 'REAL456';
 
-  const [searchMode, setSearchMode] = useState<'Fiat' | 'Exchange' | 'Web3'>(isRealMode ? 'Exchange' : 'Fiat');
+  const [activeMode, setActiveMode] = useState<'Portfolio' | 'Fiat' | 'Exchange' | 'Web3'>(isRealMode ? 'Portfolio' : 'Portfolio');
   
   useEffect(() => {
-    if (isRealMode && searchMode === 'Fiat') {
-      setSearchMode('Exchange');
+    if (isRealMode && activeMode === 'Fiat') {
+      setActiveMode('Exchange');
     }
-  }, [isRealMode, searchMode]);
+  }, [isRealMode, activeMode]);
 
   if (loading || !user) {
      return (
         <ProtectedRoute>
             <div className="flex flex-col min-h-screen">
-                <AppHeader searchMode={searchMode} onSearchModeChange={setSearchMode} isRealMode={false} />
+                <AppHeader activeMode={activeMode} onModeChange={setActiveMode} isRealMode={false} />
                 <main className="flex-grow container mx-auto p-4 sm:p-6 lg:p-8 space-y-8">
                     <Skeleton className="h-24 w-full" />
                     <Skeleton className="h-12 w-full" />
@@ -43,11 +43,11 @@ export default function DashboardRouterPage() {
     <ProtectedRoute>
       <div className="flex flex-col min-h-screen">
         <AppHeader 
-          searchMode={searchMode}
-          onSearchModeChange={setSearchMode}
+          activeMode={activeMode}
+          onModeChange={setActiveMode}
           isRealMode={isRealMode}
         />
-        {isRealMode ? <RealDashboard searchMode={searchMode} /> : <DemoDashboard searchMode={searchMode} />}
+        {isRealMode ? <RealDashboard activeMode={activeMode} /> : <DemoDashboard activeMode={activeMode} />}
         <footer className="py-6 text-center text-sm text-muted-foreground border-t">
           © {new Date().getFullYear()} SIM - Stock Information &amp; Management. All rights reserved.
         </footer>
