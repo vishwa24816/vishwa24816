@@ -51,6 +51,7 @@ export function CryptoFuturesSection({ positions, cashBalance }: CryptoFuturesSe
   };
 
   const totalUnrealizedPnL = positions.reduce((acc, pos) => acc + pos.unrealizedPnL, 0);
+  const totalMtmPnl = positions.reduce((acc, pos) => acc + pos.mtmPnl, 0);
   const totalMargin = positions.reduce((acc, pos) => acc + pos.margin, 0);
 
   const chartConfig = useMemo(() => {
@@ -109,9 +110,15 @@ export function CryptoFuturesSection({ positions, cashBalance }: CryptoFuturesSe
       </CardHeader>
       <CardContent className="p-0">
         <div className="px-6 pb-4 border-b">
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div>
-              <p className="text-sm text-muted-foreground">Total Unrealized P&L</p>
+              <p className="text-sm text-muted-foreground">MTM P&L</p>
+              <p className={cn("text-lg font-semibold", totalMtmPnl >= 0 ? 'text-green-600' : 'text-red-600')}>
+                  {formatCurrency(totalMtmPnl)}
+              </p>
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground">Overall P&L</p>
               <p className={cn("text-lg font-semibold", totalUnrealizedPnL >= 0 ? 'text-green-600' : 'text-red-600')}>
                   {formatCurrency(totalUnrealizedPnL)}
               </p>
@@ -138,7 +145,8 @@ export function CryptoFuturesSection({ positions, cashBalance }: CryptoFuturesSe
                   <TableHead className="text-right">Entry Price</TableHead>
                   <TableHead className="text-right">Mark Price</TableHead>
                   <TableHead className="text-right">Liq. Price</TableHead>
-                  <TableHead className="text-right">Unrealized P&L</TableHead>
+                  <TableHead className="text-right">MTM P&L</TableHead>
+                  <TableHead className="text-right">Overall P&L</TableHead>
                   <TableHead className="text-right">Margin (INR)</TableHead>
                   <TableHead className="text-right">Leverage</TableHead>
                 </TableRow>
@@ -158,6 +166,9 @@ export function CryptoFuturesSection({ positions, cashBalance }: CryptoFuturesSe
                       <TableCell className="text-right">{formatPrice(pos.entryPrice)}</TableCell>
                       <TableCell className="text-right">{formatPrice(pos.markPrice)}</TableCell>
                       <TableCell className="text-right">{pos.liquidationPrice ? formatPrice(pos.liquidationPrice) : '-'}</TableCell>
+                       <TableCell className={cn("text-right", pos.mtmPnl >= 0 ? 'text-green-600' : 'text-red-600')}>
+                        {formatCurrency(pos.mtmPnl)}
+                      </TableCell>
                       <TableCell className={cn("text-right", pos.unrealizedPnL >= 0 ? 'text-green-600' : 'text-red-600')}>
                         {formatCurrency(pos.unrealizedPnL)}
                       </TableCell>
@@ -166,7 +177,7 @@ export function CryptoFuturesSection({ positions, cashBalance }: CryptoFuturesSe
                     </TableRow>
                     {expandedRowId === pos.id && (
                       <TableRow className="bg-muted/50 hover:bg-muted/60">
-                        <TableCell colSpan={9} className="p-0">
+                        <TableCell colSpan={10} className="p-0">
                           <div className="p-4 space-y-3">
                             <h4 className="font-semibold text-md text-foreground">
                               {pos.symbol} ({pos.positionSide}) - Actions

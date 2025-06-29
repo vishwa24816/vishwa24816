@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState } from 'react';
@@ -31,6 +32,7 @@ export function FoPositionsSection() {
   };
 
   const totalPandL = positions.reduce((acc, pos) => acc + pos.pAndL, 0);
+  const totalMtmPnl = positions.reduce((acc, pos) => acc + pos.mtmPnl, 0);
   const totalQuantity = (pos: FoPosition) => pos.lots * pos.quantityPerLot;
 
   return (
@@ -40,11 +42,19 @@ export function FoPositionsSection() {
           <CardTitle className="text-xl font-semibold font-headline text-primary flex items-center mb-2 sm:mb-0">
             <Layers className="h-6 w-6 mr-2" /> F&O Positions
           </CardTitle>
-          <div className="text-left sm:text-right">
-              <p className="text-sm text-muted-foreground">Total P&L</p>
-              <p className={cn("text-lg font-semibold", totalPandL >= 0 ? 'text-green-600' : 'text-red-600')}>
-                  {formatCurrency(totalPandL)}
+          <div className="grid grid-cols-2 gap-4 text-left sm:text-right">
+            <div>
+              <p className="text-sm text-muted-foreground">MTM P&L</p>
+              <p className={cn("text-lg font-semibold", totalMtmPnl >= 0 ? 'text-green-600' : 'text-red-600')}>
+                {formatCurrency(totalMtmPnl)}
               </p>
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground">Overall P&L</p>
+              <p className={cn("text-lg font-semibold", totalPandL >= 0 ? 'text-green-600' : 'text-red-600')}>
+                {formatCurrency(totalPandL)}
+              </p>
+            </div>
           </div>
         </div>
       </CardHeader>
@@ -61,7 +71,8 @@ export function FoPositionsSection() {
                 <TableHead className="text-right">Qty.</TableHead>
                 <TableHead className="text-right">Avg. Price</TableHead>
                 <TableHead className="text-right">LTP</TableHead>
-                <TableHead className="text-right">P&L (%)</TableHead>
+                <TableHead className="text-right">MTM P&L</TableHead>
+                <TableHead className="text-right">Overall P&L (%)</TableHead>
                 <TableHead className="text-right">Expiry</TableHead>
               </TableRow>
             </TableHeader>
@@ -81,6 +92,9 @@ export function FoPositionsSection() {
                     <TableCell className="text-right">{totalQuantity(pos).toLocaleString()}</TableCell>
                     <TableCell className="text-right">{formatCurrency(pos.avgPrice)}</TableCell>
                     <TableCell className="text-right">{formatCurrency(pos.ltp)}</TableCell>
+                    <TableCell className={cn("text-right", pos.mtmPnl >= 0 ? 'text-green-600' : 'text-red-600')}>
+                      {formatCurrency(pos.mtmPnl)}
+                    </TableCell>
                     <TableCell className={cn("text-right whitespace-nowrap", pos.pAndL >= 0 ? 'text-green-600' : 'text-red-600')}>
                       {formatCurrency(pos.pAndL)}<br/>({pos.pAndLPercent.toFixed(2)}%)
                     </TableCell>
@@ -88,7 +102,7 @@ export function FoPositionsSection() {
                   </TableRow>
                   {expandedRowId === pos.id && (
                     <TableRow className="bg-muted/50 hover:bg-muted/60">
-                      <TableCell colSpan={8} className="p-0">
+                      <TableCell colSpan={9} className="p-0">
                         <div className="p-4 space-y-3">
                           <h4 className="font-semibold text-md text-foreground">
                             {pos.instrumentName} - Actions

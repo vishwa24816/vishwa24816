@@ -1,3 +1,4 @@
+
 "use client";
 
 import React from 'react';
@@ -102,18 +103,28 @@ export function FoBasketSection() {
                             </div>
                             
                             <div className="flex items-center justify-between pt-1">
-                            <div>
-                                <p className="text-xs text-muted-foreground">Req. Margin</p>
-                                <p className="font-semibold text-foreground">{formatCurrency(basket.requiredMargin)}</p>
-                            </div>
-                            {basket.pnl !== undefined && (
-                                <div className="text-right">
-                                <p className="text-xs text-muted-foreground">P&L</p>
-                                <p className={cn("font-semibold", basket.pnl >= 0 ? 'text-green-600' : 'text-red-600')}>
-                                    {formatCurrency(basket.pnl)}
-                                </p>
+                                <div>
+                                    <p className="text-xs text-muted-foreground">Req. Margin</p>
+                                    <p className="font-semibold text-foreground">{formatCurrency(basket.requiredMargin)}</p>
                                 </div>
-                            )}
+                                <div className="flex gap-4 text-right">
+                                    {basket.mtmPnl !== undefined && (
+                                    <div>
+                                        <p className="text-xs text-muted-foreground">MTM P&L</p>
+                                        <p className={cn("font-semibold", basket.mtmPnl >= 0 ? 'text-green-600' : 'text-red-600')}>
+                                        {formatCurrency(basket.mtmPnl)}
+                                        </p>
+                                    </div>
+                                    )}
+                                    {basket.pnl !== undefined && (
+                                    <div>
+                                        <p className="text-xs text-muted-foreground">Overall P&L</p>
+                                        <p className={cn("font-semibold", basket.pnl >= 0 ? 'text-green-600' : 'text-red-600')}>
+                                        {formatCurrency(basket.pnl)}
+                                        </p>
+                                    </div>
+                                    )}
+                                </div>
                             </div>
                         </div>
                         
@@ -140,7 +151,7 @@ export function FoBasketSection() {
                                     <MetricDisplay label="Max Loss" value={basket.maxLoss !== undefined ? formatCurrency(basket.maxLoss) : 'Unlimited'} icon={Minimize} className={cn(basket.maxLoss === undefined ? 'text-red-600' : (basket.maxLoss >= 0 ? 'text-red-600' : 'text-green-600'))} />
                                     <MetricDisplay label="Risk/Reward" value={basket.riskRewardRatio} icon={Sigma} />
                                     <MetricDisplay label="Breakeven(s)" value={basket.breakEvenPoints} icon={Info} className="col-span-2 sm:col-span-1"/>
-                                    <MetricDisplay label="Actual P&L" value={formatCurrency(basket.pnl)} icon={DollarSign} className={cn("font-bold", basket.pnl !== undefined && basket.pnl >=0 ? 'text-green-600' : 'text-red-600')} />
+                                    <MetricDisplay label="Overall P&L" value={formatCurrency(basket.pnl)} icon={DollarSign} className={cn("font-bold", basket.pnl !== undefined && basket.pnl >=0 ? 'text-green-600' : 'text-red-600')} />
                                     <MetricDisplay label="Total Margin" value={formatCurrency(basket.totalMargin || basket.requiredMargin)} icon={DollarSign} />
                                     <MetricDisplay label="Margin Benefits" value={formatCurrency(basket.marginBenefits)} icon={AlertTriangle} />
                                 </div>

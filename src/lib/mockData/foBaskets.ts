@@ -10,6 +10,7 @@ export const mockFoBaskets: FoBasket[] = [
     instrumentsCount: 2,
     createdDate: '2024-07-15',
     pnl: 1250.50,
+    mtmPnl: 450.25,
     category: 'Fiat',
     instruments: [
       { id: 'instr1-1', action: 'BUY', name: 'NIFTY 25JUL24 22000 CE', price: 150.50, lots: 1, quantityPerLot: 50, ltp: 160.00 },
@@ -53,6 +54,7 @@ export const mockFoBaskets: FoBasket[] = [
     instrumentsCount: 2,
     createdDate: '2024-07-10',
     pnl: -350.80,
+    mtmPnl: -105.24,
     category: 'Fiat',
     instruments: [
       { id: 'instr3-1', action: 'BUY', name: 'RELIANCE JAN25 FUT', price: 2900.00, lots: 1, quantityPerLot: 250, ltp: 2880.00 },
@@ -74,6 +76,7 @@ export const mockFoBaskets: FoBasket[] = [
     instrumentsCount: 3,
     createdDate: '2024-05-10',
     pnl: 12500.00,
+    mtmPnl: 4375.00,
     category: 'Fiat',
     instruments: [
       { id: 'bs1-1', action: 'BUY', name: 'RELIANCE', price: 2800, lots: 20, quantityPerLot: 1, ltp: 2950 },
@@ -96,6 +99,7 @@ export const mockFoBaskets: FoBasket[] = [
     instrumentsCount: 2,
     createdDate: '2024-06-01',
     pnl: 3200.00,
+    mtmPnl: 960.00,
     category: 'Fiat',
     instruments: [
         { id: 'bs2-1', action: 'BUY', name: 'TCS', price: 3800, lots: 10, quantityPerLot: 1, ltp: 3850 },
@@ -117,6 +121,7 @@ export const mockFoBaskets: FoBasket[] = [
     instrumentsCount: 2, 
     createdDate: '2024-04-15',
     pnl: 8500.00,
+    mtmPnl: 2975.00,
     category: 'Crypto',
     instruments: [
         { id: 'bc1-1', action: 'BUY', name: 'BTC', price: 2500000, lots: 0.01, quantityPerLot: 1, ltp: 2800000 }, 
@@ -158,6 +163,7 @@ export const mockFoBaskets: FoBasket[] = [
     instrumentsCount: 2, 
     createdDate: '2024-03-01',
     pnl: 15000.00,
+    mtmPnl: 5250.00,
     category: 'Fiat',
     instruments: [ 
         { id: 'bmf1-1', action: 'BUY', name: 'Parag Parikh Flexi Cap', price: 60, lots: 1000, quantityPerLot: 1, ltp: 65 },
@@ -179,6 +185,7 @@ export const mockFoBaskets: FoBasket[] = [
     instrumentsCount: 1,
     createdDate: '2024-02-10',
     pnl: 4500.00,
+    mtmPnl: 1575.00,
     category: 'Fiat',
     instruments: [
         { id: 'bmf2-1', action: 'BUY', name: 'Axis Long Term Equity', price: 50, lots: 1000, quantityPerLot: 1, ltp: 55 },

@@ -139,6 +139,7 @@ export interface FoPosition {
   avgPrice: number;
   ltp: number;
   pAndL: number;
+  mtmPnl: number;
   pAndLPercent: number;
   expiryDate: string;
 }
@@ -152,6 +153,7 @@ export interface CryptoFuturePosition {
   markPrice: number;
   liquidationPrice?: number;
   unrealizedPnL: number;
+  mtmPnl: number;
   margin: number;
   leverage: number;
 }
@@ -217,6 +219,7 @@ export interface FoBasket {
   instrumentsCount: number;
   createdDate: string;
   pnl?: number;
+  mtmPnl?: number;
   instruments?: FoInstrumentInBasket[];
   probabilityOfProfit?: number; 
   maxProfit?: number; 
