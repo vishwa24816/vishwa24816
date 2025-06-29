@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { AppHeader } from '@/components/shared/AppHeader';
 import { ProtectedRoute } from '@/components/shared/ProtectedRoute';
 import { PostCard } from '@/components/community/PostCard';
@@ -22,27 +22,14 @@ export default function CommunityPage() {
   const [activeTab, setActiveTab] = useState("hot");
 
   const displayedTabs = useMemo(() => {
-    const allTabs = [
+    return [
       { value: "hot", label: "Hot" },
       { value: "new", label: "New" },
       { value: "top", label: "Top" },
       { value: "foryou", label: "For You" },
       { value: "research", label: "Research" },
     ];
-    if (activeMode === 'Fiat') {
-      return allTabs;
-    }
-    // For Crypto and Web3, hide the 'Research' tab for now.
-    return allTabs.filter(tab => tab.value !== 'research');
-  }, [activeMode]);
-
-  useEffect(() => {
-    // If activeMode changes and the active tab is 'research' (which might now be hidden),
-    // switch to a default tab like 'hot'.
-    if (activeMode !== 'Fiat' && activeTab === 'research') {
-      setActiveTab('hot');
-    }
-  }, [activeMode, activeTab]);
+  }, []);
 
   const displayedPosts = useMemo(() => {
     // First, filter by the current mode (Fiat, Crypto, Web3)

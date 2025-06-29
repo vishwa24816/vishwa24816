@@ -248,4 +248,48 @@ export const mockCommunityPosts: CommunityPost[] = [
     reposts: 15,
     category: 'Web3',
   },
+  {
+    id: 'research_crypto_1',
+    user: {
+      name: 'SIM Research Desk',
+      username: '@SIM_Research',
+      avatarUrl: 'https://placehold.co/40x40.png?text=SR',
+    },
+    timestamp: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(), // 12 hours ago
+    content: 'Our latest report on Ethereum (ETH) suggests strong on-chain metrics and upcoming EIPs could lead to a re-test of previous highs. We initiate with an ACCUMULATE rating.',
+    stockSymbol: 'ETH',
+    stockChangePercent: -1.12,
+    tags: ['Ethereum', 'Crypto Research', 'On-Chain'],
+    source: 'SIM Research',
+    likes: 450,
+    comments: 88,
+    reposts: 110,
+    recommendationType: 'Accumulate',
+    targetPrice: 180000,
+    researchFirm: 'SIM Research',
+    analystName: 'Crypto Team',
+    category: 'Crypto',
+  },
+  {
+    id: 'research_web3_1',
+    user: {
+      name: 'SIM Research Desk',
+      username: '@SIM_Research',
+      avatarUrl: 'https://placehold.co/40x40.png?text=SR',
+    },
+    timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 days ago
+    content: 'In-depth analysis of the Aave protocol. The move to V3 has significantly improved capital efficiency. We see strong long-term potential for the AAVE token as a blue-chip DeFi asset. Rating: BUY.',
+    stockSymbol: 'AAVE',
+    stockChangePercent: 2.81,
+    tags: ['DeFi', 'AAVE', 'Web3 Research'],
+    source: 'SIM Research',
+    likes: 320,
+    comments: 55,
+    reposts: 75,
+    recommendationType: 'Buy',
+    targetPrice: 10000, // approx $120
+    researchFirm: 'SIM Research',
+    analystName: 'Web3 Division',
+    category: 'Web3',
+  },
 ];
