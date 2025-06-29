@@ -1,4 +1,3 @@
-
 "use client";
 
 import { SubNav } from '@/components/dashboard/SubNav';
@@ -192,12 +191,12 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
     
     // Crypto mode
     const cryptoPrimaryNav = [
-      "Crypto Spot", "Crypto Futures", "Crypto Mutual Fund"
+      "Spot", "Futures", "Mutual Fund"
     ];
     const cryptoSecondaryNav: Record<string, string[]> = {
-      "Crypto Spot": ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
-      "Crypto Futures": ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
-      "Crypto Mutual Fund": ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
+      "Spot": ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
+      "Futures": ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
+      "Mutual Fund": ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
     };
     return { primaryNavItems: cryptoPrimaryNav, secondaryNavTriggerCategories: cryptoSecondaryNav };
   }, [activeMode]);
@@ -295,9 +294,9 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
     }
   } else if (activeMode === 'Crypto') {
     categoryWatchlistTitle = `${activePrimaryItem} - ${activeSecondaryItem}`;
-    if (activePrimaryItem === "Crypto Spot") itemsForWatchlist = mockCryptoAssets;
-    else if (activePrimaryItem === "Crypto Futures") itemsForWatchlist = mockCryptoFuturesForWatchlist;
-    else if (activePrimaryItem === "Crypto Mutual Fund") itemsForWatchlist = [...mockCryptoMutualFunds, ...mockCryptoETFs];
+    if (activePrimaryItem === "Spot") itemsForWatchlist = mockCryptoAssets;
+    else if (activePrimaryItem === "Futures") itemsForWatchlist = mockCryptoFuturesForWatchlist;
+    else if (activePrimaryItem === "Mutual Fund") itemsForWatchlist = [...mockCryptoMutualFunds, ...mockCryptoETFs];
     else itemsForWatchlist = [];
     newsForView = getRelevantNewsForWatchlistItems(itemsForWatchlist, mockNewsArticles);
   } else if (activeMode === 'Web3') {

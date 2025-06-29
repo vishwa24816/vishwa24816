@@ -1,4 +1,3 @@
-
 "use client";
 
 import { SubNav } from '@/components/dashboard/SubNav';
@@ -78,12 +77,12 @@ export function RealDashboard({ activeMode }: RealDashboardProps) {
     
     // Default to Crypto mode
     const cryptoPrimaryNav = [
-      "Crypto Spot", "Crypto Futures", "Crypto Mutual Fund"
+      "Spot", "Futures", "Mutual Fund"
     ];
     const cryptoSecondaryNav: Record<string, string[]> = {
-      "Crypto Spot": ["Top watchlist"],
-      "Crypto Futures": ["Top watchlist"],
-      "Crypto Mutual Fund": ["Top watchlist"],
+      "Spot": ["Top watchlist"],
+      "Futures": ["Top watchlist"],
+      "Mutual Fund": ["Top watchlist"],
     };
     return { primaryNavItems: cryptoPrimaryNav, secondaryNavTriggerCategories: cryptoSecondaryNav };
   }, [activeMode]);
@@ -140,9 +139,9 @@ export function RealDashboard({ activeMode }: RealDashboardProps) {
       }
   } else if (activeMode === 'Crypto') { // Crypto Mode Watchlists
     categoryWatchlistTitle = `${activePrimaryItem} - ${activeSecondaryItem}`;
-    if (activePrimaryItem === "Crypto Spot") itemsForWatchlist = mockCryptoAssets;
-    else if (activePrimaryItem === "Crypto Futures") itemsForWatchlist = mockCryptoFuturesForWatchlist;
-    else if (activePrimaryItem === "Crypto Mutual Fund") itemsForWatchlist = [...mockCryptoMutualFunds, ...mockCryptoETFs];
+    if (activePrimaryItem === "Spot") itemsForWatchlist = mockCryptoAssets;
+    else if (activePrimaryItem === "Futures") itemsForWatchlist = mockCryptoFuturesForWatchlist;
+    else if (activePrimaryItem === "Mutual Fund") itemsForWatchlist = [...mockCryptoMutualFunds, ...mockCryptoETFs];
     newsForView = getRelevantNewsForWatchlistItems(itemsForWatchlist, mockNewsArticles);
   } else if (activeMode === 'Web3') { // Web3 Mode Watchlists
       categoryWatchlistTitle = `Top ${activePrimaryItem}`;
