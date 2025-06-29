@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState } from 'react';
@@ -120,11 +119,11 @@ export function PortfolioHoldingsTable({ mainPortfolioCashBalance, setMainPortfo
               {formatCurrency(mainPortfolioCashBalance)}
             </p>
           </div>
-          <div className="pt-2 flex flex-col sm:flex-row gap-2">
-            <Button variant="outline" size="sm" className="flex-1" onClick={() => toast({ title: "Add Cash (Mock)", description: "Functionality to add funds to your main portfolio." })}>
+          <div className="pt-2 flex gap-2">
+            <Button variant="outline" className="flex-1" onClick={() => toast({ title: "Add Cash (Mock)", description: "Functionality to add funds to your main portfolio." })}>
               <Coins className="mr-2 h-4 w-4" /> Add Cash
             </Button>
-            <Button variant="outline" size="sm" className="flex-1" onClick={() => toast({ title: "Withdraw Cash (Mock)", description: "Functionality to withdraw funds from your main portfolio." })}>
+            <Button variant="outline" className="flex-1" onClick={() => toast({ title: "Withdraw Cash (Mock)", description: "Functionality to withdraw funds from your main portfolio." })}>
               <Landmark className="mr-2 h-4 w-4" /> Withdraw Cash
             </Button>
           </div>
@@ -254,4 +253,3 @@ export function PortfolioHoldingsTable({ mainPortfolioCashBalance, setMainPortfo
     </section>
   );
 }
-
