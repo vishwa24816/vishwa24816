@@ -343,7 +343,7 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
   const renderMarketContent = () => {
     if (activeMode === 'Fiat') {
         if (activePrimaryItem === "Options") { 
-            return activeSecondaryItem === "Custom" ? ( <div className="space-y-8"><OptionChain onAddLeg={setStrategyLegs} /><StrategyBuilder legs={strategyLegs} setLegs={setStrategyLegs} /><NewsSection articles={newsForView} /></div>) 
+            return activeSecondaryItem === "Custom" ? ( <div className="space-y-8"><OptionChain onAddLeg={(leg) => setStrategyLegs(prev => [...prev, leg])} /><StrategyBuilder legs={strategyLegs} setLegs={setStrategyLegs} /><NewsSection articles={newsForView} /></div>) 
             : activeSecondaryItem === "Readymade" ? ( <div className="space-y-8"><ReadymadeStrategiesSection /><NewsSection articles={newsForView} /></div> ) 
             : null
         }
