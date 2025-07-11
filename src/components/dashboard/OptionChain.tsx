@@ -19,11 +19,15 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { mockUnderlyings, mockOptionChains } from '@/lib/mockData/optionChainData';
-import type { OptionChainData, OptionData, Underlying } from '@/types';
+import type { OptionChainData, OptionData, Underlying, SelectedOptionLeg } from '@/types';
 import { cn } from '@/lib/utils';
-import { ArrowUpDown, LineChart } from 'lucide-react';
+import { ArrowUpDown, LineChart, Target } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { useToast } from '@/hooks/use-toast';
 
+interface OptionChainProps {
+  onAddLeg: (legs: SelectedOptionLeg[]) => void;
+}
 
 type OptionChainViewType = 'price' | 'volume_oi' | 'greeks';
 
@@ -43,15 +47,15 @@ const HeaderCell = ({ title, subtitle }: { title: string; subtitle?: string }) =
     </div>
 );
 
-const PriceCell = ({ bid, ask }: { bid?: number, ask?: number }) => (
+const PriceCell = ({ bid, ask, onClick }: { bid?: number, ask?: number, onClick: (price: number, type: 'bid' | 'ask') => void }) => (
     <div className="flex flex-col items-center text-xs">
-        <span className="text-green-600 dark:text-green-400">{formatNumber(bid, 2)}</span>
-        <span className="text-red-600 dark:text-red-400">{formatNumber(ask, 2)}</span>
+        <span className="text-green-600 dark:text-green-400 p-1 hover:bg-green-500/10 rounded-md w-full text-center" onClick={(e) => { e.stopPropagation(); onClick(bid || 0, 'bid'); }}>{formatNumber(bid, 2)}</span>
+        <span className="text-red-600 dark:text-red-400 p-1 hover:bg-red-500/10 rounded-md w-full text-center" onClick={(e) => { e.stopPropagation(); onClick(ask || 0, 'ask'); }}>{formatNumber(ask, 2)}</span>
     </div>
 );
 
-const MarkCell = ({ price, iv }: { price?: number, iv?: number }) => (
-    <div className="flex flex-col items-center text-xs">
+const MarkCell = ({ price, iv, onClick }: { price?: number, iv?: number, onClick: (price: number, type: 'ltp') => void }) => (
+    <div className="flex flex-col items-center text-xs p-1 hover:bg-primary/10 rounded-md" onClick={(e) => { e.stopPropagation(); onClick(price || 0, 'ltp'); }}>
         <span className="font-semibold text-foreground">₹{formatNumber(price, 2)}</span>
         <span className="text-muted-foreground">{formatNumber(iv, 1)}%</span>
     </div>
@@ -75,13 +79,13 @@ const OIBars = ({ callOI, putOI, totalOI }: { callOI?: number, putOI?: number, t
     );
 };
 
-
-export function OptionChain() {
+export function OptionChain({ onAddLeg }: OptionChainProps) {
   const [selectedUnderlyingSymbol, setSelectedUnderlyingSymbol] = useState<string>(mockUnderlyings[0].symbol);
   const [availableExpiries, setAvailableExpiries] = useState<string[]>([]);
   const [selectedExpiry, setSelectedExpiry] = useState<string>('');
   const [optionChainData, setOptionChainData] = useState<OptionChainData | null>(null);
   const [optionChainView, setOptionChainView] = useState<OptionChainViewType>('price');
+  const { toast } = useToast();
   
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const atmRowRef = useRef<HTMLTableRowElement>(null);
@@ -144,6 +148,28 @@ export function OptionChain() {
     });
     return closestIndex;
   };
+
+  const handleAddLeg = (strikePrice: number, optionType: 'Call' | 'Put', action: 'Buy' | 'Sell', price: number) => {
+    if (!optionChainData || !selectedUnderlyingDetails) return;
+    
+    const newLeg: SelectedOptionLeg = {
+      id: `${selectedUnderlyingDetails.symbol}-${selectedExpiry}-${strikePrice}-${optionType}-${action}-${Date.now()}`,
+      underlyingSymbol: selectedUnderlyingDetails.symbol,
+      instrumentName: `${selectedUnderlyingDetails.symbol} ${selectedExpiry} ${strikePrice} ${optionType === 'Call' ? 'CE' : 'PE'}`,
+      expiryDate: optionChainData.expiryDate,
+      strikePrice,
+      optionType,
+      action,
+      ltp: price,
+      quantity: 1, // Default to 1 lot
+    };
+
+    onAddLeg((prevLegs) => [...prevLegs, newLeg]);
+    toast({
+      title: 'Leg Added',
+      description: `${action} ${newLeg.instrumentName} at ₹${price.toFixed(2)}`,
+    });
+  };
   
   const atmIndex = optionChainData?.data && optionChainData?.underlyingValue ? findATMIndex(optionChainData.data, optionChainData.underlyingValue) : -1;
   const totalOI = useMemo(() => {
@@ -167,25 +193,51 @@ export function OptionChain() {
         </TableRow>
       );
     }
-    // Implement other headers if needed
+    if (optionChainView === 'volume_oi') {
+      return (
+        <TableRow className="border-border hover:bg-transparent">
+            <TableHead className="w-[15%] text-center"><HeaderCell title="Volume" /></TableHead>
+            <TableHead className="w-[15%] text-center"><HeaderCell title="Open Int." /></TableHead>
+            <TableHead className="w-[40%] text-center" colSpan={2}><HeaderCell title="Strike" /></TableHead>
+            <TableHead className="w-[15%] text-center"><HeaderCell title="Open Int." /></TableHead>
+            <TableHead className="w-[15%] text-center"><HeaderCell title="Volume" /></TableHead>
+        </TableRow>
+      );
+    }
+    if (optionChainView === 'greeks') {
+      return (
+        <TableRow className="border-border hover:bg-transparent">
+            <TableHead className="w-[15%] text-center"><HeaderCell title="Delta" subtitle="Vega" /></TableHead>
+            <TableHead className="w-[15%] text-center"><HeaderCell title="Theta" subtitle="Gamma" /></TableHead>
+            <TableHead className="w-[40%] text-center" colSpan={2}><HeaderCell title="Strike" /></TableHead>
+            <TableHead className="w-[15%] text-center"><HeaderCell title="Theta" subtitle="Gamma" /></TableHead>
+            <TableHead className="w-[15%] text-center"><HeaderCell title="Delta" subtitle="Vega" /></TableHead>
+        </TableRow>
+      );
+    }
     return null;
   }
 
-  const renderCells = (data: OptionData | undefined, view: OptionChainViewType) => {
-     if (!data || view !== 'price') return (
-        <>
-            <TableCell className="text-center w-[15%]">-</TableCell>
-            <TableCell className="text-center w-[15%]">-</TableCell>
-        </>
-     );
-     return <>
-        <TableCell className="w-[15%]"><PriceCell bid={data.bidPrice} ask={data.askPrice} /></TableCell>
-        <TableCell className="w-[15%]"><MarkCell price={data.ltp} iv={data.iv} /></TableCell>
+  const renderCells = (data: OptionData | undefined, view: OptionChainViewType, type: 'Call' | 'Put', strike: number) => {
+     if (!data) return <><TableCell/><TableCell/></>;
+
+     if (view === 'price') return <>
+        <TableCell className="w-[15%]"><PriceCell bid={data.bidPrice} ask={data.askPrice} onClick={(price, actionType) => handleAddLeg(strike, type, actionType === 'bid' ? 'Sell' : 'Buy', price)} /></TableCell>
+        <TableCell className="w-[15%]"><MarkCell price={data.ltp} iv={data.iv} onClick={(price) => handleAddLeg(strike, type, 'Buy', price)} /></TableCell>
      </>
+     if (view === 'volume_oi') return <>
+        <TableCell className="w-[15%] text-center">{formatNumber(data.volume, 0)}</TableCell>
+        <TableCell className="w-[15%] text-center">{formatNumber(data.oi, 0)}</TableCell>
+     </>
+     if (view === 'greeks') return <>
+        <TableCell className="w-[15%] text-center"><div className="flex flex-col items-center text-xs"><p>{formatNumber(data.delta, 2)}</p><p className="text-muted-foreground">{formatNumber(data.vega, 2)}</p></div></TableCell>
+        <TableCell className="w-[15%] text-center"><div className="flex flex-col items-center text-xs"><p>{formatNumber(data.theta, 2)}</p><p className="text-muted-foreground">{formatNumber(data.gamma, 2)}</p></div></TableCell>
+     </>
+     return null;
   }
 
   return (
-    <div className="bg-background text-foreground w-full flex flex-col h-[70vh] border rounded-lg shadow-lg">
+    <div className="bg-background text-foreground w-full flex flex-col h-[70vh]">
         {/* Header Controls */}
         <div className="p-2 sm:p-3 border-b border-border flex flex-wrap items-center justify-between gap-2">
             <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
@@ -227,17 +279,22 @@ export function OptionChain() {
             <ScrollArea className="h-full" ref={scrollContainerRef}>
                 <Table className="min-w-full text-xs">
                     <TableHeader className="sticky top-0 bg-background z-10">
+                         <TableRow className="border-border hover:bg-transparent">
+                            <TableHead className="w-[30%]" colSpan={2}>CALLS</TableHead>
+                            <TableHead className="w-[40%] text-center" colSpan={2}><HeaderCell title="" /></TableHead>
+                            <TableHead className="w-[30%] text-right" colSpan={2}>PUTS</TableHead>
+                         </TableRow>
                         {renderHeaders()}
                     </TableHeader>
                     <TableBody>
                         {optionChainData.data.map((entry, index) => (
                            <React.Fragment key={entry.strikePrice}>
                              {index === atmIndex && (
-                                <TableRow className="sticky top-10 z-10 hover:bg-transparent">
+                                <TableRow className="sticky top-20 z-10 hover:bg-transparent">
                                     <TableCell colSpan={6} className="p-0 h-8">
                                         <div className="h-full w-full flex items-center justify-center bg-muted/80 backdrop-blur-sm">
                                             <div className="bg-background border rounded-full px-4 py-1.5 text-xs font-semibold flex items-center gap-2">
-                                                <LineChart className="h-4 w-4 text-primary" />
+                                                <Target className="h-4 w-4 text-primary" />
                                                 <span>{selectedUnderlyingSymbol}</span>
                                                 <span>₹{formatNumber(optionChainData.underlyingValue, 2)}</span>
                                             </div>
@@ -247,16 +304,15 @@ export function OptionChain() {
                              )}
                             <TableRow 
                                 ref={index === atmIndex ? atmRowRef : null}
-                                className={cn("border-border hover:bg-muted/50 cursor-pointer",
-                                // Puts are ITM when strike > underlying; Calls are ITM when strike < underlying
+                                className={cn("border-border",
                                 (optionChainData.underlyingValue && entry.strikePrice < optionChainData.underlyingValue && "bg-primary/5"), 
                                 (optionChainData.underlyingValue && entry.strikePrice > optionChainData.underlyingValue && "bg-accent/5")
                                 )}
                             >
-                                {renderCells(entry.call, optionChainView)}
+                                {renderCells(entry.call, optionChainView, 'Call', entry.strikePrice)}
                                 <TableCell className="w-[20%] font-semibold text-base text-center p-0">{formatNumber(entry.strikePrice, 0)}</TableCell>
                                 <TableCell className="w-[20%] p-0"><OIBars callOI={entry.call?.oi} putOI={entry.put?.oi} totalOI={totalOI} /></TableCell>
-                                {renderCells(entry.put, optionChainView)}
+                                {renderCells(entry.put, optionChainView, 'Put', entry.strikePrice)}
                             </TableRow>
                            </React.Fragment>
                         ))}

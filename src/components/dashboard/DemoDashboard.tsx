@@ -14,9 +14,11 @@ import { FoPositionsSection } from '@/components/dashboard/FoPositionsSection';
 import { FoBasketSection } from '@/components/dashboard/FoBasketSection';
 import { OptionChain } from '@/components/dashboard/OptionChain';
 import { ReadymadeStrategiesSection } from '@/components/dashboard/ReadymadeStrategiesSection';
+import { StrategyBuilder } from '@/components/dashboard/StrategyBuilder';
+
 
 import React, { useState, useMemo } from 'react';
-import type { PortfolioHolding, NewsArticle, IntradayPosition, FoPosition, CryptoFuturePosition, Stock } from '@/types';
+import type { PortfolioHolding, NewsArticle, IntradayPosition, FoPosition, CryptoFuturePosition, Stock, SelectedOptionLeg } from '@/types';
 import { 
   mockPortfolioHoldings, 
   mockNewsArticles, 
@@ -210,6 +212,8 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
   const [mainPortfolioCashBalance, setMainPortfolioCashBalance] = useState(50000.00);
   const [cryptoCashBalance, setCryptoCashBalance] = useState(15000.00);
   const [web3CashBalance, setWeb3CashBalance] = useState(20000.00);
+  const [strategyLegs, setStrategyLegs] = useState<SelectedOptionLeg[]>([]);
+
 
   React.useEffect(() => {
     const firstPrimary = primaryNavItems[0] || "";
@@ -339,7 +343,7 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
   const renderMarketContent = () => {
     if (activeMode === 'Fiat') {
         if (activePrimaryItem === "Options") { 
-            return activeSecondaryItem === "Custom" ? ( <div className="space-y-8"><OptionChain /><NewsSection articles={newsForView} /></div>) 
+            return activeSecondaryItem === "Custom" ? ( <div className="space-y-8"><OptionChain onAddLeg={setStrategyLegs} /><StrategyBuilder legs={strategyLegs} setLegs={setStrategyLegs} /><NewsSection articles={newsForView} /></div>) 
             : activeSecondaryItem === "Readymade" ? ( <div className="space-y-8"><ReadymadeStrategiesSection /><NewsSection articles={newsForView} /></div> ) 
             : null
         }

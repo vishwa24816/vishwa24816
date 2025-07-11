@@ -176,6 +176,10 @@ export interface OptionData {
   bidPrice?: number;
   askPrice?: number;
   askQty?: number;
+  delta?: number;
+  gamma?: number;
+  theta?: number;
+  vega?: number;
 }
 
 export interface OptionChainEntry {

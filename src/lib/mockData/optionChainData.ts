@@ -31,6 +31,10 @@ const generateOptionData = (baseLTP: number, isCall: boolean, strike: number, un
     bidPrice: parseFloat(Math.max(0.05, ltp * (1 - Math.random() * 0.02 - 0.005)).toFixed(2)), // Slightly lower than LTP
     askPrice: parseFloat(Math.max(ltp, ltp * (1 + Math.random() * 0.02 + 0.005)).toFixed(2)), // Slightly higher than LTP
     askQty: Math.floor(Math.random() * 500),
+    delta: parseFloat((Math.random() * (isCall ? 1 : -1)).toFixed(2)),
+    gamma: parseFloat(Math.random().toFixed(4)),
+    theta: parseFloat((Math.random() * -10).toFixed(2)),
+    vega: parseFloat((Math.random() * 5).toFixed(2)),
   };
 };
 
