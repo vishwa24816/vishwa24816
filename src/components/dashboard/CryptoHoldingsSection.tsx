@@ -27,8 +27,8 @@ import {
   ChartLegend,
   ChartLegendContent,
   type ChartConfig,
+  Chart,
 } from "@/components/ui/chart";
-import { Bar, BarChart, Pie, PieChart, ResponsiveContainer, YAxis, XAxis, Cell } from "recharts"
 
 interface CryptoHoldingsSectionProps {
   holdings: PortfolioHolding[];
@@ -297,36 +297,36 @@ export function CryptoHoldingsSection({
                 {viewType === 'bar' && (
                   <div className="p-4">
                     <ChartContainer config={chartConfig} className="h-[300px] w-full">
-                      <ResponsiveContainer>
-                        <BarChart layout="vertical" data={chartData} margin={{ right: 20 }}>
-                          <YAxis dataKey="name" type="category" tickLine={false} axisLine={false} tickMargin={10} width={80} tick={{ fill: "hsl(var(--muted-foreground))" }} tickFormatter={tickFormatter} />
-                          <XAxis type="number" hide />
+                      <Chart.ResponsiveContainer>
+                        <Chart.BarChart layout="vertical" data={chartData} margin={{ right: 20 }}>
+                          <Chart.YAxis dataKey="name" type="category" tickLine={false} axisLine={false} tickMargin={10} width={80} tick={{ fill: "hsl(var(--muted-foreground))" }} tickFormatter={tickFormatter} />
+                          <Chart.XAxis type="number" hide />
                           <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
-                          <Bar dataKey="value" layout="vertical" radius={5}>
+                          <Chart.Bar dataKey="value" layout="vertical" radius={5}>
                              {chartData.map((entry) => (
-                                <Cell key={`cell-${entry.name}`} fill={`var(--color-${entry.name})`} />
+                                <Chart.Cell key={`cell-${entry.name}`} fill={`var(--color-${entry.name})`} />
                             ))}
-                          </Bar>
-                          <ChartLegend content={<ChartLegendContent nameKey="name" />} />
-                        </BarChart>
-                      </ResponsiveContainer>
+                          </Chart.Bar>
+                          <ChartLegend content={<ChartLegendContent nameKey="label" />} />
+                        </Chart.BarChart>
+                      </Chart.ResponsiveContainer>
                     </ChartContainer>
                   </div>
                 )}
                 {viewType === 'pie' && (
                   <div className="p-4 flex justify-center">
                     <ChartContainer config={chartConfig} className="mx-auto aspect-square max-h-[300px]">
-                      <ResponsiveContainer>
-                        <PieChart>
+                      <Chart.ResponsiveContainer>
+                        <Chart.PieChart>
                           <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
-                          <Pie data={chartData} dataKey="value" nameKey="name" innerRadius={60} strokeWidth={5}>
+                          <Chart.Pie data={chartData} dataKey="value" nameKey="name" innerRadius={60} strokeWidth={5}>
                             {chartData.map((entry) => (
-                                <Cell key={`cell-${entry.name}`} fill={`var(--color-${entry.name})`} />
+                                <Chart.Cell key={`cell-${entry.name}`} fill={`var(--color-${entry.name})`} />
                             ))}
-                          </Pie>
-                          <ChartLegend content={<ChartLegendContent nameKey="name" />} />
-                        </PieChart>
-                      </ResponsiveContainer>
+                          </Chart.Pie>
+                          <ChartLegend content={<ChartLegendContent nameKey="label" />} />
+                        </Chart.PieChart>
+                      </Chart.ResponsiveContainer>
                     </ChartContainer>
                   </div>
                 )}
@@ -345,7 +345,7 @@ export function CryptoHoldingsSection({
         onOpenChange={setIsFundTransferDialogOpen}
         transferDirection={transferDirection}
         mainPortfolioCashBalance={mainPortfolioCashBalance}
-        cryptoCashBalance={cashBalance}
+        cryptoCashBalance={cryptoCashBalance}
         onTransferConfirm={handleTransferConfirm}
         currencyMode={currencyMode}
       />

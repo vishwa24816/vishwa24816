@@ -1,3 +1,4 @@
+
 "use client";
 
 import React from 'react';
@@ -11,19 +12,7 @@ import { cn } from '@/lib/utils';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from '@/components/ui/badge';
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  ReferenceLine,
-  AreaChart,
-  Area,
-  ComposedChart,
-} from 'recharts';
+import { ChartContainer, Chart } from "@/components/ui/chart";
 
 interface StrategyBuilderProps {
   legs: SelectedOptionLeg[];
@@ -146,35 +135,37 @@ export function StrategyBuilder({ legs, setLegs }: StrategyBuilderProps) {
                                     <TabsTrigger value="futures_chart" disabled>Futures Chart</TabsTrigger>
                                 </TabsList>
                                 <TabsContent value="payoff" className="mt-4">
-                                    <ResponsiveContainer width="100%" height={300}>
-                                        <ComposedChart data={payoffData} margin={{ top: 5, right: 20, left: -10, bottom: 5 }}>
-                                            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                                            <XAxis dataKey="price" stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
-                                            <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `₹${value/1000}k`} />
-                                            <Tooltip
-                                                contentStyle={{ 
-                                                    backgroundColor: 'hsl(var(--background))', 
-                                                    borderColor: 'hsl(var(--border))',
-                                                    fontSize: '12px',
-                                                }}
-                                                labelFormatter={(value) => `Spot: ${value}`}
-                                                formatter={(value: number) => [formatCurrency(value), 'P&L']}
-                                            />
-                                            <ReferenceLine y={0} stroke="hsl(var(--border))" strokeWidth={1} />
-                                            
-                                            <defs>
-                                                <linearGradient id="splitColor" x1="0" y1="0" x2="0" y2="1">
-                                                <stop offset={payoffData.findIndex(d => d.pnl < 0) / (payoffData.length-1)} stopColor="hsl(var(--positive))" stopOpacity={0.4} />
-                                                <stop offset={payoffData.findIndex(d => d.pnl < 0) / (payoffData.length-1)} stopColor="hsl(var(--destructive))" stopOpacity={0.4} />
-                                                </linearGradient>
-                                            </defs>
-                                            
-                                            <Area type="monotone" dataKey="pnl" stroke="transparent" fill="url(#splitColor)" />
-                                            <Line type="monotone" dataKey="pnl" strokeWidth={2} dot={false}
-                                                stroke="hsl(var(--primary))"
-                                            />
-                                        </ComposedChart>
-                                    </ResponsiveContainer>
+                                    <ChartContainer config={{}} className="h-[300px] w-full">
+                                        <Chart.ResponsiveContainer>
+                                            <Chart.ComposedChart data={payoffData} margin={{ top: 5, right: 20, left: -10, bottom: 5 }}>
+                                                <Chart.CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                                                <Chart.XAxis dataKey="price" stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
+                                                <Chart.YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `₹${value/1000}k`} />
+                                                <Chart.Tooltip
+                                                    contentStyle={{ 
+                                                        backgroundColor: 'hsl(var(--background))', 
+                                                        borderColor: 'hsl(var(--border))',
+                                                        fontSize: '12px',
+                                                    }}
+                                                    labelFormatter={(value) => `Spot: ${value}`}
+                                                    formatter={(value: number) => [formatCurrency(value), 'P&L']}
+                                                />
+                                                <Chart.ReferenceLine y={0} stroke="hsl(var(--border))" strokeWidth={1} />
+                                                
+                                                <defs>
+                                                    <linearGradient id="splitColor" x1="0" y1="0" x2="0" y2="1">
+                                                    <stop offset={payoffData.findIndex(d => d.pnl < 0) / (payoffData.length-1)} stopColor="hsl(var(--positive))" stopOpacity={0.4} />
+                                                    <stop offset={payoffData.findIndex(d => d.pnl < 0) / (payoffData.length-1)} stopColor="hsl(var(--destructive))" stopOpacity={0.4} />
+                                                    </linearGradient>
+                                                </defs>
+                                                
+                                                <Chart.Area type="monotone" dataKey="pnl" stroke="transparent" fill="url(#splitColor)" />
+                                                <Chart.Line type="monotone" dataKey="pnl" strokeWidth={2} dot={false}
+                                                    stroke="hsl(var(--primary))"
+                                                />
+                                            </Chart.ComposedChart>
+                                        </Chart.ResponsiveContainer>
+                                    </ChartContainer>
                                 </TabsContent>
                                 <TabsContent value="greeks" className="mt-4 text-center text-muted-foreground py-10">Greeks data would be displayed here.</TabsContent>
                                 <TabsContent value="pnl_table" className="mt-4 text-center text-muted-foreground py-10">P&L table would be displayed here.</TabsContent>
