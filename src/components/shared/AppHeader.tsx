@@ -39,9 +39,11 @@ export function AppHeader({ activeMode, onModeChange, isRealMode }: AppHeaderPro
     if (activeMode) {
       document.documentElement.setAttribute('data-theme', activeMode.toLowerCase());
     } else {
-      document.documentElement.removeAttribute('data-theme');
+      // Default to portfolio theme if no mode is active or on pages without mode switching
+      document.documentElement.setAttribute('data-theme', 'portfolio');
     }
   }, [activeMode]);
+
 
   const isPortfolioDisabled = pathname === '/orders' || pathname === '/screener' || pathname === '/community';
 
@@ -55,12 +57,12 @@ export function AppHeader({ activeMode, onModeChange, isRealMode }: AppHeaderPro
   const handleModeChange = (mode: 'Portfolio' | 'Fiat' | 'Crypto' | 'Web3') => {
     if (onModeChange && mode !== activeMode) {
         onModeChange(mode);
-        if(!isPortfolioDisabled || mode !== 'Portfolio') {
-            toast({
-                title: 'Mode Switched',
-                description: `Now in ${mode} mode.`,
-            });
-        }
+        // if(!isPortfolioDisabled || mode !== 'Portfolio') {
+        //     toast({
+        //         title: 'Mode Switched',
+        //         description: `Now in ${mode} mode.`,
+        //     });
+        // }
     }
   };
   
@@ -144,7 +146,8 @@ export function AppHeader({ activeMode, onModeChange, isRealMode }: AppHeaderPro
                             "h-7 px-3 text-xs rounded-md border-none flex-1",
                             activeMode === 'Portfolio' 
                                 ? 'bg-primary-foreground/20 text-white shadow-sm' 
-                                : 'bg-transparent text-primary-foreground/70 hover:bg-primary-foreground/15'
+                                : 'bg-transparent text-primary-foreground/70 hover:bg-primary-foreground/15',
+                            isPortfolioDisabled && "opacity-50 cursor-not-allowed"
                         )}
                         disabled={isPortfolioDisabled}
                     >
