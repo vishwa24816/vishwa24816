@@ -239,7 +239,7 @@ export function OptionChain() {
   }
 
   return (
-    <div className="bg-background text-foreground border border-border rounded-lg shadow-lg w-full flex flex-col h-[70vh]">
+    <div className="bg-background text-foreground w-full flex flex-col h-[70vh]">
         {/* Header Controls */}
         <div className="p-2 sm:p-3 border-b border-border flex flex-wrap items-center justify-between gap-2">
             <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
