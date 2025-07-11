@@ -19,13 +19,10 @@
 
     --border: 220 13% 91%;
     --input: 220 13% 91%;
-
+    
+    /* Default/Portfolio Theme: Blue/Cyan */
     --primary: 217.2 91.2% 59.8%; /* Blue */
     --primary-foreground: 210 20% 98%; /* Light Blue/White */
-
-    --secondary: 220 14.3% 95.9%;
-    --secondary-foreground: 224 71.4% 4.1%;
-
     --accent: 180 90% 45%; /* Cyan */
     --accent-foreground: 180 90% 95%; /* Light Cyan/White for text on accent */
 
@@ -45,6 +42,30 @@
     --chart-5: 340 75% 55%;
   }
 
+  [data-theme="fiat"] {
+    --primary: 0 84.2% 60.2%; /* Red */
+    --primary-foreground: 0 0% 98%;
+    --accent: 24 94% 52%; /* Orange */
+    --accent-foreground: 24 94% 95%;
+    --ring: 0 84.2% 60.2%;
+  }
+
+  [data-theme="crypto"] {
+    --primary: 142 76% 36%; /* Green */
+    --primary-foreground: 142 76% 96%;
+    --accent: 140 70% 60%; /* Light Green */
+    --accent-foreground: 140 70% 98%;
+    --ring: 142 76% 36%;
+  }
+  
+  [data-theme="web3"] {
+    --primary: 262 82% 57%; /* Violet */
+    --primary-foreground: 262 82% 97%;
+    --accent: 280 65% 60%; /* Purple */
+    --accent-foreground: 280 65% 98%;
+    --ring: 262 82% 57%;
+  }
+
   .dark {
     --background: 224 71.4% 4.1%; /* Dark Blue-Gray */
     --foreground: 210 20% 98%; /* Light Blue/White */
@@ -60,14 +81,11 @@
 
     --border: 215 27.9% 16.9%;
     --input: 215 27.9% 16.9%;
-
-    --primary: 217.2 91.2% 59.8%; /* Blue */
+    
+    /* Default/Portfolio Theme */
+    --primary: 217.2 91.2% 59.8%;
     --primary-foreground: 210 20% 98%;
-
-    --secondary: 215 27.9% 16.9%;
-    --secondary-foreground: 210 20% 98%;
-
-    --accent: 180 90% 45%; /* Cyan */
+    --accent: 180 90% 45%;
     --accent-foreground: 180 90% 95%;
 
     --destructive: 0 62.8% 30.6%;
@@ -82,6 +100,30 @@
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
+  }
+
+  .dark[data-theme="fiat"] {
+    --primary: 0 72% 51%; /* Red */
+    --primary-foreground: 0 0% 98%;
+    --accent: 24 84% 55%; /* Orange */
+    --accent-foreground: 24 84% 96%;
+    --ring: 0 72% 51%;
+  }
+
+  .dark[data-theme="crypto"] {
+    --primary: 142 66% 46%; /* Green */
+    --primary-foreground: 142 66% 96%;
+    --accent: 140 60% 55%; /* Light Green */
+    --accent-foreground: 140 60% 97%;
+    --ring: 142 66% 46%;
+  }
+
+  .dark[data-theme="web3"] {
+    --primary: 262 72% 67%; /* Violet */
+    --primary-foreground: 262 72% 97%;
+    --accent: 280 55% 65%; /* Purple */
+    --accent-foreground: 280 55% 97%;
+    --ring: 262 72% 67%;
   }
 }
 

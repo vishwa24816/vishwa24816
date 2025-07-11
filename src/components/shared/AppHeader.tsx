@@ -34,6 +34,14 @@ export function AppHeader({ activeMode, onModeChange, isRealMode }: AppHeaderPro
   useEffect(() => {
     setIsMounted(true);
   }, []);
+  
+   useEffect(() => {
+    if (activeMode) {
+      document.documentElement.setAttribute('data-theme', activeMode.toLowerCase());
+    } else {
+      document.documentElement.removeAttribute('data-theme');
+    }
+  }, [activeMode]);
 
   const isPortfolioDisabled = pathname === '/orders' || pathname === '/screener' || pathname === '/community';
 
