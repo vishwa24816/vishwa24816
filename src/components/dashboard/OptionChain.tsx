@@ -261,18 +261,18 @@ export function OptionChain({ onAddLeg }: OptionChainProps) {
   const renderCells = (data: OptionData | undefined, view: OptionChainViewType, type: 'Call' | 'Put', strike: number) => {
      if (!data) return [<TableCell key={`${type}-${strike}-empty1`}/>, <TableCell key={`${type}-${strike}-empty2`}/>];
 
-     if (view === 'price') return [
-        <TableCell key={`${type}-${strike}-price-bidask`} className="w-[15%]"><PriceCell bid={data.bidPrice} ask={data.askPrice} onClick={(price, actionType) => handleAddLeg(strike, type, actionType === 'bid' ? 'Sell' : 'Buy', price)} /></TableCell>,
+     if (view === 'price') return <>
+        <TableCell key={`${type}-${strike}-price-bidask`} className="w-[15%]"><PriceCell bid={data.bidPrice} ask={data.askPrice} onClick={(price, actionType) => handleAddLeg(strike, type, actionType === 'bid' ? 'Sell' : 'Buy', price)} /></TableCell>
         <TableCell key={`${type}-${strike}-price-mark`} className="w-[15%]"><MarkCell price={data.ltp} iv={data.iv} onClick={(price) => handleAddLeg(strike, type, 'Buy', price)} /></TableCell>
-     ];
-     if (view === 'volume_oi') return [
-        <TableCell key={`${type}-${strike}-vol`} className="w-[15%] text-center">{formatNumber(data.volume, 0)}</TableCell>,
+     </>;
+     if (view === 'volume_oi') return <>
+        <TableCell key={`${type}-${strike}-vol`} className="w-[15%] text-center">{formatNumber(data.volume, 0)}</TableCell>
         <TableCell key={`${type}-${strike}-oi`} className="w-[15%] text-center">{formatNumber(data.oi, 0)}</TableCell>
-     ];
-     if (view === 'greeks') return [
-        <TableCell key={`${type}-${strike}-greeks1`} className="w-[15%] text-center"><div className="flex flex-col items-center text-xs"><p>{formatNumber(data.delta, 2)}</p><p className="text-muted-foreground">{formatNumber(data.vega, 2)}</p></div></TableCell>,
+     </>;
+     if (view === 'greeks') return <>
+        <TableCell key={`${type}-${strike}-greeks1`} className="w-[15%] text-center"><div className="flex flex-col items-center text-xs"><p>{formatNumber(data.delta, 2)}</p><p className="text-muted-foreground">{formatNumber(data.vega, 2)}</p></div></TableCell>
         <TableCell key={`${type}-${strike}-greeks2`} className="w-[15%] text-center"><div className="flex flex-col items-center text-xs"><p>{formatNumber(data.theta, 2)}</p><p className="text-muted-foreground">{formatNumber(data.gamma, 2)}</p></div></TableCell>
-     ];
+     </>;
      return null;
   }
 
@@ -352,12 +352,12 @@ export function OptionChain({ onAddLeg }: OptionChainProps) {
                                 className="border-border cursor-pointer"
                                 onClick={() => setExpandedStrike(isExpanded ? null : entry.strikePrice)}
                             >
-                                {renderCells(entry.call, optionChainView, 'Call', entry.strikePrice)?.map((cell: React.ReactElement, cellIndex) => React.cloneElement(cell, { key: `call-${entry.strikePrice}-${cellIndex}`, className: cn(cell.props.className, isCallItm && 'bg-primary/5') }))}
+                                {renderCells(entry.call, optionChainView, 'Call', entry.strikePrice)?.map((cell, cellIndex) => React.cloneElement(cell, { key: `call-${entry.strikePrice}-${cellIndex}`, className: cn(cell.props.className, isCallItm && 'bg-primary/5') }))}
 
                                 <TableCell className="w-[20%] font-semibold text-base text-center p-0">{formatNumber(entry.strikePrice, 0)}</TableCell>
                                 <TableCell className="w-[20%] p-0"><OIBars callOI={entry.call?.oi} putOI={entry.put?.oi} totalOI={totalOI} /></TableCell>
 
-                                {renderCells(entry.put, optionChainView, 'Put', entry.strikePrice)?.map((cell: React.ReactElement, cellIndex) => React.cloneElement(cell, { key: `put-${entry.strikePrice}-${cellIndex}`, className: cn(cell.props.className, isPutItm && 'bg-primary/5') }))}
+                                {renderCells(entry.put, optionChainView, 'Put', entry.strikePrice)?.map((cell, cellIndex) => React.cloneElement(cell, { key: `put-${entry.strikePrice}-${cellIndex}`, className: cn(cell.props.className, isPutItm && 'bg-primary/5') }))}
                             </TableRow>
                             {isExpanded && (
                                 <TableRow className="border-border bg-muted hover:bg-muted/90">
