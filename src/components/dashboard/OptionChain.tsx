@@ -22,7 +22,7 @@ import { Input } from "@/components/ui/input";
 import { mockUnderlyings, mockOptionChains } from '@/lib/mockData/optionChainData';
 import type { OptionChainData, OptionData, Underlying, SelectedOptionLeg } from '@/types';
 import { cn } from '@/lib/utils';
-import { ArrowUpDown, LineChart, Target, Plus, Minus } from 'lucide-react';
+import { ArrowUpDown, Target, Plus, Minus } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
 
@@ -352,12 +352,12 @@ export function OptionChain({ onAddLeg }: OptionChainProps) {
                                 className="border-border cursor-pointer"
                                 onClick={() => setExpandedStrike(isExpanded ? null : entry.strikePrice)}
                             >
-                                {renderCells(entry.call, optionChainView, 'Call', entry.strikePrice)?.map((cell: React.ReactElement) => React.cloneElement(cell, { className: cn(cell.props.className, isCallItm && 'bg-primary/5') }))}
+                                {renderCells(entry.call, optionChainView, 'Call', entry.strikePrice)?.map((cell: React.ReactElement, cellIndex) => React.cloneElement(cell, { key: `call-${entry.strikePrice}-${cellIndex}`, className: cn(cell.props.className, isCallItm && 'bg-primary/5') }))}
 
                                 <TableCell className="w-[20%] font-semibold text-base text-center p-0">{formatNumber(entry.strikePrice, 0)}</TableCell>
                                 <TableCell className="w-[20%] p-0"><OIBars callOI={entry.call?.oi} putOI={entry.put?.oi} totalOI={totalOI} /></TableCell>
 
-                                {renderCells(entry.put, optionChainView, 'Put', entry.strikePrice)?.map((cell: React.ReactElement) => React.cloneElement(cell, { className: cn(cell.props.className, isPutItm && 'bg-primary/5') }))}
+                                {renderCells(entry.put, optionChainView, 'Put', entry.strikePrice)?.map((cell: React.ReactElement, cellIndex) => React.cloneElement(cell, { key: `put-${entry.strikePrice}-${cellIndex}`, className: cn(cell.props.className, isPutItm && 'bg-primary/5') }))}
                             </TableRow>
                             {isExpanded && (
                                 <TableRow className="border-border bg-muted hover:bg-muted/90">
