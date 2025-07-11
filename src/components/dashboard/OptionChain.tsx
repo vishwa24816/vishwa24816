@@ -45,14 +45,14 @@ const HeaderCell = ({ title, subtitle }: { title: string; subtitle?: string }) =
 
 const PriceCell = ({ bid, ask }: { bid?: number, ask?: number }) => (
     <div className="flex flex-col items-center text-xs">
-        <span className="text-green-400">{formatNumber(bid, 1)}</span>
-        <span className="text-red-400">{formatNumber(ask, 1)}</span>
+        <span className="text-green-600 dark:text-green-400">{formatNumber(bid, 1)}</span>
+        <span className="text-red-600 dark:text-red-400">{formatNumber(ask, 1)}</span>
     </div>
 );
 
 const MarkCell = ({ price, iv }: { price?: number, iv?: number }) => (
     <div className="flex flex-col items-center text-xs">
-        <span className="font-semibold text-foreground">${formatNumber(price, 1)}</span>
+        <span className="font-semibold text-foreground">₹{formatNumber(price, 1)}</span>
         <span className="text-muted-foreground">{formatNumber(iv, 1)}%</span>
     </div>
 );
@@ -183,15 +183,27 @@ export function OptionChain() {
   }
 
   return (
-    <div className="bg-[#1C1C1E] text-gray-200 border border-gray-700 rounded-lg shadow-lg w-full flex flex-col h-[70vh]">
+    <div className="bg-background text-foreground border border-border rounded-lg shadow-lg w-full flex flex-col h-[70vh]">
         {/* Header Controls */}
-        <div className="p-2 sm:p-3 border-b border-gray-700 flex flex-wrap items-center justify-between gap-2">
-            <div className="w-full sm:w-auto">
+        <div className="p-2 sm:p-3 border-b border-border flex flex-wrap items-center justify-between gap-2">
+            <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                 <Select value={selectedUnderlyingSymbol} onValueChange={setSelectedUnderlyingSymbol}>
+                    <SelectTrigger className="w-full sm:w-[160px] h-8 bg-background border-border text-xs">
+                        <SelectValue placeholder="Select Underlying" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-popover border-border text-popover-foreground">
+                        {mockUnderlyings.map((underlying) => (
+                        <SelectItem key={underlying.id} value={underlying.symbol} className="text-xs">
+                            {underlying.name}
+                        </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
                 <Select value={selectedExpiry} onValueChange={setSelectedExpiry} disabled={availableExpiries.length === 0}>
-                    <SelectTrigger className="w-full sm:w-[140px] h-8 bg-[#2C2C2E] border-gray-600 text-xs">
+                    <SelectTrigger className="w-full sm:w-[140px] h-8 bg-background border-border text-xs">
                         <SelectValue placeholder="Select Expiry" />
                     </SelectTrigger>
-                    <SelectContent className="bg-[#2C2C2E] border-gray-600 text-gray-200">
+                    <SelectContent className="bg-popover border-border text-popover-foreground">
                         {availableExpiries.map((expiry) => (
                         <SelectItem key={expiry} value={expiry} className="text-xs">
                             {mockOptionChains[selectedUnderlyingSymbol]?.[expiry]?.expiryDate || expiry}
@@ -200,16 +212,10 @@ export function OptionChain() {
                     </SelectContent>
                 </Select>
             </div>
-            <div className="flex items-center bg-[#2C2C2E] p-0.5 rounded-md">
-                <Button onClick={() => setOptionChainView('price')} variant="ghost" size="sm" className={cn("h-7 text-xs px-3", optionChainView === 'price' ? 'bg-gray-500/50 text-white' : 'text-gray-400 hover:text-white')}>Price</Button>
-                <Button onClick={() => setOptionChainView('volume_oi')} variant="ghost" size="sm" className={cn("h-7 text-xs px-3", optionChainView === 'volume_oi' ? 'bg-gray-500/50 text-white' : 'text-gray-400 hover:text-white')}>OI/Vol</Button>
-                <Button onClick={() => setOptionChainView('greeks')} variant="ghost" size="sm" className={cn("h-7 text-xs px-3", optionChainView === 'greeks' ? 'bg-gray-500/50 text-white' : 'text-gray-400 hover:text-white')}>Greeks</Button>
-            </div>
-             <div className="hidden sm:flex items-center bg-[#2C2C2E] p-0.5 rounded-md">
-                <Button variant="ghost" size="sm" className="h-7 text-xs px-3 bg-gray-500/50 text-white">T-Shape</Button>
-                <Button variant="ghost" size="sm" className="h-7 text-xs px-3 text-gray-400 hover:text-white">All</Button>
-                <Button variant="ghost" size="sm" className="h-7 text-xs px-3 text-gray-400 hover:text-white">Calls</Button>
-                <Button variant="ghost" size="sm" className="h-7 text-xs px-3 text-gray-400 hover:text-white">Puts</Button>
+            <div className="flex items-center bg-muted p-0.5 rounded-md">
+                <Button onClick={() => setOptionChainView('price')} variant="ghost" size="sm" className={cn("h-7 text-xs px-3", optionChainView === 'price' ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground')}>Price</Button>
+                <Button onClick={() => setOptionChainView('volume_oi')} variant="ghost" size="sm" className={cn("h-7 text-xs px-3", optionChainView === 'volume_oi' ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground')}>OI/Vol</Button>
+                <Button onClick={() => setOptionChainView('greeks')} variant="ghost" size="sm" className={cn("h-7 text-xs px-3", optionChainView === 'greeks' ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground')}>Greeks</Button>
             </div>
         </div>
 
@@ -218,8 +224,8 @@ export function OptionChain() {
         {optionChainData && optionChainData.data.length > 0 ? (
             <ScrollArea className="h-full" ref={scrollContainerRef}>
                 <Table className="min-w-full text-xs">
-                    <TableHeader className="sticky top-0 bg-[#1C1C1E] z-10">
-                        <TableRow className="border-gray-700 hover:bg-transparent">
+                    <TableHeader className="sticky top-0 bg-background z-10">
+                        <TableRow className="border-border hover:bg-transparent">
                             <TableHead className="w-[15%] text-center"><HeaderCell title="BID" subtitle="ASK" /></TableHead>
                             <TableHead className="w-[15%] text-center"><HeaderCell title="Mark" subtitle="Price/IV" /></TableHead>
                             <TableHead className="w-[40%] text-center" colSpan={2}>
@@ -237,11 +243,11 @@ export function OptionChain() {
                              {index === atmIndex && (
                                 <TableRow className="sticky top-10 z-10 hover:bg-transparent">
                                     <TableCell colSpan={6} className="p-0 h-8">
-                                        <div className="h-full w-full flex items-center justify-center bg-gray-700/80 backdrop-blur-sm">
-                                            <div className="bg-[#3A3A3C] rounded-full px-4 py-1.5 text-xs font-semibold flex items-center gap-2">
+                                        <div className="h-full w-full flex items-center justify-center bg-muted/80 backdrop-blur-sm">
+                                            <div className="bg-background border rounded-full px-4 py-1.5 text-xs font-semibold flex items-center gap-2">
                                                 <LineChart className="h-4 w-4 text-primary" />
                                                 <span>{selectedUnderlyingSymbol}</span>
-                                                <span>{formatNumber(optionChainData.underlyingValue, 2)}</span>
+                                                <span>₹{formatNumber(optionChainData.underlyingValue, 2)}</span>
                                             </div>
                                         </div>
                                     </TableCell>
@@ -249,9 +255,9 @@ export function OptionChain() {
                              )}
                             <TableRow 
                                 ref={index === atmIndex ? atmRowRef : null}
-                                className={cn("border-gray-700 hover:bg-gray-800/50 cursor-pointer",
-                                (entry.strikePrice < (optionChainData.underlyingValue || 0) && "bg-blue-900/10"), // ITM Calls
-                                (entry.strikePrice > (optionChainData.underlyingValue || 0) && "bg-orange-900/10") // ITM Puts
+                                className={cn("border-border hover:bg-muted/50 cursor-pointer",
+                                (entry.strikePrice < (optionChainData.underlyingValue || 0) && "bg-primary/5"), // ITM Puts
+                                (entry.strikePrice > (optionChainData.underlyingValue || 0) && "bg-accent/5") // ITM Calls
                                 )}
                             >
                                 {renderCells(entry.call, optionChainView)}
@@ -265,7 +271,7 @@ export function OptionChain() {
                 </Table>
             </ScrollArea>
         ) : (
-            <div className="text-center py-10 text-gray-500 p-4 sm:p-6">
+            <div className="text-center py-10 text-muted-foreground p-4 sm:p-6">
                 <p>No option chain data available for the selected underlying and expiry.</p>
             </div>
         )}
@@ -273,4 +279,3 @@ export function OptionChain() {
     </div>
   );
 }
-
