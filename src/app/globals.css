@@ -43,11 +43,11 @@
   }
 
   [data-theme="fiat"] {
-    --primary: 0 84.2% 60.2%; /* Red */
-    --primary-foreground: 0 0% 98%;
-    --accent: 24 94% 52%; /* Orange */
-    --accent-foreground: 24 94% 95%;
-    --ring: 0 84.2% 60.2%;
+    --primary: 24 94% 52%; /* Orange */
+    --primary-foreground: 24 94% 95%;
+    --accent: 48 95% 55%; /* Yellow */
+    --accent-foreground: 48 95% 95%;
+    --ring: 24 94% 52%;
   }
 
   [data-theme="crypto"] {
@@ -103,11 +103,11 @@
   }
 
   .dark[data-theme="fiat"] {
-    --primary: 0 72% 51%; /* Red */
-    --primary-foreground: 0 0% 98%;
-    --accent: 24 84% 55%; /* Orange */
-    --accent-foreground: 24 84% 96%;
-    --ring: 0 72% 51%;
+    --primary: 24 84% 55%; /* Orange */
+    --primary-foreground: 24 84% 96%;
+    --accent: 48 85% 58%; /* Yellow */
+    --accent-foreground: 48 85% 97%;
+    --ring: 24 84% 55%;
   }
 
   .dark[data-theme="crypto"] {
