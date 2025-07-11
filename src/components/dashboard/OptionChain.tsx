@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import {
   Table,
   TableBody,
@@ -17,104 +17,62 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { mockUnderlyings, mockOptionChains } from '@/lib/mockData/optionChainData';
-import type { OptionChainData, OptionData, OptionChainEntry, Underlying, SelectedOptionLeg } from '@/types';
+import type { OptionChainData, OptionData, Underlying } from '@/types';
 import { cn } from '@/lib/utils';
-import { ArrowRightLeft, PlusCircle, ShoppingBasket, X, BarChartBig, Zap } from 'lucide-react'; // Added ShoppingBasket, X, BarChartBig, Zap
-import { useToast } from "@/hooks/use-toast";
+import { ArrowUpDown, LineChart } from 'lucide-react';
+import { ScrollArea } from '@/components/ui/scroll-area';
+
 
 type OptionChainViewType = 'price' | 'volume_oi' | 'greeks';
 
-const formatNumber = (num?: number, precision = 0) => {
+const formatNumber = (num?: number, precision = 2) => {
   if (num === undefined || num === null || isNaN(num)) return '-';
-  return num.toLocaleString('en-IN', { minimumFractionDigits: precision, maximumFractionDigits: precision });
+  const fixedNum = num.toFixed(precision);
+  if (parseFloat(fixedNum) >= 1000) {
+    return parseFloat(fixedNum).toLocaleString('en-IN', { minimumFractionDigits: precision, maximumFractionDigits: precision });
+  }
+  return fixedNum;
 };
 
-const renderOptionTableHeaders = (view: OptionChainViewType, isCallSide: boolean): JSX.Element[] => {
-  const callHeaderClass = "bg-blue-500/10 dark:bg-blue-500/20";
-  const putHeaderClass = "bg-orange-500/10 dark:bg-orange-500/20";
-  let headers: string[];
-  const appliedHeaderClass = isCallSide ? callHeaderClass : putHeaderClass;
+const HeaderCell = ({ title, subtitle }: { title: string; subtitle?: string }) => (
+    <div className="flex flex-col items-center">
+        <span className="text-xs text-muted-foreground font-medium">{title}</span>
+        {subtitle && <span className="text-[10px] text-muted-foreground/70 -mt-0.5">{subtitle}</span>}
+    </div>
+);
 
-  if (view === 'price') {
-    headers = isCallSide 
-      ? ["Ask Qty", "Ask Price", "LTP", "Net Chng", "Bid Price", "Bid Qty"]
-      : ["Bid Qty", "Bid Price", "Net Chng", "LTP", "Ask Price", "Ask Qty"];
-  } else if (view === 'volume_oi') {
-    headers = isCallSide
-      ? ["IV", "Volume", "Chng in OI", "OI", "LTP", "Net Chng"]
-      : ["Net Chng", "LTP", "OI", "Chng in OI", "Volume", "IV"];
-  } else { // greeks
-    headers = isCallSide
-      ? ["Delta", "Gamma", "Theta", "Vega", "Rho", "LTP"]
-      : ["LTP", "Rho", "Vega", "Theta", "Gamma", "Delta"];
-  }
-  
-  return headers.map(header => (
-    <TableHead key={`${isCallSide ? 'call' : 'put'}-${header}-${view}`} className={cn("text-right min-w-[80px] px-2 align-middle", appliedHeaderClass)}>{header}</TableHead>
-  ));
-};
+const PriceCell = ({ bid, ask }: { bid?: number, ask?: number }) => (
+    <div className="flex flex-col items-center text-xs">
+        <span className="text-green-400">{formatNumber(bid, 1)}</span>
+        <span className="text-red-400">{formatNumber(ask, 1)}</span>
+    </div>
+);
 
-const renderCells = (data: OptionData | undefined, view: OptionChainViewType, isCall: boolean): JSX.Element[] => {
-  const cellClass = cn(isCall ? "bg-blue-500/5 dark:bg-blue-500/10" : "bg-orange-500/5 dark:bg-orange-500/10", "px-2 align-middle");
+const MarkCell = ({ price, iv }: { price?: number, iv?: number }) => (
+    <div className="flex flex-col items-center text-xs">
+        <span className="font-semibold text-foreground">${formatNumber(price, 1)}</span>
+        <span className="text-muted-foreground">{formatNumber(iv, 1)}%</span>
+    </div>
+);
 
-  if (!data) {
-    return Array(6).fill(null).map((_, idx) => <TableCell key={`empty-${idx}-${view}-${isCall ? 'call' : 'put'}`} className={cn("text-center", cellClass)}>-</TableCell>);
-  }
+const OIBAR_MAX_WIDTH = 60; // max width for OI bars on each side
 
-  const isPositiveChange = data.netChng >= 0;
+const OIBars = ({ callOI, putOI, totalOI }: { callOI?: number, putOI?: number, totalOI: number }) => {
+    const callWidth = totalOI > 0 && callOI ? (callOI / totalOI) * OIBAR_MAX_WIDTH : 0;
+    const putWidth = totalOI > 0 && putOI ? (putOI / totalOI) * OIBAR_MAX_WIDTH : 0;
 
-  if (view === 'price') {
-    const cells = isCall
-      ? [data.askQty, data.askPrice, data.ltp, data.netChng, data.bidPrice, data.bidQty]
-      : [data.bidQty, data.bidPrice, data.netChng, data.ltp, data.askPrice, data.askQty];
-    const precisions = isCall ? [0,2,2,2,2,0] : [0,2,2,2,2,0];
-    
-    return cells.map((value, idx) => {
-        let specialClass = "";
-        if((isCall && idx === 2) || (!isCall && idx === 3)) specialClass = "font-bold"; // LTP
-        if((isCall && idx === 3) || (!isCall && idx === 2)) specialClass = cn(specialClass, data.netChng >= 0 ? 'text-green-600' : 'text-red-600'); // NetChng
-
-        const content = (isCall && idx === 3) || (!isCall && idx === 2) // NetChng column
-            ? `${data.netChng !== 0 ? (isPositiveChange ? '+' : '') : ''}${formatNumber(data.netChng, 2)}`
-            : formatNumber(value as number | undefined, precisions[idx]);
-
-        return <TableCell key={`price-${idx}-${view}-${isCall ? 'call' : 'put'}`} className={cn("text-right", cellClass, specialClass)}>{content}</TableCell>
-    });
-
-  } else if (view === 'volume_oi') {
-     const cells = isCall
-      ? [data.iv, data.volume, data.chngInOI, data.oi, data.ltp, data.netChng]
-      : [data.netChng, data.ltp, data.oi, data.chngInOI, data.volume, data.iv];
-    const precisions = isCall ? [2,0,0,0,2,2] : [2,2,0,0,0,2];
-     
-    return cells.map((value, idx) => {
-        let specialClass = "";
-        if((isCall && idx === 2) || (!isCall && idx === 3)) specialClass = cn(data.chngInOI > 0 ? 'text-green-600' : data.chngInOI < 0 ? 'text-red-600' : '', "font-semibold"); // ChngInOI
-        if((isCall && idx === 4) || (!isCall && idx === 1)) specialClass = "font-bold"; // LTP
-        if((isCall && idx === 5) || (!isCall && idx === 0)) specialClass = cn(specialClass, data.netChng >= 0 ? 'text-green-600' : 'text-red-600'); // NetChng
-
-        const content = (isCall && idx === 5) || (!isCall && idx === 0) // NetChng column
-            ? `${data.netChng !== 0 ? (isPositiveChange ? '+' : '') : ''}${formatNumber(data.netChng, 2)}`
-            : formatNumber(value as number | undefined, precisions[idx]);
-
-        return <TableCell key={`vol-${idx}-${view}-${isCall ? 'call' : 'put'}`} className={cn("text-right", cellClass, specialClass)}>{content}</TableCell>;
-    });
-  } else { // greeks
-    const cells = isCall
-      ? [data.delta, data.gamma, data.theta, data.vega, data.rho, data.ltp]
-      : [data.ltp, data.rho, data.vega, data.theta, data.gamma, data.delta];
-    const precisions = isCall ? [4,4,4,4,4,2] : [2,4,4,4,4,4];
-
-    return cells.map((value, idx) => {
-        let specialClass = "";
-        if((isCall && idx === 5) || (!isCall && idx === 0)) specialClass = "font-bold"; // LTP
-        return <TableCell key={`greek-${idx}-${view}-${isCall ? 'call' : 'put'}`} className={cn("text-right", cellClass, specialClass)}>{formatNumber(value as number | undefined, precisions[idx])}</TableCell>;
-    });
-  }
+    return (
+        <div className="flex items-center justify-center h-full w-full">
+            <div className="flex items-center justify-end w-1/2 pr-1">
+                <div className="bg-red-500/50 h-2.5 rounded-l-sm" style={{ width: `${putWidth}px` }} />
+            </div>
+            <div className="flex items-center justify-start w-1/2 pl-1">
+                <div className="bg-green-500/50 h-2.5 rounded-r-sm" style={{ width: `${callWidth}px` }} />
+            </div>
+        </div>
+    );
 };
 
 
@@ -123,9 +81,10 @@ export function OptionChain() {
   const [availableExpiries, setAvailableExpiries] = useState<string[]>([]);
   const [selectedExpiry, setSelectedExpiry] = useState<string>('');
   const [optionChainData, setOptionChainData] = useState<OptionChainData | null>(null);
-  const [optionChainView, setOptionChainView] = useState<OptionChainViewType>('volume_oi');
-  const [selectedLegs, setSelectedLegs] = useState<SelectedOptionLeg[]>([]);
-  const { toast } = useToast();
+  const [optionChainView, setOptionChainView] = useState<OptionChainViewType>('price');
+  
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const atmRowRef = useRef<HTMLTableRowElement>(null);
 
   useEffect(() => {
     const chainsForUnderlying = mockOptionChains[selectedUnderlyingSymbol];
@@ -145,7 +104,6 @@ export function OptionChain() {
       setSelectedExpiry('');
       setOptionChainData(null);
     }
-    setSelectedLegs([]); // Clear legs when underlying changes
   }, [selectedUnderlyingSymbol]);
 
   useEffect(() => {
@@ -157,240 +115,162 @@ export function OptionChain() {
         setOptionChainData(null);
       }
     }
-    setSelectedLegs([]); // Clear legs when expiry changes
   }, [selectedUnderlyingSymbol, selectedExpiry]);
-  
+
+  useEffect(() => {
+    if (atmRowRef.current && scrollContainerRef.current) {
+        const container = scrollContainerRef.current.querySelector('[data-radix-scroll-area-viewport]');
+        if(container){
+            const containerHeight = container.clientHeight;
+            const rowTop = atmRowRef.current.offsetTop;
+            const rowHeight = atmRowRef.current.clientHeight;
+            container.scrollTop = rowTop - (containerHeight / 2) + (rowHeight / 2);
+        }
+    }
+  }, [optionChainData]);
+
+
   const selectedUnderlyingDetails = mockUnderlyings.find(u => u.symbol === selectedUnderlyingSymbol);
 
-  const getStrikePriceRowClass = (strike: number, underlyingValue?: number): string => {
-    if (!underlyingValue) return "";
-    const lowerBound = underlyingValue * 0.995; 
-    const upperBound = underlyingValue * 1.005; 
-    if (strike >= lowerBound && strike <= upperBound) {
-      return "bg-yellow-400/20 dark:bg-yellow-600/20"; 
-    }
-    return "";
-  };
-
-  const handleSelectOptionForStrategy = (
-    optionType: 'Call' | 'Put',
-    action: 'Buy' | 'Sell',
-    strikePrice: number,
-    optionData?: OptionData
-  ) => {
-    if (!selectedUnderlyingDetails || !optionChainData || !optionData || !optionData.ltp) {
-      toast({ title: "Error", description: "Option data not available to select for strategy.", variant: "destructive" });
-      return;
-    }
-
-    const legId = `${selectedUnderlyingSymbol}-${optionChainData.expiryDate}-${strikePrice}-${optionType}-${action}-${Date.now()}`;
-    const instrumentName = `${selectedUnderlyingSymbol} ${optionChainData.expiryDate} ${strikePrice} ${optionType.toUpperCase()}`;
-    
-    const newLeg: SelectedOptionLeg = {
-      id: legId,
-      underlyingSymbol: selectedUnderlyingSymbol,
-      instrumentName,
-      expiryDate: optionChainData.expiryDate,
-      strikePrice,
-      optionType,
-      action,
-      ltp: optionData.ltp,
-      quantity: 1, // Default to 1 lot for now
-    };
-
-    setSelectedLegs(prev => [...prev, newLeg]);
-
-    toast({
-      title: "Leg Added to Strategy",
-      description: `${action} ${instrumentName} @ ${formatNumber(optionData.ltp, 2)}`,
+  const findATMIndex = (data: typeof optionChainData.data, underlyingPrice: number) => {
+    let closestIndex = -1;
+    let minDiff = Infinity;
+    data.forEach((entry, index) => {
+      const diff = Math.abs(entry.strikePrice - underlyingPrice);
+      if (diff < minDiff) {
+        minDiff = diff;
+        closestIndex = index;
+      }
     });
-  };
-
-  const handleRemoveLeg = (legId: string) => {
-    setSelectedLegs(prev => prev.filter(leg => leg.id !== legId));
-    toast({ title: "Leg Removed", description: "Option leg removed from strategy."});
-  };
-
-  const handleClearStrategy = () => {
-    setSelectedLegs([]);
-    toast({ title: "Strategy Cleared", description: "All option legs removed."});
-  };
-
-  const handleAnalyzeStrategy = () => {
-    if (selectedLegs.length === 0) {
-        toast({ title: "No Legs Selected", description: "Please add option legs to analyze.", variant: "destructive"});
-        return;
-    }
-    toast({ title: "Analyze Strategy (Mock)", description: `Analyzing ${selectedLegs.length} leg(s). Payoff chart and greeks would appear here.`});
+    return closestIndex;
   };
   
-  const handleExecuteStrategy = () => {
-    if (selectedLegs.length === 0) {
-        toast({ title: "No Legs to Execute", description: "Please add option legs to your strategy.", variant: "destructive"});
-        return;
-    }
-    toast({ title: "Execute Strategy (Mock)", description: `Executing ${selectedLegs.length} leg(s). Orders would be placed.`});
-    setSelectedLegs([]); // Clear after mock execution
-  };
+  const atmIndex = optionChainData?.data && optionChainData?.underlyingValue ? findATMIndex(optionChainData.data, optionChainData.underlyingValue) : -1;
+  const totalOI = useMemo(() => {
+    if (!optionChainData) return 0;
+    return Math.max(...optionChainData.data.map(d => (d.call?.oi || 0) + (d.put?.oi || 0)));
+  }, [optionChainData]);
 
+  const renderCells = (data: OptionData | undefined, view: OptionChainViewType) => {
+     if (!data) {
+        return (
+            <>
+                <TableCell className="text-center w-[15%]">-</TableCell>
+                <TableCell className="text-center w-[15%]">-</TableCell>
+            </>
+        );
+     }
 
-  const callCellBaseClass = "bg-blue-500/5 dark:bg-blue-500/10 px-2 align-middle";
-  const putCellBaseClass = "bg-orange-500/5 dark:bg-orange-500/10 px-2 align-middle";
-  const callHeaderBaseClass = "bg-blue-500/10 dark:bg-blue-500/20 align-middle";
-  const putHeaderBaseClass = "bg-orange-500/10 dark:bg-orange-500/20 align-middle";
-
+     if (view === 'price') {
+        return <>
+            <TableCell className="w-[15%]"><PriceCell bid={data.bidPrice} ask={data.askPrice} /></TableCell>
+            <TableCell className="w-[15%]"><MarkCell price={data.ltp} iv={data.iv} /></TableCell>
+        </>
+     }
+     if (view === 'volume_oi') {
+        return <>
+            <TableCell className="w-[15%] text-center text-xs">{formatNumber(data.volume, 0)}</TableCell>
+            <TableCell className="w-[15%] text-center text-xs">{formatNumber(data.oi, 0)}</TableCell>
+        </>
+     }
+     if (view === 'greeks') {
+        return <>
+            <TableCell className="w-[15%] text-center text-xs">{formatNumber(data.delta, 2)}</TableCell>
+            <TableCell className="w-[15%] text-center text-xs">{formatNumber(data.theta, 2)}</TableCell>
+        </>
+     }
+     return null;
+  }
 
   return (
-    <div className="bg-card text-card-foreground border rounded-lg shadow-lg w-full">
-      <div className="p-3 sm:p-4 border-b">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div>
-                <h2 className="text-xl font-semibold font-headline text-primary flex items-center">
-                    <ArrowRightLeft className="h-6 w-6 mr-2" /> Option Chain
-                </h2>
-                {selectedUnderlyingDetails && optionChainData?.underlyingValue && (
-                    <p className="text-xs mt-1 text-muted-foreground">
-                        {selectedUnderlyingDetails.name} at {formatNumber(optionChainData.underlyingValue, 2)} as of mock data time.
-                    </p>
-                )}
+    <div className="bg-[#1C1C1E] text-gray-200 border border-gray-700 rounded-lg shadow-lg w-full flex flex-col h-[70vh]">
+        {/* Header Controls */}
+        <div className="p-2 sm:p-3 border-b border-gray-700 flex flex-wrap items-center justify-between gap-2">
+            <div className="w-full sm:w-auto">
+                <Select value={selectedExpiry} onValueChange={setSelectedExpiry} disabled={availableExpiries.length === 0}>
+                    <SelectTrigger className="w-full sm:w-[140px] h-8 bg-[#2C2C2E] border-gray-600 text-xs">
+                        <SelectValue placeholder="Select Expiry" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-[#2C2C2E] border-gray-600 text-gray-200">
+                        {availableExpiries.map((expiry) => (
+                        <SelectItem key={expiry} value={expiry} className="text-xs">
+                            {mockOptionChains[selectedUnderlyingSymbol]?.[expiry]?.expiryDate || expiry}
+                        </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
             </div>
-            <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
-            <Select value={selectedUnderlyingSymbol} onValueChange={setSelectedUnderlyingSymbol}>
-              <SelectTrigger className="w-full sm:w-[180px]">
-                <SelectValue placeholder="Select Underlying" />
-              </SelectTrigger>
-              <SelectContent>
-                {mockUnderlyings.map((underlying) => (
-                  <SelectItem key={underlying.id} value={underlying.symbol}>
-                    {underlying.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Select value={selectedExpiry} onValueChange={setSelectedExpiry} disabled={availableExpiries.length === 0}>
-              <SelectTrigger className="w-full sm:w-[180px]">
-                <SelectValue placeholder="Select Expiry" />
-              </SelectTrigger>
-              <SelectContent>
-                {availableExpiries.map((expiry) => (
-                  <SelectItem key={expiry} value={expiry}>
-                    {mockOptionChains[selectedUnderlyingSymbol]?.[expiry]?.expiryDate || expiry}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+            <div className="flex items-center bg-[#2C2C2E] p-0.5 rounded-md">
+                <Button onClick={() => setOptionChainView('price')} variant="ghost" size="sm" className={cn("h-7 text-xs px-3", optionChainView === 'price' ? 'bg-gray-500/50 text-white' : 'text-gray-400 hover:text-white')}>Price</Button>
+                <Button onClick={() => setOptionChainView('volume_oi')} variant="ghost" size="sm" className={cn("h-7 text-xs px-3", optionChainView === 'volume_oi' ? 'bg-gray-500/50 text-white' : 'text-gray-400 hover:text-white')}>OI/Vol</Button>
+                <Button onClick={() => setOptionChainView('greeks')} variant="ghost" size="sm" className={cn("h-7 text-xs px-3", optionChainView === 'greeks' ? 'bg-gray-500/50 text-white' : 'text-gray-400 hover:text-white')}>Greeks</Button>
+            </div>
+             <div className="hidden sm:flex items-center bg-[#2C2C2E] p-0.5 rounded-md">
+                <Button variant="ghost" size="sm" className="h-7 text-xs px-3 bg-gray-500/50 text-white">T-Shape</Button>
+                <Button variant="ghost" size="sm" className="h-7 text-xs px-3 text-gray-400 hover:text-white">All</Button>
+                <Button variant="ghost" size="sm" className="h-7 text-xs px-3 text-gray-400 hover:text-white">Calls</Button>
+                <Button variant="ghost" size="sm" className="h-7 text-xs px-3 text-gray-400 hover:text-white">Puts</Button>
+            </div>
         </div>
-        <RadioGroup 
-            value={optionChainView} 
-            onValueChange={(value) => setOptionChainView(value as OptionChainViewType)} 
-            className="flex flex-wrap gap-2 mt-4"
-        >
-            {(['price', 'volume_oi', 'greeks'] as OptionChainViewType[]).map(viewType => (
-                <Label 
-                    key={viewType}
-                    htmlFor={`view-${viewType}`} 
-                    className={cn(
-                        "flex items-center space-x-2 px-3 py-1.5 rounded-md border cursor-pointer text-xs sm:text-sm transition-colors hover:bg-muted/50",
-                        optionChainView === viewType && "bg-primary/10 border-primary text-primary"
-                    )}
-                >
-                    <RadioGroupItem value={viewType} id={`view-${viewType}`} className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                    <span>{viewType === 'volume_oi' ? 'Volume/OI' : viewType.charAt(0).toUpperCase() + viewType.slice(1)}</span>
-                </Label>
-            ))}
-        </RadioGroup>
-      </div>
-      <div className="overflow-x-auto"> 
+
+        {/* Option Chain Table */}
+        <div className="flex-grow overflow-hidden">
         {optionChainData && optionChainData.data.length > 0 ? (
-          <Table className="min-w-[1300px] text-xs">
-            <TableHeader>
-              <TableRow>
-                <TableHead className="text-center" colSpan={7}>CALLS</TableHead> {/* 6 data + 1 action */}
-                <TableHead className="text-center w-[100px] sm:w-[120px] bg-muted dark:bg-muted/50 align-middle">Strike</TableHead>
-                <TableHead className="text-center" colSpan={7}>PUTS</TableHead> {/* 6 data + 1 action */}
-              </TableRow>
-              <TableRow>
-                {renderOptionTableHeaders(optionChainView, true)}
-                <TableHead className={cn("text-center px-2 min-w-[70px]", callHeaderBaseClass)}>Action</TableHead>
-                
-                <TableHead className="text-center font-bold bg-muted dark:bg-muted/50 w-[100px] sm:w-[120px] align-middle">Price</TableHead>
-                
-                <TableHead className={cn("text-center px-2 min-w-[70px]", putHeaderBaseClass)}>Action</TableHead>
-                {renderOptionTableHeaders(optionChainView, false)}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {optionChainData.data.map((entry: OptionChainEntry) => (
-                <TableRow key={entry.strikePrice} className={cn("hover:bg-muted/20",getStrikePriceRowClass(entry.strikePrice, optionChainData.underlyingValue))}>
-                  {renderCells(entry.call, optionChainView, true)}
-                  <TableCell className={cn("text-center align-middle px-1", callCellBaseClass)}>
-                    <div className="flex flex-row items-center justify-center gap-0.5 sm:gap-1">
-                        <Button variant="outline" className="h-6 px-1.5 text-xs font-medium text-green-600 border-green-600 hover:bg-green-600/10 hover:text-green-700" onClick={() => handleSelectOptionForStrategy('Call', 'Buy', entry.strikePrice, entry.call)}>B</Button>
-                        <Button variant="outline" className="h-6 px-1.5 text-xs font-medium text-red-600 border-red-600 hover:bg-red-600/10 hover:text-red-700" onClick={() => handleSelectOptionForStrategy('Call', 'Sell', entry.strikePrice, entry.call)}>S</Button>
-                    </div>
-                  </TableCell>
-
-                  <TableCell className={cn("text-center font-bold bg-muted dark:bg-muted/50 align-middle", getStrikePriceRowClass(entry.strikePrice, optionChainData.underlyingValue))}>
-                    {formatNumber(entry.strikePrice)}
-                  </TableCell>
-
-                  <TableCell className={cn("text-center align-middle px-1", putCellBaseClass)}>
-                     <div className="flex flex-row items-center justify-center gap-0.5 sm:gap-1">
-                        <Button variant="outline" className="h-6 px-1.5 text-xs font-medium text-green-600 border-green-600 hover:bg-green-600/10 hover:text-green-700" onClick={() => handleSelectOptionForStrategy('Put', 'Buy', entry.strikePrice, entry.put)}>B</Button>
-                        <Button variant="outline" className="h-6 px-1.5 text-xs font-medium text-red-600 border-red-600 hover:bg-red-600/10 hover:text-red-700" onClick={() => handleSelectOptionForStrategy('Put', 'Sell', entry.strikePrice, entry.put)}>S</Button>
-                    </div>
-                  </TableCell>
-                  {renderCells(entry.put, optionChainView, false)}
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+            <ScrollArea className="h-full" ref={scrollContainerRef}>
+                <Table className="min-w-full text-xs">
+                    <TableHeader className="sticky top-0 bg-[#1C1C1E] z-10">
+                        <TableRow className="border-gray-700 hover:bg-transparent">
+                            <TableHead className="w-[15%] text-center"><HeaderCell title="BID" subtitle="ASK" /></TableHead>
+                            <TableHead className="w-[15%] text-center"><HeaderCell title="Mark" subtitle="Price/IV" /></TableHead>
+                            <TableHead className="w-[40%] text-center" colSpan={2}>
+                                <div className="flex items-center justify-center">
+                                <HeaderCell title="Strike" /> <ArrowUpDown className="h-3 w-3 ml-1 text-muted-foreground" />
+                                </div>
+                            </TableHead>
+                            <TableHead className="w-[15%] text-center"><HeaderCell title="Mark" subtitle="Price/IV" /></TableHead>
+                            <TableHead className="w-[15%] text-center"><HeaderCell title="BID" subtitle="ASK" /></TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {optionChainData.data.map((entry, index) => (
+                           <React.Fragment key={entry.strikePrice}>
+                             {index === atmIndex && (
+                                <TableRow className="sticky top-10 z-10 hover:bg-transparent">
+                                    <TableCell colSpan={6} className="p-0 h-8">
+                                        <div className="h-full w-full flex items-center justify-center bg-gray-700/80 backdrop-blur-sm">
+                                            <div className="bg-[#3A3A3C] rounded-full px-4 py-1.5 text-xs font-semibold flex items-center gap-2">
+                                                <LineChart className="h-4 w-4 text-primary" />
+                                                <span>{selectedUnderlyingSymbol}</span>
+                                                <span>{formatNumber(optionChainData.underlyingValue, 2)}</span>
+                                            </div>
+                                        </div>
+                                    </TableCell>
+                                </TableRow>
+                             )}
+                            <TableRow 
+                                ref={index === atmIndex ? atmRowRef : null}
+                                className={cn("border-gray-700 hover:bg-gray-800/50 cursor-pointer",
+                                (entry.strikePrice < (optionChainData.underlyingValue || 0) && "bg-blue-900/10"), // ITM Calls
+                                (entry.strikePrice > (optionChainData.underlyingValue || 0) && "bg-orange-900/10") // ITM Puts
+                                )}
+                            >
+                                {renderCells(entry.call, optionChainView)}
+                                <TableCell className="w-[20%] font-semibold text-base text-center p-0">{formatNumber(entry.strikePrice, 0)}</TableCell>
+                                <TableCell className="w-[20%] p-0"><OIBars callOI={entry.call?.oi} putOI={entry.put?.oi} totalOI={totalOI} /></TableCell>
+                                {renderCells(entry.put, optionChainView)}
+                            </TableRow>
+                           </React.Fragment>
+                        ))}
+                    </TableBody>
+                </Table>
+            </ScrollArea>
         ) : (
-          <div className="text-center py-10 text-muted-foreground p-4 sm:p-6">
-            <p>No option chain data available for the selected underlying and expiry.</p>
-            <p>Please select an underlying and expiry date.</p>
-          </div>
+            <div className="text-center py-10 text-gray-500 p-4 sm:p-6">
+                <p>No option chain data available for the selected underlying and expiry.</p>
+            </div>
         )}
-      </div>
-      {selectedLegs.length > 0 && (
-        <div className="p-3 sm:p-4 border-t mt-4">
-          <h3 className="text-lg font-semibold mb-3 text-primary flex items-center">
-            <ShoppingBasket className="h-5 w-5 mr-2" />
-            Strategy Legs ({selectedLegs.length})
-          </h3>
-          <div className="max-h-60 overflow-y-auto space-y-2 pr-2">
-            {selectedLegs.map((leg) => (
-              <div key={leg.id} className="flex items-center justify-between p-2.5 rounded-md bg-muted/50 border">
-                <div>
-                  <p className="text-sm font-medium text-foreground">
-                    <span className={cn("font-bold", leg.action === 'Buy' ? 'text-green-600' : 'text-red-600')}>
-                      {leg.action.toUpperCase()} {leg.quantity} Lot(s)
-                    </span> - {leg.instrumentName}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    LTP: {formatNumber(leg.ltp, 2)}
-                  </p>
-                </div>
-                <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-destructive" onClick={() => handleRemoveLeg(leg.id)}>
-                  <X className="h-4 w-4" />
-                </Button>
-              </div>
-            ))}
-          </div>
-          <div className="mt-4 flex flex-col sm:flex-row sm:justify-end sm:space-x-2 space-y-2 sm:space-y-0">
-            <Button variant="outline" size="sm" onClick={handleAnalyzeStrategy} className="text-sm">
-              <BarChartBig className="mr-2 h-4 w-4" /> Analyze Strategy (Mock)
-            </Button>
-            <Button variant="destructive" size="sm" onClick={handleClearStrategy} className="text-sm">
-              <X className="mr-2 h-4 w-4" /> Clear All
-            </Button>
-            <Button size="sm" onClick={handleExecuteStrategy} className="text-sm bg-green-600 hover:bg-green-700 text-white">
-              <Zap className="mr-2 h-4 w-4" /> Execute Strategy (Mock)
-            </Button>
-          </div>
         </div>
-      )}
     </div>
   );
 }
+
