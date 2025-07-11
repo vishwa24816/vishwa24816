@@ -1,23 +1,27 @@
-
 "use client";
 
 import React from 'react';
 import type { SelectedOptionLeg } from '@/types';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Label } from '@/components/ui/label';
-import { Trash2, LineChart, TrendingUp, TrendingDown, Sigma } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Trash2, Edit, Copy, BarChart2 as PayoffIcon, BookOpen, Scaling } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import { Card, CardContent } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  ReferenceLine,
+  AreaChart,
+  Area,
+  ComposedChart,
+} from 'recharts';
 
 interface StrategyBuilderProps {
   legs: SelectedOptionLeg[];
@@ -29,35 +33,59 @@ const formatCurrency = (value?: number) => {
     return `₹${value.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
 
+// Mock data for payoff chart
+const generatePayoffData = (legs: SelectedOptionLeg[]) => {
+  if (legs.length === 0) return [];
+  
+  const basePrice = legs.length > 0 ? legs[0].strikePrice : 21500;
+  const range = basePrice * 0.1;
+  const step = range / 20;
+
+  const data = [];
+  for (let i = -20; i <= 20; i++) {
+    const underlyingPrice = basePrice + i * step;
+    let pnl = 0;
+
+    legs.forEach(leg => {
+      let intrinsicValue = 0;
+      if (leg.optionType === 'Call') {
+        intrinsicValue = Math.max(0, underlyingPrice - leg.strikePrice);
+      } else { // Put
+        intrinsicValue = Math.max(0, leg.strikePrice - underlyingPrice);
+      }
+
+      if (leg.action === 'Buy') {
+        pnl += intrinsicValue - leg.ltp;
+      } else { // Sell
+        pnl += leg.ltp - intrinsicValue;
+      }
+    });
+    
+    data.push({
+      price: parseFloat(underlyingPrice.toFixed(2)),
+      pnl: parseFloat((pnl * (legs[0]?.quantity || 1) * 50).toFixed(2)), // Assuming lot size 50
+    });
+  }
+  return data;
+};
+
+
 export function StrategyBuilder({ legs, setLegs }: StrategyBuilderProps) {
     const { toast } = useToast();
-
-    const updateLegAction = (id: string, action: 'Buy' | 'Sell') => {
-        setLegs(legs.map(leg => leg.id === id ? { ...leg, action } : leg));
-    };
-
-    const updateLegQuantity = (id: string, quantity: number) => {
-        setLegs(legs.map(leg => leg.id === id ? { ...leg, quantity } : leg));
-    };
 
     const removeLeg = (id: string) => {
         setLegs(legs.filter(leg => leg.id !== id));
         toast({ title: 'Leg Removed', description: 'The option leg has been removed from the strategy.' });
     };
 
-    const handleAnalyze = () => {
-        if (legs.length === 0) {
-            toast({ title: 'No Legs Selected', description: 'Please add at least one option leg to analyze a strategy.', variant: 'destructive' });
-            return;
-        }
-        toast({ title: 'Analyzing Strategy (Mock)', description: `Calculating payoff for ${legs.length} leg(s).` });
-    };
-    
+    const payoffData = React.useMemo(() => generatePayoffData(legs), [legs]);
+
     // Placeholder calculations
-    const lotSize = 50; // Should be dynamic based on underlying
-    const requiredMargin = legs.reduce((acc, leg) => acc + (leg.ltp * leg.quantity * lotSize) * (leg.action === 'Sell' ? 0.25 : 0), 25000);
-    const maxProfit = legs.length > 1 ? 12500 : undefined;
-    const maxLoss = legs.length > 1 ? 8500 : undefined;
+    const lotSize = 50; 
+    const estimatedMargin = legs.reduce((acc, leg) => acc + (leg.ltp * leg.quantity * lotSize) * (leg.action === 'Sell' ? 0.25 : 0.05), 0);
+    const maxProfit = legs.length > 0 ? 2874 : 0;
+    const maxLoss = legs.length > 0 ? -57126 : 0;
+    const totalPnl = legs.reduce((acc, leg) => acc + (leg.action === 'Buy' ? -leg.ltp : leg.ltp) * leg.quantity * lotSize, 0);
 
     return (
         <div className="mt-6 border-t pt-6">
@@ -67,95 +95,91 @@ export function StrategyBuilder({ legs, setLegs }: StrategyBuilderProps) {
                     <p>Click on an option in the chain above to start building your strategy.</p>
                 </div>
             ) : (
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    {/* Legs Table */}
-                    <div className="lg:col-span-2">
-                        <div className="overflow-x-auto">
-                             <Table>
-                                <TableHeader>
-                                <TableRow>
-                                    <TableHead>Instrument</TableHead>
-                                    <TableHead>Action</TableHead>
-                                    <TableHead>Qty (Lots)</TableHead>
-                                    <TableHead>Price</TableHead>
-                                    <TableHead className="text-right"></TableHead>
-                                </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                {legs.map(leg => (
-                                    <TableRow key={leg.id}>
-                                    <TableCell className="font-medium text-xs">{leg.instrumentName}</TableCell>
-                                    <TableCell>
-                                        <RadioGroup
-                                            value={leg.action}
-                                            onValueChange={(value) => updateLegAction(leg.id, value as 'Buy' | 'Sell')}
-                                            className="flex"
-                                        >
-                                            <div className="flex items-center space-x-2">
-                                                <RadioGroupItem value="Buy" id={`buy-${leg.id}`} className="text-green-500 border-green-500"/>
-                                                <Label htmlFor={`buy-${leg.id}`} className="font-normal text-xs">Buy</Label>
-                                            </div>
-                                            <div className="flex items-center space-x-2">
-                                                <RadioGroupItem value="Sell" id={`sell-${leg.id}`} className="text-red-500 border-red-500" />
-                                                <Label htmlFor={`sell-${leg.id}`} className="font-normal text-xs">Sell</Label>
-                                            </div>
-                                        </RadioGroup>
-                                    </TableCell>
-                                    <TableCell>
-                                        <Input
-                                            type="number"
-                                            value={leg.quantity}
-                                            onChange={(e) => updateLegQuantity(leg.id, parseInt(e.target.value) || 1)}
-                                            className="w-16 h-8 text-center"
-                                            min="1"
-                                        />
-                                    </TableCell>
-                                    <TableCell>₹{leg.ltp.toFixed(2)}</TableCell>
-                                    <TableCell className="text-right">
-                                        <Button variant="ghost" size="icon" onClick={() => removeLeg(leg.id)} className="h-7 w-7">
-                                            <Trash2 className="h-4 w-4 text-destructive" />
-                                        </Button>
-                                    </TableCell>
-                                    </TableRow>
-                                ))}
-                                </TableBody>
-                            </Table>
+                <Card>
+                    <CardContent className="p-4 space-y-4">
+                        {/* Selected Legs */}
+                        <div className="space-y-2">
+                            <div className="flex items-center space-x-3">
+                                <Checkbox id="select-all-legs" />
+                                <Label htmlFor="select-all-legs" className="text-sm font-medium">Select All</Label>
+                            </div>
+                            {legs.map(leg => (
+                                <div key={leg.id} className="flex items-center space-x-2 p-2 rounded-md hover:bg-muted/50">
+                                    <Checkbox id={`leg-${leg.id}`} defaultChecked />
+                                    <Badge variant={leg.action === 'Buy' ? 'default' : 'destructive'} className={cn("w-6 h-6 justify-center p-0", leg.action === 'Buy' ? 'bg-green-600' : 'bg-red-600')}>{leg.action.charAt(0)}</Badge>
+                                    <div className="flex-grow text-sm">
+                                        <span className="font-semibold">{leg.quantity}x {leg.instrumentName}</span> - <span>{formatCurrency(leg.ltp)}</span>
+                                        <span className={cn("ml-2", leg.action === 'Buy' ? 'text-red-500' : 'text-green-500')}>
+                                          ({formatCurrency((leg.action === 'Buy' ? -1 : 1) * leg.ltp * leg.quantity * lotSize)})
+                                        </span>
+                                    </div>
+                                    <div className="flex items-center space-x-1">
+                                        <Button variant="ghost" size="icon" className="h-7 w-7"><Edit className="h-4 w-4" /></Button>
+                                        <Button variant="ghost" size="icon" className="h-7 w-7"><Copy className="h-4 w-4" /></Button>
+                                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => removeLeg(leg.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
-                       
-                        <div className="mt-4 flex flex-col sm:flex-row gap-2">
-                            <Button className="flex-1" onClick={handleAnalyze}>Analyze Strategy</Button>
-                            <Button variant="outline" className="flex-1" onClick={() => setLegs([])}>Reset</Button>
-                        </div>
-                    </div>
 
-                    {/* Payoff & Metrics */}
-                    <div>
-                        <div className="space-y-4">
-                            <div className="bg-muted/50 rounded-lg p-4 h-48 flex items-center justify-center">
-                                <LineChart className="h-16 w-16 text-muted-foreground" />
-                                <p className="absolute text-sm text-muted-foreground">Payoff Chart</p>
-                            </div>
-                            <div className="grid grid-cols-2 gap-3 text-sm">
-                                <div className="p-3 bg-muted/50 rounded-lg">
-                                    <div className="text-muted-foreground flex items-center gap-1"><TrendingUp className="h-4 w-4 text-green-500"/> Max Profit</div>
-                                    <div className={cn("font-semibold", maxProfit ? "text-green-600" : "text-foreground")}>{maxProfit ? formatCurrency(maxProfit) : "Unlimited"}</div>
-                                </div>
-                                <div className="p-3 bg-muted/50 rounded-lg">
-                                    <div className="text-muted-foreground flex items-center gap-1"><TrendingDown className="h-4 w-4 text-red-500"/> Max Loss</div>
-                                    <div className={cn("font-semibold", maxLoss ? "text-red-600" : "text-foreground")}>{maxLoss ? formatCurrency(maxLoss) : "Unlimited"}</div>
-                                </div>
-                                <div className="p-3 bg-muted/50 rounded-lg col-span-2">
-                                    <div className="text-muted-foreground flex items-center gap-1"><Sigma className="h-4 w-4"/> Break-even(s)</div>
-                                    <div className="font-semibold text-foreground">₹21,550.25</div>
-                                </div>
-                                <div className="p-3 bg-muted/50 rounded-lg col-span-2">
-                                    <div className="text-muted-foreground">Required Margin</div>
-                                    <div className="font-semibold text-foreground">{formatCurrency(requiredMargin)}</div>
-                                </div>
-                            </div>
+                        {/* Metrics */}
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-2 text-sm pt-4 border-t">
+                            <div className="flex justify-between"><span className="text-muted-foreground">Prob. of Profit</span> <span className="font-semibold">NA%</span></div>
+                            <div className="flex justify-between"><span className="text-muted-foreground">Max. Profit</span> <span className="font-semibold text-green-600">{formatCurrency(maxProfit)}</span></div>
+                            <div className="flex justify-between"><span className="text-muted-foreground">Max. Loss</span> <span className="font-semibold text-red-600">{formatCurrency(maxLoss)}</span></div>
+                            <div className="flex justify-between"><span className="text-muted-foreground">Max. RR Ratio</span> <span className="font-semibold">1:0.05</span></div>
+                            <div className="flex justify-between"><span className="text-muted-foreground">Breakevens</span> <span className="font-semibold">57095.0</span></div>
+                            <div className="flex justify-between"><span className="text-muted-foreground">Total PNL</span> <span className={cn("font-semibold", totalPnl >= 0 ? 'text-green-600' : 'text-red-600')}>{formatCurrency(totalPnl)}</span></div>
+                            <div className="flex justify-between"><span className="text-muted-foreground">Net Credit</span> <span className="font-semibold">₹0</span></div>
+                            <div className="flex justify-between"><span className="text-muted-foreground">Estimated Margin</span> <span className="font-semibold">{formatCurrency(estimatedMargin)}</span></div>
                         </div>
-                    </div>
-                </div>
+
+                        {/* Payoff Chart Section */}
+                        <div className="pt-4 border-t">
+                             <Tabs defaultValue="payoff" className="w-full">
+                                <TabsList className="grid w-full grid-cols-4">
+                                    <TabsTrigger value="payoff"><PayoffIcon className="mr-2 h-4 w-4"/>Payoff Chart</TabsTrigger>
+                                    <TabsTrigger value="greeks"><BookOpen className="mr-2 h-4 w-4"/>Greeks</TabsTrigger>
+                                    <TabsTrigger value="pnl_table"><Scaling className="mr-2 h-4 w-4"/>P&L Table</TabsTrigger>
+                                    <TabsTrigger value="futures_chart" disabled>Futures Chart</TabsTrigger>
+                                </TabsList>
+                                <TabsContent value="payoff" className="mt-4">
+                                    <ResponsiveContainer width="100%" height={300}>
+                                        <ComposedChart data={payoffData} margin={{ top: 5, right: 20, left: -10, bottom: 5 }}>
+                                            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                                            <XAxis dataKey="price" stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
+                                            <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `₹${value/1000}k`} />
+                                            <Tooltip
+                                                contentStyle={{ 
+                                                    backgroundColor: 'hsl(var(--background))', 
+                                                    borderColor: 'hsl(var(--border))',
+                                                    fontSize: '12px',
+                                                }}
+                                                labelFormatter={(value) => `Spot: ${value}`}
+                                                formatter={(value: number) => [formatCurrency(value), 'P&L']}
+                                            />
+                                            <ReferenceLine y={0} stroke="hsl(var(--border))" strokeWidth={1} />
+                                            
+                                            <defs>
+                                                <linearGradient id="splitColor" x1="0" y1="0" x2="0" y2="1">
+                                                <stop offset={payoffData.findIndex(d => d.pnl < 0) / (payoffData.length-1)} stopColor="hsl(var(--positive))" stopOpacity={0.4} />
+                                                <stop offset={payoffData.findIndex(d => d.pnl < 0) / (payoffData.length-1)} stopColor="hsl(var(--destructive))" stopOpacity={0.4} />
+                                                </linearGradient>
+                                            </defs>
+                                            
+                                            <Area type="monotone" dataKey="pnl" stroke="transparent" fill="url(#splitColor)" />
+                                            <Line type="monotone" dataKey="pnl" strokeWidth={2} dot={false}
+                                                stroke="hsl(var(--primary))"
+                                            />
+                                        </ComposedChart>
+                                    </ResponsiveContainer>
+                                </TabsContent>
+                                <TabsContent value="greeks" className="mt-4 text-center text-muted-foreground py-10">Greeks data would be displayed here.</TabsContent>
+                                <TabsContent value="pnl_table" className="mt-4 text-center text-muted-foreground py-10">P&L table would be displayed here.</TabsContent>
+                            </Tabs>
+                        </div>
+                    </CardContent>
+                </Card>
             )}
         </div>
     );
