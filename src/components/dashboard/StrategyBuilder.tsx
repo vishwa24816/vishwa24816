@@ -4,11 +4,13 @@ import React from 'react';
 import type { SelectedOptionLeg } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
 import { Trash2, Edit, Copy, BarChart2 as PayoffIcon, BookOpen, Scaling } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from '@/components/ui/badge';
 import {
   LineChart,
   Line,
