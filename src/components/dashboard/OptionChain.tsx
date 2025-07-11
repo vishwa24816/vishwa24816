@@ -18,10 +18,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { mockUnderlyings, mockOptionChains } from '@/lib/mockData/optionChainData';
 import type { OptionChainData, OptionData, Underlying, SelectedOptionLeg } from '@/types';
 import { cn } from '@/lib/utils';
-import { ArrowUpDown, LineChart, Target } from 'lucide-react';
+import { ArrowUpDown, LineChart, Target, Plus, Minus } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
 
@@ -79,12 +80,43 @@ const OIBars = ({ callOI, putOI, totalOI }: { callOI?: number, putOI?: number, t
     );
 };
 
+const ExpandedRowContent = ({ lotSize, onBuy, onSell }: { lotSize: number; onBuy: (qty: number) => void; onSell: (qty: number) => void; }) => {
+    const [quantity, setQuantity] = useState(1);
+    
+    const handleBuy = () => onBuy(quantity);
+    const handleSell = () => onSell(quantity);
+
+    return (
+        <td colSpan={6} className="p-0">
+            <div className="bg-muted/70 p-3 flex items-center justify-center space-x-4">
+                <div className="flex items-center space-x-2">
+                    <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setQuantity(q => Math.max(1, q - 1))}><Minus className="h-4 w-4" /></Button>
+                    <Input 
+                        type="number" 
+                        className="w-20 h-9 text-center" 
+                        value={quantity}
+                        onChange={(e) => setQuantity(Number(e.target.value))}
+                        min="1"
+                    />
+                    <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setQuantity(q => q + 1)}><Plus className="h-4 w-4" /></Button>
+                </div>
+                <span className="text-xs text-muted-foreground">Qty: {(quantity * lotSize).toLocaleString()}</span>
+                <div className="flex items-center space-x-2">
+                    <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white" onClick={handleBuy}>Buy</Button>
+                    <Button size="sm" className="bg-red-600 hover:bg-red-700 text-white" onClick={handleSell}>Sell</Button>
+                </div>
+            </div>
+        </td>
+    );
+};
+
 export function OptionChain({ onAddLeg }: OptionChainProps) {
   const [selectedUnderlyingSymbol, setSelectedUnderlyingSymbol] = useState<string>(mockUnderlyings[0].symbol);
   const [availableExpiries, setAvailableExpiries] = useState<string[]>([]);
   const [selectedExpiry, setSelectedExpiry] = useState<string>('');
   const [optionChainData, setOptionChainData] = useState<OptionChainData | null>(null);
   const [optionChainView, setOptionChainView] = useState<OptionChainViewType>('price');
+  const [expandedStrike, setExpandedStrike] = useState<number | null>(null);
   const { toast } = useToast();
   
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -119,6 +151,7 @@ export function OptionChain({ onAddLeg }: OptionChainProps) {
         setOptionChainData(null);
       }
     }
+    setExpandedStrike(null); // Collapse rows on data change
   }, [selectedUnderlyingSymbol, selectedExpiry]);
 
   useEffect(() => {
@@ -287,7 +320,12 @@ export function OptionChain({ onAddLeg }: OptionChainProps) {
                         {renderHeaders()}
                     </TableHeader>
                     <TableBody>
-                        {optionChainData.data.map((entry, index) => (
+                        {optionChainData.data.map((entry, index) => {
+                          const isCallItm = optionChainData.underlyingValue && entry.strikePrice < optionChainData.underlyingValue;
+                          const isPutItm = optionChainData.underlyingValue && entry.strikePrice > optionChainData.underlyingValue;
+                          const isExpanded = expandedStrike === entry.strikePrice;
+
+                          return (
                            <React.Fragment key={entry.strikePrice}>
                              {index === atmIndex && (
                                 <TableRow className="sticky top-20 z-10 hover:bg-transparent">
@@ -304,18 +342,27 @@ export function OptionChain({ onAddLeg }: OptionChainProps) {
                              )}
                             <TableRow 
                                 ref={index === atmIndex ? atmRowRef : null}
-                                className={cn("border-border",
-                                (optionChainData.underlyingValue && entry.strikePrice < optionChainData.underlyingValue && "bg-primary/5"), 
-                                (optionChainData.underlyingValue && entry.strikePrice > optionChainData.underlyingValue && "bg-accent/5")
-                                )}
+                                className="border-border cursor-pointer"
+                                onClick={() => setExpandedStrike(isExpanded ? null : entry.strikePrice)}
                             >
-                                {renderCells(entry.call, optionChainView, 'Call', entry.strikePrice)}
+                                {renderCells(entry.call, optionChainView, 'Call', entry.strikePrice).props.children.map((cell: React.ReactElement, cellIndex: number) => React.cloneElement(cell, { className: cn(cell.props.className, isCallItm && 'bg-primary/5') }))}
+
                                 <TableCell className="w-[20%] font-semibold text-base text-center p-0">{formatNumber(entry.strikePrice, 0)}</TableCell>
                                 <TableCell className="w-[20%] p-0"><OIBars callOI={entry.call?.oi} putOI={entry.put?.oi} totalOI={totalOI} /></TableCell>
-                                {renderCells(entry.put, optionChainView, 'Put', entry.strikePrice)}
+
+                                {renderCells(entry.put, optionChainView, 'Put', entry.strikePrice).props.children.map((cell: React.ReactElement, cellIndex: number) => React.cloneElement(cell, { className: cn(cell.props.className, isPutItm && 'bg-primary/5') }))}
                             </TableRow>
+                            {isExpanded && (
+                                <TableRow className="border-border bg-muted hover:bg-muted/90">
+                                    <ExpandedRowContent 
+                                        lotSize={selectedUnderlyingDetails?.symbol === 'BANKNIFTY' ? 15 : 50} 
+                                        onBuy={(qty) => toast({ title: `BUY ${qty} lot(s) of ${entry.strikePrice} options`})}
+                                        onSell={(qty) => toast({ title: `SELL ${qty} lot(s) of ${entry.strikePrice} options`})}
+                                    />
+                                </TableRow>
+                            )}
                            </React.Fragment>
-                        ))}
+                        )})}
                     </TableBody>
                 </Table>
             </ScrollArea>
