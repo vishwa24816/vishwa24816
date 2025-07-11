@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState } from 'react';
@@ -64,9 +65,9 @@ const BasketCard: React.FC<{ basket: FoBasket }> = ({ basket }) => {
 
     return (
         <Card className="flex flex-col shadow-md hover:shadow-lg transition-shadow">
-            <CardHeader className="pb-3 cursor-pointer" onClick={() => setIsOpen(!isOpen)}>
+            <div className="p-4 pb-3 cursor-pointer flex flex-col space-y-1.5" onClick={() => setIsOpen(!isOpen)}>
                 <div className="flex justify-between items-start">
-                    <CardTitle className="text-lg font-semibold">{basket.name}</CardTitle>
+                    <span className="text-lg font-semibold leading-none tracking-tight">{basket.name}</span>
                     <div className="flex items-center gap-2">
                          <Badge variant={getStatusBadgeVariant(basket.status)} className={cn("text-xs capitalize", 
                             basket.status === 'Active' ? 'bg-green-500/80 text-white dark:bg-green-600/80' :
@@ -79,10 +80,10 @@ const BasketCard: React.FC<{ basket: FoBasket }> = ({ basket }) => {
                         <ChevronDown className={cn("h-5 w-5 text-muted-foreground transition-transform duration-200", isOpen && "rotate-180")} />
                     </div>
                 </div>
-            </CardHeader>
+            </div>
             {isOpen && (
                 <>
-                    <CardContent className="space-y-4 text-sm flex-grow">
+                    <CardContent className="space-y-4 text-sm flex-grow p-4 pt-0">
                         <div className="space-y-2">
                             <div className="flex items-center text-muted-foreground">
                             <Layers className="h-4 w-4 mr-2 text-primary/70" />
