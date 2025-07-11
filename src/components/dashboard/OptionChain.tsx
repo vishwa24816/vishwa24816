@@ -83,30 +83,37 @@ const OIBars = ({ callOI, putOI, totalOI }: { callOI?: number, putOI?: number, t
 const ExpandedRowContent = ({ lotSize, onBuy, onSell }: { lotSize: number; onBuy: (qty: number) => void; onSell: (qty: number) => void; }) => {
     const [quantity, setQuantity] = useState(1);
     
-    const handleBuy = () => onBuy(quantity);
-    const handleSell = () => onSell(quantity);
+    const handleBuy = (e: React.MouseEvent) => {
+      e.stopPropagation();
+      onBuy(quantity);
+    }
+    const handleSell = (e: React.MouseEvent) => {
+      e.stopPropagation();
+      onSell(quantity);
+    }
+    const handleQuantityClick = (e: React.MouseEvent) => {
+      e.stopPropagation();
+    }
 
     return (
-        <td colSpan={6} className="p-0">
-            <div className="bg-muted/70 p-3 flex items-center justify-center space-x-4">
-                <div className="flex items-center space-x-2">
-                    <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setQuantity(q => Math.max(1, q - 1))}><Minus className="h-4 w-4" /></Button>
-                    <Input 
-                        type="number" 
-                        className="w-20 h-9 text-center" 
-                        value={quantity}
-                        onChange={(e) => setQuantity(Number(e.target.value))}
-                        min="1"
-                    />
-                    <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setQuantity(q => q + 1)}><Plus className="h-4 w-4" /></Button>
-                </div>
-                <span className="text-xs text-muted-foreground">Qty: {(quantity * lotSize).toLocaleString()}</span>
-                <div className="flex items-center space-x-2">
-                    <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white" onClick={handleBuy}>Buy</Button>
-                    <Button size="sm" className="bg-red-600 hover:bg-red-700 text-white" onClick={handleSell}>Sell</Button>
-                </div>
+        <div className="bg-muted/70 p-3 flex items-center justify-center space-x-4" onClick={handleQuantityClick}>
+            <div className="flex items-center space-x-2">
+                <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setQuantity(q => Math.max(1, q - 1))}><Minus className="h-4 w-4" /></Button>
+                <Input 
+                    type="number" 
+                    className="w-20 h-9 text-center" 
+                    value={quantity}
+                    onChange={(e) => setQuantity(Number(e.target.value))}
+                    min="1"
+                />
+                <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setQuantity(q => q + 1)}><Plus className="h-4 w-4" /></Button>
             </div>
-        </td>
+            <span className="text-xs text-muted-foreground">Qty: {(quantity * lotSize).toLocaleString()}</span>
+            <div className="flex items-center space-x-2">
+                <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white" onClick={handleBuy}>Buy</Button>
+                <Button size="sm" className="bg-red-600 hover:bg-red-700 text-white" onClick={handleSell}>Sell</Button>
+            </div>
+        </div>
     );
 };
 
@@ -354,11 +361,21 @@ export function OptionChain({ onAddLeg }: OptionChainProps) {
                             </TableRow>
                             {isExpanded && (
                                 <TableRow className="border-border bg-muted hover:bg-muted/90">
-                                    <ExpandedRowContent 
-                                        lotSize={selectedUnderlyingDetails?.symbol === 'BANKNIFTY' ? 15 : 50} 
-                                        onBuy={(qty) => toast({ title: `BUY ${qty} lot(s) of ${entry.strikePrice} options`})}
-                                        onSell={(qty) => toast({ title: `SELL ${qty} lot(s) of ${entry.strikePrice} options`})}
-                                    />
+                                    <TableCell colSpan={2} className="p-0">
+                                        <ExpandedRowContent 
+                                            lotSize={selectedUnderlyingDetails?.symbol === 'BANKNIFTY' ? 15 : 50} 
+                                            onBuy={(qty) => toast({ title: `BUY ${qty} lot(s) of ${entry.strikePrice} CALL`})}
+                                            onSell={(qty) => toast({ title: `SELL ${qty} lot(s) of ${entry.strikePrice} CALL`})}
+                                        />
+                                    </TableCell>
+                                    <TableCell colSpan={2} />
+                                    <TableCell colSpan={2} className="p-0">
+                                        <ExpandedRowContent 
+                                            lotSize={selectedUnderlyingDetails?.symbol === 'BANKNIFTY' ? 15 : 50} 
+                                            onBuy={(qty) => toast({ title: `BUY ${qty} lot(s) of ${entry.strikePrice} PUT`})}
+                                            onSell={(qty) => toast({ title: `SELL ${qty} lot(s) of ${entry.strikePrice} PUT`})}
+                                        />
+                                    </TableCell>
                                 </TableRow>
                             )}
                            </React.Fragment>
