@@ -20,11 +20,6 @@ const generateOptionData = (baseLTP: number, isCall: boolean, strike: number, un
 
   const ltp = parseFloat(Math.max(0.05, baseLTP * randomFactor() * ltpMultiplier).toFixed(2));
   
-  const deltaRandomFactor = isCall ? (Math.random() * 0.4 + 0.3) : (Math.random() * -0.4 - 0.3); // Call: 0.3 to 0.7, Put: -0.3 to -0.7
-  let delta = 0.5 + (strike - underlyingPrice) * (isCall ? -0.001 : 0.001); // Basic delta approximation
-  delta = Math.max(isCall ? 0.01 : -1.0, Math.min(isCall ? 1.0 : -0.01, delta + deltaRandomFactor * 0.2));
-
-
   return {
     oi: Math.floor(Math.random() * 500000) + 10000,
     chngInOI: Math.floor((Math.random() - 0.5) * 100000),
@@ -36,11 +31,6 @@ const generateOptionData = (baseLTP: number, isCall: boolean, strike: number, un
     bidPrice: parseFloat(Math.max(0.05, ltp * (1 - Math.random() * 0.02 - 0.005)).toFixed(2)), // Slightly lower than LTP
     askPrice: parseFloat(Math.max(ltp, ltp * (1 + Math.random() * 0.02 + 0.005)).toFixed(2)), // Slightly higher than LTP
     askQty: Math.floor(Math.random() * 500),
-    delta: parseFloat(delta.toFixed(4)),
-    gamma: parseFloat((Math.random() * 0.0005 + 0.0001).toFixed(4)), // Small positive value
-    theta: parseFloat((-(Math.random() * 0.5 + 0.1)).toFixed(4)),   // Small negative value
-    vega: parseFloat((Math.random() * 0.2 + 0.05).toFixed(4)),    // Small positive value
-    rho: parseFloat((Math.random() * 0.05 * (isCall ? 1 : -1)).toFixed(4)), // Small, sign depends on call/put
   };
 };
 

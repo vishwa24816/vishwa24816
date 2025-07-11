@@ -57,13 +57,6 @@ const MarkCell = ({ price, iv }: { price?: number, iv?: number }) => (
     </div>
 );
 
-const GreekCell = ({ topValue, bottomValue }: { topValue?: number, bottomValue?: number }) => (
-     <div className="flex flex-col items-center text-xs">
-        <span className="font-semibold text-foreground">{formatNumber(topValue, 2)}</span>
-        <span className="text-muted-foreground">{formatNumber(bottomValue, 2)}</span>
-    </div>
-);
-
 const OIBAR_MAX_WIDTH = 60; // max width for OI bars on each side
 
 const OIBars = ({ callOI, putOI, totalOI }: { callOI?: number, putOI?: number, totalOI: number }) => {
@@ -174,72 +167,25 @@ export function OptionChain() {
         </TableRow>
       );
     }
-    if (optionChainView === 'volume_oi') {
-      return (
-        <TableRow className="border-border hover:bg-transparent">
-            <TableHead className="w-[15%] text-center"><HeaderCell title="VOLUME" /></TableHead>
-            <TableHead className="w-[15%] text-center"><HeaderCell title="OI" /></TableHead>
-            <TableHead className="w-[40%] text-center" colSpan={2}>
-                <div className="flex items-center justify-center">
-                <HeaderCell title="Strike" /> <ArrowUpDown className="h-3 w-3 ml-1 text-muted-foreground" />
-                </div>
-            </TableHead>
-            <TableHead className="w-[15%] text-center"><HeaderCell title="OI" /></TableHead>
-            <TableHead className="w-[15%] text-center"><HeaderCell title="VOLUME" /></TableHead>
-        </TableRow>
-      );
-    }
-    if (optionChainView === 'greeks') {
-      return (
-        <TableRow className="border-border hover:bg-transparent">
-            <TableHead className="w-[15%] text-center"><HeaderCell title="DELTA" subtitle="VEGA" /></TableHead>
-            <TableHead className="w-[15%] text-center"><HeaderCell title="THETA" subtitle="GAMMA" /></TableHead>
-            <TableHead className="w-[40%] text-center" colSpan={2}>
-                <div className="flex items-center justify-center">
-                <HeaderCell title="Strike" /> <ArrowUpDown className="h-3 w-3 ml-1 text-muted-foreground" />
-                </div>
-            </TableHead>
-            <TableHead className="w-[15%] text-center"><HeaderCell title="THETA" subtitle="GAMMA" /></TableHead>
-            <TableHead className="w-[15%] text-center"><HeaderCell title="DELTA" subtitle="VEGA" /></TableHead>
-        </TableRow>
-      );
-    }
+    // Implement other headers if needed
     return null;
   }
 
   const renderCells = (data: OptionData | undefined, view: OptionChainViewType) => {
-     const emptyCells = (
+     if (!data || view !== 'price') return (
         <>
             <TableCell className="text-center w-[15%]">-</TableCell>
             <TableCell className="text-center w-[15%]">-</TableCell>
         </>
      );
-
-     if (!data) return emptyCells;
-
-     if (view === 'price') {
-        return <>
-            <TableCell className="w-[15%]"><PriceCell bid={data.bidPrice} ask={data.askPrice} /></TableCell>
-            <TableCell className="w-[15%]"><MarkCell price={data.ltp} iv={data.iv} /></TableCell>
-        </>
-     }
-     if (view === 'volume_oi') {
-        return <>
-            <TableCell className="w-[15%] text-center text-xs">{formatNumber(data.volume, 0)}</TableCell>
-            <TableCell className="w-[15%] text-center text-xs">{formatNumber(data.oi, 0)}</TableCell>
-        </>
-     }
-     if (view === 'greeks') {
-        return <>
-            <TableCell className="w-[15%]"><GreekCell topValue={data.delta} bottomValue={data.vega} /></TableCell>
-            <TableCell className="w-[15%]"><GreekCell topValue={data.theta} bottomValue={data.gamma} /></TableCell>
-        </>
-     }
-     return emptyCells;
+     return <>
+        <TableCell className="w-[15%]"><PriceCell bid={data.bidPrice} ask={data.askPrice} /></TableCell>
+        <TableCell className="w-[15%]"><MarkCell price={data.ltp} iv={data.iv} /></TableCell>
+     </>
   }
 
   return (
-    <div className="bg-background text-foreground w-full flex flex-col h-[70vh]">
+    <div className="bg-background text-foreground w-full flex flex-col h-[70vh] border rounded-lg shadow-lg">
         {/* Header Controls */}
         <div className="p-2 sm:p-3 border-b border-border flex flex-wrap items-center justify-between gap-2">
             <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">

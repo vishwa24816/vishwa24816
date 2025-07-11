@@ -1,3 +1,4 @@
+
 "use client";
 
 import { SubNav } from '@/components/dashboard/SubNav';
@@ -13,7 +14,6 @@ import { FoPositionsSection } from '@/components/dashboard/FoPositionsSection';
 import { FoBasketSection } from '@/components/dashboard/FoBasketSection';
 import { OptionChain } from '@/components/dashboard/OptionChain';
 import { ReadymadeStrategiesSection } from '@/components/dashboard/ReadymadeStrategiesSection';
-import { StrategyBuilder } from '@/components/dashboard/StrategyBuilder';
 
 import React, { useState, useMemo } from 'react';
 import type { PortfolioHolding, NewsArticle, IntradayPosition, FoPosition, CryptoFuturePosition, Stock } from '@/types';
@@ -173,7 +173,7 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
             secondaryNavTriggerCategories: {
                 Stocks: ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
                 Futures: ["Index Futures", "Stock Futures"],
-                Options: ["Custom", "Strategy Builder", "Readymade"],
+                Options: ["Custom", "Readymade"],
                 "Mutual Fund": ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
                 Bonds: ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
                 IPO: [],
@@ -340,7 +340,6 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
     if (activeMode === 'Fiat') {
         if (activePrimaryItem === "Options") { 
             return activeSecondaryItem === "Custom" ? ( <div className="space-y-8"><OptionChain /><NewsSection articles={newsForView} /></div>) 
-            : activeSecondaryItem === "Strategy Builder" ? ( <div className="space-y-8"><StrategyBuilder /><NewsSection articles={newsForView} /></div> ) 
             : activeSecondaryItem === "Readymade" ? ( <div className="space-y-8"><ReadymadeStrategiesSection /><NewsSection articles={newsForView} /></div> ) 
             : null
         }
