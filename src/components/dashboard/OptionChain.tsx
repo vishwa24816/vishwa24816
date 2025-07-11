@@ -45,15 +45,22 @@ const HeaderCell = ({ title, subtitle }: { title: string; subtitle?: string }) =
 
 const PriceCell = ({ bid, ask }: { bid?: number, ask?: number }) => (
     <div className="flex flex-col items-center text-xs">
-        <span className="text-green-600 dark:text-green-400">{formatNumber(bid, 1)}</span>
-        <span className="text-red-600 dark:text-red-400">{formatNumber(ask, 1)}</span>
+        <span className="text-green-600 dark:text-green-400">{formatNumber(bid, 2)}</span>
+        <span className="text-red-600 dark:text-red-400">{formatNumber(ask, 2)}</span>
     </div>
 );
 
 const MarkCell = ({ price, iv }: { price?: number, iv?: number }) => (
     <div className="flex flex-col items-center text-xs">
-        <span className="font-semibold text-foreground">₹{formatNumber(price, 1)}</span>
+        <span className="font-semibold text-foreground">₹{formatNumber(price, 2)}</span>
         <span className="text-muted-foreground">{formatNumber(iv, 1)}%</span>
+    </div>
+);
+
+const GreekCell = ({ topValue, bottomValue }: { topValue?: number, bottomValue?: number }) => (
+     <div className="flex flex-col items-center text-xs">
+        <span className="font-semibold text-foreground">{formatNumber(topValue, 2)}</span>
+        <span className="text-muted-foreground">{formatNumber(bottomValue, 2)}</span>
     </div>
 );
 
@@ -151,15 +158,64 @@ export function OptionChain() {
     return Math.max(...optionChainData.data.map(d => (d.call?.oi || 0) + (d.put?.oi || 0)));
   }, [optionChainData]);
 
+  const renderHeaders = () => {
+    if (optionChainView === 'price') {
+      return (
+        <TableRow className="border-border hover:bg-transparent">
+            <TableHead className="w-[15%] text-center"><HeaderCell title="BID" subtitle="ASK" /></TableHead>
+            <TableHead className="w-[15%] text-center"><HeaderCell title="Mark" subtitle="Price/IV" /></TableHead>
+            <TableHead className="w-[40%] text-center" colSpan={2}>
+                <div className="flex items-center justify-center">
+                <HeaderCell title="Strike" /> <ArrowUpDown className="h-3 w-3 ml-1 text-muted-foreground" />
+                </div>
+            </TableHead>
+            <TableHead className="w-[15%] text-center"><HeaderCell title="Mark" subtitle="Price/IV" /></TableHead>
+            <TableHead className="w-[15%] text-center"><HeaderCell title="BID" subtitle="ASK" /></TableHead>
+        </TableRow>
+      );
+    }
+    if (optionChainView === 'volume_oi') {
+      return (
+        <TableRow className="border-border hover:bg-transparent">
+            <TableHead className="w-[15%] text-center"><HeaderCell title="VOLUME" /></TableHead>
+            <TableHead className="w-[15%] text-center"><HeaderCell title="OI" /></TableHead>
+            <TableHead className="w-[40%] text-center" colSpan={2}>
+                <div className="flex items-center justify-center">
+                <HeaderCell title="Strike" /> <ArrowUpDown className="h-3 w-3 ml-1 text-muted-foreground" />
+                </div>
+            </TableHead>
+            <TableHead className="w-[15%] text-center"><HeaderCell title="OI" /></TableHead>
+            <TableHead className="w-[15%] text-center"><HeaderCell title="VOLUME" /></TableHead>
+        </TableRow>
+      );
+    }
+    if (optionChainView === 'greeks') {
+      return (
+        <TableRow className="border-border hover:bg-transparent">
+            <TableHead className="w-[15%] text-center"><HeaderCell title="DELTA" subtitle="VEGA" /></TableHead>
+            <TableHead className="w-[15%] text-center"><HeaderCell title="THETA" subtitle="GAMMA" /></TableHead>
+            <TableHead className="w-[40%] text-center" colSpan={2}>
+                <div className="flex items-center justify-center">
+                <HeaderCell title="Strike" /> <ArrowUpDown className="h-3 w-3 ml-1 text-muted-foreground" />
+                </div>
+            </TableHead>
+            <TableHead className="w-[15%] text-center"><HeaderCell title="THETA" subtitle="GAMMA" /></TableHead>
+            <TableHead className="w-[15%] text-center"><HeaderCell title="DELTA" subtitle="VEGA" /></TableHead>
+        </TableRow>
+      );
+    }
+    return null;
+  }
+
   const renderCells = (data: OptionData | undefined, view: OptionChainViewType) => {
-     if (!data) {
-        return (
-            <>
-                <TableCell className="text-center w-[15%]">-</TableCell>
-                <TableCell className="text-center w-[15%]">-</TableCell>
-            </>
-        );
-     }
+     const emptyCells = (
+        <>
+            <TableCell className="text-center w-[15%]">-</TableCell>
+            <TableCell className="text-center w-[15%]">-</TableCell>
+        </>
+     );
+
+     if (!data) return emptyCells;
 
      if (view === 'price') {
         return <>
@@ -175,11 +231,11 @@ export function OptionChain() {
      }
      if (view === 'greeks') {
         return <>
-            <TableCell className="w-[15%] text-center text-xs">{formatNumber(data.delta, 2)}</TableCell>
-            <TableCell className="w-[15%] text-center text-xs">{formatNumber(data.theta, 2)}</TableCell>
+            <TableCell className="w-[15%]"><GreekCell topValue={data.delta} bottomValue={data.vega} /></TableCell>
+            <TableCell className="w-[15%]"><GreekCell topValue={data.theta} bottomValue={data.gamma} /></TableCell>
         </>
      }
-     return null;
+     return emptyCells;
   }
 
   return (
@@ -225,17 +281,7 @@ export function OptionChain() {
             <ScrollArea className="h-full" ref={scrollContainerRef}>
                 <Table className="min-w-full text-xs">
                     <TableHeader className="sticky top-0 bg-background z-10">
-                        <TableRow className="border-border hover:bg-transparent">
-                            <TableHead className="w-[15%] text-center"><HeaderCell title="BID" subtitle="ASK" /></TableHead>
-                            <TableHead className="w-[15%] text-center"><HeaderCell title="Mark" subtitle="Price/IV" /></TableHead>
-                            <TableHead className="w-[40%] text-center" colSpan={2}>
-                                <div className="flex items-center justify-center">
-                                <HeaderCell title="Strike" /> <ArrowUpDown className="h-3 w-3 ml-1 text-muted-foreground" />
-                                </div>
-                            </TableHead>
-                            <TableHead className="w-[15%] text-center"><HeaderCell title="Mark" subtitle="Price/IV" /></TableHead>
-                            <TableHead className="w-[15%] text-center"><HeaderCell title="BID" subtitle="ASK" /></TableHead>
-                        </TableRow>
+                        {renderHeaders()}
                     </TableHeader>
                     <TableBody>
                         {optionChainData.data.map((entry, index) => (
@@ -256,8 +302,9 @@ export function OptionChain() {
                             <TableRow 
                                 ref={index === atmIndex ? atmRowRef : null}
                                 className={cn("border-border hover:bg-muted/50 cursor-pointer",
-                                (entry.strikePrice < (optionChainData.underlyingValue || 0) && "bg-primary/5"), // ITM Puts
-                                (entry.strikePrice > (optionChainData.underlyingValue || 0) && "bg-accent/5") // ITM Calls
+                                // Puts are ITM when strike > underlying; Calls are ITM when strike < underlying
+                                (optionChainData.underlyingValue && entry.strikePrice < optionChainData.underlyingValue && "bg-primary/5"), 
+                                (optionChainData.underlyingValue && entry.strikePrice > optionChainData.underlyingValue && "bg-accent/5")
                                 )}
                             >
                                 {renderCells(entry.call, optionChainView)}
