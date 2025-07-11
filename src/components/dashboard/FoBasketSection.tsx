@@ -1,7 +1,6 @@
-
 "use client";
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from '@/components/ui/button';
@@ -9,7 +8,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { mockFoBaskets } from '@/lib/mockData';
 import type { FoBasket, FoInstrumentInBasket } from '@/types';
 import { cn } from '@/lib/utils';
-import { ShoppingBasket, CalendarDays, Layers, Edit3, Copy, PlayCircle, TrendingUp, TrendingDown, Minus, DollarSign, AlertTriangle, Sigma, Maximize, Minimize, Info } from 'lucide-react';
+import { ShoppingBasket, CalendarDays, Layers, Edit3, Copy, PlayCircle, TrendingUp, TrendingDown, Minus, DollarSign, AlertTriangle, Sigma, Maximize, Minimize, Info, ChevronDown } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 
 const formatCurrency = (value?: number, precision = 2) => {
@@ -59,39 +58,31 @@ const InstrumentListItem: React.FC<{ instrument: FoInstrumentInBasket }> = ({ in
   </li>
 );
 
+const BasketCard: React.FC<{ basket: FoBasket }> = ({ basket }) => {
+    const [isOpen, setIsOpen] = useState(false);
+    const { toast } = useToast();
 
-export function FoBasketSection() {
-  const baskets = mockFoBaskets;
-  const { toast } = useToast();
-
-  return (
-    <Card className="shadow-md">
-        <CardHeader>
-            <CardTitle className="text-xl font-semibold font-headline text-primary flex items-center">
-                <ShoppingBasket className="h-6 w-6 mr-2" /> F&O Basket
-            </CardTitle>
-        </CardHeader>
-        <CardContent>
-            {baskets.length === 0 ? (
-                <p className="text-muted-foreground text-center py-8">You have no F&O baskets.</p>
-            ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {baskets.map((basket) => (
-                    <Card key={basket.id} className="flex flex-col shadow-md hover:shadow-lg transition-shadow">
-                        <CardHeader className="pb-3">
-                        <div className="flex justify-between items-start">
-                            <CardTitle className="text-lg font-semibold">{basket.name}</CardTitle>
-                            <Badge variant={getStatusBadgeVariant(basket.status)} className={cn("text-xs capitalize", 
-                                basket.status === 'Active' ? 'bg-green-500/80 text-white dark:bg-green-600/80' :
-                                basket.status === 'Pending Execution' ? 'bg-yellow-500/80 text-black dark:bg-yellow-600/80' :
-                                basket.status === 'Executed' ? 'bg-blue-500/80 text-white dark:bg-blue-600/80' :
-                                ''
-                            )}>
-                                {basket.status.toLowerCase()}
-                            </Badge>
-                        </div>
-                        </CardHeader>
-                        <CardContent className="space-y-4 text-sm flex-grow">
+    return (
+        <Card className="flex flex-col shadow-md hover:shadow-lg transition-shadow">
+            <CardHeader className="pb-3 cursor-pointer" onClick={() => setIsOpen(!isOpen)}>
+                <div className="flex justify-between items-start">
+                    <CardTitle className="text-lg font-semibold">{basket.name}</CardTitle>
+                    <div className="flex items-center gap-2">
+                         <Badge variant={getStatusBadgeVariant(basket.status)} className={cn("text-xs capitalize", 
+                            basket.status === 'Active' ? 'bg-green-500/80 text-white dark:bg-green-600/80' :
+                            basket.status === 'Pending Execution' ? 'bg-yellow-500/80 text-black dark:bg-yellow-600/80' :
+                            basket.status === 'Executed' ? 'bg-blue-500/80 text-white dark:bg-blue-600/80' :
+                            ''
+                        )}>
+                            {basket.status.toLowerCase()}
+                        </Badge>
+                        <ChevronDown className={cn("h-5 w-5 text-muted-foreground transition-transform duration-200", isOpen && "rotate-180")} />
+                    </div>
+                </div>
+            </CardHeader>
+            {isOpen && (
+                <>
+                    <CardContent className="space-y-4 text-sm flex-grow">
                         <div className="space-y-2">
                             <div className="flex items-center text-muted-foreground">
                             <Layers className="h-4 w-4 mr-2 text-primary/70" />
@@ -157,21 +148,43 @@ export function FoBasketSection() {
                                 </div>
                             </div>
                         </div>
-                        </CardContent>
-                        <CardFooter className="border-t mt-auto p-3 flex justify-end space-x-2">
-                            {basket.status === 'Pending Execution' && (
-                            <Button variant="default" size="sm" className="bg-primary" onClick={(e) => {e.stopPropagation(); toast({ title: `Execute Basket: ${basket.name}`})}}>
-                                <PlayCircle className="mr-1 h-4 w-4" /> Execute
-                            </Button>
-                            )}
-                            <Button variant="outline" size="sm" onClick={(e) => {e.stopPropagation(); toast({ title: `Edit Basket (Mock): ${basket.name}`, description: "Full edit functionality coming soon."})}}>
-                                <Edit3 className="mr-1 h-4 w-4" /> Edit
-                            </Button>
-                            <Button variant="outline" size="sm" onClick={(e) => {e.stopPropagation(); toast({ title: `Duplicate Basket: ${basket.name}`})}}>
-                                <Copy className="mr-1 h-4 w-4" /> Duplicate
-                            </Button>
-                        </CardFooter>
-                    </Card>
+                    </CardContent>
+                    <CardFooter className="border-t mt-auto p-3 flex justify-end space-x-2">
+                        {basket.status === 'Pending Execution' && (
+                        <Button variant="default" size="sm" className="bg-primary" onClick={(e) => {e.stopPropagation(); toast({ title: `Execute Basket: ${basket.name}`})}}>
+                            <PlayCircle className="mr-1 h-4 w-4" /> Execute
+                        </Button>
+                        )}
+                        <Button variant="outline" size="sm" onClick={(e) => {e.stopPropagation(); toast({ title: `Edit Basket (Mock): ${basket.name}`, description: "Full edit functionality coming soon."})}}>
+                            <Edit3 className="mr-1 h-4 w-4" /> Edit
+                        </Button>
+                        <Button variant="outline" size="sm" onClick={(e) => {e.stopPropagation(); toast({ title: `Duplicate Basket: ${basket.name}`})}}>
+                            <Copy className="mr-1 h-4 w-4" /> Duplicate
+                        </Button>
+                    </CardFooter>
+                </>
+            )}
+        </Card>
+    );
+};
+
+export function FoBasketSection() {
+  const baskets = mockFoBaskets;
+
+  return (
+    <Card className="shadow-md">
+        <CardHeader>
+            <CardTitle className="text-xl font-semibold font-headline text-primary flex items-center">
+                <ShoppingBasket className="h-6 w-6 mr-2" /> F&O Basket
+            </CardTitle>
+        </CardHeader>
+        <CardContent>
+            {baskets.length === 0 ? (
+                <p className="text-muted-foreground text-center py-8">You have no F&O baskets.</p>
+            ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {baskets.map((basket) => (
+                        <BasketCard key={basket.id} basket={basket} />
                     ))}
                 </div>
             )}
