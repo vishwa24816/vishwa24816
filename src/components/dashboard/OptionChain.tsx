@@ -25,6 +25,7 @@ import { cn } from '@/lib/utils';
 import { ArrowUpDown, Target, Plus, Minus } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
+import { Label } from '@/components/ui/label';
 
 interface OptionChainProps {
   onAddLeg: (leg: SelectedOptionLeg) => void;
@@ -352,12 +353,12 @@ export function OptionChain({ onAddLeg }: OptionChainProps) {
                                 className="border-border cursor-pointer"
                                 onClick={() => setExpandedStrike(isExpanded ? null : entry.strikePrice)}
                             >
-                                {renderCells(entry.call, optionChainView, 'Call', entry.strikePrice).map((cell) => React.cloneElement(cell as React.ReactElement, { className: cn((cell as React.ReactElement).props.className, isCallItm && 'bg-primary/5') }))}
+                                {renderCells(entry.call, optionChainView, 'Call', entry.strikePrice).map((cell, cellIndex) => React.cloneElement(cell as React.ReactElement, { key: `call-${entry.strikePrice}-${cellIndex}`, className: cn((cell as React.ReactElement).props.className, isCallItm && 'bg-primary/5') }))}
 
                                 <TableCell className="w-[15%] font-semibold text-base text-center p-0">{formatNumber(entry.strikePrice, 0)}</TableCell>
                                 <TableCell className="w-[15%] p-0"><OIBars callOI={entry.call?.oi} putOI={entry.put?.oi} totalOI={totalOI} /></TableCell>
 
-                                {renderCells(entry.put, optionChainView, 'Put', entry.strikePrice).map((cell) => React.cloneElement(cell as React.ReactElement, { className: cn((cell as React.ReactElement).props.className, isPutItm && 'bg-primary/5') }))}
+                                {renderCells(entry.put, optionChainView, 'Put', entry.strikePrice).map((cell, cellIndex) => React.cloneElement(cell as React.ReactElement, { key: `put-${entry.strikePrice}-${cellIndex}`, className: cn((cell as React.ReactElement).props.className, isPutItm && 'bg-primary/5') }))}
                             </TableRow>
                             {isExpanded && (
                                 <TableRow className="border-border bg-muted hover:bg-muted/90">
