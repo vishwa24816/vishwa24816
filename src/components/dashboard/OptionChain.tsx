@@ -63,24 +63,6 @@ const MarkCell = ({ price, iv }: { price?: number, iv?: number }) => (
     </div>
 );
 
-const OIBAR_MAX_WIDTH = 30; // max width for OI bars on each side
-
-const OIBars = ({ callOI, putOI, totalOI }: { callOI?: number, putOI?: number, totalOI: number }) => {
-    const callWidth = totalOI > 0 && callOI ? (callOI / totalOI) * OIBAR_MAX_WIDTH : 0;
-    const putWidth = totalOI > 0 && putOI ? (putOI / totalOI) * OIBAR_MAX_WIDTH : 0;
-
-    return (
-        <div className="flex items-center justify-center h-full w-full">
-            <div className="flex items-center justify-end w-1/2 pr-1">
-                <div className="bg-red-500/50 h-2.5 rounded-l-sm" style={{ width: `${putWidth}px` }} />
-            </div>
-            <div className="flex items-center justify-start w-1/2 pl-1">
-                <div className="bg-green-500/50 h-2.5 rounded-r-sm" style={{ width: `${callWidth}px` }} />
-            </div>
-        </div>
-    );
-};
-
 const ExpandedRowContent = ({
   lotSize,
   onBuy,
@@ -165,11 +147,6 @@ export function OptionChain({ onAddLeg }: OptionChainProps) {
 
   const selectedUnderlyingDetails = useMemo(() => mockUnderlyings.find(u => u.symbol === selectedUnderlyingSymbol), [selectedUnderlyingSymbol]);
   
-  const totalOI = useMemo(() => {
-    if (!optionChainData) return 0;
-    return Math.max(...optionChainData.data.map(d => (d.call?.oi || 0) + (d.put?.oi || 0)));
-  }, [optionChainData]);
-
   const atmIndex = useMemo(() => {
     if (!optionChainData?.data || !optionChainData?.underlyingValue) return -1;
     let closestIndex = -1;
@@ -206,7 +183,7 @@ export function OptionChain({ onAddLeg }: OptionChainProps) {
     });
   };
 
-  const renderCells = (data: OptionData | undefined, view: OptionChainViewType) => {
+  const renderCells = (data: OptionData | undefined, view: OptionChainViewType): React.ReactNode[] => {
      if (!data) return [<TableCell key="empty1" />, <TableCell key="empty2" />];
 
      if (view === 'price') return [
@@ -225,36 +202,43 @@ export function OptionChain({ onAddLeg }: OptionChainProps) {
   }
 
   const renderHeaders = () => {
-    if (optionChainView === 'price') return (
+    const baseHeaders = (
         <TableRow className="border-border hover:bg-transparent">
-            <TableHead className="text-center"><HeaderCell title="BID" subtitle="ASK" /></TableHead>
-            <TableHead className="text-center"><HeaderCell title="Mark" subtitle="Price/IV" /></TableHead>
-            <TableHead className="text-center w-[120px]"> <HeaderCell title="Strike" /></TableHead>
-            <TableHead className="text-center w-[60px]"><HeaderCell title="OI" /></TableHead>
-            <TableHead className="text-center"><HeaderCell title="Mark" subtitle="Price/IV" /></TableHead>
-            <TableHead className="text-center"><HeaderCell title="BID" subtitle="ASK" /></TableHead>
+            <TableHead colSpan={2} className="text-center font-semibold">CALLS</TableHead>
+            <TableHead className="text-center w-[15%]"><HeaderCell title="Strike" /></TableHead>
+            <TableHead colSpan={2} className="text-center font-semibold">PUTS</TableHead>
         </TableRow>
     );
-    if (optionChainView === 'volume_oi') return (
+
+    let specificHeaders;
+    if (optionChainView === 'price') specificHeaders = (
         <TableRow className="border-border hover:bg-transparent">
-            <TableHead className="text-center"><HeaderCell title="Volume" /></TableHead>
-            <TableHead className="text-center"><HeaderCell title="Open Int." /></TableHead>
-            <TableHead className="text-center w-[120px]"><HeaderCell title="Strike" /></TableHead>
-            <TableHead className="text-center w-[60px]"><HeaderCell title="OI" /></TableHead>
-            <TableHead className="text-center"><HeaderCell title="Open Int." /></TableHead>
-            <TableHead className="text-center"><HeaderCell title="Volume" /></TableHead>
+            <TableHead className="text-center w-[21.25%]"><HeaderCell title="BID" subtitle="ASK" /></TableHead>
+            <TableHead className="text-center w-[21.25%]"><HeaderCell title="Mark" subtitle="Price/IV" /></TableHead>
+            <TableHead className="w-[15%]"></TableHead>
+            <TableHead className="text-center w-[21.25%]"><HeaderCell title="Mark" subtitle="Price/IV" /></TableHead>
+            <TableHead className="text-center w-[21.25%]"><HeaderCell title="BID" subtitle="ASK" /></TableHead>
         </TableRow>
     );
-    if (optionChainView === 'greeks') return (
+    if (optionChainView === 'volume_oi') specificHeaders = (
         <TableRow className="border-border hover:bg-transparent">
-            <TableHead className="text-center"><HeaderCell title="Delta" subtitle="Vega" /></TableHead>
-            <TableHead className="text-center"><HeaderCell title="Theta" subtitle="Gamma" /></TableHead>
-            <TableHead className="text-center w-[120px]"><HeaderCell title="Strike" /></TableHead>
-            <TableHead className="text-center w-[60px]"><HeaderCell title="OI" /></TableHead>
-            <TableHead className="text-center"><HeaderCell title="Theta" subtitle="Gamma" /></TableHead>
-            <TableHead className="text-center"><HeaderCell title="Delta" subtitle="Vega" /></TableHead>
+            <TableHead className="text-center w-[21.25%]"><HeaderCell title="Volume" /></TableHead>
+            <TableHead className="text-center w-[21.25%]"><HeaderCell title="Open Int." /></TableHead>
+            <TableHead className="w-[15%]"></TableHead>
+            <TableHead className="text-center w-[21.25%]"><HeaderCell title="Open Int." /></TableHead>
+            <TableHead className="text-center w-[21.25%]"><HeaderCell title="Volume" /></TableHead>
         </TableRow>
     );
+    if (optionChainView === 'greeks') specificHeaders = (
+        <TableRow className="border-border hover:bg-transparent">
+            <TableHead className="text-center w-[21.25%]"><HeaderCell title="Delta" subtitle="Vega" /></TableHead>
+            <TableHead className="text-center w-[21.25%]"><HeaderCell title="Theta" subtitle="Gamma" /></TableHead>
+            <TableHead className="w-[15%]"></TableHead>
+            <TableHead className="text-center w-[21.25%]"><HeaderCell title="Theta" subtitle="Gamma" /></TableHead>
+            <TableHead className="text-center w-[21.25%]"><HeaderCell title="Delta" subtitle="Vega" /></TableHead>
+        </TableRow>
+    );
+    return <>{baseHeaders}{specificHeaders}</>;
   }
 
   return (
@@ -288,13 +272,8 @@ export function OptionChain({ onAddLeg }: OptionChainProps) {
       <div className="flex-grow overflow-hidden">
         {optionChainData?.data.length ? (
           <ScrollArea className="h-full" ref={scrollContainerRef}>
-            <Table className="min-w-full text-xs table-fixed">
+            <Table className="min-w-full text-xs" style={{ tableLayout: 'fixed' }}>
               <TableHeader className="sticky top-0 bg-background z-10 shadow-sm">
-                <TableRow className="border-border hover:bg-transparent">
-                  <TableHead colSpan={2} className="text-center font-semibold">CALLS</TableHead>
-                  <TableHead colSpan={2} className="text-center"></TableHead>
-                  <TableHead colSpan={2} className="text-center font-semibold">PUTS</TableHead>
-                </TableRow>
                 {renderHeaders()}
               </TableHeader>
               <TableBody>
@@ -306,8 +285,8 @@ export function OptionChain({ onAddLeg }: OptionChainProps) {
                   return (
                     <React.Fragment key={entry.strikePrice}>
                       {index === atmIndex && (
-                        <TableRow className="sticky top-20 z-10 hover:bg-transparent">
-                          <TableCell colSpan={6} className="p-0 h-8">
+                        <TableRow className="sticky top-[7.5rem] z-10 hover:bg-transparent">
+                          <TableCell colSpan={5} className="p-0 h-8">
                             <div className="h-full w-full flex items-center justify-center bg-muted/80 backdrop-blur-sm">
                               <div className="bg-background border rounded-full px-4 py-1.5 text-xs font-semibold flex items-center gap-2">
                                 <Target className="h-4 w-4 text-primary" />
@@ -319,19 +298,19 @@ export function OptionChain({ onAddLeg }: OptionChainProps) {
                         </TableRow>
                       )}
                       <TableRow ref={index === atmIndex ? atmRowRef : null} className="border-border cursor-pointer" onClick={() => setExpandedStrike(isExpanded ? null : entry.strikePrice)}>
-                        {renderCells(entry.call, optionChainView).map((cell, cellIndex) => React.cloneElement(cell, { key: `call-${cellIndex}`, className: cn(cell.props.className, isCallItm && 'bg-primary/5') }))}
+                        {renderCells(entry.call, optionChainView).map((cell, cellIndex) => React.cloneElement(cell as React.ReactElement, { key: `call-${cellIndex}`, className: cn((cell as React.ReactElement).props.className, isCallItm && 'bg-primary/5') }))}
                         <TableCell className="font-semibold text-base text-center p-0">{formatNumber(entry.strikePrice, 0)}</TableCell>
-                        <TableCell className="p-0"><OIBars callOI={entry.call?.oi} putOI={entry.put?.oi} totalOI={totalOI} /></TableCell>
-                        {renderCells(entry.put, optionChainView).map((cell, cellIndex) => React.cloneElement(cell, { key: `put-${cellIndex}`, className: cn(cell.props.className, isPutItm && 'bg-primary/5') }))}
+                        {renderCells(entry.put, optionChainView).map((cell, cellIndex) => React.cloneElement(cell as React.ReactElement, { key: `put-${cellIndex}`, className: cn((cell as React.ReactElement).props.className, isPutItm && 'bg-primary/5') }))}
                       </TableRow>
                       {isExpanded && (
                         <TableRow className="border-border bg-muted hover:bg-muted/90">
-                          <TableCell colSpan={6} className="p-0">
+                          <TableCell colSpan={5} className="p-0">
                             <div className="flex justify-between items-center w-full">
-                              <div className="w-1/2 flex justify-center">
+                              <div className="w-[42.5%] flex justify-center">
                                 <ExpandedRowContent lotSize={selectedUnderlyingDetails?.symbol === 'BANKNIFTY' ? 15 : 50} onBuy={(qty) => handleAddLeg(entry.strikePrice, 'Call', 'Buy', entry.call?.ltp ?? 0, qty)} onSell={(qty) => handleAddLeg(entry.strikePrice, 'Call', 'Sell', entry.call?.ltp ?? 0, qty)} />
                               </div>
-                              <div className="w-1/2 flex justify-center">
+                               <div className="w-[15%]"></div>
+                              <div className="w-[42.5%] flex justify-center">
                                 <ExpandedRowContent lotSize={selectedUnderlyingDetails?.symbol === 'BANKNIFTY' ? 15 : 50} onBuy={(qty) => handleAddLeg(entry.strikePrice, 'Put', 'Buy', entry.put?.ltp ?? 0, qty)} onSell={(qty) => handleAddLeg(entry.strikePrice, 'Put', 'Sell', entry.put?.ltp ?? 0, qty)} />
                               </div>
                             </div>
