@@ -6,8 +6,6 @@ import {
   Table,
   TableBody,
   TableCell,
-  TableHead,
-  TableHeader,
   TableRow,
 } from "@/components/ui/table";
 import {
@@ -76,20 +74,18 @@ const ExpandedRowContent = ({
   const stopPropagation = (e: React.MouseEvent) => e.stopPropagation();
 
   return (
-    <div className="bg-muted/70 p-3 flex items-center justify-center space-x-4" onClick={stopPropagation}>
-      <div className="flex items-center space-x-2">
-        <Label htmlFor={`lots-${lotSize}`} className="text-xs shrink-0">Lots:</Label>
-        <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setQuantity(q => Math.max(1, q - 1))}><Minus className="h-4 w-4" /></Button>
-        <Input
-          id={`lots-${lotSize}`}
-          type="number"
-          className="w-16 h-8 text-center"
-          value={quantity}
-          onChange={(e) => setQuantity(Math.max(1, Number(e.target.value) || 1))}
-          min="1"
-        />
-        <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setQuantity(q => q + 1)}><Plus className="h-4 w-4" /></Button>
-      </div>
+    <div className="flex items-center space-x-2" onClick={stopPropagation}>
+      <Label htmlFor={`lots-${lotSize}`} className="text-xs shrink-0">Lots:</Label>
+      <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setQuantity(q => Math.max(1, q - 1))}><Minus className="h-4 w-4" /></Button>
+      <Input
+        id={`lots-${lotSize}`}
+        type="number"
+        className="w-16 h-8 text-center"
+        value={quantity}
+        onChange={(e) => setQuantity(Math.max(1, Number(e.target.value) || 1))}
+        min="1"
+      />
+      <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setQuantity(q => q + 1)}><Plus className="h-4 w-4" /></Button>
       <span className="text-xs text-muted-foreground">Qty: {(quantity * lotSize).toLocaleString()}</span>
       <div className="flex items-center space-x-2">
         <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white" onClick={() => onBuy(quantity)}>Buy</Button>
@@ -130,7 +126,7 @@ export function OptionChain({ onAddLeg }: OptionChainProps) {
     if (selectedUnderlyingSymbol && selectedExpiry) {
       setOptionChainData(mockOptionChains[selectedUnderlyingSymbol]?.[selectedExpiry] || null);
     }
-    setExpandedStrike(null); // Collapse rows on data change
+    setExpandedStrike(null);
   }, [selectedUnderlyingSymbol, selectedExpiry]);
 
   useEffect(() => {
@@ -201,49 +197,30 @@ export function OptionChain({ onAddLeg }: OptionChainProps) {
      return [<TableCell key="empty1" />, <TableCell key="empty2" />];
   }
 
-  const renderHeaders = () => {
-    const baseHeaders = (
-        <TableRow className="border-border hover:bg-transparent">
-            <TableHead colSpan={2} className="text-center font-semibold">CALLS</TableHead>
-            <TableHead className="text-center w-[15%]"><HeaderCell title="Strike" /></TableHead>
-            <TableHead colSpan={2} className="text-center font-semibold">PUTS</TableHead>
-        </TableRow>
+  const renderSpecificHeaders = (view: OptionChainViewType) => {
+    if (view === 'price') return (
+        <>
+            <div className="w-[21.25%] text-center"><HeaderCell title="BID" subtitle="ASK" /></div>
+            <div className="w-[21.25%] text-center"><HeaderCell title="Mark" subtitle="Price/IV" /></div>
+        </>
     );
-
-    let specificHeaders;
-    if (optionChainView === 'price') specificHeaders = (
-        <TableRow className="border-border hover:bg-transparent">
-            <TableHead className="text-center w-[21.25%]"><HeaderCell title="BID" subtitle="ASK" /></TableHead>
-            <TableHead className="text-center w-[21.25%]"><HeaderCell title="Mark" subtitle="Price/IV" /></TableHead>
-            <TableHead className="w-[15%]"></TableHead>
-            <TableHead className="text-center w-[21.25%]"><HeaderCell title="Mark" subtitle="Price/IV" /></TableHead>
-            <TableHead className="text-center w-[21.25%]"><HeaderCell title="BID" subtitle="ASK" /></TableHead>
-        </TableRow>
+    if (view === 'volume_oi') return (
+        <>
+            <div className="w-[21.25%] text-center"><HeaderCell title="Volume" /></div>
+            <div className="w-[21.25%] text-center"><HeaderCell title="Open Int." /></div>
+        </>
     );
-    if (optionChainView === 'volume_oi') specificHeaders = (
-        <TableRow className="border-border hover:bg-transparent">
-            <TableHead className="text-center w-[21.25%]"><HeaderCell title="Volume" /></TableHead>
-            <TableHead className="text-center w-[21.25%]"><HeaderCell title="Open Int." /></TableHead>
-            <TableHead className="w-[15%]"></TableHead>
-            <TableHead className="text-center w-[21.25%]"><HeaderCell title="Open Int." /></TableHead>
-            <TableHead className="text-center w-[21.25%]"><HeaderCell title="Volume" /></TableHead>
-        </TableRow>
+    if (view === 'greeks') return (
+         <>
+            <div className="w-[21.25%] text-center"><HeaderCell title="Delta" subtitle="Vega" /></div>
+            <div className="w-[21.25%] text-center"><HeaderCell title="Theta" subtitle="Gamma" /></div>
+        </>
     );
-    if (optionChainView === 'greeks') specificHeaders = (
-        <TableRow className="border-border hover:bg-transparent">
-            <TableHead className="text-center w-[21.25%]"><HeaderCell title="Delta" subtitle="Vega" /></TableHead>
-            <TableHead className="text-center w-[21.25%]"><HeaderCell title="Theta" subtitle="Gamma" /></TableHead>
-            <TableHead className="w-[15%]"></TableHead>
-            <TableHead className="text-center w-[21.25%]"><HeaderCell title="Theta" subtitle="Gamma" /></TableHead>
-            <TableHead className="text-center w-[21.25%]"><HeaderCell title="Delta" subtitle="Vega" /></TableHead>
-        </TableRow>
-    );
-    return <>{baseHeaders}{specificHeaders}</>;
-  }
+    return null;
+  };
 
   return (
     <div className="bg-background text-foreground w-full flex flex-col h-[70vh]">
-      {/* Header Controls */}
       <div className="p-2 sm:p-3 border-b border-border flex flex-wrap items-center justify-between gap-2 shrink-0">
         <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
           <Select value={selectedUnderlyingSymbol} onValueChange={setSelectedUnderlyingSymbol}>
@@ -267,15 +244,25 @@ export function OptionChain({ onAddLeg }: OptionChainProps) {
           ))}
         </div>
       </div>
-
-      {/* Option Chain Table */}
+      
+      {/* Static Headers */}
+      <div className="shrink-0 bg-background shadow-sm z-10 border-b">
+        <div className="flex w-full py-1 text-sm font-semibold">
+            <div className="w-[42.5%] text-center">CALLS</div>
+            <div className="w-[15%] text-center">STRIKE</div>
+            <div className="w-[42.5%] text-center">PUTS</div>
+        </div>
+        <div className="flex w-full py-1 text-sm">
+            {renderSpecificHeaders(optionChainView)}
+            <div className="w-[15%]" /> 
+            {renderSpecificHeaders(optionChainView)}
+        </div>
+      </div>
+      
       <div className="flex-grow overflow-hidden">
         {optionChainData?.data.length ? (
           <ScrollArea className="h-full" ref={scrollContainerRef}>
             <Table className="min-w-full text-xs" style={{ tableLayout: 'fixed' }}>
-              <TableHeader className="sticky top-0 bg-background z-10 shadow-sm">
-                {renderHeaders()}
-              </TableHeader>
               <TableBody>
                 {optionChainData.data.map((entry, index) => {
                   const isCallItm = optionChainData.underlyingValue && entry.strikePrice < optionChainData.underlyingValue;
@@ -285,7 +272,7 @@ export function OptionChain({ onAddLeg }: OptionChainProps) {
                   return (
                     <React.Fragment key={entry.strikePrice}>
                       {index === atmIndex && (
-                        <TableRow className="sticky top-[7.5rem] z-10 hover:bg-transparent">
+                        <TableRow className="sticky top-0 z-10 hover:bg-transparent">
                           <TableCell colSpan={5} className="p-0 h-8">
                             <div className="h-full w-full flex items-center justify-center bg-muted/80 backdrop-blur-sm">
                               <div className="bg-background border rounded-full px-4 py-1.5 text-xs font-semibold flex items-center gap-2">
@@ -298,21 +285,20 @@ export function OptionChain({ onAddLeg }: OptionChainProps) {
                         </TableRow>
                       )}
                       <TableRow ref={index === atmIndex ? atmRowRef : null} className="border-border cursor-pointer" onClick={() => setExpandedStrike(isExpanded ? null : entry.strikePrice)}>
-                        {renderCells(entry.call, optionChainView).map((cell, cellIndex) => React.cloneElement(cell as React.ReactElement, { key: `call-${cellIndex}`, className: cn((cell as React.ReactElement).props.className, isCallItm && 'bg-primary/5') }))}
-                        <TableCell className="font-semibold text-base text-center p-0">{formatNumber(entry.strikePrice, 0)}</TableCell>
-                        {renderCells(entry.put, optionChainView).map((cell, cellIndex) => React.cloneElement(cell as React.ReactElement, { key: `put-${cellIndex}`, className: cn((cell as React.ReactElement).props.className, isPutItm && 'bg-primary/5') }))}
+                        {renderCells(entry.call, optionChainView).map((cell, cellIndex) => React.cloneElement(cell as React.ReactElement, { key: `call-${cellIndex}`, className: cn((cell as React.ReactElement).props.className, isCallItm && 'bg-primary/5', 'w-[21.25%]') }))}
+                        <TableCell className="font-semibold text-base text-center p-0 w-[15%]">{formatNumber(entry.strikePrice, 0)}</TableCell>
+                        {renderCells(entry.put, optionChainView).map((cell, cellIndex) => React.cloneElement(cell as React.ReactElement, { key: `put-${cellIndex}`, className: cn((cell as React.ReactElement).props.className, isPutItm && 'bg-primary/5', 'w-[21.25%]') }))}
                       </TableRow>
                       {isExpanded && (
                         <TableRow className="border-border bg-muted hover:bg-muted/90">
                           <TableCell colSpan={5} className="p-0">
-                            <div className="flex justify-between items-center w-full">
-                              <div className="w-[42.5%] flex justify-center">
-                                <ExpandedRowContent lotSize={selectedUnderlyingDetails?.symbol === 'BANKNIFTY' ? 15 : 50} onBuy={(qty) => handleAddLeg(entry.strikePrice, 'Call', 'Buy', entry.call?.ltp ?? 0, qty)} onSell={(qty) => handleAddLeg(entry.strikePrice, 'Call', 'Sell', entry.call?.ltp ?? 0, qty)} />
-                              </div>
-                               <div className="w-[15%]"></div>
-                              <div className="w-[42.5%] flex justify-center">
-                                <ExpandedRowContent lotSize={selectedUnderlyingDetails?.symbol === 'BANKNIFTY' ? 15 : 50} onBuy={(qty) => handleAddLeg(entry.strikePrice, 'Put', 'Buy', entry.put?.ltp ?? 0, qty)} onSell={(qty) => handleAddLeg(entry.strikePrice, 'Put', 'Sell', entry.put?.ltp ?? 0, qty)} />
-                              </div>
+                             <div className="flex items-center justify-between w-full p-2">
+                                <div className="w-[42.5%] flex justify-center">
+                                    <ExpandedRowContent lotSize={selectedUnderlyingDetails?.symbol === 'BANKNIFTY' ? 15 : 50} onBuy={(qty) => handleAddLeg(entry.strikePrice, 'Call', 'Buy', entry.call?.ltp ?? 0, qty)} onSell={(qty) => handleAddLeg(entry.strikePrice, 'Call', 'Sell', entry.call?.ltp ?? 0, qty)} />
+                                </div>
+                                <div className="w-[42.5%] flex justify-center">
+                                    <ExpandedRowContent lotSize={selectedUnderlyingDetails?.symbol === 'BANKNIFTY' ? 15 : 50} onBuy={(qty) => handleAddLeg(entry.strikePrice, 'Put', 'Buy', entry.put?.ltp ?? 0, qty)} onSell={(qty) => handleAddLeg(entry.strikePrice, 'Put', 'Sell', entry.put?.ltp ?? 0, qty)} />
+                                </div>
                             </div>
                           </TableCell>
                         </TableRow>
