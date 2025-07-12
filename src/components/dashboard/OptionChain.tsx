@@ -76,20 +76,20 @@ const ExpandedRowContent = ({
   return (
     <div className="flex items-center space-x-2" onClick={stopPropagation}>
       <Label htmlFor={`lots-${lotSize}`} className="text-xs shrink-0">Lots:</Label>
-      <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setQuantity(q => Math.max(1, q - 1))}><Minus className="h-4 w-4" /></Button>
+      <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => setQuantity(q => Math.max(1, q - 1))}><Minus className="h-3 w-3" /></Button>
       <Input
         id={`lots-${lotSize}`}
         type="number"
-        className="w-16 h-8 text-center"
+        className="w-14 h-7 text-center text-sm"
         value={quantity}
         onChange={(e) => setQuantity(Math.max(1, Number(e.target.value) || 1))}
         min="1"
       />
-      <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setQuantity(q => q + 1)}><Plus className="h-4 w-4" /></Button>
-      <span className="text-xs text-muted-foreground">Qty: {(quantity * lotSize).toLocaleString()}</span>
-      <div className="flex items-center space-x-2">
-        <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white" onClick={() => onBuy(quantity)}>Buy</Button>
-        <Button size="sm" className="bg-red-600 hover:bg-red-700 text-white" onClick={() => onSell(quantity)}>Sell</Button>
+      <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => setQuantity(q => q + 1)}><Plus className="h-3 w-3" /></Button>
+      <span className="text-xs text-muted-foreground w-16">Qty: {(quantity * lotSize).toLocaleString()}</span>
+      <div className="flex items-center space-x-1">
+        <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white w-8 h-7 text-xs" onClick={() => onBuy(quantity)}>B</Button>
+        <Button size="sm" className="bg-red-600 hover:bg-red-700 text-white w-8 h-7 text-xs" onClick={() => onSell(quantity)}>S</Button>
       </div>
     </div>
   );
@@ -296,6 +296,7 @@ export function OptionChain({ onAddLeg }: OptionChainProps) {
                                 <div className="w-[42.5%] flex justify-center">
                                     <ExpandedRowContent lotSize={selectedUnderlyingDetails?.symbol === 'BANKNIFTY' ? 15 : 50} onBuy={(qty) => handleAddLeg(entry.strikePrice, 'Call', 'Buy', entry.call?.ltp ?? 0, qty)} onSell={(qty) => handleAddLeg(entry.strikePrice, 'Call', 'Sell', entry.call?.ltp ?? 0, qty)} />
                                 </div>
+                                <div className="w-[15%]" /> 
                                 <div className="w-[42.5%] flex justify-center">
                                     <ExpandedRowContent lotSize={selectedUnderlyingDetails?.symbol === 'BANKNIFTY' ? 15 : 50} onBuy={(qty) => handleAddLeg(entry.strikePrice, 'Put', 'Buy', entry.put?.ltp ?? 0, qty)} onSell={(qty) => handleAddLeg(entry.strikePrice, 'Put', 'Sell', entry.put?.ltp ?? 0, qty)} />
                                 </div>
