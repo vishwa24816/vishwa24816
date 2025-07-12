@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Loader2, Zap, TrendingUp, Rocket, Star, PiggyBank, CandlestickChart, Bell, ArrowUpDown, FileText } from 'lucide-react';
+import { Loader2, Zap, TrendingUp, Rocket, Star, PiggyBank, CandlestickChart, Bell, ArrowUpDown, FileText, InfoIcon } from 'lucide-react';
 import { runScreenerAction } from '@/app/actions';
 import type { Stock } from '@/types';
 import { useToast } from '@/hooks/use-toast';
@@ -22,6 +22,9 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { cn } from '@/lib/utils';
+import { Input } from '@/components/ui/input';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Label } from '@/components/ui/label';
 
 const suggestionQueries = [
     "IT stocks with P/E less than 30",
@@ -256,6 +259,55 @@ const SuperstarsTable = () => {
     );
 };
 
+const ExpandedScreenerRow = ({ stock, onAction, onNav }: { stock: Stock, onAction: (type: 'buy' | 'sell', qty: number) => void, onNav: () => void }) => {
+    const { toast } = useToast();
+    const [quantity, setQuantity] = useState('1');
+    const [orderType, setOrderType] = useState('Limit');
+    
+    const handleBuy = () => {
+        onAction('buy', parseInt(quantity, 10));
+    };
+
+    const handleSell = () => {
+        onAction('sell', parseInt(quantity, 10));
+    };
+
+    return (
+      <TableCell colSpan={5} className="p-0">
+        <div className="bg-muted/50 p-3 grid grid-cols-1 sm:grid-cols-3 gap-4 items-center">
+            <div className="flex items-center gap-2">
+                <Label htmlFor={`qty-${stock.id}`} className="shrink-0">Qty:</Label>
+                <Input
+                    id={`qty-${stock.id}`}
+                    type="number"
+                    value={quantity}
+                    onChange={(e) => setQuantity(e.target.value)}
+                    className="h-9 w-24"
+                    min="1"
+                />
+            </div>
+            <RadioGroup value={orderType} onValueChange={setOrderType} className="flex gap-4">
+                <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="Market" id={`market-${stock.id}`} />
+                    <Label htmlFor={`market-${stock.id}`}>Market</Label>
+                </div>
+                 <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="Limit" id={`limit-${stock.id}`} />
+                    <Label htmlFor={`limit-${stock.id}`}>Limit</Label>
+                </div>
+            </RadioGroup>
+            <div className="flex gap-2 justify-self-end">
+                <Button size="sm" onClick={handleBuy}>Buy</Button>
+                <Button size="sm" variant="destructive" onClick={handleSell}>Sell</Button>
+                <Button size="sm" variant="outline" onClick={onNav}>
+                    <InfoIcon className="h-4 w-4 mr-1"/> Details
+                </Button>
+            </div>
+        </div>
+      </TableCell>
+    );
+};
+
 export default function ScreenerPage() {
     const { toast } = useToast();
     const router = useRouter();
@@ -265,6 +317,7 @@ export default function ScreenerPage() {
     const [analysis, setAnalysis] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
+    const [expandedStockId, setExpandedStockId] = useState<string | null>(null);
 
     const isRealMode = user?.id === 'REAL456';
     const [activeMode, setActiveMode] = useState<'Fiat' | 'Crypto' | 'Web3'>(isRealMode ? 'Crypto' : 'Fiat');
@@ -279,6 +332,7 @@ export default function ScreenerPage() {
         setError('');
         setResults([]);
         setAnalysis('');
+        setExpandedStockId(null);
 
         try {
             const response = await runScreenerAction({ query });
@@ -305,8 +359,15 @@ export default function ScreenerPage() {
         setQuery(suggestion);
     };
     
-    const handleRowClick = (symbol: string) => {
-        router.push(`/order/stock/${symbol}`);
+    const handleRowClick = (stockId: string) => {
+        setExpandedStockId(currentId => (currentId === stockId ? null : stockId));
+    };
+
+    const handleAction = (stock: Stock, type: 'buy' | 'sell', qty: number) => {
+        toast({
+            title: `Order Placed (Mock)`,
+            description: `Placed ${type.toUpperCase()} order for ${qty} shares of ${stock.symbol}.`,
+        });
     };
 
     return (
@@ -474,13 +535,24 @@ export default function ScreenerPage() {
                                     </TableHeader>
                                     <TableBody>
                                         {results.map((stock) => (
-                                            <TableRow key={stock.id} onClick={() => handleRowClick(stock.symbol)} className="cursor-pointer">
-                                                <TableCell className="font-semibold">{stock.symbol}</TableCell>
-                                                <TableCell>{stock.price.toFixed(2)}</TableCell>
-                                                <TableCell>{stock.fundamentals?.peRatioTTM?.toFixed(2) ?? 'N/A'}</TableCell>
-                                                <TableCell>{stock.fundamentals?.roe?.toFixed(2) ?? 'N/A'}</TableCell>
-                                                <TableCell>{stock.fundamentals?.marketCap ?? 'N/A'}</TableCell>
-                                            </TableRow>
+                                            <React.Fragment key={stock.id}>
+                                                <TableRow onClick={() => handleRowClick(stock.id)} className="cursor-pointer">
+                                                    <TableCell className="font-semibold">{stock.symbol}</TableCell>
+                                                    <TableCell>{stock.price.toFixed(2)}</TableCell>
+                                                    <TableCell>{stock.fundamentals?.peRatioTTM?.toFixed(2) ?? 'N/A'}</TableCell>
+                                                    <TableCell>{stock.fundamentals?.roe?.toFixed(2) ?? 'N/A'}</TableCell>
+                                                    <TableCell>{stock.fundamentals?.marketCap ?? 'N/A'}</TableCell>
+                                                </TableRow>
+                                                {expandedStockId === stock.id && (
+                                                    <TableRow>
+                                                        <ExpandedScreenerRow
+                                                            stock={stock}
+                                                            onAction={(type, qty) => handleAction(stock, type, qty)}
+                                                            onNav={() => router.push(`/order/stock/${stock.symbol}`)}
+                                                        />
+                                                    </TableRow>
+                                                )}
+                                            </React.Fragment>
                                         ))}
                                     </TableBody>
                                 </Table>
@@ -492,3 +564,5 @@ export default function ScreenerPage() {
         </ProtectedRoute>
     );
 }
+
+    
