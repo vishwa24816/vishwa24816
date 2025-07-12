@@ -258,22 +258,22 @@ export function OptionChain({ onAddLeg }: OptionChainProps) {
     return null;
   }
 
-  const renderCells = (data: OptionData | undefined, view: OptionChainViewType, type: 'Call' | 'Put', strike: number) => {
+  const renderCells = (data: OptionData | undefined, view: OptionChainViewType, type: 'Call' | 'Put', strike: number): React.ReactNode[] => {
      if (!data) return [<TableCell key={`${type}-${strike}-empty1`}/>, <TableCell key={`${type}-${strike}-empty2`}/>];
 
-     if (view === 'price') return <>
-        <TableCell key={`${type}-${strike}-price-bidask`} className="w-[15%]"><PriceCell bid={data.bidPrice} ask={data.askPrice} onClick={(price, actionType) => handleAddLeg(strike, type, actionType === 'bid' ? 'Sell' : 'Buy', price)} /></TableCell>
+     if (view === 'price') return [
+        <TableCell key={`${type}-${strike}-price-bidask`} className="w-[15%]"><PriceCell bid={data.bidPrice} ask={data.askPrice} onClick={(price, actionType) => handleAddLeg(strike, type, actionType === 'bid' ? 'Sell' : 'Buy', price)} /></TableCell>,
         <TableCell key={`${type}-${strike}-price-mark`} className="w-[15%]"><MarkCell price={data.ltp} iv={data.iv} onClick={(price) => handleAddLeg(strike, type, 'Buy', price)} /></TableCell>
-     </>;
-     if (view === 'volume_oi') return <>
-        <TableCell key={`${type}-${strike}-vol`} className="w-[15%] text-center">{formatNumber(data.volume, 0)}</TableCell>
+     ];
+     if (view === 'volume_oi') return [
+        <TableCell key={`${type}-${strike}-vol`} className="w-[15%] text-center">{formatNumber(data.volume, 0)}</TableCell>,
         <TableCell key={`${type}-${strike}-oi`} className="w-[15%] text-center">{formatNumber(data.oi, 0)}</TableCell>
-     </>;
-     if (view === 'greeks') return <>
-        <TableCell key={`${type}-${strike}-greeks1`} className="w-[15%] text-center"><div className="flex flex-col items-center text-xs"><p>{formatNumber(data.delta, 2)}</p><p className="text-muted-foreground">{formatNumber(data.vega, 2)}</p></div></TableCell>
+     ];
+     if (view === 'greeks') return [
+        <TableCell key={`${type}-${strike}-greeks1`} className="w-[15%] text-center"><div className="flex flex-col items-center text-xs"><p>{formatNumber(data.delta, 2)}</p><p className="text-muted-foreground">{formatNumber(data.vega, 2)}</p></div></TableCell>,
         <TableCell key={`${type}-${strike}-greeks2`} className="w-[15%] text-center"><div className="flex flex-col items-center text-xs"><p>{formatNumber(data.theta, 2)}</p><p className="text-muted-foreground">{formatNumber(data.gamma, 2)}</p></div></TableCell>
-     </>;
-     return null;
+     ];
+     return [];
   }
 
   return (
@@ -320,9 +320,9 @@ export function OptionChain({ onAddLeg }: OptionChainProps) {
                 <Table className="min-w-full text-xs">
                     <TableHeader className="sticky top-0 bg-background z-10">
                          <TableRow className="border-border hover:bg-transparent">
-                            <TableHead className="w-[30%]" colSpan={2}>CALLS</TableHead>
+                            <TableHead className="w-[30%] text-center" colSpan={2}>CALLS</TableHead>
                             <TableHead className="w-[40%] text-center" colSpan={2}><HeaderCell title="" /></TableHead>
-                            <TableHead className="w-[30%] text-right" colSpan={2}>PUTS</TableHead>
+                            <TableHead className="w-[30%] text-center" colSpan={2}>PUTS</TableHead>
                          </TableRow>
                         {renderHeaders()}
                     </TableHeader>
