@@ -48,15 +48,15 @@ const HeaderCell = ({ title, subtitle }: { title: string; subtitle?: string }) =
     </div>
 );
 
-const PriceCell = ({ bid, ask, onClick }: { bid?: number, ask?: number, onClick: (price: number, type: 'bid' | 'ask') => void }) => (
+const PriceCell = ({ bid, ask }: { bid?: number, ask?: number }) => (
     <div className="flex flex-col items-center text-xs">
-        <span className="text-green-600 dark:text-green-400 p-1 hover:bg-green-500/10 rounded-md w-full text-center" onClick={(e) => { e.stopPropagation(); onClick(bid || 0, 'bid'); }}>{formatNumber(bid, 2)}</span>
-        <span className="text-red-600 dark:text-red-400 p-1 hover:bg-red-500/10 rounded-md w-full text-center" onClick={(e) => { e.stopPropagation(); onClick(ask || 0, 'ask'); }}>{formatNumber(ask, 2)}</span>
+        <span className="text-green-600 dark:text-green-400 p-1 rounded-md w-full text-center">{formatNumber(bid, 2)}</span>
+        <span className="text-red-600 dark:text-red-400 p-1 rounded-md w-full text-center">{formatNumber(ask, 2)}</span>
     </div>
 );
 
-const MarkCell = ({ price, iv, onClick }: { price?: number, iv?: number, onClick: (price: number, type: 'ltp') => void }) => (
-    <div className="flex flex-col items-center text-xs p-1 hover:bg-primary/10 rounded-md" onClick={(e) => { e.stopPropagation(); onClick(price || 0, 'ltp'); }}>
+const MarkCell = ({ price, iv }: { price?: number, iv?: number }) => (
+    <div className="flex flex-col items-center text-xs p-1 rounded-md">
         <span className="font-semibold text-foreground">₹{formatNumber(price, 2)}</span>
         <span className="text-muted-foreground">{formatNumber(iv, 1)}%</span>
     </div>
@@ -221,37 +221,37 @@ export function OptionChain({ onAddLeg }: OptionChainProps) {
     if (optionChainView === 'price') {
       return (
         <TableRow className="border-border hover:bg-transparent">
-            <TableHead className="w-[15%] text-center"><HeaderCell title="BID" subtitle="ASK" /></TableHead>
-            <TableHead className="w-[15%] text-center"><HeaderCell title="Mark" subtitle="Price/IV" /></TableHead>
-            <TableHead className="w-[40%] text-center" colSpan={2}>
+            <TableHead className="w-[12%] text-center"><HeaderCell title="BID" subtitle="ASK" /></TableHead>
+            <TableHead className="w-[13%] text-center"><HeaderCell title="Mark" subtitle="Price/IV" /></TableHead>
+            <TableHead className="w-[30%] text-center" colSpan={2}>
                 <div className="flex items-center justify-center">
                 <HeaderCell title="Strike" /> <ArrowUpDown className="h-3 w-3 ml-1 text-muted-foreground" />
                 </div>
             </TableHead>
-            <TableHead className="w-[15%] text-center"><HeaderCell title="Mark" subtitle="Price/IV" /></TableHead>
-            <TableHead className="w-[15%] text-center"><HeaderCell title="BID" subtitle="ASK" /></TableHead>
+            <TableHead className="w-[13%] text-center"><HeaderCell title="Mark" subtitle="Price/IV" /></TableHead>
+            <TableHead className="w-[12%] text-center"><HeaderCell title="BID" subtitle="ASK" /></TableHead>
         </TableRow>
       );
     }
     if (optionChainView === 'volume_oi') {
       return (
         <TableRow className="border-border hover:bg-transparent">
-            <TableHead className="w-[15%] text-center"><HeaderCell title="Volume" /></TableHead>
-            <TableHead className="w-[15%] text-center"><HeaderCell title="Open Int." /></TableHead>
-            <TableHead className="w-[40%] text-center" colSpan={2}><HeaderCell title="Strike" /></TableHead>
-            <TableHead className="w-[15%] text-center"><HeaderCell title="Open Int." /></TableHead>
-            <TableHead className="w-[15%] text-center"><HeaderCell title="Volume" /></TableHead>
+            <TableHead className="w-[12%] text-center"><HeaderCell title="Volume" /></TableHead>
+            <TableHead className="w-[13%] text-center"><HeaderCell title="Open Int." /></TableHead>
+            <TableHead className="w-[30%] text-center" colSpan={2}><HeaderCell title="Strike" /></TableHead>
+            <TableHead className="w-[13%] text-center"><HeaderCell title="Open Int." /></TableHead>
+            <TableHead className="w-[12%] text-center"><HeaderCell title="Volume" /></TableHead>
         </TableRow>
       );
     }
     if (optionChainView === 'greeks') {
       return (
         <TableRow className="border-border hover:bg-transparent">
-            <TableHead className="w-[15%] text-center"><HeaderCell title="Delta" subtitle="Vega" /></TableHead>
-            <TableHead className="w-[15%] text-center"><HeaderCell title="Theta" subtitle="Gamma" /></TableHead>
-            <TableHead className="w-[40%] text-center" colSpan={2}><HeaderCell title="Strike" /></TableHead>
-            <TableHead className="w-[15%] text-center"><HeaderCell title="Theta" subtitle="Gamma" /></TableHead>
-            <TableHead className="w-[15%] text-center"><HeaderCell title="Delta" subtitle="Vega" /></TableHead>
+            <TableHead className="w-[12%] text-center"><HeaderCell title="Delta" subtitle="Vega" /></TableHead>
+            <TableHead className="w-[13%] text-center"><HeaderCell title="Theta" subtitle="Gamma" /></TableHead>
+            <TableHead className="w-[30%] text-center" colSpan={2}><HeaderCell title="Strike" /></TableHead>
+            <TableHead className="w-[13%] text-center"><HeaderCell title="Theta" subtitle="Gamma" /></TableHead>
+            <TableHead className="w-[12%] text-center"><HeaderCell title="Delta" subtitle="Vega" /></TableHead>
         </TableRow>
       );
     }
@@ -259,19 +259,19 @@ export function OptionChain({ onAddLeg }: OptionChainProps) {
   }
 
   const renderCells = (data: OptionData | undefined, view: OptionChainViewType, type: 'Call' | 'Put', strike: number): React.ReactNode[] => {
-     if (!data) return [<TableCell key={`${type}-${strike}-empty1`}/>, <TableCell key={`${type}-${strike}-empty2`}/>];
+     if (!data) return [<TableCell key={`${type}-${strike}-empty1`} className="w-[12%]" />, <TableCell key={`${type}-${strike}-empty2`} className="w-[13%]" />];
 
      if (view === 'price') return [
-        <TableCell key={`${type}-${strike}-price-bidask`} className="w-[15%]"><PriceCell bid={data.bidPrice} ask={data.askPrice} onClick={(price, actionType) => handleAddLeg(strike, type, actionType === 'bid' ? 'Sell' : 'Buy', price)} /></TableCell>,
-        <TableCell key={`${type}-${strike}-price-mark`} className="w-[15%]"><MarkCell price={data.ltp} iv={data.iv} onClick={(price) => handleAddLeg(strike, type, 'Buy', price)} /></TableCell>
+        <TableCell key={`${type}-${strike}-price-bidask`} className="w-[12%]"><PriceCell bid={data.bidPrice} ask={data.askPrice} /></TableCell>,
+        <TableCell key={`${type}-${strike}-price-mark`} className="w-[13%]"><MarkCell price={data.ltp} iv={data.iv} /></TableCell>
      ];
      if (view === 'volume_oi') return [
-        <TableCell key={`${type}-${strike}-vol`} className="w-[15%] text-center">{formatNumber(data.volume, 0)}</TableCell>,
-        <TableCell key={`${type}-${strike}-oi`} className="w-[15%] text-center">{formatNumber(data.oi, 0)}</TableCell>
+        <TableCell key={`${type}-${strike}-vol`} className="w-[12%] text-center">{formatNumber(data.volume, 0)}</TableCell>,
+        <TableCell key={`${type}-${strike}-oi`} className="w-[13%] text-center">{formatNumber(data.oi, 0)}</TableCell>
      ];
      if (view === 'greeks') return [
-        <TableCell key={`${type}-${strike}-greeks1`} className="w-[15%] text-center"><div className="flex flex-col items-center text-xs"><p>{formatNumber(data.delta, 2)}</p><p className="text-muted-foreground">{formatNumber(data.vega, 2)}</p></div></TableCell>,
-        <TableCell key={`${type}-${strike}-greeks2`} className="w-[15%] text-center"><div className="flex flex-col items-center text-xs"><p>{formatNumber(data.theta, 2)}</p><p className="text-muted-foreground">{formatNumber(data.gamma, 2)}</p></div></TableCell>
+        <TableCell key={`${type}-${strike}-greeks1`} className="w-[12%] text-center"><div className="flex flex-col items-center text-xs"><p>{formatNumber(data.delta, 2)}</p><p className="text-muted-foreground">{formatNumber(data.vega, 2)}</p></div></TableCell>,
+        <TableCell key={`${type}-${strike}-greeks2`} className="w-[13%] text-center"><div className="flex flex-col items-center text-xs"><p>{formatNumber(data.theta, 2)}</p><p className="text-muted-foreground">{formatNumber(data.gamma, 2)}</p></div></TableCell>
      ];
      return [];
   }
@@ -320,9 +320,9 @@ export function OptionChain({ onAddLeg }: OptionChainProps) {
                 <Table className="min-w-full text-xs">
                     <TableHeader className="sticky top-0 bg-background z-10">
                          <TableRow className="border-border hover:bg-transparent">
-                            <TableHead className="w-[30%] text-center" colSpan={2}>CALLS</TableHead>
-                            <TableHead className="w-[40%] text-center" colSpan={2}><HeaderCell title="" /></TableHead>
-                            <TableHead className="w-[30%] text-center" colSpan={2}>PUTS</TableHead>
+                            <TableHead className="w-[25%] text-center" colSpan={2}>CALLS</TableHead>
+                            <TableHead className="w-[50%] text-center" colSpan={2}><HeaderCell title="" /></TableHead>
+                            <TableHead className="w-[25%] text-center" colSpan={2}>PUTS</TableHead>
                          </TableRow>
                         {renderHeaders()}
                     </TableHeader>
@@ -354,8 +354,8 @@ export function OptionChain({ onAddLeg }: OptionChainProps) {
                             >
                                 {renderCells(entry.call, optionChainView, 'Call', entry.strikePrice).map((cell) => React.cloneElement(cell as React.ReactElement, { className: cn((cell as React.ReactElement).props.className, isCallItm && 'bg-primary/5') }))}
 
-                                <TableCell className="w-[20%] font-semibold text-base text-center p-0">{formatNumber(entry.strikePrice, 0)}</TableCell>
-                                <TableCell className="w-[20%] p-0"><OIBars callOI={entry.call?.oi} putOI={entry.put?.oi} totalOI={totalOI} /></TableCell>
+                                <TableCell className="w-[15%] font-semibold text-base text-center p-0">{formatNumber(entry.strikePrice, 0)}</TableCell>
+                                <TableCell className="w-[15%] p-0"><OIBars callOI={entry.call?.oi} putOI={entry.put?.oi} totalOI={totalOI} /></TableCell>
 
                                 {renderCells(entry.put, optionChainView, 'Put', entry.strikePrice).map((cell) => React.cloneElement(cell as React.ReactElement, { className: cn((cell as React.ReactElement).props.className, isPutItm && 'bg-primary/5') }))}
                             </TableRow>
@@ -363,15 +363,14 @@ export function OptionChain({ onAddLeg }: OptionChainProps) {
                                 <TableRow className="border-border bg-muted hover:bg-muted/90">
                                     <TableCell colSpan={6} className="p-0">
                                         <div className="flex justify-between items-center w-full">
-                                            <div className="w-[30%]">
+                                            <div className="w-[50%] flex justify-end pr-[25%]">
                                                 <ExpandedRowContent 
                                                     lotSize={selectedUnderlyingDetails?.symbol === 'BANKNIFTY' ? 15 : 50} 
                                                     onBuy={(qty) => handleAddLeg(entry.strikePrice, 'Call', 'Buy', entry.call?.ltp ?? 0, qty)}
                                                     onSell={(qty) => handleAddLeg(entry.strikePrice, 'Call', 'Sell', entry.call?.ltp ?? 0, qty)}
                                                 />
                                             </div>
-                                            <div className="w-[40%]" />
-                                            <div className="w-[30%]">
+                                            <div className="w-[50%] flex justify-start pl-[25%]">
                                                 <ExpandedRowContent 
                                                     lotSize={selectedUnderlyingDetails?.symbol === 'BANKNIFTY' ? 15 : 50} 
                                                     onBuy={(qty) => handleAddLeg(entry.strikePrice, 'Put', 'Buy', entry.put?.ltp ?? 0, qty)}
