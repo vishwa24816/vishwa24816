@@ -189,7 +189,7 @@ export function OptionChain({ onAddLeg }: OptionChainProps) {
     return closestIndex;
   };
 
-  const handleAddLeg = (strikePrice: number, optionType: 'Call' | 'Put', action: 'Buy' | 'Sell', price: number) => {
+  const handleAddLeg = (strikePrice: number, optionType: 'Call' | 'Put', action: 'Buy' | 'Sell', price: number, quantity: number = 1) => {
     if (!optionChainData || !selectedUnderlyingDetails) return;
     
     const newLeg: SelectedOptionLeg = {
@@ -201,13 +201,13 @@ export function OptionChain({ onAddLeg }: OptionChainProps) {
       optionType,
       action,
       ltp: price,
-      quantity: 1, // Default to 1 lot
+      quantity: quantity,
     };
 
     onAddLeg(newLeg);
     toast({
       title: 'Leg Added',
-      description: `${action} ${newLeg.instrumentName} at ₹${price.toFixed(2)}`,
+      description: `${action} ${newLeg.quantity} lot(s) of ${newLeg.instrumentName} at ₹${price.toFixed(2)}`,
     });
   };
   
@@ -352,28 +352,28 @@ export function OptionChain({ onAddLeg }: OptionChainProps) {
                                 className="border-border cursor-pointer"
                                 onClick={() => setExpandedStrike(isExpanded ? null : entry.strikePrice)}
                             >
-                                {renderCells(entry.call, optionChainView, 'Call', entry.strikePrice)?.map((cell, cellIndex) => React.cloneElement(cell, { key: `call-${entry.strikePrice}-${cellIndex}`, className: cn(cell.props.className, isCallItm && 'bg-primary/5') }))}
+                                {renderCells(entry.call, optionChainView, 'Call', entry.strikePrice).map((cell, cellIndex) => React.cloneElement(cell, { key: `call-${entry.strikePrice}-${cellIndex}`, className: cn(cell.props.className, isCallItm && 'bg-primary/5') }))}
 
                                 <TableCell className="w-[20%] font-semibold text-base text-center p-0">{formatNumber(entry.strikePrice, 0)}</TableCell>
                                 <TableCell className="w-[20%] p-0"><OIBars callOI={entry.call?.oi} putOI={entry.put?.oi} totalOI={totalOI} /></TableCell>
 
-                                {renderCells(entry.put, optionChainView, 'Put', entry.strikePrice)?.map((cell, cellIndex) => React.cloneElement(cell, { key: `put-${entry.strikePrice}-${cellIndex}`, className: cn(cell.props.className, isPutItm && 'bg-primary/5') }))}
+                                {renderCells(entry.put, optionChainView, 'Put', entry.strikePrice).map((cell, cellIndex) => React.cloneElement(cell, { key: `put-${entry.strikePrice}-${cellIndex}`, className: cn(cell.props.className, isPutItm && 'bg-primary/5') }))}
                             </TableRow>
                             {isExpanded && (
                                 <TableRow className="border-border bg-muted hover:bg-muted/90">
                                     <TableCell colSpan={2} className="p-0">
                                         <ExpandedRowContent 
                                             lotSize={selectedUnderlyingDetails?.symbol === 'BANKNIFTY' ? 15 : 50} 
-                                            onBuy={(qty) => toast({ title: `BUY ${qty} lot(s) of ${entry.strikePrice} CALL`})}
-                                            onSell={(qty) => toast({ title: `SELL ${qty} lot(s) of ${entry.strikePrice} CALL`})}
+                                            onBuy={(qty) => handleAddLeg(entry.strikePrice, 'Call', 'Buy', entry.call?.ltp ?? 0, qty)}
+                                            onSell={(qty) => handleAddLeg(entry.strikePrice, 'Call', 'Sell', entry.call?.ltp ?? 0, qty)}
                                         />
                                     </TableCell>
                                     <TableCell colSpan={2} />
                                     <TableCell colSpan={2} className="p-0">
                                         <ExpandedRowContent 
                                             lotSize={selectedUnderlyingDetails?.symbol === 'BANKNIFTY' ? 15 : 50} 
-                                            onBuy={(qty) => toast({ title: `BUY ${qty} lot(s) of ${entry.strikePrice} PUT`})}
-                                            onSell={(qty) => toast({ title: `SELL ${qty} lot(s) of ${entry.strikePrice} PUT`})}
+                                            onBuy={(qty) => handleAddLeg(entry.strikePrice, 'Put', 'Buy', entry.put?.ltp ?? 0, qty)}
+                                            onSell={(qty) => handleAddLeg(entry.strikePrice, 'Put', 'Sell', entry.put?.ltp ?? 0, qty)}
                                         />
                                     </TableCell>
                                 </TableRow>
