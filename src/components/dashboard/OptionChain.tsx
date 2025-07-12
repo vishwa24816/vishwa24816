@@ -352,29 +352,33 @@ export function OptionChain({ onAddLeg }: OptionChainProps) {
                                 className="border-border cursor-pointer"
                                 onClick={() => setExpandedStrike(isExpanded ? null : entry.strikePrice)}
                             >
-                                {renderCells(entry.call, optionChainView, 'Call', entry.strikePrice).map((cell, cellIndex) => React.cloneElement(cell, { key: `call-${entry.strikePrice}-${cellIndex}`, className: cn(cell.props.className, isCallItm && 'bg-primary/5') }))}
+                                {renderCells(entry.call, optionChainView, 'Call', entry.strikePrice).map((cell) => React.cloneElement(cell as React.ReactElement, { className: cn((cell as React.ReactElement).props.className, isCallItm && 'bg-primary/5') }))}
 
                                 <TableCell className="w-[20%] font-semibold text-base text-center p-0">{formatNumber(entry.strikePrice, 0)}</TableCell>
                                 <TableCell className="w-[20%] p-0"><OIBars callOI={entry.call?.oi} putOI={entry.put?.oi} totalOI={totalOI} /></TableCell>
 
-                                {renderCells(entry.put, optionChainView, 'Put', entry.strikePrice).map((cell, cellIndex) => React.cloneElement(cell, { key: `put-${entry.strikePrice}-${cellIndex}`, className: cn(cell.props.className, isPutItm && 'bg-primary/5') }))}
+                                {renderCells(entry.put, optionChainView, 'Put', entry.strikePrice).map((cell) => React.cloneElement(cell as React.ReactElement, { className: cn((cell as React.ReactElement).props.className, isPutItm && 'bg-primary/5') }))}
                             </TableRow>
                             {isExpanded && (
                                 <TableRow className="border-border bg-muted hover:bg-muted/90">
-                                    <TableCell colSpan={2} className="p-0">
-                                        <ExpandedRowContent 
-                                            lotSize={selectedUnderlyingDetails?.symbol === 'BANKNIFTY' ? 15 : 50} 
-                                            onBuy={(qty) => handleAddLeg(entry.strikePrice, 'Call', 'Buy', entry.call?.ltp ?? 0, qty)}
-                                            onSell={(qty) => handleAddLeg(entry.strikePrice, 'Call', 'Sell', entry.call?.ltp ?? 0, qty)}
-                                        />
-                                    </TableCell>
-                                    <TableCell colSpan={2} />
-                                    <TableCell colSpan={2} className="p-0">
-                                        <ExpandedRowContent 
-                                            lotSize={selectedUnderlyingDetails?.symbol === 'BANKNIFTY' ? 15 : 50} 
-                                            onBuy={(qty) => handleAddLeg(entry.strikePrice, 'Put', 'Buy', entry.put?.ltp ?? 0, qty)}
-                                            onSell={(qty) => handleAddLeg(entry.strikePrice, 'Put', 'Sell', entry.put?.ltp ?? 0, qty)}
-                                        />
+                                    <TableCell colSpan={6} className="p-0">
+                                        <div className="flex justify-between items-center w-full">
+                                            <div className="w-[30%]">
+                                                <ExpandedRowContent 
+                                                    lotSize={selectedUnderlyingDetails?.symbol === 'BANKNIFTY' ? 15 : 50} 
+                                                    onBuy={(qty) => handleAddLeg(entry.strikePrice, 'Call', 'Buy', entry.call?.ltp ?? 0, qty)}
+                                                    onSell={(qty) => handleAddLeg(entry.strikePrice, 'Call', 'Sell', entry.call?.ltp ?? 0, qty)}
+                                                />
+                                            </div>
+                                            <div className="w-[40%]" />
+                                            <div className="w-[30%]">
+                                                <ExpandedRowContent 
+                                                    lotSize={selectedUnderlyingDetails?.symbol === 'BANKNIFTY' ? 15 : 50} 
+                                                    onBuy={(qty) => handleAddLeg(entry.strikePrice, 'Put', 'Buy', entry.put?.ltp ?? 0, qty)}
+                                                    onSell={(qty) => handleAddLeg(entry.strikePrice, 'Put', 'Sell', entry.put?.ltp ?? 0, qty)}
+                                                />
+                                            </div>
+                                        </div>
                                     </TableCell>
                                 </TableRow>
                             )}
