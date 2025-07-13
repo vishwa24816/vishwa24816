@@ -74,19 +74,20 @@ const ExpandedRowContent = ({
   const stopPropagation = (e: React.MouseEvent) => e.stopPropagation();
 
   return (
-    <div className="flex items-center space-x-2" onClick={stopPropagation}>
-      <Label htmlFor={`lots-${lotSize}`} className="text-xs shrink-0">Lots:</Label>
-      <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => setQuantity(q => Math.max(1, q - 1))}><Minus className="h-3 w-3" /></Button>
-      <Input
-        id={`lots-${lotSize}`}
-        type="number"
-        className="w-14 h-7 text-center text-sm"
-        value={quantity}
-        onChange={(e) => setQuantity(Math.max(1, Number(e.target.value) || 1))}
-        min="1"
-      />
-      <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => setQuantity(q => q + 1)}><Plus className="h-3 w-3" /></Button>
-      <span className="text-xs text-muted-foreground w-16">Qty: {(quantity * lotSize).toLocaleString()}</span>
+    <div className="grid grid-cols-[auto_1fr_auto] items-center gap-x-1" onClick={stopPropagation}>
+      <Label htmlFor={`lots-${lotSize}`} className="text-xs shrink-0 pr-1">Lots:</Label>
+      <div className="flex items-center">
+        <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => setQuantity(q => Math.max(1, q - 1))}><Minus className="h-3 w-3" /></Button>
+        <Input
+          id={`lots-${lotSize}`}
+          type="number"
+          className="w-12 h-7 text-center text-sm px-1"
+          value={quantity}
+          onChange={(e) => setQuantity(Math.max(1, Number(e.target.value) || 1))}
+          min="1"
+        />
+        <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => setQuantity(q => q + 1)}><Plus className="h-3 w-3" /></Button>
+      </div>
       <div className="flex items-center space-x-1">
         <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white w-8 h-7 text-xs" onClick={() => onBuy(quantity)}>B</Button>
         <Button size="sm" className="bg-red-600 hover:bg-red-700 text-white w-8 h-7 text-xs" onClick={() => onSell(quantity)}>S</Button>
@@ -179,9 +180,9 @@ export function OptionChain({ onAddLeg }: OptionChainProps) {
     });
   };
 
-  const renderCells = (data: OptionData | undefined, view: OptionChainViewType): React.ReactNode[] => {
+  const renderCells = (data: OptionData | undefined, view: OptionChainViewType, type: 'Call' | 'Put', strike: number): React.ReactNode[] => {
      if (!data) return [<TableCell key="empty1" />, <TableCell key="empty2" />];
-
+     
      if (view === 'price') return [
         <TableCell key="price-bidask"><PriceCell bid={data.bidPrice} ask={data.askPrice} /></TableCell>,
         <TableCell key="price-mark"><MarkCell price={data.ltp} iv={data.iv} /></TableCell>
@@ -285,9 +286,9 @@ export function OptionChain({ onAddLeg }: OptionChainProps) {
                         </TableRow>
                       )}
                       <TableRow ref={index === atmIndex ? atmRowRef : null} className="border-border cursor-pointer" onClick={() => setExpandedStrike(isExpanded ? null : entry.strikePrice)}>
-                        {renderCells(entry.call, optionChainView).map((cell, cellIndex) => React.cloneElement(cell as React.ReactElement, { key: `call-${cellIndex}`, className: cn((cell as React.ReactElement).props.className, isCallItm && 'bg-primary/5', 'w-[21.25%]') }))}
+                        {renderCells(entry.call, optionChainView, 'Call', entry.strikePrice).map((cell, cellIndex) => React.cloneElement(cell as React.ReactElement, { key: `call-${cellIndex}`, className: cn((cell as React.ReactElement).props.className, isCallItm && 'bg-primary/5', 'w-[21.25%]') }))}
                         <TableCell className="font-semibold text-base text-center p-0 w-[15%]">{formatNumber(entry.strikePrice, 0)}</TableCell>
-                        {renderCells(entry.put, optionChainView).map((cell, cellIndex) => React.cloneElement(cell as React.ReactElement, { key: `put-${cellIndex}`, className: cn((cell as React.ReactElement).props.className, isPutItm && 'bg-primary/5', 'w-[21.25%]') }))}
+                        {renderCells(entry.put, optionChainView, 'Put', entry.strikePrice).map((cell, cellIndex) => React.cloneElement(cell as React.ReactElement, { key: `put-${cellIndex}`, className: cn((cell as React.ReactElement).props.className, isPutItm && 'bg-primary/5', 'w-[21.25%]') }))}
                       </TableRow>
                       {isExpanded && (
                         <TableRow className="border-border bg-muted hover:bg-muted/90">
