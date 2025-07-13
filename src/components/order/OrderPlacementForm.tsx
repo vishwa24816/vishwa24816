@@ -72,7 +72,7 @@ const AdvancedOptionInput = ({
               onClick={() => onUnitChange('price')}
               className="h-9 rounded-r-none flex-1 text-xs px-2"
             >
-              ₹
+              $
             </Button>
             <Button
               type="button"
@@ -177,7 +177,7 @@ const SipForm = ({ asset, assetType }: { asset: Stock, assetType: string }) => {
     }, [assetType, sipInvestmentType]);
 
     const handleStartSip = () => {
-        const investmentValue = isSipAmountBased ? `₹${sipAmount}` : `${sipQuantity} Qty`;
+        const investmentValue = isSipAmountBased ? `$${sipAmount}` : `${sipQuantity} Qty`;
         const startDateFormatted = sipStartDate ? format(sipStartDate, "PPP") : "Not set";
         const installmentsInfo = sipInstallments ? `${sipInstallments} installments` : "Ongoing";
         toast({
@@ -215,8 +215,8 @@ const SipForm = ({ asset, assetType }: { asset: Stock, assetType: string }) => {
             </div>
             {isSipAmountBased ? (
                 <div className="space-y-2">
-                    <Label htmlFor="sip-amount">Investment Amount (₹)</Label>
-                    <Input id="sip-amount" type="number" value={sipAmount} onChange={(e) => setSipAmount(e.target.value)} placeholder="e.g., 1000" />
+                    <Label htmlFor="sip-amount">Investment Amount ($)</Label>
+                    <Input id="sip-amount" type="number" value={sipAmount} onChange={(e) => setSipAmount(e.target.value)} placeholder="e.g., 100" />
                 </div>
             ) : (
                 <div className="space-y-2">
@@ -464,11 +464,11 @@ const StockOrderForm = ({ asset, assetType, productType, onProductTypeChange }: 
                 <RadioGroup value={selectedExchange} onValueChange={(v) => setSelectedExchange(v as any)} className="flex space-x-4">
                     <div className="flex items-center space-x-2">
                         <RadioGroupItem value="BSE" id="BSE" />
-                        <Label htmlFor="BSE" className="text-sm">BSE: ₹{(asset.price * 0.995).toFixed(2)}</Label>
+                        <Label htmlFor="BSE" className="text-sm">BSE: ${asset.price.toFixed(2)}</Label>
                     </div>
                     <div className="flex items-center space-x-2">
                         <RadioGroupItem value="NSE" id="NSE" />
-                        <Label htmlFor="NSE" className="text-sm">NSE: ₹{asset.price.toFixed(2)}</Label>
+                        <Label htmlFor="NSE" className="text-sm">NSE: ${asset.price.toFixed(2)}</Label>
                     </div>
                 </RadioGroup>
             </div>
@@ -480,7 +480,7 @@ const StockOrderForm = ({ asset, assetType, productType, onProductTypeChange }: 
                 </TabsList>
                 <TabsContent value="Regular" className="p-4 mt-0">
                     <CommonOrderFields orderProps={commonOrderProps} />
-                     <div className="mt-4 pt-4 border-t"><p className="text-sm text-muted-foreground">Margin required: <span className="font-semibold text-foreground">₹{displayedMargin.toLocaleString('en-IN')}</span></p></div>
+                     <div className="mt-4 pt-4 border-t"><p className="text-sm text-muted-foreground">Margin required: <span className="font-semibold text-foreground">${displayedMargin.toLocaleString('en-US')}</span></p></div>
                 </TabsContent>
                 <TabsContent value="MTF" className="p-4 mt-0 space-y-4">
                     <CommonOrderFields orderProps={commonOrderProps} />
@@ -495,7 +495,7 @@ const StockOrderForm = ({ asset, assetType, productType, onProductTypeChange }: 
                              ))}
                          </RadioGroup>
                      </div>
-                     <div className="mt-4 pt-4 border-t"><p className="text-sm text-muted-foreground">Margin required: <span className="font-semibold text-foreground">₹{displayedMargin.toLocaleString('en-IN')}</span></p></div>
+                     <div className="mt-4 pt-4 border-t"><p className="text-sm text-muted-foreground">Margin required: <span className="font-semibold text-foreground">${displayedMargin.toLocaleString('en-US')}</span></p></div>
                 </TabsContent>
                 <TabsContent value="SIP" className="p-0 mt-0"><SipForm asset={asset} assetType="stock" /></TabsContent>
             </Tabs>
@@ -554,7 +554,7 @@ const CryptoOrderForm = ({ asset, assetType, productType, onProductTypeChange }:
                 </TabsList>
                 <TabsContent value="Regular" className="p-4 mt-0">
                      <CommonOrderFields orderProps={commonOrderProps} />
-                     <div className="mt-4 pt-4 border-t"><p className="text-sm text-muted-foreground">Margin required: <span className="font-semibold text-foreground">₹{displayedMargin.toLocaleString('en-IN')}</span></p></div>
+                     <div className="mt-4 pt-4 border-t"><p className="text-sm text-muted-foreground">Margin required: <span className="font-semibold text-foreground">${displayedMargin.toLocaleString('en-US')}</span></p></div>
                 </TabsContent>
                 <TabsContent value="SIP" className="p-0 mt-0"><SipForm asset={asset} assetType="crypto" /></TabsContent>
             </Tabs>
@@ -623,7 +623,7 @@ const FutureOrderForm = ({ asset, assetType, productType, onProductTypeChange }:
                     </div>
                 )}
                  <CommonOrderFields orderProps={commonOrderProps} />
-                 <div className="mt-4 pt-4 border-t"><p className="text-sm text-muted-foreground">Margin required: <span className="font-semibold text-foreground">₹{displayedMargin.toLocaleString('en-IN')}</span></p></div>
+                 <div className="mt-4 pt-4 border-t"><p className="text-sm text-muted-foreground">Margin required: <span className="font-semibold text-foreground">${displayedMargin.toLocaleString('en-US')}</span></p></div>
             </div>
              <div className="p-4 border-t flex flex-col sm:flex-row gap-2">
                 <Button variant="outline" className="flex-1" onClick={() => setIsAddToBasketDialogOpen(true)}><ShoppingBasket className="mr-2 h-4 w-4" /> Add to Basket</Button>
@@ -691,7 +691,7 @@ const CryptoFutureOrderForm = ({ asset, assetType, productType, onProductTypeCha
                             <SelectContent>{leverageOptions.map(val => <SelectItem key={val} value={val}>{val}</SelectItem>)}</SelectContent>
                         </Select>
                     </div>
-                     <div className="mt-4 pt-4 border-t"><p className="text-sm text-muted-foreground">Margin required: <span className="font-semibold text-foreground">₹{displayedMargin.toLocaleString('en-IN')}</span></p></div>
+                     <div className="mt-4 pt-4 border-t"><p className="text-sm text-muted-foreground">Margin required: <span className="font-semibold text-foreground">${displayedMargin.toLocaleString('en-US')}</span></p></div>
                  </TabsContent>
                  <TabsContent value="SIP" className="p-0 mt-0"><SipForm asset={asset} assetType="crypto" /></TabsContent>
             </Tabs>

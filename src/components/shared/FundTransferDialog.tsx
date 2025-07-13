@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect } from 'react';
@@ -24,10 +25,8 @@ interface FundTransferDialogProps {
   mainPortfolioCashBalance: number;
   cryptoCashBalance: number;
   onTransferConfirm: (amount: number, direction: 'toCrypto' | 'fromCrypto') => void;
-  currencyMode: 'INR' | 'USDT';
+  currencyMode: 'USD';
 }
-
-const INR_TO_USDT_RATE = 83.5;
 
 export function FundTransferDialog({
   isOpen,
@@ -53,16 +52,8 @@ export function FundTransferDialog({
   const destinationAccountName = transferDirection === 'toCrypto' ? "Crypto Wallet" : "Main Portfolio";
   const sourceBalance = transferDirection === 'toCrypto' ? mainPortfolioCashBalance : cryptoCashBalance;
 
-  const formatCurrency = (value: number, mode: 'INR' | 'USDT') => {
-    if (mode === 'USDT') {
-      const usdtValue = value / INR_TO_USDT_RATE;
-      return usdtValue.toLocaleString('en-US', {
-        style: 'decimal',
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      }) + ' USDT';
-    }
-    return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
   };
 
   const handleTransfer = () => {
@@ -74,16 +65,12 @@ export function FundTransferDialog({
       return;
     }
     
-    // Convert the input amount to INR for validation and confirmation.
-    // The underlying balances are always in INR.
-    const transferAmountInINR = currencyMode === 'USDT' ? typedAmount * INR_TO_USDT_RATE : typedAmount;
-
-    if (transferAmountInINR > sourceBalance) {
-      setError(`Insufficient funds in ${sourceAccountName}. Available: ${formatCurrency(sourceBalance, currencyMode)}`);
+    if (typedAmount > sourceBalance) {
+      setError(`Insufficient funds in ${sourceAccountName}. Available: ${formatCurrency(sourceBalance)}`);
       return;
     }
 
-    onTransferConfirm(transferAmountInINR, transferDirection); // Always pass back the INR value
+    onTransferConfirm(typedAmount, transferDirection);
     onOpenChange(false);
   };
 
@@ -106,7 +93,7 @@ export function FundTransferDialog({
               From: <span className="font-medium text-foreground">{sourceAccountName}</span>
             </p>
             <p className="text-sm">
-              Available Balance: <span className="font-semibold text-primary">{formatCurrency(sourceBalance, currencyMode)}</span>
+              Available Balance: <span className="font-semibold text-primary">{formatCurrency(sourceBalance)}</span>
             </p>
           </div>
           <div className="space-y-1">
@@ -114,20 +101,20 @@ export function FundTransferDialog({
               To: <span className="font-medium text-foreground">{destinationAccountName}</span>
             </p>
             <p className="text-sm">
-              Current Balance: <span className="font-semibold text-primary">{formatCurrency(transferDirection === 'toCrypto' ? cryptoCashBalance : mainPortfolioCashBalance, currencyMode)}</span>
+              Current Balance: <span className="font-semibold text-primary">{formatCurrency(transferDirection === 'toCrypto' ? cryptoCashBalance : mainPortfolioCashBalance)}</span>
             </p>
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="transfer-amount" className="text-right">
-              Amount to Transfer ({currencyMode === 'INR' ? '₹' : 'USDT'})
+              Amount to Transfer ($)
             </Label>
             <Input
               id="transfer-amount"
               type="number"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
-              placeholder={currencyMode === 'INR' ? "e.g., 1000" : "e.g., 12"}
+              placeholder={"e.g., 100"}
               className={cn(error && "border-destructive focus-visible:ring-destructive")}
             />
             {error && <p className="text-xs text-destructive pt-1">{error}</p>}

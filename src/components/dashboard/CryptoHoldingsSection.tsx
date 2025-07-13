@@ -18,8 +18,6 @@ import { cn } from '@/lib/utils';
 import { Bitcoin, XCircle, Coins, Landmark, BarChart2, LayoutGrid, Table2, Settings2 } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { FundTransferDialog } from '@/components/shared/FundTransferDialog';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   ChartContainer,
@@ -60,20 +58,10 @@ export function CryptoHoldingsSection({
   const router = useRouter();
   const [isFundTransferDialogOpen, setIsFundTransferDialogOpen] = useState(false);
   const [transferDirection, setTransferDirection] = useState<'toCrypto' | 'fromCrypto'>('toCrypto');
-  const [currencyMode, setCurrencyMode] = useState<'INR' | 'USDT'>('INR');
   const [viewType, setViewType] = useState<'table' | 'bar' | 'heatmap'>('table');
-  const INR_TO_USDT_RATE = 83.5;
 
-  const formatCurrency = (value: number, mode: 'INR' | 'USDT') => {
-    if (mode === 'USDT') {
-      const usdtValue = value / INR_TO_USDT_RATE;
-      return usdtValue.toLocaleString('en-US', {
-        style: 'decimal',
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      }) + ' USDT';
-    }
-    return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
   };
   
   const handleRowClick = (holdingId: string) => {
@@ -112,11 +100,11 @@ export function CryptoHoldingsSection({
     if (direction === 'toCrypto') {
       setMainPortfolioCashBalance(prev => prev - amount);
       setCashBalance(prev => prev + amount);
-      toast({ title: "Transfer Successful", description: `${formatCurrency(amount, 'INR')} transferred to ${title}.` });
+      toast({ title: "Transfer Successful", description: `${formatCurrency(amount)} transferred to ${title}.` });
     } else { // fromCrypto
       setMainPortfolioCashBalance(prev => prev + amount);
       setCashBalance(prev => prev - amount);
-      toast({ title: "Transfer Successful", description: `${formatCurrency(amount, 'INR')} transferred to Main Portfolio.` });
+      toast({ title: "Transfer Successful", description: `${formatCurrency(amount)} transferred to Main Portfolio.` });
     }
   };
 
@@ -195,13 +183,13 @@ export function CryptoHoldingsSection({
               <div className="flex justify-between items-start">
                 <div>
                   <p className={cn("text-xl font-semibold", overallPandL >= 0 ? 'text-green-500' : 'text-red-500')}>
-                    {formatCurrency(overallPandL, currencyMode)}
+                    {formatCurrency(overallPandL)}
                   </p>
                   <p className="text-xs text-muted-foreground">Overall P&L ({overallPandLPercent.toFixed(2)}%)</p>
                 </div>
                 <div className="text-right">
                   <p className={cn("text-xl font-semibold", totalDayChangeAbsolute >= 0 ? 'text-green-500' : 'text-red-500')}>
-                    {formatCurrency(totalDayChangeAbsolute, currencyMode)}
+                    {formatCurrency(totalDayChangeAbsolute)}
                   </p>
                   <p className="text-xs text-muted-foreground">Day's P&L ({totalDayChangePercent.toFixed(2)}%)</p>
                 </div>
@@ -210,15 +198,15 @@ export function CryptoHoldingsSection({
               <div className="space-y-1.5">
                 <div className="flex justify-between items-center text-sm">
                   <p className="text-muted-foreground">Total Investment</p>
-                  <p className="font-medium text-foreground">{formatCurrency(totalInvestmentValue, currencyMode)}</p>
+                  <p className="font-medium text-foreground">{formatCurrency(totalInvestmentValue)}</p>
                 </div>
                 <div className="flex justify-between items-center text-sm">
                   <p className="text-muted-foreground">Current Value</p>
-                  <p className="font-medium text-foreground">{formatCurrency(totalCurrentValue, currencyMode)}</p>
+                  <p className="font-medium text-foreground">{formatCurrency(totalCurrentValue)}</p>
                 </div>
                 <div className="flex justify-between items-center text-sm">
                   <p className="text-muted-foreground">Cash Balance</p>
-                  <p className="font-medium text-foreground">{formatCurrency(cashBalance, currencyMode)}</p>
+                  <p className="font-medium text-foreground">{formatCurrency(cashBalance)}</p>
                 </div>
                 {!isRealMode && (
                   <div className="pt-2 flex gap-2">
@@ -230,19 +218,6 @@ export function CryptoHoldingsSection({
                     </Button>
                   </div>
                 )}
-                <div className="pt-4">
-                  <Label className="text-sm font-medium">Display Currency</Label>
-                  <RadioGroup value={currencyMode} onValueChange={(v) => setCurrencyMode(v as any)} className="flex space-x-4 mt-2">
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="INR" id="currency-inr" />
-                      <Label htmlFor="currency-inr" className="font-normal">Rupee (₹)</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="USDT" id="currency-usdt" />
-                      <Label htmlFor="currency-usdt" className="font-normal">USDT ($)</Label>
-                    </div>
-                  </RadioGroup>
-                </div>
               </div>
             </div>
           </CardContent>
@@ -284,21 +259,21 @@ export function CryptoHoldingsSection({
                             </TableCell>
                             <TableCell className="text-right">{holding.quantity.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 8 })}</TableCell>
                             <TableCell className="text-right">
-                                <div>{formatCurrency(holding.ltp, currencyMode)}</div>
-                                <div className="text-xs text-muted-foreground">{formatCurrency(holding.currentValue, currencyMode)}</div>
+                                <div>{formatCurrency(holding.ltp)}</div>
+                                <div className="text-xs text-muted-foreground">{formatCurrency(holding.currentValue)}</div>
                             </TableCell>
                             <TableCell className={cn("text-right whitespace-nowrap")}>
                                 <div className={cn(holding.profitAndLoss >= 0 ? 'text-green-600' : 'text-red-600')}>
-                                    {formatCurrency(holding.profitAndLoss, currencyMode)} ({holding.profitAndLossPercent.toFixed(2)}%)
+                                    {formatCurrency(holding.profitAndLoss)} ({holding.profitAndLossPercent.toFixed(2)}%)
                                 </div>
                                 <div className={cn("text-xs", holding.dayChangeAbsolute >= 0 ? 'text-green-500' : 'text-red-500')}>
-                                    {formatCurrency(holding.dayChangeAbsolute, currencyMode)} ({holding.dayChangePercent.toFixed(2)}%)
+                                    {formatCurrency(holding.dayChangeAbsolute)} ({holding.dayChangePercent.toFixed(2)}%)
                                 </div>
                             </TableCell>
                           </TableRow>
                           {expandedRowId === holding.id && (
                             <TableRow className="bg-muted/50 hover:bg-muted/60 data-[state=selected]:bg-muted/70">
-                              <TableCell colSpan={4} className="p-0">
+                              <TableCell colSpan={4}>
                                 <div className="p-4 flex gap-2">
                                      <Button 
                                         size="sm" 
@@ -366,7 +341,7 @@ export function CryptoHoldingsSection({
         mainPortfolioCashBalance={mainPortfolioCashBalance}
         cryptoCashBalance={cashBalance}
         onTransferConfirm={handleTransferConfirm}
-        currencyMode={currencyMode}
+        currencyMode={'USD'}
       />
     </>
   );

@@ -104,7 +104,7 @@ export function CryptoMutualFundOrderPageContent({ asset, assetSpecificNews }: C
           <div className="grid grid-cols-2 gap-y-4 gap-x-2 text-sm py-4">
               <div>
                   <p className="text-muted-foreground">NAV: {asset.navDate || "N/A"}</p>
-                  <p className="font-semibold text-foreground">₹{asset.price.toFixed(2)}</p>
+                  <p className="font-semibold text-foreground">${asset.price.toFixed(2)}</p>
               </div>
               <div>
                   <p className="text-muted-foreground">Rating</p>
@@ -112,7 +112,7 @@ export function CryptoMutualFundOrderPageContent({ asset, assetSpecificNews }: C
               </div>
               <div>
                   <p className="text-muted-foreground">Min. SIP amount</p>
-                  <p className="font-semibold text-foreground">₹{asset.minSipAmount?.toLocaleString() || "N/A"}</p>
+                  <p className="font-semibold text-foreground">${asset.minSipAmount?.toLocaleString() || "N/A"}</p>
               </div>
               <div>
                   <p className="text-muted-foreground">Fund Size</p>

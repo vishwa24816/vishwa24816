@@ -28,18 +28,20 @@ export function CryptoIntradayPositionsSection({ positions }: CryptoIntradayPosi
   const { toast } = useToast();
 
   const formatCurrency = (value: number) => {
-     return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
+     return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
   };
 
   const handleRowClick = (positionId: string) => {
     setExpandedRowId(prevId => (prevId === positionId ? null : positionId));
   };
   
-  const handleAdjustPosition = (pos: IntradayPosition) => {
+  const handleAdjustPosition = (e: React.MouseEvent, pos: IntradayPosition) => {
+      e.stopPropagation();
       router.push(`/order/crypto/${encodeURIComponent(pos.symbol)}`);
   };
 
-  const handleExitPosition = (pos: IntradayPosition) => {
+  const handleExitPosition = (e: React.MouseEvent, pos: IntradayPosition) => {
+    e.stopPropagation();
     toast({
       title: `Exiting Position (Mock): ${pos.symbol}`,
       description: `A market order would be placed to close this position.`,
@@ -105,13 +107,13 @@ export function CryptoIntradayPositionsSection({ positions }: CryptoIntradayPosi
                   </TableRow>
                   {expandedRowId === pos.id && (
                     <TableRow className="bg-muted/50 hover:bg-muted/60">
-                      <TableCell colSpan={3} className="p-0">
+                      <TableCell colSpan={3}>
                         <div className="p-4 flex gap-2">
                             <Button 
                               size="sm" 
                               variant="outline" 
                               className="flex-1 justify-center" 
-                              onClick={() => handleAdjustPosition(pos)}
+                              onClick={(e) => handleAdjustPosition(e, pos)}
                             >
                               <Settings2 className="mr-2 h-4 w-4" /> Adjust Position
                             </Button>
@@ -119,7 +121,7 @@ export function CryptoIntradayPositionsSection({ positions }: CryptoIntradayPosi
                               size="sm" 
                               variant="destructive" 
                               className="flex-1 justify-center"
-                              onClick={() => handleExitPosition(pos)}
+                              onClick={(e) => handleExitPosition(e, pos)}
                             >
                               <XCircle className="mr-2 h-4 w-4" /> Exit Position
                             </Button>

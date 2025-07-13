@@ -43,14 +43,14 @@ export function CryptoFuturesSection({ positions, cashBalance }: CryptoFuturesSe
   const { toast } = useToast();
 
   const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
   };
    const formatPrice = (value: number) => {
-    return value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    return value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   };
 
   const handleRowClick = (positionId: string) => {
-    setExpandedRowId(prevId => (prevId === positionId ? null : prevId));
+    setExpandedRowId(prevId => (prevId === positionId ? null : positionId));
   };
   
   const handleAdjustPosition = (e: React.MouseEvent, pos: CryptoFuturePosition) => {
@@ -168,7 +168,7 @@ export function CryptoFuturesSection({ positions, cashBalance }: CryptoFuturesSe
                   <TableHead>Symbol / Mark</TableHead>
                   <TableHead>Side / Qty</TableHead>
                   <TableHead>Entry / Liq.</TableHead>
-                  <TableHead className="text-right">MTM / P&L</TableHead>
+                  <TableHead className="text-right">MTM P&L / Overall P&L</TableHead>
                   <TableHead className="text-right">Margin / Lev</TableHead>
                 </TableRow>
               </TableHeader>
@@ -208,8 +208,8 @@ export function CryptoFuturesSection({ positions, cashBalance }: CryptoFuturesSe
                     </TableRow>
                     {expandedRowId === pos.id && (
                       <TableRow className="bg-muted/50 hover:bg-muted/60">
-                        <TableCell colSpan={5} className="p-0">
-                          <div className="p-4 flex gap-2">
+                        <TableCell colSpan={5}>
+                           <div className="p-4 flex gap-2">
                               <Button 
                                 size="sm" 
                                 variant="outline" 

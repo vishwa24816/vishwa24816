@@ -41,7 +41,7 @@ export const SipForm = ({ asset, assetType, onSipStart }: SipFormProps) => {
     }, [assetType, sipInvestmentType]);
 
     const handleStartSip = () => {
-        const investmentValue = isSipAmountBased ? `₹${sipAmount}` : `${sipQuantity} Qty`;
+        const investmentValue = isSipAmountBased ? `$${sipAmount}` : `${sipQuantity} Qty`;
         const startDateFormatted = sipStartDate ? format(sipStartDate, "PPP") : "Not set";
         const installmentsInfo = sipInstallments ? `${sipInstallments} installments` : "Ongoing";
         toast({
@@ -76,8 +76,8 @@ export const SipForm = ({ asset, assetType, onSipStart }: SipFormProps) => {
             )}
             {isSipAmountBased ? (
                 <div className="space-y-2">
-                    <Label htmlFor="sip-amount">Investment Amount (₹)</Label>
-                    <Input id="sip-amount" type="number" value={sipAmount} onChange={(e) => setSipAmount(e.target.value)} placeholder="e.g., 1000" />
+                    <Label htmlFor="sip-amount">Investment Amount ($)</Label>
+                    <Input id="sip-amount" type="number" value={sipAmount} onChange={(e) => setSipAmount(e.target.value)} placeholder="e.g., 100" />
                 </div>
             ) : (
                 <div className="space-y-2">

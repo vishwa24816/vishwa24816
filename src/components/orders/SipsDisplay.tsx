@@ -17,7 +17,7 @@ interface SipItemProps {
 
 const SipItem: React.FC<SipItemProps> = ({ sip }) => {
   const { toast } = useToast();
-  const valueDisplay = sip.amount ? `₹${sip.amount.toLocaleString()}` : `${sip.quantity} units`;
+  const valueDisplay = sip.amount ? `$${sip.amount.toLocaleString()}` : `${sip.quantity} units`;
 
   return (
     <Card className="mb-3 shadow-sm">
@@ -106,5 +106,3 @@ export function SipsDisplay({ isRealMode = false, activeMode }: SipsDisplayProps
     </ScrollArea>
   );
 }
-
-    

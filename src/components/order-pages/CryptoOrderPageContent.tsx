@@ -52,11 +52,11 @@ export function CryptoOrderPageContent({ asset, assetSpecificNews }: CryptoOrder
               <div>
                 <h1 className="text-xl font-semibold">{asset.name}</h1>
                 <p className={`text-3xl font-bold ${isPositiveChange ? 'text-green-500' : 'text-red-500'}`}>
-                  ₹{asset.price.toFixed(2)}
+                  ${asset.price.toFixed(2)}
                 </p>
                 <p className={`text-sm ${isPositiveChange ? 'text-green-500' : 'text-red-500'} flex items-center`}>
                   {isPositiveChange ? <TrendingUp className="h-4 w-4 mr-1" /> : <TrendingDown className="h-4 w-4 mr-1" />}
-                  {asset.change.toFixed(2)} ({asset.changePercent.toFixed(2)}%) 24H
+                  ${asset.change.toFixed(2)} ({asset.changePercent.toFixed(2)}%) 24H
                 </p>
               </div>
               <Badge variant="outline" className="text-xs">{asset.exchange}</Badge>
@@ -130,11 +130,11 @@ export function CryptoOrderPageContent({ asset, assetSpecificNews }: CryptoOrder
                 <div className="grid grid-cols-2 gap-4 text-sm pt-2 mb-6">
                   <div>
                     <p className="text-xs text-muted-foreground">Open</p>
-                    <p className="font-semibold text-foreground">{asset.openPrice?.toFixed(2) || 'N/A'}</p>
+                    <p className="font-semibold text-foreground">${asset.openPrice?.toFixed(2) || 'N/A'}</p>
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground">Prev. Close</p>
-                    <p className="font-semibold text-foreground">{asset.prevClosePrice?.toFixed(2) || 'N/A'}</p>
+                    <p className="font-semibold text-foreground">${asset.prevClosePrice?.toFixed(2) || 'N/A'}</p>
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground">Volume (24H)</p>

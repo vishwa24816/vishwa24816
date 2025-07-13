@@ -24,10 +24,10 @@ export function ReturnCalculator({ defaultReturnRate }: ReturnCalculatorProps) {
   const [investmentMode, setInvestmentMode] = useState<'lumpsum' | 'sip'>('lumpsum');
 
   // Lumpsum state
-  const [lumpsumAmount, setLumpsumAmount] = useState('100000');
+  const [lumpsumAmount, setLumpsumAmount] = useState('10000');
   
   // SIP state
-  const [sipAmount, setSipAmount] = useState('10000');
+  const [sipAmount, setSipAmount] = useState('100');
 
   // Common state
   const [timePeriod, setTimePeriod] = useState(10);
@@ -64,7 +64,7 @@ export function ReturnCalculator({ defaultReturnRate }: ReturnCalculatorProps) {
     });
   };
 
-  const formatCurrency = (value: number) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(value);
+  const formatCurrency = (value: number) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(value);
 
   return (
     <Card>
@@ -85,13 +85,13 @@ export function ReturnCalculator({ defaultReturnRate }: ReturnCalculatorProps) {
           </TabsList>
           <TabsContent value="lumpsum" className="mt-4 space-y-6">
              <div className="space-y-2">
-                <Label htmlFor="lumpsum-amount">Total Investment (₹)</Label>
+                <Label htmlFor="lumpsum-amount">Total Investment ($)</Label>
                 <Input id="lumpsum-amount" type="text" value={lumpsumAmount} onChange={(e) => setLumpsumAmount(e.target.value.replace(/,/g, ''))} />
               </div>
           </TabsContent>
           <TabsContent value="sip" className="mt-4 space-y-6">
               <div className="space-y-2">
-                <Label htmlFor="sip-amount">Monthly Investment (₹)</Label>
+                <Label htmlFor="sip-amount">Monthly Investment ($)</Label>
                 <Input id="sip-amount" type="text" value={sipAmount} onChange={(e) => setSipAmount(e.target.value.replace(/,/g, ''))} />
               </div>
           </TabsContent>

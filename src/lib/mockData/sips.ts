@@ -7,12 +7,12 @@ export const mockSips: SipOrder[] = [
     instrumentName: 'Parag Parikh Flexi Cap Fund Direct-Growth',
     symbol: 'PARAGPARIKH',
     assetType: 'Mutual Fund',
-    amount: 5000,
+    amount: 50, // $50
     frequency: 'Monthly',
-    nextDueDate: '2024-08-05', // Adjusted date
+    nextDueDate: '2024-08-05',
     status: 'Active',
     startDate: '2023-01-05',
-    installmentsDone: 18, // Adjusted
+    installmentsDone: 18,
     totalInstallments: 60,
   },
   {
@@ -22,30 +22,30 @@ export const mockSips: SipOrder[] = [
     assetType: 'ETF',
     quantity: 10,
     frequency: 'Weekly',
-    nextDueDate: '2024-07-29', // Adjusted date
+    nextDueDate: '2024-07-29',
     status: 'Active',
     startDate: '2023-09-01',
-    installmentsDone: 45, // Adjusted
+    installmentsDone: 45,
   },
   {
     id: 'sip3',
     instrumentName: 'Reliance Industries Ltd.',
     symbol: 'RELIANCE',
     assetType: 'Stock',
-    amount: 2000, // Amount-based stock SIP
+    amount: 25, // $25
     frequency: 'Monthly',
-    nextDueDate: '2024-08-15', // Adjusted date
+    nextDueDate: '2024-08-15',
     status: 'Paused',
     startDate: '2023-06-15',
-    installmentsDone: 13, // Adjusted
+    installmentsDone: 13,
   },
   {
     id: 'sip4',
     instrumentName: 'Sovereign Gold Bond Tranche X',
     assetType: 'Gold Bond',
-    amount: 6000,
+    amount: 70, // $70
     frequency: 'Monthly', 
-    nextDueDate: '2024-09-01', // Assuming it's completed but showing last theoretical due date
+    nextDueDate: '2024-09-01',
     status: 'Completed',
     startDate: '2022-03-01',
     installmentsDone: 12,
@@ -56,9 +56,9 @@ export const mockSips: SipOrder[] = [
     instrumentName: 'Bitcoin (BTC)',
     symbol: 'BTC',
     assetType: 'Crypto',
-    amount: 1000, // INR amount for BTC
+    amount: 20, // $20
     frequency: 'Daily',
-    nextDueDate: '2024-07-26', // Today or tomorrow
+    nextDueDate: '2024-07-26',
     status: 'Active',
     startDate: '2024-07-01',
     installmentsDone: 25, 
@@ -68,12 +68,12 @@ export const mockSips: SipOrder[] = [
     instrumentName: 'Axis Long Term Equity Fund Direct-Growth',
     symbol: 'AXISLTE',
     assetType: 'Mutual Fund',
-    amount: 10000,
+    amount: 120,
     frequency: 'Annually', // Annual SIP
     nextDueDate: '2025-01-10',
     status: 'Active',
     startDate: '2023-01-10',
-    installmentsDone: 2, // Two annual installments done
+    installmentsDone: 2,
     totalInstallments: 5,
   },
   {
@@ -81,7 +81,7 @@ export const mockSips: SipOrder[] = [
     instrumentName: 'Ethereum (ETH)',
     symbol: 'ETH',
     assetType: 'Crypto',
-    quantity: 0.01, // Quantity based crypto SIP
+    quantity: 0.01,
     frequency: 'Weekly',
     nextDueDate: '2024-07-29',
     status: 'Active',
@@ -93,7 +93,7 @@ export const mockSips: SipOrder[] = [
     instrumentName: 'Infosys Ltd.',
     symbol: 'INFY',
     assetType: 'Stock',
-    quantity: 5, // Quantity-based stock SIP
+    quantity: 5,
     frequency: 'Bi-Weekly',
     nextDueDate: '2024-08-02',
     status: 'Paused',
@@ -101,4 +101,3 @@ export const mockSips: SipOrder[] = [
     installmentsDone: 20,
   },
 ];
-
