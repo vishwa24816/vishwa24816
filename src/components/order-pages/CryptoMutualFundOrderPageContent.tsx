@@ -4,10 +4,10 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { Stock, NewsArticle } from '@/types';
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, TrendingUp, ShoppingCart, Bookmark, Search, Info, CheckCircle2, XCircle, TrendingDown, Star, WalletCards } from 'lucide-react';
+import { ArrowLeft, TrendingUp, ShoppingCart, Bookmark, Search, Info, CheckCircle2, XCircle, TrendingDown, Star, WalletCards, Briefcase } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { MutualFundOrderForm } from '@/components/order/MutualFundOrderForm';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -123,6 +123,7 @@ export function CryptoMutualFundOrderPageContent({ asset, assetSpecificNews }: C
           <Tabs defaultValue="about" className="w-full">
             <TabsList className="w-full bg-muted/30 flex overflow-x-auto whitespace-nowrap no-scrollbar rounded-none p-0 h-auto border-b mb-1">
                 <TabsTrigger value="about" className="flex-shrink-0 px-4 py-3 text-sm rounded-t-md rounded-b-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=inactive]:border-b-2 data-[state=inactive]:border-transparent data-[state=active]:shadow-none hover:text-primary">About Fund</TabsTrigger>
+                <TabsTrigger value="management" className="flex-shrink-0 px-4 py-3 text-sm rounded-t-md rounded-b-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=inactive]:border-b-2 data-[state=inactive]:border-transparent data-[state=active]:shadow-none hover:text-primary">Fund Management</TabsTrigger>
                 <TabsTrigger value="calculator" className="flex-shrink-0 px-4 py-3 text-sm rounded-t-md rounded-b-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=inactive]:border-b-2 data-[state=inactive]:border-transparent data-[state=active]:shadow-none hover:text-primary">Calculator</TabsTrigger>
                 <TabsTrigger value="holdings" className="flex-shrink-0 px-4 py-3 text-sm rounded-t-md rounded-b-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=inactive]:border-b-2 data-[state=inactive]:border-transparent data-[state=active]:shadow-none hover:text-primary">Holdings</TabsTrigger>
                 <TabsTrigger value="rankings" className="flex-shrink-0 px-4 py-3 text-sm rounded-t-md rounded-b-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=inactive]:border-b-2 data-[state=inactive]:border-transparent data-[state=active]:shadow-none hover:text-primary">Rankings</TabsTrigger>
@@ -138,6 +139,35 @@ export function CryptoMutualFundOrderPageContent({ asset, assetSpecificNews }: C
                     </div>
                 ) : (
                     <div className="text-center text-muted-foreground py-4">No fund description available.</div>
+                )}
+            </TabsContent>
+            <TabsContent value="management" className="mt-4 space-y-4">
+                {asset.fundManagement ? (
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center text-lg">
+                                <Briefcase className="h-5 w-5 mr-2 text-primary" />
+                                Fund Management
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <div className="flex items-start space-x-4">
+                                <Avatar className="h-16 w-16 border">
+                                    <AvatarImage src={asset.fundManagement.managerAvatarUrl} alt={asset.fundManagement.managerName} data-ai-hint="manager profile" />
+                                    <AvatarFallback>{asset.fundManagement.managerName.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                                </Avatar>
+                                <div className="flex-1">
+                                    <h4 className="font-semibold text-md">{asset.fundManagement.managerName}</h4>
+                                    <p className="text-sm text-muted-foreground">Fund Manager, {asset.fundManagement.fundHouse}</p>
+                                </div>
+                            </div>
+                            <p className="text-sm text-foreground leading-relaxed">
+                                {asset.fundManagement.managerBio}
+                            </p>
+                        </CardContent>
+                    </Card>
+                ) : (
+                     <div className="text-center text-muted-foreground py-4">Fund management details not available.</div>
                 )}
             </TabsContent>
             <TabsContent value="calculator" className="mt-4">

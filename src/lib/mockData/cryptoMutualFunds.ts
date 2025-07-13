@@ -41,7 +41,13 @@ export const mockCryptoMutualFunds: Stock[] = [
         'High volatility inherent to the crypto market.',
         'Regulatory uncertainty remains a risk.',
         'Expense ratio is higher than traditional ETFs.'
-    ]
+    ],
+    fundManagement: {
+      managerName: 'Jane Crypto',
+      managerBio: 'Jane is a pioneer in digital asset management with over 10 years of experience in the crypto space. She specializes in quantitative analysis and on-chain metrics to drive investment decisions.',
+      managerAvatarUrl: 'https://placehold.co/100x100.png?text=JC',
+      fundHouse: 'Digital Asset Ventures'
+    }
   },
   { 
     id: 'cmf2', 

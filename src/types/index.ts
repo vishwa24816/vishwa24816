@@ -78,6 +78,13 @@ export interface Stock {
   };
   pros?: string[];
   cons?: string[];
+  fundManagement?: {
+    managerName: string;
+    managerBio: string;
+    managerAvatarUrl?: string;
+    fundHouse: string;
+    fundHouseIconUrl?: string;
+  };
 }
 
 export interface MarketIndex {
@@ -336,5 +343,3 @@ export interface SummaryCardItem {
   declines?: number;
   ltp?: number;
 }
-
-    

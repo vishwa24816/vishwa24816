@@ -40,7 +40,13 @@ export const mockMutualFunds: Stock[] = [
     cons: [
         'High exposure to foreign equities can be volatile due to currency fluctuations.',
         'Expense ratio is slightly higher than peers.'
-    ]
+    ],
+    fundManagement: {
+      managerName: 'Rajeev Thakkar',
+      managerBio: 'Rajeev Thakkar has over 20 years of experience in various areas of capital markets such as investment banking, corporate finance, and securities broking. He has been instrumental in steering the fund house with his sharp investment acumen.',
+      managerAvatarUrl: 'https://placehold.co/100x100.png?text=RT',
+      fundHouse: 'PPFAS Mutual Fund'
+    }
   },
   { 
     id: 'mf2', 
