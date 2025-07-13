@@ -32,16 +32,14 @@ export function CryptoIntradayPositionsSection({ positions }: CryptoIntradayPosi
   };
 
   const handleRowClick = (positionId: string) => {
-    setExpandedRowId(prevId => (prevId === positionId ? null : prevId));
+    setExpandedRowId(prevId => (prevId === positionId ? null : positionId));
   };
   
-  const handleAdjustPosition = (e: React.MouseEvent, pos: IntradayPosition) => {
-      e.stopPropagation();
+  const handleAdjustPosition = (pos: IntradayPosition) => {
       router.push(`/order/crypto/${encodeURIComponent(pos.symbol)}`);
   };
 
-  const handleExitPosition = (e: React.MouseEvent, pos: IntradayPosition) => {
-    e.stopPropagation();
+  const handleExitPosition = (pos: IntradayPosition) => {
     toast({
       title: `Exiting Position (Mock): ${pos.symbol}`,
       description: `A market order would be placed to close this position.`,
@@ -108,12 +106,12 @@ export function CryptoIntradayPositionsSection({ positions }: CryptoIntradayPosi
                   {expandedRowId === pos.id && (
                     <TableRow className="bg-muted/50 hover:bg-muted/60">
                       <TableCell colSpan={3} className="p-0">
-                        <div className="p-4 flex gap-2" onClick={(e) => e.stopPropagation()}>
+                        <div className="p-4 flex gap-2">
                             <Button 
                               size="sm" 
                               variant="outline" 
                               className="flex-1 justify-center" 
-                              onClick={(e) => handleAdjustPosition(e, pos)}
+                              onClick={() => handleAdjustPosition(pos)}
                             >
                               <Settings2 className="mr-2 h-4 w-4" /> Adjust Position
                             </Button>
@@ -121,7 +119,7 @@ export function CryptoIntradayPositionsSection({ positions }: CryptoIntradayPosi
                               size="sm" 
                               variant="destructive" 
                               className="flex-1 justify-center"
-                              onClick={(e) => handleExitPosition(e, pos)}
+                              onClick={() => handleExitPosition(pos)}
                             >
                               <XCircle className="mr-2 h-4 w-4" /> Exit Position
                             </Button>
