@@ -14,7 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import type { CryptoFuturePosition } from '@/types';
 import { cn } from '@/lib/utils';
-import { Repeat, PlusCircle, MinusCircle, XCircle, Table2, BarChart2, PieChart as PieChartIcon, Settings2 } from 'lucide-react';
+import { Repeat, XCircle, Table2, BarChart2, PieChart as PieChartIcon, Settings2 } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -39,6 +39,7 @@ export function CryptoFuturesSection({ positions, cashBalance }: CryptoFuturesSe
   const [expandedRowId, setExpandedRowId] = useState<string | null>(null);
   const [viewType, setViewType] = useState<'table' | 'bar' | 'pie'>('table');
   const router = useRouter();
+  const { toast } = useToast();
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
@@ -97,6 +98,14 @@ export function CryptoFuturesSection({ positions, cashBalance }: CryptoFuturesSe
   
   const handleAdjustPosition = (pos: CryptoFuturePosition) => {
       router.push(`/order/crypto-future/${encodeURIComponent(pos.symbol)}`);
+  };
+
+  const handleExitPosition = (pos: CryptoFuturePosition) => {
+    toast({
+      title: `Exiting Position (Mock): ${pos.symbol}`,
+      description: `A market order would be placed to close this position.`,
+      variant: "destructive"
+    });
   };
 
   return (
@@ -192,7 +201,7 @@ export function CryptoFuturesSection({ positions, cashBalance }: CryptoFuturesSe
                             <h4 className="font-semibold text-md text-foreground">
                               {pos.symbol} ({pos.positionSide}) - Actions
                             </h4>
-                            <div className="flex flex-col sm:flex-row gap-2">
+                            <div className="flex gap-2">
                               <Button 
                                 size="sm" 
                                 variant="outline" 
@@ -203,6 +212,17 @@ export function CryptoFuturesSection({ positions, cashBalance }: CryptoFuturesSe
                                 }}
                               >
                                 <Settings2 className="mr-2 h-4 w-4" /> Adjust Position
+                              </Button>
+                               <Button 
+                                size="sm" 
+                                variant="destructive" 
+                                className="flex-1 justify-center"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleExitPosition(pos);
+                                }}
+                              >
+                                <XCircle className="mr-2 h-4 w-4" /> Exit Position
                               </Button>
                             </div>
                           </div>

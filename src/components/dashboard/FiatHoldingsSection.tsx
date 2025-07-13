@@ -16,7 +16,7 @@ import { Separator } from "@/components/ui/separator";
 import { mockPortfolioHoldings } from '@/lib/mockData';
 import type { PortfolioHolding } from '@/types';
 import { cn } from '@/lib/utils';
-import { Briefcase, Info, PlusCircle, MinusCircle, XCircle, Coins, Landmark, BarChart2, PieChart as PieChartIcon, Table2, Settings2 } from 'lucide-react'; 
+import { Briefcase, Info, XCircle, Coins, Landmark, BarChart2, PieChart as PieChartIcon, Table2, Settings2 } from 'lucide-react'; 
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -44,6 +44,7 @@ export function FiatHoldingsSection({ mainPortfolioCashBalance, setMainPortfolio
   const [expandedRowId, setExpandedRowId] = useState<string | null>(null);
   const [viewType, setViewType] = useState<'table' | 'bar' | 'pie'>('table');
   const router = useRouter();
+  const { toast } = useToast();
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
@@ -61,6 +62,14 @@ export function FiatHoldingsSection({ mainPortfolioCashBalance, setMainPortfolio
           path = `/order/bond/${encodeURIComponent(holding.symbol || holding.name)}`;
       }
       router.push(path);
+  };
+
+  const handleExitPosition = (holding: PortfolioHolding) => {
+    toast({
+      title: `Exiting Position (Mock): ${holding.symbol}`,
+      description: `A market order would be placed to close this position.`,
+      variant: "destructive"
+    });
   };
 
   const filterOptions: { label: string; value: HoldingFilterType }[] = [
@@ -247,6 +256,14 @@ export function FiatHoldingsSection({ mainPortfolioCashBalance, setMainPortfolio
                                         onClick={(e) => { e.stopPropagation(); handleAdjustPosition(holding); }}
                                     >
                                         <Settings2 className="mr-2 h-4 w-4" /> Adjust Position
+                                    </Button>
+                                    <Button 
+                                        size="sm" 
+                                        variant="destructive" 
+                                        className="flex-1 justify-center"
+                                        onClick={(e) => { e.stopPropagation(); handleExitPosition(holding); }}
+                                    >
+                                        <XCircle className="mr-2 h-4 w-4" /> Exit Position
                                     </Button>
                                     </div>
                                 </div>

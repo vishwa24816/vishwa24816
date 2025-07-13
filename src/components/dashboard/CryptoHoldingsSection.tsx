@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import type { PortfolioHolding } from '@/types';
 import { cn } from '@/lib/utils';
-import { Bitcoin, PlusCircle, MinusCircle, XCircle, Coins, Landmark, BarChart2, PieChart as PieChartIcon, Table2, Settings2 } from 'lucide-react';
+import { Bitcoin, XCircle, Coins, Landmark, BarChart2, PieChart as PieChartIcon, Table2, Settings2 } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { FundTransferDialog } from '@/components/shared/FundTransferDialog';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -75,7 +75,7 @@ export function CryptoHoldingsSection({
   };
 
   const handleRowClick = (holdingId: string) => {
-    setExpandedRowId(prevId => (prevId === holdingId ? null : holdingId));
+    setExpandedRowId(prevId => (prevId === holdingId ? null : prevId));
   };
 
   const totalCurrentValue = cryptoHoldings.reduce((acc, holding) => acc + holding.currentValue, 0);
@@ -144,6 +144,14 @@ export function CryptoHoldingsSection({
   
   const handleAdjustPosition = (holding: PortfolioHolding) => {
       router.push(`/order/crypto/${encodeURIComponent(holding.symbol || holding.name)}`);
+  };
+
+  const handleExitPosition = (holding: PortfolioHolding) => {
+    toast({
+      title: `Exiting Position (Mock): ${holding.symbol}`,
+      description: `A market order would be placed to close this position.`,
+      variant: "destructive"
+    });
   };
 
   if (cryptoHoldings.length === 0 && cashBalance === 0) {
@@ -288,6 +296,14 @@ export function CryptoHoldingsSection({
                                         onClick={(e) => { e.stopPropagation(); handleAdjustPosition(holding); }}
                                     >
                                         <Settings2 className="mr-2 h-4 w-4" /> Adjust Position
+                                    </Button>
+                                    <Button 
+                                        size="sm" 
+                                        variant="destructive" 
+                                        className="flex-1 justify-center"
+                                        onClick={(e) => { e.stopPropagation(); handleExitPosition(holding); }}
+                                    >
+                                        <XCircle className="mr-2 h-4 w-4" /> Exit Position
                                     </Button>
                                   </div>
                                 </div>
