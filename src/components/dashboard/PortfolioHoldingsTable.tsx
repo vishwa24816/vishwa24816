@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState } from 'react';
@@ -199,7 +200,7 @@ export function PortfolioHoldingsTable({ mainPortfolioCashBalance, setMainPortfo
                                 <h4 className="font-semibold text-md text-foreground">
                                 {holding.name} ({holding.symbol || holding.type}) - Actions
                                 </h4>
-                                <div className="flex flex-col sm:flex-row gap-2">
+                                <div className="flex gap-2">
                                 <Button 
                                     size="sm" 
                                     variant="outline" 

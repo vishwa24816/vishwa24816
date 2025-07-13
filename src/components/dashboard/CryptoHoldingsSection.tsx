@@ -194,7 +194,7 @@ export function CryptoHoldingsSection({
                   <p className="font-medium text-foreground">{formatCurrency(cashBalance, currencyMode)}</p>
                 </div>
                 {!isRealMode && (
-                  <div className="pt-2 flex flex-col sm:flex-row gap-2">
+                  <div className="pt-2 flex gap-2">
                     <Button variant="outline" size="sm" className="flex-1 h-11" onClick={() => handleOpenFundTransferDialog('toCrypto')}>
                       <Coins className="mr-2 h-4 w-4" /> Add Funds
                     </Button>
@@ -274,7 +274,7 @@ export function CryptoHoldingsSection({
                               <TableCell colSpan={7} className="p-0">
                                 <div className="p-4 space-y-3">
                                   <h4 className="font-semibold text-md text-foreground">{holding.name} ({holding.symbol || holding.type}) - Actions</h4>
-                                  <div className="flex flex-col sm:flex-row gap-2">
+                                  <div className="flex gap-2">
                                     <Button size="sm" variant="outline" className="flex-1 justify-center text-green-600 border-green-500 hover:bg-green-500/10 hover:text-green-700" onClick={(e) => { e.stopPropagation(); toast({ title: `Buy More: ${holding.symbol || holding.name}` }); }}>
                                       <PlusCircle className="mr-2 h-4 w-4" /> Buy More
                                     </Button>
