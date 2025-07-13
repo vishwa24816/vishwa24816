@@ -187,16 +187,22 @@ export function StrategyBuilder({ legs, setLegs }: StrategyBuilderProps) {
                                                     labelFormatter={(value) => `Spot: ${value}`}
                                                     formatter={(value: number) => [formatCurrency(value), 'P&L']}
                                                 />
-                                                <Chart.ReferenceLine y={0} stroke="hsl(var(--border))" strokeWidth={1} />
+                                                <Chart.ReferenceLine y={0} stroke="hsl(var(--foreground))" strokeWidth={1.5} strokeDasharray="3 3" />
                                                 
                                                 <defs>
-                                                    <linearGradient id="splitColor" x1="0" y1="0" x2="0" y2="1">
-                                                    <stop offset={payoffData.findIndex(d => d.pnl < 0) / (payoffData.length-1)} stopColor="hsl(var(--positive))" stopOpacity={0.4} />
-                                                    <stop offset={payoffData.findIndex(d => d.pnl < 0) / (payoffData.length-1)} stopColor="hsl(var(--destructive))" stopOpacity={0.4} />
+                                                    <linearGradient id="splitColorPositive" x1="0" y1="0" x2="0" y2="1">
+                                                        <stop offset="5%" stopColor="hsl(var(--positive))" stopOpacity={0.8}/>
+                                                        <stop offset="95%" stopColor="hsl(var(--positive))" stopOpacity={0.1}/>
+                                                    </linearGradient>
+                                                     <linearGradient id="splitColorNegative" x1="0" y1="0" x2="0" y2="1">
+                                                        <stop offset="5%" stopColor="hsl(var(--destructive))" stopOpacity={0.1}/>
+                                                        <stop offset="95%" stopColor="hsl(var(--destructive))" stopOpacity={0.8}/>
                                                     </linearGradient>
                                                 </defs>
                                                 
-                                                <Chart.Area type="monotone" dataKey="pnl" stroke="transparent" fill="url(#splitColor)" />
+                                                <Chart.Area type="monotone" dataKey="pnl" stroke="transparent" fill="url(#splitColorPositive)" />
+                                                <Chart.Area type="monotone" dataKey="pnl" stroke="transparent" fill="url(#splitColorNegative)" />
+
                                                 <Chart.Line type="monotone" dataKey="pnl" strokeWidth={2} dot={false}
                                                     stroke="hsl(var(--primary))"
                                                 />
