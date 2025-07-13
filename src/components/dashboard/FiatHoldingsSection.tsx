@@ -49,7 +49,7 @@ export function FiatHoldingsSection({ mainPortfolioCashBalance, setMainPortfolio
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
   };
-
+  
   const handleRowClick = (holdingId: string) => {
     setExpandedRowId(prevId => (prevId === holdingId ? null : prevId));
   };
@@ -211,10 +211,10 @@ export function FiatHoldingsSection({ mainPortfolioCashBalance, setMainPortfolio
                 <Table>
                     <TableHeader>
                     <TableRow>
-                        <TableHead className="w-[40%]">Instrument</TableHead>
+                        <TableHead className="w-[35%]">Instrument</TableHead>
                         <TableHead className="w-[20%] text-right">Qty.</TableHead>
                         <TableHead className="w-[20%] text-right">LTP / Value</TableHead>
-                        <TableHead className="w-[20%] text-right">Overall / Day P&L</TableHead>
+                        <TableHead className="w-[25%] text-right">Overall / Day P&L</TableHead>
                     </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -222,32 +222,31 @@ export function FiatHoldingsSection({ mainPortfolioCashBalance, setMainPortfolio
                         filteredHoldings.map((holding) => (
                         <React.Fragment key={holding.id}>
                             <TableRow 
-                            onClick={() => handleRowClick(holding.id)}
-                            className="cursor-pointer"
+                                onClick={() => handleRowClick(holding.id)}
+                                className="cursor-pointer"
                             >
-                            <TableCell className="font-medium">
-                                <div>{holding.name}</div>
-                                <div className="text-xs text-muted-foreground">{holding.symbol}</div>
-                            </TableCell>
-                            <TableCell className="text-right">{holding.quantity.toLocaleString()}</TableCell>
-                            <TableCell className="text-right">
-                                <div>{formatCurrency(holding.ltp)}</div>
-                                <div className="text-xs text-muted-foreground">{formatCurrency(holding.currentValue)}</div>
-                            </TableCell>
-                            <TableCell className={cn("text-right whitespace-nowrap")}>
-                                <div className={cn(holding.profitAndLoss >= 0 ? 'text-green-600' : 'text-red-600')}>
-                                    {formatCurrency(holding.profitAndLoss)} ({holding.profitAndLossPercent.toFixed(2)}%)
-                                </div>
-                                <div className={cn("text-xs", holding.dayChangeAbsolute >= 0 ? 'text-green-500' : 'text-red-500')}>
-                                    {formatCurrency(holding.dayChangeAbsolute)} ({holding.dayChangePercent.toFixed(2)}%)
-                                </div>
-                            </TableCell>
+                                <TableCell className="font-medium">
+                                    <div>{holding.name}</div>
+                                    <div className="text-xs text-muted-foreground">{holding.symbol}</div>
+                                </TableCell>
+                                <TableCell className="text-right">{holding.quantity.toLocaleString()}</TableCell>
+                                <TableCell className="text-right">
+                                    <div>{formatCurrency(holding.ltp)}</div>
+                                    <div className="text-xs text-muted-foreground">{formatCurrency(holding.currentValue)}</div>
+                                </TableCell>
+                                <TableCell className={cn("text-right whitespace-nowrap")}>
+                                    <div className={cn(holding.profitAndLoss >= 0 ? 'text-green-600' : 'text-red-600')}>
+                                        {formatCurrency(holding.profitAndLoss)} ({holding.profitAndLossPercent.toFixed(2)}%)
+                                    </div>
+                                    <div className={cn("text-xs", holding.dayChangeAbsolute >= 0 ? 'text-green-500' : 'text-red-500')}>
+                                        {formatCurrency(holding.dayChangeAbsolute)} ({holding.dayChangePercent.toFixed(2)}%)
+                                    </div>
+                                </TableCell>
                             </TableRow>
                             {expandedRowId === holding.id && (
                             <TableRow className="bg-muted/50 hover:bg-muted/60 data-[state=selected]:bg-muted/70">
                                 <TableCell colSpan={4} className="p-0">
-                                <div className="p-4">
-                                    <div className="flex gap-2">
+                                    <div className="p-4 flex gap-2" onClick={(e) => e.stopPropagation()}>
                                         <Button 
                                             size="sm" 
                                             variant="outline" 
@@ -265,7 +264,6 @@ export function FiatHoldingsSection({ mainPortfolioCashBalance, setMainPortfolio
                                             <XCircle className="mr-2 h-4 w-4" /> Exit Position
                                         </Button>
                                     </div>
-                                </div>
                                 </TableCell>
                             </TableRow>
                             )}

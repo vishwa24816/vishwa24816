@@ -51,6 +51,20 @@ export function CryptoFuturesSection({ positions, cashBalance }: CryptoFuturesSe
   const handleRowClick = (positionId: string) => {
     setExpandedRowId(prevId => (prevId === positionId ? null : prevId));
   };
+  
+  const handleAdjustPosition = (e: React.MouseEvent, pos: CryptoFuturePosition) => {
+      e.stopPropagation();
+      router.push(`/order/crypto-future/${encodeURIComponent(pos.symbol)}`);
+  };
+
+  const handleExitPosition = (e: React.MouseEvent, pos: CryptoFuturePosition) => {
+    e.stopPropagation();
+    toast({
+      title: `Exiting Position (Mock): ${pos.symbol}`,
+      description: `A market order would be placed to close this position.`,
+      variant: "destructive"
+    });
+  };
 
   const totalUnrealizedPnL = positions.reduce((acc, pos) => acc + pos.unrealizedPnL, 0);
   const totalMtmPnl = positions.reduce((acc, pos) => acc + pos.mtmPnl, 0);
@@ -96,20 +110,6 @@ export function CryptoFuturesSection({ positions, cashBalance }: CryptoFuturesSe
     return chartConfig[value]?.label || value;
   }
   
-  const handleAdjustPosition = (e: React.MouseEvent, pos: CryptoFuturePosition) => {
-      e.stopPropagation();
-      router.push(`/order/crypto-future/${encodeURIComponent(pos.symbol)}`);
-  };
-
-  const handleExitPosition = (e: React.MouseEvent, pos: CryptoFuturePosition) => {
-    e.stopPropagation();
-    toast({
-      title: `Exiting Position (Mock): ${pos.symbol}`,
-      description: `A market order would be placed to close this position.`,
-      variant: "destructive"
-    });
-  };
-
   return (
     <Card className="shadow-md">
       <CardHeader>
@@ -199,8 +199,7 @@ export function CryptoFuturesSection({ positions, cashBalance }: CryptoFuturesSe
                     {expandedRowId === pos.id && (
                       <TableRow className="bg-muted/50 hover:bg-muted/60">
                         <TableCell colSpan={5} className="p-0">
-                          <div className="p-4">
-                            <div className="flex gap-2">
+                          <div className="p-4 flex gap-2" onClick={(e) => e.stopPropagation()}>
                               <Button 
                                 size="sm" 
                                 variant="outline" 
@@ -217,7 +216,6 @@ export function CryptoFuturesSection({ positions, cashBalance }: CryptoFuturesSe
                               >
                                 <XCircle className="mr-2 h-4 w-4" /> Exit Position
                               </Button>
-                            </div>
                           </div>
                         </TableCell>
                       </TableRow>

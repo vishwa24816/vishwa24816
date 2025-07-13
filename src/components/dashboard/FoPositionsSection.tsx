@@ -119,8 +119,7 @@ export function FoPositionsSection() {
                   {expandedRowId === pos.id && (
                     <TableRow className="bg-muted/50 hover:bg-muted/60">
                       <TableCell colSpan={3} className="p-0">
-                        <div className="p-4">
-                          <div className="flex gap-2">
+                        <div className="p-4 flex gap-2" onClick={(e) => e.stopPropagation()}>
                             <Button 
                               size="sm" 
                               variant="outline" 
@@ -137,7 +136,6 @@ export function FoPositionsSection() {
                             >
                               <XCircle className="mr-2 h-4 w-4" /> Exit Position
                             </Button>
-                          </div>
                         </div>
                       </TableCell>
                     </TableRow>
