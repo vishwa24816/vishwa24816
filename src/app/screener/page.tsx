@@ -320,7 +320,7 @@ export default function ScreenerPage() {
     const [expandedStockId, setExpandedStockId] = useState<string | null>(null);
 
     const isRealMode = user?.id === 'REAL456';
-    const [activeMode, setActiveMode] = useState<'Fiat' | 'Crypto' | 'Web3'>(isRealMode ? 'Crypto' : 'Fiat');
+    const [activeMode, setActiveMode] = useState<'Fiat' | 'Crypto'>(isRealMode ? 'Crypto' : 'Fiat');
     
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();

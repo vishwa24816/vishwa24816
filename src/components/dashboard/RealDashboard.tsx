@@ -1,3 +1,4 @@
+
 "use client";
 
 import { SubNav } from '@/components/dashboard/SubNav';
@@ -15,12 +16,6 @@ import {
   mockCryptoFuturesForWatchlist,
   mockCryptoMutualFunds,
   mockCryptoETFs,
-  mockWeb3Gainers,
-  mockWeb3Trending,
-  mockWeb3Memes,
-  mockWeb3DeFi,
-  mockWeb3AI,
-  mockWeb3Holdings,
   mockRealPortfolioHoldings,
   mockRealCryptoIntradayPositions,
   mockRealCryptoFutures,
@@ -52,27 +47,18 @@ function getRelevantNewsForWatchlistItems(items: Stock[] | undefined, allNews: N
 }
 
 interface RealDashboardProps {
-  activeMode: 'Portfolio' | 'Fiat' | 'Crypto' | 'Web3';
+  activeMode: 'Portfolio' | 'Fiat' | 'Crypto';
 }
 
 export function RealDashboard({ activeMode }: RealDashboardProps) {
   const { primaryNavItems, secondaryNavTriggerCategories } = useMemo(() => {
     if (activeMode === 'Portfolio') {
        return {
-            primaryNavItems: ["Crypto", "Web3"],
+            primaryNavItems: ["Crypto"],
             secondaryNavTriggerCategories: {
                 Crypto: ["Holdings", "Positions", "Portfolio Watchlist"],
-                Web3: ["Holdings", "Portfolio Watchlist"],
             }
         }
-    }
-    if (activeMode === 'Web3') {
-      const web3PrimaryNav = ['Gainers', 'Trending', 'Memes', 'DeFi', 'AI'];
-      const web3SecondaryNav = web3PrimaryNav.reduce((acc, item) => {
-        acc[item] = ['Top'];
-        return acc;
-      }, {} as Record<string, string[]>);
-      return { primaryNavItems: web3PrimaryNav, secondaryNavTriggerCategories: web3SecondaryNav };
     }
     
     // Default to Crypto mode
@@ -95,7 +81,6 @@ export function RealDashboard({ activeMode }: RealDashboardProps) {
   
   const [mainPortfolioCashBalance, setMainPortfolioCashBalance] = useState(50000.00); 
   const [cryptoCashBalance, setCryptoCashBalance] = useState(15000.00);
-  const [web3CashBalance, setWeb3CashBalance] = useState(20000.00);
 
   React.useEffect(() => {
     const firstPrimary = primaryNavItems[0] || "";
@@ -111,7 +96,6 @@ export function RealDashboard({ activeMode }: RealDashboardProps) {
   };
   
   const cryptoHoldings = useMemo(() => mockRealPortfolioHoldings, []);
-  const web3PortfolioWatchlistItems = useMemo(() => [...mockWeb3Trending.slice(0, 3), ...mockWeb3DeFi.slice(0, 2)], []);
 
   // Determine what news and watchlist items to show
   let newsForView: NewsArticle[] = mockNewsArticles; 
@@ -130,12 +114,6 @@ export function RealDashboard({ activeMode }: RealDashboardProps) {
               itemsForWatchlist = mockCryptoAssets.slice(0, 5);
               newsForView = getRelevantNewsForWatchlistItems(itemsForWatchlist, mockNewsArticles);
           }
-      } else if (activePrimaryItem === 'Web3') {
-          if (isHoldingsView) newsForView = getRelevantNewsForHoldings(mockWeb3Holdings, mockNewsArticles);
-          if (isWatchlistView) {
-              itemsForWatchlist = web3PortfolioWatchlistItems;
-              newsForView = getRelevantNewsForWatchlistItems(itemsForWatchlist, mockNewsArticles);
-          }
       }
   } else if (activeMode === 'Crypto') { // Crypto Mode Watchlists
     categoryWatchlistTitle = `${activePrimaryItem} - ${activeSecondaryItem}`;
@@ -143,17 +121,6 @@ export function RealDashboard({ activeMode }: RealDashboardProps) {
     else if (activePrimaryItem === "Futures") itemsForWatchlist = mockCryptoFuturesForWatchlist;
     else if (activePrimaryItem === "Mutual Fund") itemsForWatchlist = [...mockCryptoMutualFunds, ...mockCryptoETFs];
     newsForView = getRelevantNewsForWatchlistItems(itemsForWatchlist, mockNewsArticles);
-  } else if (activeMode === 'Web3') { // Web3 Mode Watchlists
-      categoryWatchlistTitle = `Top ${activePrimaryItem}`;
-      switch (activePrimaryItem) {
-        case 'Gainers': itemsForWatchlist = mockWeb3Gainers; break;
-        case 'Trending': itemsForWatchlist = mockWeb3Trending; break;
-        case 'Memes': itemsForWatchlist = mockWeb3Memes; break;
-        case 'DeFi': itemsForWatchlist = mockWeb3DeFi; break;
-        case 'AI': itemsForWatchlist = mockWeb3AI; break;
-        default: itemsForWatchlist = [];
-      }
-      newsForView = getRelevantNewsForWatchlistItems(itemsForWatchlist, mockNewsArticles);
   }
 
   const renderPortfolioContent = () => {
@@ -165,9 +132,6 @@ export function RealDashboard({ activeMode }: RealDashboardProps) {
       if (isHoldingsView) return <><CryptoHoldingsSection title="Crypto Wallet & Holdings" holdings={cryptoHoldings} cashBalance={cryptoCashBalance} setCashBalance={setCryptoCashBalance} mainPortfolioCashBalance={mainPortfolioCashBalance} setMainPortfolioCashBalance={setMainPortfolioCashBalance} isRealMode={true} /><NewsSection articles={newsForView} /></>;
       if (isPositionsView) return <div className="space-y-8"><CryptoFuturesSection positions={mockRealCryptoFutures} cashBalance={cryptoCashBalance} /><CryptoBasketSection /><NewsSection articles={newsForView} /></div>;
       if (isWatchlistView) return <div className="space-y-8"><WatchlistSection title="My Crypto Watchlist" defaultInitialItems={itemsForWatchlist} localStorageKeyOverride={'simCryptoWatchlist_real'}/><NewsSection articles={newsForView} /></div>;
-    } else if (activePrimaryItem === 'Web3') {
-      if (isHoldingsView) return <><CryptoHoldingsSection title="Web3 Wallet & Holdings" holdings={mockWeb3Holdings} cashBalance={web3CashBalance} setCashBalance={setWeb3CashBalance} mainPortfolioCashBalance={mainPortfolioCashBalance} setMainPortfolioCashBalance={setMainPortfolioCashBalance} isRealMode={true} /><NewsSection articles={newsForView} /></>;
-      if (isWatchlistView) return <div className="space-y-8"><WatchlistSection title="My Web3 Watchlist" defaultInitialItems={itemsForWatchlist} localStorageKeyOverride={'simWeb3Watchlist_real'} /><NewsSection articles={newsForView} /></div>;
     }
     return null;
   }
@@ -175,8 +139,6 @@ export function RealDashboard({ activeMode }: RealDashboardProps) {
   const renderMarketContent = () => {
       if(activeMode === 'Crypto') {
           return <div className="space-y-8"><WatchlistSection title={categoryWatchlistTitle} displayItems={itemsForWatchlist} isPredefinedList={true}/><NewsSection articles={newsForView} /></div>
-      } else if (activeMode === 'Web3') {
-           return <div className="space-y-8"><WatchlistSection title={categoryWatchlistTitle} displayItems={itemsForWatchlist} isPredefinedList={true} /><NewsSection articles={newsForView} /></div>
       }
       return null;
   }
@@ -197,3 +159,5 @@ export function RealDashboard({ activeMode }: RealDashboardProps) {
     </main>
   );
 }
+
+    

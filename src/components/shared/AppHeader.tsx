@@ -17,8 +17,8 @@ import { mockMarketIndices, mockCryptoAssets } from '@/lib/mockData';
 import { SideMenu } from './SideMenu';
 
 interface AppHeaderProps {
-  activeMode?: 'Portfolio' | 'Fiat' | 'Crypto' | 'Web3';
-  onModeChange?: (mode: 'Portfolio' | 'Fiat' | 'Crypto' | 'Web3') => void;
+  activeMode?: 'Portfolio' | 'Fiat' | 'Crypto';
+  onModeChange?: (mode: 'Portfolio' | 'Fiat' | 'Crypto') => void;
   isRealMode?: boolean;
 }
 
@@ -54,7 +54,7 @@ export function AppHeader({ activeMode, onModeChange, isRealMode }: AppHeaderPro
     }
   };
 
-  const handleModeChange = (mode: 'Portfolio' | 'Fiat' | 'Crypto' | 'Web3') => {
+  const handleModeChange = (mode: 'Portfolio' | 'Fiat' | 'Crypto') => {
     if (onModeChange && mode !== activeMode) {
         onModeChange(mode);
         // if(!isPortfolioDisabled || mode !== 'Portfolio') {
@@ -70,7 +70,6 @@ export function AppHeader({ activeMode, onModeChange, isRealMode }: AppHeaderPro
     if (activeMode === 'Portfolio') return "Search in all portfolios...";
     if (activeMode === 'Fiat') return "Search stocks, futures...";
     if (activeMode === 'Crypto') return "Search crypto spot, futures...";
-    if (activeMode === 'Web3') return "Search Web3 assets...";
     return "Search...";
   };
 
@@ -82,7 +81,7 @@ export function AppHeader({ activeMode, onModeChange, isRealMode }: AppHeaderPro
     if (isRealMode) {
         isCryptoView = true;
     } else {
-        isCryptoView = activeMode === 'Crypto' || activeMode === 'Web3' || activeMode === 'Portfolio';
+        isCryptoView = activeMode === 'Crypto' || activeMode === 'Portfolio';
     }
     
     return {
@@ -206,3 +205,5 @@ export function AppHeader({ activeMode, onModeChange, isRealMode }: AppHeaderPro
     </header>
   );
 }
+
+    

@@ -264,7 +264,7 @@ export interface CommunityPost {
   targetPrice?: number;
   researchFirm?: string;
   analystName?: string;
-  category?: 'Fiat' | 'Crypto' | 'Web3';
+  category?: 'Fiat' | 'Crypto';
 }
 
 export interface GttOrder {
@@ -336,3 +336,5 @@ export interface SummaryCardItem {
   declines?: number;
   ltp?: number;
 }
+
+    

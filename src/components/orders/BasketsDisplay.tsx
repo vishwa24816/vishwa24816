@@ -130,7 +130,7 @@ const BasketItem: React.FC<BasketItemProps> = ({ basket }) => {
 
 interface BasketsDisplayProps {
   isRealMode?: boolean;
-  activeMode: 'Fiat' | 'Crypto' | 'Web3';
+  activeMode: 'Fiat' | 'Crypto';
 }
 
 export function BasketsDisplay({ isRealMode = false, activeMode }: BasketsDisplayProps) {
@@ -164,3 +164,5 @@ export function BasketsDisplay({ isRealMode = false, activeMode }: BasketsDispla
     </ScrollArea>
   );
 }
+
+    

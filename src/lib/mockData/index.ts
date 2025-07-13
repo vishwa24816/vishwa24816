@@ -2,32 +2,29 @@
 // This file now acts as an index for the mockData directory.
 // It imports and re-exports all mock data arrays.
 
-export * from './mockData/marketIndices';
-export * from './mockData/stocks';
-export * from './mockData/cryptoAssets';
-export * from './mockData/newsArticles';
-export * from './mockData/portfolioHoldings';
-export * from './mockData/intradayPositions';
-export * from './mockData/foPositions';
-export * from './mockData/cryptoFutures';
-export * from './mockData/mutualFunds';
-export * from './mockData/bonds';
-export * from './mockData/futuresWatchlistData'; // Exports mockIndexFuturesForWatchlist and mockStockFuturesForWatchlist
-export * from './mockData/optionsWatchlistData';
-export * from './mockData/optionChainData';
-export * from './mockData/cryptoFuturesWatchlist';
-export * from './mockData/foBaskets';
-export * from './mockData/communityPosts';
-export * from './mockData/gttOrders';
-export * from './mockData/bondBids';
-export * from './mockData/sips';
-export * from './mockData/priceAlerts';
-export * from './mockData/cryptoMutualFunds';
-export * from './mockData/cryptoETFs';
-export * from './mockData/cryptoIntradayPositions';
-export * from './mockData/web3AI';
-export * from './mockData/web3DeFi';
-export * from './mockData/web3Gainers';
-export * from './mockData/web3Memes';
-export * from './mockData/web3Trending';
-export * from './mockData/web3Holdings';
+export * from './marketIndices';
+export * from './stocks';
+export * from './cryptoAssets';
+export * from './newsArticles';
+export * from './portfolioHoldings';
+export * from './intradayPositions';
+export * from './foPositions';
+export * from './cryptoFutures';
+export * from './mutualFunds';
+export * from './bonds';
+export * from './futuresWatchlistData'; // Exports mockIndexFuturesForWatchlist and mockStockFuturesForWatchlist
+export * from './optionsWatchlistData';
+export * from './optionChainData';
+export * from './cryptoFuturesWatchlist';
+export * from './foBaskets';
+export * from './communityPosts';
+export * from './gttOrders';
+export * from './bondBids';
+export * from './sips';
+export * from './priceAlerts';
+export * from './cryptoMutualFunds';
+export * from './cryptoETFs';
+export * from './cryptoIntradayPositions';
+export * from './marketSectorData';
+
+    

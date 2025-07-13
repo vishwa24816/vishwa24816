@@ -1,45 +1,51 @@
 
 import type { OptionChainData, Underlying, OptionData } from '@/types';
+import { mockCryptoAssets } from './cryptoAssets';
+
+const btcAsset = mockCryptoAssets.find(a => a.symbol === 'BTC');
 
 export const mockUnderlyings: Underlying[] = [
   { id: 'nifty', name: 'NIFTY 50', symbol: 'NIFTY' },
   { id: 'banknifty', name: 'NIFTY Bank', symbol: 'BANKNIFTY' },
+  { id: 'btc', name: 'Bitcoin', symbol: 'BTC'},
 ];
 
-const generateOptionData = (baseLTP: number, isCall: boolean, strike: number, underlyingPrice: number): OptionData => {
+const generateOptionData = (baseLTP: number, isCall: boolean, strike: number, underlyingPrice: number, isCrypto = false): OptionData => {
   const randomFactor = () => (Math.random() - 0.5) * 0.2 + 1; // +/- 20%
   
   let ltpMultiplier = 0.1;
+  const priceRange = underlyingPrice * (isCrypto ? 0.2 : 0.05);
+
   if (isCall) {
-    ltpMultiplier = Math.max(0.1, (underlyingPrice - strike + 100) / 200); // More sensitive for calls
+    ltpMultiplier = Math.max(0.01, (underlyingPrice - strike + priceRange) / (priceRange * 2));
   } else {
-    ltpMultiplier = Math.max(0.1, (strike - underlyingPrice + 100) / 200); // More sensitive for puts
+    ltpMultiplier = Math.max(0.01, (strike - underlyingPrice + priceRange) / (priceRange * 2));
   }
-  ltpMultiplier = Math.max(0.05, Math.min(2, ltpMultiplier)); // Bound multiplier
+  ltpMultiplier = Math.max(0.01, Math.min(2.5, ltpMultiplier));
 
 
-  const ltp = parseFloat(Math.max(0.05, baseLTP * randomFactor() * ltpMultiplier).toFixed(2));
+  const ltp = parseFloat(Math.max(0.01, baseLTP * randomFactor() * ltpMultiplier).toFixed(isCrypto ? 4 : 2));
   
   return {
-    oi: Math.floor(Math.random() * 500000) + 10000,
-    chngInOI: Math.floor((Math.random() - 0.5) * 100000),
-    volume: Math.floor(Math.random() * 20000) + 500,
-    iv: Math.random() * 30 + 10, // IV between 10 and 40
+    oi: Math.floor(Math.random() * (isCrypto ? 1000 : 500000)) + (isCrypto ? 50 : 10000),
+    chngInOI: Math.floor((Math.random() - 0.5) * (isCrypto ? 200 : 100000)),
+    volume: Math.floor(Math.random() * (isCrypto ? 500 : 20000)) + (isCrypto ? 10 : 500),
+    iv: Math.random() * (isCrypto ? 60 : 30) + (isCrypto ? 40 : 10), // IV between 10-40 for stocks, 40-100 for crypto
     ltp: ltp,
-    netChng: parseFloat(((Math.random() - 0.5) * (ltp * 0.2)).toFixed(2)), // Max 20% change
-    bidQty: Math.floor(Math.random() * 500),
-    bidPrice: parseFloat(Math.max(0.05, ltp * (1 - Math.random() * 0.02 - 0.005)).toFixed(2)), // Slightly lower than LTP
-    askPrice: parseFloat(Math.max(ltp, ltp * (1 + Math.random() * 0.02 + 0.005)).toFixed(2)), // Slightly higher than LTP
-    askQty: Math.floor(Math.random() * 500),
+    netChng: parseFloat(((Math.random() - 0.5) * (ltp * 0.2)).toFixed(isCrypto ? 4 : 2)), // Max 20% change
+    bidQty: Math.floor(Math.random() * (isCrypto ? 20 : 500)),
+    bidPrice: parseFloat(Math.max(0.01, ltp * (1 - Math.random() * 0.02 - 0.005)).toFixed(isCrypto ? 4 : 2)),
+    askPrice: parseFloat(Math.max(ltp, ltp * (1 + Math.random() * 0.02 + 0.005)).toFixed(isCrypto ? 4 : 2)),
+    askQty: Math.floor(Math.random() * (isCrypto ? 20 : 500)),
     delta: parseFloat((Math.random() * (isCall ? 1 : -1)).toFixed(2)),
     gamma: parseFloat(Math.random().toFixed(4)),
-    theta: parseFloat((Math.random() * -10).toFixed(2)),
-    vega: parseFloat((Math.random() * 5).toFixed(2)),
+    theta: parseFloat((Math.random() * (isCrypto ? -50 : -10)).toFixed(2)),
+    vega: parseFloat((Math.random() * (isCrypto ? 20 : 5)).toFixed(2)),
   };
 };
 
-const niftyCurrentPrice = 21500; // Example current price for NIFTY
-
+// NIFTY
+const niftyCurrentPrice = 21500; 
 export const mockNiftyOptionChain: Record<string, OptionChainData> = {
   '2024-07-25': {
     underlyingValue: niftyCurrentPrice,
@@ -69,6 +75,7 @@ export const mockNiftyOptionChain: Record<string, OptionChainData> = {
   },
 };
 
+// BANKNIFTY
 const bankNiftyCurrentPrice = 47000;
 export const mockBankNiftyOptionChain: Record<string, OptionChainData> = {
     '2024-07-25': {
@@ -84,7 +91,27 @@ export const mockBankNiftyOptionChain: Record<string, OptionChainData> = {
     }
 };
 
+// BTC
+const btcCurrentPrice = btcAsset?.price || 2400000;
+export const mockBtcOptionChain: Record<string, OptionChainData> = {
+  '2024-07-26': {
+    underlyingValue: btcCurrentPrice,
+    expiryDate: '26 Jul 2024',
+    data: [
+      { strikePrice: 2300000, call: generateOptionData(110000, true, 2300000, btcCurrentPrice, true), put: generateOptionData(10000, false, 2300000, btcCurrentPrice, true) },
+      { strikePrice: 2350000, call: generateOptionData(70000, true, 2350000, btcCurrentPrice, true), put: generateOptionData(20000, false, 2350000, btcCurrentPrice, true) },
+      { strikePrice: 2400000, call: generateOptionData(40000, true, 2400000, btcCurrentPrice, true), put: generateOptionData(40000, false, 2400000, btcCurrentPrice, true) }, // ATM
+      { strikePrice: 2450000, call: generateOptionData(20000, true, 2450000, btcCurrentPrice, true), put: generateOptionData(70000, false, 2450000, btcCurrentPrice, true) },
+      { strikePrice: 2500000, call: generateOptionData(10000, true, 2500000, btcCurrentPrice, true), put: generateOptionData(110000, false, 2500000, btcCurrentPrice, true) },
+    ]
+  }
+};
+
+
 export const mockOptionChains: Record<string, Record<string, OptionChainData>> = {
     NIFTY: mockNiftyOptionChain,
     BANKNIFTY: mockBankNiftyOptionChain,
+    BTC: mockBtcOptionChain,
 };
+
+    

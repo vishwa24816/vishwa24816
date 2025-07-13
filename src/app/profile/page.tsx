@@ -15,7 +15,7 @@ export default function ProfilePage() {
   const { user, logout } = useAuth();
   const isRealMode = user?.id === 'REAL456';
   
-  const [activeMode, setActiveMode] = useState<'Fiat' | 'Crypto' | 'Web3'>(isRealMode ? 'Crypto' : 'Fiat');
+  const [activeMode, setActiveMode] = useState<'Fiat' | 'Crypto'>(isRealMode ? 'Crypto' : 'Fiat');
   
   return (
     <ProtectedRoute>
@@ -66,3 +66,5 @@ export default function ProfilePage() {
     </ProtectedRoute>
   );
 }
+
+    

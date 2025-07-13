@@ -64,14 +64,13 @@ const SipItem: React.FC<SipItemProps> = ({ sip }) => {
 
 interface SipsDisplayProps {
   isRealMode?: boolean;
-  activeMode: 'Fiat' | 'Crypto' | 'Web3';
+  activeMode: 'Fiat' | 'Crypto';
 }
 
 export function SipsDisplay({ isRealMode = false, activeMode }: SipsDisplayProps) {
   const sips = React.useMemo(() => {
     const fiatAssetTypes = ['Stock', 'Mutual Fund', 'ETF', 'Gold Bond'];
     const cryptoAssetTypes = ['Crypto'];
-    // No web3 sips in mock data
 
     let filteredSips: SipOrder[] = [];
     
@@ -79,8 +78,6 @@ export function SipsDisplay({ isRealMode = false, activeMode }: SipsDisplayProps
         filteredSips = mockSips.filter(sip => fiatAssetTypes.includes(sip.assetType));
     } else if (activeMode === 'Crypto') {
         filteredSips = mockSips.filter(sip => cryptoAssetTypes.includes(sip.assetType));
-    } else {
-        filteredSips = []; // No Web3 sips
     }
 
     if (isRealMode) {
@@ -109,3 +106,5 @@ export function SipsDisplay({ isRealMode = false, activeMode }: SipsDisplayProps
     </ScrollArea>
   );
 }
+
+    

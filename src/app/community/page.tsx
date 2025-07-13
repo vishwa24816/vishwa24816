@@ -18,7 +18,7 @@ export default function CommunityPage() {
   const { user } = useAuth();
   const isRealMode = user?.id === 'REAL456';
   
-  const [activeMode, setActiveMode] = useState<'Fiat' | 'Crypto' | 'Web3'>(isRealMode ? 'Crypto' : 'Fiat');
+  const [activeMode, setActiveMode] = useState<'Fiat' | 'Crypto'>(isRealMode ? 'Crypto' : 'Fiat');
   const [activeTab, setActiveTab] = useState("hot");
 
   const displayedTabs = useMemo(() => {
@@ -32,7 +32,7 @@ export default function CommunityPage() {
   }, []);
 
   const displayedPosts = useMemo(() => {
-    // First, filter by the current mode (Fiat, Crypto, Web3)
+    // First, filter by the current mode (Fiat, Crypto)
     const modeFilteredPosts = mockCommunityPosts.filter(post => {
       // Default to Fiat if category is missing
       const postCategory = post.category || 'Fiat'; 
@@ -114,3 +114,5 @@ export default function CommunityPage() {
     </ProtectedRoute>
   );
 }
+
+    

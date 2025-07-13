@@ -6,10 +6,10 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import type { PortfolioHolding, IntradayPosition, FoPosition, CryptoFuturePosition } from '@/types';
-import { mockPortfolioHoldings, mockIntradayPositions, mockFoPositions, mockCryptoFutures, mockWeb3Holdings } from '@/lib/mockData';
+import { mockPortfolioHoldings, mockIntradayPositions, mockFoPositions, mockCryptoFutures } from '@/lib/mockData';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
-import { Briefcase, InfoIcon, XCircle } from 'lucide-react';
+import { Briefcase, InfoIcon, XCircle, Settings2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 interface PositionItemProps {
@@ -66,8 +66,8 @@ const PositionItemCard: React.FC<PositionItemProps> = ({ item, type }) => {
     pnl = `${cryptoFutItem.unrealizedPnL.toFixed(2)} USDT`;
     isProfit = cryptoFutItem.unrealizedPnL >= 0;
     details = `Leverage: ${cryptoFutItem.leverage}x`;
-  } else if (type === 'Crypto' || type === 'Web3') { // Explicitly handling 'Crypto' passed as type prop
-    const cryptoItem = item as PortfolioHolding; // Assuming it's from portfolio holdings
+  } else if (type === 'Crypto') { 
+    const cryptoItem = item as PortfolioHolding; 
     name = cryptoItem.name;
     symbolDisplay = cryptoItem.symbol || '';
     qty = `${cryptoItem.quantity.toLocaleString()} units`;
@@ -78,8 +78,7 @@ const PositionItemCard: React.FC<PositionItemProps> = ({ item, type }) => {
     isProfit = cryptoItem.profitAndLoss >= 0;
   }
 
-
-  const handleInfoClick = () => {
+  const handleAdjustPosition = () => {
     let routerSymbolForPath: string | undefined;
     let path = '';
 
@@ -113,10 +112,6 @@ const PositionItemCard: React.FC<PositionItemProps> = ({ item, type }) => {
       const cryptoItem = item as PortfolioHolding; 
       routerSymbolForPath = cryptoItem.symbol;
       if (routerSymbolForPath) path = `/order/crypto/${encodeURIComponent(routerSymbolForPath)}`;
-    } else if (type === "Web3") {
-      const web3Item = item as PortfolioHolding;
-      routerSymbolForPath = web3Item.symbol;
-      if (routerSymbolForPath) path = `/order/crypto/${encodeURIComponent(routerSymbolForPath)}`; // Web3 assets use the crypto order page for now
     } else if (type === "Crypto Future") {
       const cryptoFutItem = item as CryptoFuturePosition;
       routerSymbolForPath = cryptoFutItem.symbol;
@@ -159,9 +154,9 @@ const PositionItemCard: React.FC<PositionItemProps> = ({ item, type }) => {
         {details && <p className="text-muted-foreground">{details}</p>}
       </CardContent>
       <CardFooter className="px-4 py-2 border-t flex space-x-2">
-        <Button variant="outline" size="sm" className="flex-1" onClick={handleInfoClick}>
-          <InfoIcon className="mr-2 h-4 w-4" />
-          Info
+        <Button variant="outline" size="sm" className="flex-1" onClick={handleAdjustPosition}>
+          <Settings2 className="mr-2 h-4 w-4" />
+          Adjust Position
         </Button>
         <Button variant="destructive" size="sm" className="flex-1" onClick={handleExitClick}>
           <XCircle className="mr-2 h-4 w-4" />
@@ -174,7 +169,7 @@ const PositionItemCard: React.FC<PositionItemProps> = ({ item, type }) => {
 
 interface OpenPositionsDisplayProps {
   isRealMode?: boolean;
-  activeMode: 'Fiat' | 'Crypto' | 'Web3';
+  activeMode: 'Fiat' | 'Crypto';
 }
 
 export function OpenPositionsDisplay({ isRealMode = false, activeMode }: OpenPositionsDisplayProps) {
@@ -186,14 +181,12 @@ export function OpenPositionsDisplay({ isRealMode = false, activeMode }: OpenPos
       ...mockFoPositions.map(item => ({ item, typeLabel: "F&O", category: 'Fiat' as const })),
       ...mockPortfolioHoldings.filter(h => h.type === 'Crypto').map(item => ({ item, typeLabel: "Crypto", category: 'Crypto' as const })),
       ...mockCryptoFutures.map(item => ({ item, typeLabel: "Crypto Future", category: 'Crypto' as const })),
-      ...mockWeb3Holdings.map(item => ({ item, typeLabel: "Web3", category: 'Web3' as const })),
     ];
     
-    // Real mode is focused on crypto/web3
+    // Real mode is focused on crypto
     const realPositions = [
       ...mockPortfolioHoldings.filter(h => h.type === 'Crypto').map(item => ({ item, typeLabel: "Crypto", category: 'Crypto' as const })),
       ...mockCryptoFutures.map(item => ({ item, typeLabel: "Crypto Future", category: 'Crypto' as const })),
-      ...mockWeb3Holdings.map(item => ({ item, typeLabel: "Web3", category: 'Web3' as const })),
     ];
     
     const basePositions = isRealMode ? realPositions : demoPositions;
@@ -219,3 +212,5 @@ export function OpenPositionsDisplay({ isRealMode = false, activeMode }: OpenPos
     </ScrollArea>
   );
 }
+
+    
