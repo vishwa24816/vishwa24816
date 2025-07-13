@@ -3,11 +3,13 @@ import type { OptionChainData, Underlying, OptionData } from '@/types';
 import { mockCryptoAssets } from './cryptoAssets';
 
 const btcAsset = mockCryptoAssets.find(a => a.symbol === 'BTC');
+const ethAsset = mockCryptoAssets.find(a => a.symbol === 'ETH');
 
 export const mockUnderlyings: Underlying[] = [
   { id: 'nifty', name: 'NIFTY 50', symbol: 'NIFTY' },
   { id: 'banknifty', name: 'NIFTY Bank', symbol: 'BANKNIFTY' },
   { id: 'btc', name: 'Bitcoin', symbol: 'BTC'},
+  { id: 'eth', name: 'Ethereum', symbol: 'ETH'},
 ];
 
 const generateOptionData = (baseLTP: number, isCall: boolean, strike: number, underlyingPrice: number, isCrypto = false): OptionData => {
@@ -92,17 +94,33 @@ export const mockBankNiftyOptionChain: Record<string, OptionChainData> = {
 };
 
 // BTC
-const btcCurrentPrice = btcAsset?.price || 2400000;
+const btcCurrentPrice = btcAsset?.price || 65000;
 export const mockBtcOptionChain: Record<string, OptionChainData> = {
   '2024-07-26': {
     underlyingValue: btcCurrentPrice,
     expiryDate: '26 Jul 2024',
     data: [
-      { strikePrice: 2300000, call: generateOptionData(110000, true, 2300000, btcCurrentPrice, true), put: generateOptionData(10000, false, 2300000, btcCurrentPrice, true) },
-      { strikePrice: 2350000, call: generateOptionData(70000, true, 2350000, btcCurrentPrice, true), put: generateOptionData(20000, false, 2350000, btcCurrentPrice, true) },
-      { strikePrice: 2400000, call: generateOptionData(40000, true, 2400000, btcCurrentPrice, true), put: generateOptionData(40000, false, 2400000, btcCurrentPrice, true) }, // ATM
-      { strikePrice: 2450000, call: generateOptionData(20000, true, 2450000, btcCurrentPrice, true), put: generateOptionData(70000, false, 2450000, btcCurrentPrice, true) },
-      { strikePrice: 2500000, call: generateOptionData(10000, true, 2500000, btcCurrentPrice, true), put: generateOptionData(110000, false, 2500000, btcCurrentPrice, true) },
+      { strikePrice: 64000, call: generateOptionData(1500, true, 64000, btcCurrentPrice, true), put: generateOptionData(500, false, 64000, btcCurrentPrice, true) },
+      { strikePrice: 64500, call: generateOptionData(1200, true, 64500, btcCurrentPrice, true), put: generateOptionData(700, false, 64500, btcCurrentPrice, true) },
+      { strikePrice: 65000, call: generateOptionData(900, true, 65000, btcCurrentPrice, true), put: generateOptionData(900, false, 65000, btcCurrentPrice, true) }, // ATM
+      { strikePrice: 65500, call: generateOptionData(700, true, 65500, btcCurrentPrice, true), put: generateOptionData(1200, false, 65500, btcCurrentPrice, true) },
+      { strikePrice: 66000, call: generateOptionData(500, true, 66000, btcCurrentPrice, true), put: generateOptionData(1500, false, 66000, btcCurrentPrice, true) },
+    ]
+  }
+};
+
+// ETH
+const ethCurrentPrice = ethAsset?.price || 3400;
+export const mockEthOptionChain: Record<string, OptionChainData> = {
+  '2024-07-26': {
+    underlyingValue: ethCurrentPrice,
+    expiryDate: '26 Jul 2024',
+    data: [
+      { strikePrice: 3300, call: generateOptionData(150, true, 3300, ethCurrentPrice, true), put: generateOptionData(50, false, 3300, ethCurrentPrice, true) },
+      { strikePrice: 3350, call: generateOptionData(120, true, 3350, ethCurrentPrice, true), put: generateOptionData(70, false, 3350, ethCurrentPrice, true) },
+      { strikePrice: 3400, call: generateOptionData(90, true, 3400, ethCurrentPrice, true), put: generateOptionData(90, false, 3400, ethCurrentPrice, true) }, // ATM
+      { strikePrice: 3450, call: generateOptionData(70, true, 3450, ethCurrentPrice, true), put: generateOptionData(120, false, 3450, ethCurrentPrice, true) },
+      { strikePrice: 3500, call: generateOptionData(50, true, 3500, ethCurrentPrice, true), put: generateOptionData(150, false, 3500, ethCurrentPrice, true) },
     ]
   }
 };
@@ -112,6 +130,5 @@ export const mockOptionChains: Record<string, Record<string, OptionChainData>> =
     NIFTY: mockNiftyOptionChain,
     BANKNIFTY: mockBankNiftyOptionChain,
     BTC: mockBtcOptionChain,
+    ETH: mockEthOptionChain,
 };
-
-    

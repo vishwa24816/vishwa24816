@@ -25,7 +25,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
 import { Label } from '@/components/ui/label';
 
-interface OptionChainProps {
+interface CryptoOptionChainProps {
   onAddLeg: (leg: SelectedOptionLeg) => void;
 }
 
@@ -35,7 +35,7 @@ const formatNumber = (num?: number, precision = 2) => {
   if (num === undefined || num === null || isNaN(num)) return '-';
   const fixedNum = num.toFixed(precision);
   if (parseFloat(fixedNum) >= 1000) {
-    return parseFloat(fixedNum).toLocaleString('en-IN', { minimumFractionDigits: precision, maximumFractionDigits: precision });
+    return parseFloat(fixedNum).toLocaleString('en-US', { minimumFractionDigits: precision, maximumFractionDigits: precision });
   }
   return fixedNum;
 };
@@ -56,7 +56,7 @@ const PriceCell = ({ bid, ask }: { bid?: number, ask?: number }) => (
 
 const MarkCell = ({ price, iv }: { price?: number, iv?: number }) => (
     <div className="flex flex-col items-center text-xs p-1 rounded-md">
-        <span className="font-semibold text-foreground">₹{formatNumber(price, 2)}</span>
+        <span className="font-semibold text-foreground">${formatNumber(price, 2)}</span>
         <span className="text-muted-foreground">{formatNumber(iv, 1)}%</span>
     </div>
 );
@@ -75,7 +75,7 @@ const ExpandedRowContent = ({
 
   return (
     <div className="grid grid-cols-[auto_1fr_auto] items-center gap-x-1" onClick={stopPropagation}>
-      <Label htmlFor={`lots-${lotSize}`} className="text-xs shrink-0 pr-1">Lots:</Label>
+      <Label htmlFor={`lots-${lotSize}`} className="text-xs shrink-0 pr-1">Contracts:</Label>
       <Input
         id={`lots-${lotSize}`}
         type="number"
@@ -92,8 +92,10 @@ const ExpandedRowContent = ({
   );
 };
 
-export function OptionChain({ onAddLeg }: OptionChainProps) {
-  const [selectedUnderlyingSymbol, setSelectedUnderlyingSymbol] = useState<string>(mockUnderlyings[0].symbol);
+const cryptoUnderlyings = mockUnderlyings.filter(u => u.symbol === 'BTC' || u.symbol === 'ETH');
+
+export function CryptoOptionChain({ onAddLeg }: CryptoOptionChainProps) {
+  const [selectedUnderlyingSymbol, setSelectedUnderlyingSymbol] = useState<string>(cryptoUnderlyings[0].symbol);
   const [availableExpiries, setAvailableExpiries] = useState<string[]>([]);
   const [selectedExpiry, setSelectedExpiry] = useState<string>('');
   const [optionChainData, setOptionChainData] = useState<OptionChainData | null>(null);
@@ -138,7 +140,7 @@ export function OptionChain({ onAddLeg }: OptionChainProps) {
     }
   }, [optionChainData]);
 
-  const selectedUnderlyingDetails = useMemo(() => mockUnderlyings.find(u => u.symbol === selectedUnderlyingSymbol), [selectedUnderlyingSymbol]);
+  const selectedUnderlyingDetails = useMemo(() => cryptoUnderlyings.find(u => u.symbol === selectedUnderlyingSymbol), [selectedUnderlyingSymbol]);
   
   const atmIndex = useMemo(() => {
     if (!optionChainData?.data || !optionChainData?.underlyingValue) return -1;
@@ -172,7 +174,7 @@ export function OptionChain({ onAddLeg }: OptionChainProps) {
     onAddLeg(newLeg);
     toast({
       title: 'Leg Added',
-      description: `${action} ${quantity} lot(s) of ${newLeg.instrumentName} at ₹${price.toFixed(2)}`,
+      description: `${action} ${quantity} contract(s) of ${newLeg.instrumentName} at $${price.toFixed(2)}`,
     });
   };
 
@@ -224,7 +226,7 @@ export function OptionChain({ onAddLeg }: OptionChainProps) {
             <SelectTrigger className="w-full sm:w-[160px] h-8 bg-background border-border text-xs">
               <SelectValue placeholder="Select Underlying" />
             </SelectTrigger>
-            <SelectContent>{mockUnderlyings.map(u => <SelectItem key={u.id} value={u.symbol} className="text-xs">{u.name}</SelectItem>)}</SelectContent>
+            <SelectContent>{cryptoUnderlyings.map(u => <SelectItem key={u.id} value={u.symbol} className="text-xs">{u.name}</SelectItem>)}</SelectContent>
           </Select>
           <Select value={selectedExpiry} onValueChange={setSelectedExpiry} disabled={!availableExpiries.length}>
             <SelectTrigger className="w-full sm:w-[140px] h-8 bg-background border-border text-xs">
@@ -277,7 +279,7 @@ export function OptionChain({ onAddLeg }: OptionChainProps) {
                               <div className="bg-background border rounded-full px-4 py-1.5 text-xs font-semibold flex items-center gap-2">
                                 <Target className="h-4 w-4 text-primary" />
                                 <span>{selectedUnderlyingSymbol}</span>
-                                <span>₹{formatNumber(optionChainData.underlyingValue, 2)}</span>
+                                <span>${formatNumber(optionChainData.underlyingValue, 2)}</span>
                               </div>
                             </div>
                           </TableCell>
@@ -293,11 +295,11 @@ export function OptionChain({ onAddLeg }: OptionChainProps) {
                           <TableCell colSpan={5} className="p-0">
                              <div className="flex items-center justify-between w-full p-2">
                                 <div className="w-[42.5%] flex justify-center">
-                                    <ExpandedRowContent lotSize={selectedUnderlyingDetails?.symbol === 'BANKNIFTY' ? 15 : 50} onBuy={(qty) => handleAddLeg(entry.strikePrice, 'Call', 'Buy', entry.call?.ltp ?? 0, qty)} onSell={(qty) => handleAddLeg(entry.strikePrice, 'Call', 'Sell', entry.call?.ltp ?? 0, qty)} />
+                                    <ExpandedRowContent lotSize={1} onBuy={(qty) => handleAddLeg(entry.strikePrice, 'Call', 'Buy', entry.call?.ltp ?? 0, qty)} onSell={(qty) => handleAddLeg(entry.strikePrice, 'Call', 'Sell', entry.call?.ltp ?? 0, qty)} />
                                 </div>
                                 <div className="w-[15%]" /> 
                                 <div className="w-[42.5%] flex justify-center">
-                                    <ExpandedRowContent lotSize={selectedUnderlyingDetails?.symbol === 'BANKNIFTY' ? 15 : 50} onBuy={(qty) => handleAddLeg(entry.strikePrice, 'Put', 'Buy', entry.put?.ltp ?? 0, qty)} onSell={(qty) => handleAddLeg(entry.strikePrice, 'Put', 'Sell', entry.put?.ltp ?? 0, qty)} />
+                                    <ExpandedRowContent lotSize={1} onBuy={(qty) => handleAddLeg(entry.strikePrice, 'Put', 'Buy', entry.put?.ltp ?? 0, qty)} onSell={(qty) => handleAddLeg(entry.strikePrice, 'Put', 'Sell', entry.put?.ltp ?? 0, qty)} />
                                 </div>
                             </div>
                           </TableCell>

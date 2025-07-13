@@ -7,9 +7,12 @@ import { WatchlistSection } from '@/components/dashboard/WatchlistSection';
 import { CryptoHoldingsSection } from '@/components/dashboard/CryptoHoldingsSection';
 import { CryptoFuturesSection } from '@/components/dashboard/CryptoFuturesSection';
 import { CryptoBasketSection } from '@/components/dashboard/CryptoBasketSection';
+import { CryptoOptionChain } from '@/components/dashboard/CryptoOptionChain';
+import { StrategyBuilder } from '@/components/dashboard/StrategyBuilder';
+import { ReadymadeStrategiesSection } from '@/components/dashboard/ReadymadeStrategiesSection';
 
 import React, { useState, useMemo } from 'react';
-import type { PortfolioHolding, NewsArticle, IntradayPosition, FoPosition, CryptoFuturePosition, Stock } from '@/types';
+import type { PortfolioHolding, NewsArticle, IntradayPosition, FoPosition, CryptoFuturePosition, Stock, SelectedOptionLeg } from '@/types';
 import { 
   mockNewsArticles, 
   mockCryptoAssets,
@@ -63,11 +66,12 @@ export function RealDashboard({ activeMode }: RealDashboardProps) {
     
     // Default to Crypto mode
     const cryptoPrimaryNav = [
-      "Spot", "Futures", "Mutual Fund"
+      "Spot", "Futures", "Options", "Mutual Fund"
     ];
     const cryptoSecondaryNav: Record<string, string[]> = {
       "Spot": ["Top watchlist"],
       "Futures": ["Top watchlist"],
+      "Options": ["Custom", "Readymade"],
       "Mutual Fund": ["Top watchlist"],
     };
     return { primaryNavItems: cryptoPrimaryNav, secondaryNavTriggerCategories: cryptoSecondaryNav };
@@ -81,6 +85,8 @@ export function RealDashboard({ activeMode }: RealDashboardProps) {
   
   const [mainPortfolioCashBalance, setMainPortfolioCashBalance] = useState(50000.00); 
   const [cryptoCashBalance, setCryptoCashBalance] = useState(15000.00);
+  const [strategyLegs, setStrategyLegs] = useState<SelectedOptionLeg[]>([]);
+
 
   React.useEffect(() => {
     const firstPrimary = primaryNavItems[0] || "";
@@ -116,11 +122,15 @@ export function RealDashboard({ activeMode }: RealDashboardProps) {
           }
       }
   } else if (activeMode === 'Crypto') { // Crypto Mode Watchlists
-    categoryWatchlistTitle = `${activePrimaryItem} - ${activeSecondaryItem}`;
-    if (activePrimaryItem === "Spot") itemsForWatchlist = mockCryptoAssets;
-    else if (activePrimaryItem === "Futures") itemsForWatchlist = mockCryptoFuturesForWatchlist;
-    else if (activePrimaryItem === "Mutual Fund") itemsForWatchlist = [...mockCryptoMutualFunds, ...mockCryptoETFs];
-    newsForView = getRelevantNewsForWatchlistItems(itemsForWatchlist, mockNewsArticles);
+    if (activePrimaryItem !== "Options") {
+        categoryWatchlistTitle = `${activePrimaryItem} - ${activeSecondaryItem}`;
+        if (activePrimaryItem === "Spot") itemsForWatchlist = mockCryptoAssets;
+        else if (activePrimaryItem === "Futures") itemsForWatchlist = mockCryptoFuturesForWatchlist;
+        else if (activePrimaryItem === "Mutual Fund") itemsForWatchlist = [...mockCryptoMutualFunds, ...mockCryptoETFs];
+        newsForView = getRelevantNewsForWatchlistItems(itemsForWatchlist, mockNewsArticles);
+    } else {
+        newsForView = mockNewsArticles;
+    }
   }
 
   const renderPortfolioContent = () => {
@@ -138,6 +148,11 @@ export function RealDashboard({ activeMode }: RealDashboardProps) {
   
   const renderMarketContent = () => {
       if(activeMode === 'Crypto') {
+          if (activePrimaryItem === "Options") {
+            return activeSecondaryItem === "Custom" ? ( <div className="space-y-8"><CryptoOptionChain onAddLeg={(leg) => setStrategyLegs(prev => [...prev, leg])} /><StrategyBuilder legs={strategyLegs} setLegs={setStrategyLegs} /><NewsSection articles={newsForView} /></div>) 
+            : activeSecondaryItem === "Readymade" ? ( <div className="space-y-8"><ReadymadeStrategiesSection /><NewsSection articles={newsForView} /></div> ) 
+            : null
+        }
           return <div className="space-y-8"><WatchlistSection title={categoryWatchlistTitle} displayItems={itemsForWatchlist} isPredefinedList={true}/><NewsSection articles={newsForView} /></div>
       }
       return null;
@@ -159,5 +174,3 @@ export function RealDashboard({ activeMode }: RealDashboardProps) {
     </main>
   );
 }
-
-    

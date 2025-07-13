@@ -12,7 +12,8 @@ import { PackageOpen, Briefcase } from 'lucide-react';
 import { IntradayPositionsSection } from '@/components/dashboard/IntradayPositionsSection';
 import { FoPositionsSection } from '@/components/dashboard/FoPositionsSection';
 import { FoBasketSection } from '@/components/dashboard/FoBasketSection';
-import { OptionChain } from '@/components/dashboard/OptionChain';
+import { FiatOptionChain } from '@/components/dashboard/FiatOptionChain';
+import { CryptoOptionChain } from '@/components/dashboard/CryptoOptionChain';
 import { ReadymadeStrategiesSection } from '@/components/dashboard/ReadymadeStrategiesSection';
 import { StrategyBuilder } from '@/components/dashboard/StrategyBuilder';
 
@@ -310,7 +311,7 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
   const renderMarketContent = () => {
     if (activeMode === 'Fiat') {
         if (activePrimaryItem === "Options") { 
-            return activeSecondaryItem === "Custom" ? ( <div className="space-y-8"><OptionChain onAddLeg={(leg) => setStrategyLegs(prev => [...prev, leg])} /><StrategyBuilder legs={strategyLegs} setLegs={setStrategyLegs} /><NewsSection articles={newsForView} /></div>) 
+            return activeSecondaryItem === "Custom" ? ( <div className="space-y-8"><FiatOptionChain onAddLeg={(leg) => setStrategyLegs(prev => [...prev, leg])} /><StrategyBuilder legs={strategyLegs} setLegs={setStrategyLegs} /><NewsSection articles={newsForView} /></div>) 
             : activeSecondaryItem === "Readymade" ? ( <div className="space-y-8"><ReadymadeStrategiesSection /><NewsSection articles={newsForView} /></div> ) 
             : null
         }
@@ -328,7 +329,7 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
     
     } else if (activeMode === 'Crypto') {
         if (activePrimaryItem === "Options") {
-            return activeSecondaryItem === "Custom" ? ( <div className="space-y-8"><OptionChain onAddLeg={(leg) => setStrategyLegs(prev => [...prev, leg])} /><StrategyBuilder legs={strategyLegs} setLegs={setStrategyLegs} /><NewsSection articles={newsForView} /></div>) 
+            return activeSecondaryItem === "Custom" ? ( <div className="space-y-8"><CryptoOptionChain onAddLeg={(leg) => setStrategyLegs(prev => [...prev, leg])} /><StrategyBuilder legs={strategyLegs} setLegs={setStrategyLegs} /><NewsSection articles={newsForView} /></div>) 
             : activeSecondaryItem === "Readymade" ? ( <div className="space-y-8"><ReadymadeStrategiesSection /><NewsSection articles={newsForView} /></div> ) 
             : null
         }
