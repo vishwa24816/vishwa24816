@@ -110,8 +110,9 @@ export function StockOrderPageContent({ asset, assetSpecificNews }: StockOrderPa
                 <TabsTrigger value="overview" className="flex-shrink-0 px-4 py-3 text-sm rounded-t-md rounded-b-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=inactive]:border-b-2 data-[state=inactive]:border-transparent data-[state=active]:shadow-none hover:text-primary">Overview</TabsTrigger>
                 <TabsTrigger value="fundamentals" className="flex-shrink-0 px-4 py-3 text-sm rounded-t-md rounded-b-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=inactive]:border-b-2 data-[state=inactive]:border-transparent data-[state=active]:shadow-none hover:text-primary">Fundamentals</TabsTrigger>
                 <TabsTrigger value="financials" className="flex-shrink-0 px-4 py-3 text-sm rounded-t-md rounded-b-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=inactive]:border-b-2 data-[state=inactive]:border-transparent data-[state=active]:shadow-none hover:text-primary">Financials</TabsTrigger>
+                <TabsTrigger value="news" className="flex-shrink-0 px-4 py-3 text-sm rounded-t-md rounded-b-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=inactive]:border-b-2 data-[state=inactive]:border-transparent data-[state=active]:shadow-none hover:text-primary">News</TabsTrigger>
               </TabsList>
-
+              
               <TabsContent value="overview" className="mt-4 space-y-6">
                 <div>
                   <h3 className="text-md font-semibold flex items-center mb-2">
@@ -194,11 +195,6 @@ export function StockOrderPageContent({ asset, assetSpecificNews }: StockOrderPa
                     </div>
                 </CollapsibleSection>
 
-                 <NewsSection
-                    articles={assetSpecificNews}
-                    title={`All News related to ${asset.name}`}
-                    customDescription={`Browse all recent news articles for ${asset.symbol}.`}
-                />
               </TabsContent>
               
               <TabsContent value="fundamentals" className="mt-4 space-y-6">
@@ -278,6 +274,13 @@ export function StockOrderPageContent({ asset, assetSpecificNews }: StockOrderPa
                     </div>
                   </CollapsibleSection>
                 )}
+              </TabsContent>
+              <TabsContent value="news" className="mt-4">
+                 <NewsSection
+                    articles={assetSpecificNews}
+                    title={`All News related to ${asset.name}`}
+                    customDescription={`Browse all recent news articles for ${asset.symbol}.`}
+                />
               </TabsContent>
             </Tabs>
           </div>
