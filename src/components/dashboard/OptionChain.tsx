@@ -20,7 +20,7 @@ import { Input } from "@/components/ui/input";
 import { mockUnderlyings, mockOptionChains } from '@/lib/mockData/optionChainData';
 import type { OptionChainData, OptionData, Underlying, SelectedOptionLeg } from '@/types';
 import { cn } from '@/lib/utils';
-import { Target, Plus, Minus } from 'lucide-react';
+import { Target } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
 import { Label } from '@/components/ui/label';
@@ -76,18 +76,14 @@ const ExpandedRowContent = ({
   return (
     <div className="grid grid-cols-[auto_1fr_auto] items-center gap-x-1" onClick={stopPropagation}>
       <Label htmlFor={`lots-${lotSize}`} className="text-xs shrink-0 pr-1">Lots:</Label>
-      <div className="flex items-center">
-        <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => setQuantity(q => Math.max(1, q - 1))}><Minus className="h-3 w-3" /></Button>
-        <Input
-          id={`lots-${lotSize}`}
-          type="number"
-          className="w-12 h-7 text-center text-sm px-1"
-          value={quantity}
-          onChange={(e) => setQuantity(Math.max(1, Number(e.target.value) || 1))}
-          min="1"
-        />
-        <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => setQuantity(q => q + 1)}><Plus className="h-3 w-3" /></Button>
-      </div>
+      <Input
+        id={`lots-${lotSize}`}
+        type="number"
+        className="w-12 h-7 text-center text-sm px-1"
+        value={quantity}
+        onChange={(e) => setQuantity(Math.max(1, Number(e.target.value) || 1))}
+        min="1"
+      />
       <div className="flex items-center space-x-1">
         <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white w-8 h-7 text-xs" onClick={() => onBuy(quantity)}>B</Button>
         <Button size="sm" className="bg-red-600 hover:bg-red-700 text-white w-8 h-7 text-xs" onClick={() => onSell(quantity)}>S</Button>
@@ -248,12 +244,14 @@ export function OptionChain({ onAddLeg }: OptionChainProps) {
       
       {/* Static Headers */}
       <div className="shrink-0 bg-background shadow-sm z-10 border-b">
-        <div className="flex w-full py-1 text-sm font-semibold">
-            <div className="w-[42.5%] text-center">CALLS</div>
-            <div className="w-[15%] text-center">STRIKE</div>
-            <div className="w-[42.5%] text-center">PUTS</div>
+         <div className="flex w-full py-1 text-sm font-semibold items-stretch">
+            <div className="w-[42.5%] text-center py-1">CALLS</div>
+            <div className="border-r border-border"></div>
+            <div className="w-[15%] text-center py-1">STRIKE</div>
+            <div className="border-r border-border"></div>
+            <div className="w-[42.5%] text-center py-1">PUTS</div>
         </div>
-        <div className="flex w-full py-1 text-sm">
+        <div className="flex w-full py-1 text-sm border-t">
             {renderSpecificHeaders(optionChainView)}
             <div className="w-[15%]" /> 
             {renderSpecificHeaders(optionChainView)}
