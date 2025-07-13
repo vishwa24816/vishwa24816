@@ -54,7 +54,8 @@ export function FiatHoldingsSection({ mainPortfolioCashBalance, setMainPortfolio
     setExpandedRowId(prevId => (prevId === holdingId ? null : prevId));
   };
 
-  const handleAdjustPosition = (holding: PortfolioHolding) => {
+  const handleAdjustPosition = (e: React.MouseEvent, holding: PortfolioHolding) => {
+      e.stopPropagation();
       let path = `/order/stock/${encodeURIComponent(holding.symbol || holding.name)}`;
       if (holding.type === 'Mutual Fund') {
           path = `/order/mutual-fund/${encodeURIComponent(holding.symbol || holding.name)}`;
@@ -64,7 +65,8 @@ export function FiatHoldingsSection({ mainPortfolioCashBalance, setMainPortfolio
       router.push(path);
   };
 
-  const handleExitPosition = (holding: PortfolioHolding) => {
+  const handleExitPosition = (e: React.MouseEvent, holding: PortfolioHolding) => {
+    e.stopPropagation();
     toast({
       title: `Exiting Position (Mock): ${holding.symbol}`,
       description: `A market order would be placed to close this position.`,
@@ -209,10 +211,10 @@ export function FiatHoldingsSection({ mainPortfolioCashBalance, setMainPortfolio
                 <Table>
                     <TableHeader>
                     <TableRow>
-                        <TableHead className="w-[35%]">Instrument</TableHead>
+                        <TableHead className="w-[40%]">Instrument</TableHead>
                         <TableHead className="w-[20%] text-right">Qty.</TableHead>
                         <TableHead className="w-[20%] text-right">LTP / Value</TableHead>
-                        <TableHead className="w-[25%] text-right">Overall / Day P&L</TableHead>
+                        <TableHead className="w-[20%] text-right">Overall / Day P&L</TableHead>
                     </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -250,7 +252,7 @@ export function FiatHoldingsSection({ mainPortfolioCashBalance, setMainPortfolio
                                             size="sm" 
                                             variant="outline" 
                                             className="flex-1 justify-center"
-                                            onClick={(e) => { e.stopPropagation(); handleAdjustPosition(holding); }}
+                                            onClick={(e) => handleAdjustPosition(e, holding)}
                                         >
                                             <Settings2 className="mr-2 h-4 w-4" /> Adjust Position
                                         </Button>
@@ -258,7 +260,7 @@ export function FiatHoldingsSection({ mainPortfolioCashBalance, setMainPortfolio
                                             size="sm" 
                                             variant="destructive" 
                                             className="flex-1 justify-center"
-                                            onClick={(e) => { e.stopPropagation(); handleExitPosition(holding); }}
+                                            onClick={(e) => handleExitPosition(e, holding)}
                                         >
                                             <XCircle className="mr-2 h-4 w-4" /> Exit Position
                                         </Button>

@@ -35,11 +35,13 @@ export function CryptoIntradayPositionsSection({ positions }: CryptoIntradayPosi
     setExpandedRowId(prevId => (prevId === positionId ? null : prevId));
   };
   
-  const handleAdjustPosition = (pos: IntradayPosition) => {
+  const handleAdjustPosition = (e: React.MouseEvent, pos: IntradayPosition) => {
+      e.stopPropagation();
       router.push(`/order/crypto/${encodeURIComponent(pos.symbol)}`);
   };
 
-  const handleExitPosition = (pos: IntradayPosition) => {
+  const handleExitPosition = (e: React.MouseEvent, pos: IntradayPosition) => {
+    e.stopPropagation();
     toast({
       title: `Exiting Position (Mock): ${pos.symbol}`,
       description: `A market order would be placed to close this position.`,
@@ -112,10 +114,7 @@ export function CryptoIntradayPositionsSection({ positions }: CryptoIntradayPosi
                               size="sm" 
                               variant="outline" 
                               className="flex-1 justify-center" 
-                              onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleAdjustPosition(pos);
-                              }}
+                              onClick={(e) => handleAdjustPosition(e, pos)}
                             >
                               <Settings2 className="mr-2 h-4 w-4" /> Adjust Position
                             </Button>
@@ -123,10 +122,7 @@ export function CryptoIntradayPositionsSection({ positions }: CryptoIntradayPosi
                               size="sm" 
                               variant="destructive" 
                               className="flex-1 justify-center"
-                              onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleExitPosition(pos);
-                              }}
+                              onClick={(e) => handleExitPosition(e, pos)}
                             >
                               <XCircle className="mr-2 h-4 w-4" /> Exit Position
                             </Button>

@@ -96,11 +96,13 @@ export function CryptoFuturesSection({ positions, cashBalance }: CryptoFuturesSe
     return chartConfig[value]?.label || value;
   }
   
-  const handleAdjustPosition = (pos: CryptoFuturePosition) => {
+  const handleAdjustPosition = (e: React.MouseEvent, pos: CryptoFuturePosition) => {
+      e.stopPropagation();
       router.push(`/order/crypto-future/${encodeURIComponent(pos.symbol)}`);
   };
 
-  const handleExitPosition = (pos: CryptoFuturePosition) => {
+  const handleExitPosition = (e: React.MouseEvent, pos: CryptoFuturePosition) => {
+    e.stopPropagation();
     toast({
       title: `Exiting Position (Mock): ${pos.symbol}`,
       description: `A market order would be placed to close this position.`,
@@ -203,10 +205,7 @@ export function CryptoFuturesSection({ positions, cashBalance }: CryptoFuturesSe
                                 size="sm" 
                                 variant="outline" 
                                 className="flex-1 justify-center"
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleAdjustPosition(pos);
-                                }}
+                                onClick={(e) => handleAdjustPosition(e, pos)}
                               >
                                 <Settings2 className="mr-2 h-4 w-4" /> Adjust Position
                               </Button>
@@ -214,10 +213,7 @@ export function CryptoFuturesSection({ positions, cashBalance }: CryptoFuturesSe
                                 size="sm" 
                                 variant="destructive" 
                                 className="flex-1 justify-center"
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleExitPosition(pos);
-                                }}
+                                onClick={(e) => handleExitPosition(e, pos)}
                               >
                                 <XCircle className="mr-2 h-4 w-4" /> Exit Position
                               </Button>
