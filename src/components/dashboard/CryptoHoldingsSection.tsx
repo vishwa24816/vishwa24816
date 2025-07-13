@@ -255,10 +255,10 @@ export function CryptoHoldingsSection({
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead className="w-[200px] min-w-[150px]">Asset</TableHead>
-                        <TableHead className="text-right">Qty.</TableHead>
-                        <TableHead className="text-right">LTP / Value</TableHead>
-                        <TableHead className="text-right">Overall / Day P&L</TableHead>
+                        <TableHead className="w-[35%]">Asset</TableHead>
+                        <TableHead className="w-[20%] text-right">Qty.</TableHead>
+                        <TableHead className="w-[20%] text-right">LTP / Value</TableHead>
+                        <TableHead className="w-[25%] text-right">Overall / Day P&L</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>

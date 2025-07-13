@@ -49,7 +49,7 @@ export function CryptoFuturesSection({ positions, cashBalance }: CryptoFuturesSe
   };
 
   const handleRowClick = (positionId: string) => {
-    setExpandedRowId(prevId => (prevId === positionId ? null : positionId));
+    setExpandedRowId(prevId => (prevId === positionId ? null : prevId));
   };
 
   const totalUnrealizedPnL = positions.reduce((acc, pos) => acc + pos.unrealizedPnL, 0);

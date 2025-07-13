@@ -16,7 +16,7 @@ import { Separator } from "@/components/ui/separator";
 import { mockPortfolioHoldings } from '@/lib/mockData';
 import type { PortfolioHolding } from '@/types';
 import { cn } from '@/lib/utils';
-import { Briefcase, Info, XCircle, Coins, Landmark, BarChart2, PieChart as PieChartIcon, Table2, Settings2 } from 'lucide-react'; 
+import { Briefcase, Info, XCircle, Settings2, BarChart2, PieChart as PieChartIcon, Table2 } from 'lucide-react'; 
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -209,10 +209,10 @@ export function FiatHoldingsSection({ mainPortfolioCashBalance, setMainPortfolio
                 <Table>
                     <TableHeader>
                     <TableRow>
-                        <TableHead className="w-[200px] min-w-[150px]">Instrument</TableHead>
-                        <TableHead className="text-right">Qty.</TableHead>
-                        <TableHead className="text-right">LTP / Value</TableHead>
-                        <TableHead className="text-right">Overall / Day P&L</TableHead>
+                        <TableHead className="w-[35%]">Instrument</TableHead>
+                        <TableHead className="w-[20%] text-right">Qty.</TableHead>
+                        <TableHead className="w-[20%] text-right">LTP / Value</TableHead>
+                        <TableHead className="w-[25%] text-right">Overall / Day P&L</TableHead>
                     </TableRow>
                     </TableHeader>
                     <TableBody>

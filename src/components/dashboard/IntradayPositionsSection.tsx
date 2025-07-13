@@ -83,10 +83,10 @@ export function IntradayPositionsSection() {
                     className="cursor-pointer"
                   >
                     <TableCell className="font-medium">
-                      <div>{pos.name}</div>
-                      <div className="text-xs text-muted-foreground">LTP: {formatCurrency(pos.ltp)}</div>
+                        <div>{pos.name} ({pos.symbol})</div>
+                        <div className="text-xs text-muted-foreground">LTP: {formatCurrency(pos.ltp)}</div>
                     </TableCell>
-                    <TableCell>
+                     <TableCell>
                       <div>{pos.quantity.toLocaleString()}</div>
                       <div
                         className={cn(
@@ -98,8 +98,8 @@ export function IntradayPositionsSection() {
                       </div>
                     </TableCell>
                     <TableCell className={cn("text-right whitespace-nowrap", pos.pAndL >= 0 ? 'text-green-600' : 'text-red-600')}>
-                      <div>{formatCurrency(pos.pAndL)}</div>
-                      <div className="text-xs">({pos.pAndLPercent.toFixed(2)}%)</div>
+                        <div>{formatCurrency(pos.pAndL)}</div>
+                        <div className="text-xs">({pos.pAndLPercent.toFixed(2)}%)</div>
                     </TableCell>
                   </TableRow>
                   {expandedRowId === pos.id && (
@@ -113,7 +113,7 @@ export function IntradayPositionsSection() {
                             <Button 
                               size="sm" 
                               variant="outline" 
-                              className="flex-1 justify-center"
+                              className="flex-1 justify-center" 
                               onClick={(e) => {
                                   e.stopPropagation();
                                   handleAdjustPosition(pos);
