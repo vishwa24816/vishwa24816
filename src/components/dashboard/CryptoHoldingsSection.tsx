@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import type { PortfolioHolding } from '@/types';
 import { cn } from '@/lib/utils';
-import { Bitcoin, XCircle, Coins, Landmark, BarChart2, PieChart as PieChartIcon, Table2, Settings2 } from 'lucide-react';
+import { Bitcoin, XCircle, Coins, Landmark, BarChart2, LayoutGrid, Table2, Settings2 } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { FundTransferDialog } from '@/components/shared/FundTransferDialog';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -30,6 +30,8 @@ import {
   type ChartConfig,
   Chart,
 } from "@/components/ui/chart";
+import { PortfolioHeatmap, type HeatmapItem } from './PortfolioHeatmap';
+
 
 interface CryptoHoldingsSectionProps {
   holdings: PortfolioHolding[];
@@ -59,7 +61,7 @@ export function CryptoHoldingsSection({
   const [isFundTransferDialogOpen, setIsFundTransferDialogOpen] = useState(false);
   const [transferDirection, setTransferDirection] = useState<'toCrypto' | 'fromCrypto'>('toCrypto');
   const [currencyMode, setCurrencyMode] = useState<'INR' | 'USDT'>('INR');
-  const [viewType, setViewType] = useState<'table' | 'bar' | 'pie'>('table');
+  const [viewType, setViewType] = useState<'table' | 'bar' | 'heatmap'>('table');
   const INR_TO_USDT_RATE = 83.5;
 
   const formatCurrency = (value: number, mode: 'INR' | 'USDT') => {
@@ -75,14 +77,16 @@ export function CryptoHoldingsSection({
   };
   
   const handleRowClick = (holdingId: string) => {
-    setExpandedRowId(prevId => (prevId === holdingId ? null : holdingId));
+    setExpandedRowId(prevId => (prevId === holdingId ? null : prevId));
   };
   
-  const handleAdjustPosition = (holding: PortfolioHolding) => {
+  const handleAdjustPosition = (e: React.MouseEvent, holding: PortfolioHolding) => {
+    e.stopPropagation();
     router.push(`/order/crypto/${encodeURIComponent(holding.symbol || holding.name)}`);
   };
 
-  const handleExitPosition = (holding: PortfolioHolding) => {
+  const handleExitPosition = (e: React.MouseEvent, holding: PortfolioHolding) => {
+    e.stopPropagation();
     toast({
       title: `Exiting Position (Mock): ${holding.symbol}`,
       description: `A market order would be placed to close this position.`,
@@ -149,6 +153,15 @@ export function CryptoHoldingsSection({
 
     return holdingsData;
   }, [holdings, cashBalance]);
+
+  const heatmapData: HeatmapItem[] = useMemo(() => {
+    return cryptoHoldings.map(h => ({
+      name: h.name,
+      value: h.currentValue,
+      pnl: h.profitAndLoss,
+      pnlPercent: h.profitAndLossPercent,
+    }));
+  }, [cryptoHoldings]);
 
   const tickFormatter = (value: string) => {
     return chartConfig[value]?.label || value;
@@ -244,7 +257,7 @@ export function CryptoHoldingsSection({
               <div className="flex items-center gap-1 rounded-md bg-muted p-1">
                 <Button variant={viewType === 'table' ? 'secondary' : 'ghost'} size="sm" className="h-7 px-2" onClick={() => setViewType('table')} aria-label="Table View"><Table2 className="h-4 w-4" /></Button>
                 <Button variant={viewType === 'bar' ? 'secondary' : 'ghost'} size="sm" className="h-7 px-2" onClick={() => setViewType('bar')} aria-label="Bar Chart View"><BarChart2 className="h-4 w-4" /></Button>
-                <Button variant={viewType === 'pie' ? 'secondary' : 'ghost'} size="sm" className="h-7 px-2" onClick={() => setViewType('pie')} aria-label="Pie Chart View"><PieChartIcon className="h-4 w-4" /></Button>
+                <Button variant={viewType === 'heatmap' ? 'secondary' : 'ghost'} size="sm" className="h-7 px-2" onClick={() => setViewType('heatmap')} aria-label="Heatmap View"><LayoutGrid className="h-4 w-4" /></Button>
               </div>
             </div>
           </CardHeader>
@@ -291,7 +304,7 @@ export function CryptoHoldingsSection({
                                         size="sm" 
                                         variant="outline" 
                                         className="flex-1 justify-center"
-                                        onClick={() => handleAdjustPosition(holding)}
+                                        onClick={(e) => handleAdjustPosition(e, holding)}
                                     >
                                         <Settings2 className="mr-2 h-4 w-4" /> Adjust Position
                                     </Button>
@@ -299,7 +312,7 @@ export function CryptoHoldingsSection({
                                         size="sm" 
                                         variant="destructive" 
                                         className="flex-1 justify-center"
-                                        onClick={() => handleExitPosition(holding)}
+                                        onClick={(e) => handleExitPosition(e, holding)}
                                     >
                                         <XCircle className="mr-2 h-4 w-4" /> Exit Position
                                     </Button>
@@ -331,22 +344,10 @@ export function CryptoHoldingsSection({
                     </ChartContainer>
                   </div>
                 )}
-                {viewType === 'pie' && (
-                  <div className="p-4 flex justify-center">
-                    <ChartContainer config={chartConfig} className="mx-auto aspect-square max-h-[300px]">
-                      <Chart.ResponsiveContainer>
-                        <Chart.PieChart>
-                          <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
-                          <Chart.Pie data={chartData} dataKey="value" nameKey="name" innerRadius={60} strokeWidth={5}>
-                            {chartData.map((entry) => (
-                                <Chart.Cell key={`cell-${entry.name}`} fill={`var(--color-${entry.name})`} />
-                            ))}
-                          </Chart.Pie>
-                          <ChartLegend content={<ChartLegendContent nameKey="label" />} />
-                        </Chart.PieChart>
-                      </Chart.ResponsiveContainer>
-                    </ChartContainer>
-                  </div>
+                 {viewType === 'heatmap' && (
+                    <div className="p-4 min-h-[300px]">
+                      <PortfolioHeatmap items={heatmapData} />
+                    </div>
                 )}
               </>
             ) : (
