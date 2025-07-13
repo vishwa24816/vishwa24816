@@ -5,10 +5,10 @@ import { SubNav } from '@/components/dashboard/SubNav';
 import { NewsSection } from '@/components/dashboard/NewsSection';
 import { WatchlistSection } from '@/components/dashboard/WatchlistSection';
 import { CryptoHoldingsSection } from '@/components/dashboard/CryptoHoldingsSection';
+import { FiatHoldingsSection } from '@/components/dashboard/FiatHoldingsSection';
 import { CryptoIntradayPositionsSection } from '@/components/dashboard/CryptoIntradayPositionsSection';
 import { CryptoFuturesSection } from '@/components/dashboard/CryptoFuturesSection';
 import { PackageOpen, Briefcase } from 'lucide-react';
-import { PortfolioHoldingsTable } from '@/components/dashboard/PortfolioHoldingsTable';
 import { IntradayPositionsSection } from '@/components/dashboard/IntradayPositionsSection';
 import { FoPositionsSection } from '@/components/dashboard/FoPositionsSection';
 import { FoBasketSection } from '@/components/dashboard/FoBasketSection';
@@ -324,7 +324,7 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
 
     switch (activePrimaryItem) {
         case 'Fiat':
-            if (isHoldingsView) return <><PortfolioHoldingsTable mainPortfolioCashBalance={mainPortfolioCashBalance} setMainPortfolioCashBalance={setMainPortfolioCashBalance} /><NewsSection articles={newsForView} /></>;
+            if (isHoldingsView) return <><FiatHoldingsSection mainPortfolioCashBalance={mainPortfolioCashBalance} setMainPortfolioCashBalance={setMainPortfolioCashBalance} /><NewsSection articles={newsForView} /></>;
             if (isPositionsView) return <div className="space-y-8"><IntradayPositionsSection /><FoPositionsSection /><FoBasketSection /><NewsSection articles={newsForView} /></div>;
             if (isWatchlistView) return <div className="space-y-8"><WatchlistSection title="My Fiat Watchlist" defaultInitialItems={itemsForWatchlist} localStorageKeyOverride="simFiatWatchlist"/><NewsSection articles={newsForView} /></div>;
             return null;
