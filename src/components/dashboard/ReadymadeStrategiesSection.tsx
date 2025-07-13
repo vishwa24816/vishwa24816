@@ -10,10 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Card, CardContent } from "@/components/ui/card";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
+import { Card } from "@/components/ui/card";
 import { cn } from '@/lib/utils';
 import { useToast } from "@/hooks/use-toast";
 import { mockUnderlyings } from '@/lib/mockData';
@@ -28,15 +25,27 @@ interface Strategy {
 }
 
 const strategies: Strategy[] = [
-  { id: 'long-call', name: 'Long Call', type: 'bullish', payoffGraph: <svg viewBox="0 0 20 10"><path d="M0 5 L5 5 L15 0" stroke="hsl(var(--positive))" strokeWidth="0.5" fill="none"/><path d="M0 5 L5 5 L15 10" stroke="hsl(var(--destructive))" strokeWidth="0.5" fill="none"/></svg> },
-  { id: 'short-put', name: 'Short Put', type: 'bullish', payoffGraph: <svg viewBox="0 0 20 10"><path d="M0 10 L5 5 L15 5" stroke="hsl(var(--positive))" strokeWidth="0.5" fill="none"/><path d="M0 0 L5 5" stroke="hsl(var(--destructive))" strokeWidth="0.5" fill="none"/></svg> },
-  { id: 'bull-call-spread', name: 'Bull Call Spread', type: 'bullish', payoffGraph: <svg viewBox="0 0 20 10"><path d="M0 6 L5 6 L10 1 L15 1" stroke="hsl(var(--positive))" strokeWidth="0.5" fill="none"/><path d="M0 4 L5 4 L10 9" stroke="hsl(var(--destructive))" strokeWidth="0.5" fill="none"/></svg> },
-  { id: 'bull-put-spread', name: 'Bull Put Spread', type: 'bullish', payoffGraph: <svg viewBox="0 0 20 10"><path d="M0 9 L5 4 L10 4" stroke="hsl(var(--positive))" strokeWidth="0.5" fill="none"/><path d="M0 1 L5 6 L10 6" stroke="hsl(var(--destructive))" strokeWidth="0.5" fill="none"/></svg> },
-  { id: 'call-ratio-back', name: 'Call Ratio Back Spread', type: 'bullish', payoffGraph: <svg viewBox="0 0 20 10"><path d="M0 6 L8 6 L15 0" stroke="hsl(var(--positive))" strokeWidth="0.5" fill="none"/><path d="M0 4 L8 4 L15 10" stroke="hsl(var(--destructive))" strokeWidth="0.5" fill="none"/></svg> },
-  { id: 'long-synthetic', name: 'Long Synthetic', type: 'bullish', payoffGraph: <svg viewBox="0 0 20 10"><path d="M0 10 L15 0" stroke="hsl(var(--positive))" strokeWidth="0.5" fill="none"/><path d="M0 0 L15 10" stroke="hsl(var(--destructive))" strokeWidth="0.5" fill="none"/></svg> },
-  { id: 'range-forward', name: 'Range Forward', type: 'bullish', payoffGraph: <svg viewBox="0 0 20 10"><path d="M3 8 L15 2" stroke="hsl(var(--positive))" strokeWidth="0.5" fill="none"/><path d="M3 2 L15 8" stroke="hsl(var(--destructive))" strokeWidth="0.5" fill="none"/></svg> },
-  { id: 'bullish-butterfly', name: 'Bullish Butterfly', type: 'bearish', payoffGraph: <svg viewBox="0 0 20 10"><path d="M0 5 L5 1 L10 5 L15 5" stroke="hsl(var(--positive))" strokeWidth="0.5" fill="none"/><path d="M0 5 L15 5" stroke="hsl(var(--destructive))" strokeWidth="0.5" fill="none"/></svg> },
-  { id: 'bullish-condor', name: 'Bullish Condor', type: 'non-directional', payoffGraph: <svg viewBox="0 0 20 10"><path d="M3 5 L7 2 L12 2 L16 5" stroke="hsl(var(--positive))" strokeWidth="0.5" fill="none"/><path d="M0 5 L3 5 M16 5 L20 5" stroke="hsl(var(--destructive))" strokeWidth="0.5" fill="none"/></svg> },
+  // Bullish
+  { id: 'long-call', name: 'Long Call', type: 'bullish', payoffGraph: <svg viewBox="0 0 20 10"><path d="M0 8 L10 8 L20 0" stroke="hsl(var(--positive))" strokeWidth="0.5" fill="none"/><path d="M10 8 L0 8" stroke="hsl(var(--destructive))" strokeWidth="0.5" fill="none"/></svg> },
+  { id: 'short-put', name: 'Short Put', type: 'bullish', payoffGraph: <svg viewBox="0 0 20 10"><path d="M0 2 L10 2 L20 10" stroke="hsl(var(--destructive))" strokeWidth="0.5" fill="none"/><path d="M0 2 L10 2" stroke="hsl(var(--positive))" strokeWidth="0.5" fill="none"/></svg> },
+  { id: 'bull-call-spread', name: 'Bull Call Spread', type: 'bullish', payoffGraph: <svg viewBox="0 0 20 10"><path d="M5 8 L10 4 L15 4" stroke="hsl(var(--positive))" strokeWidth="0.5" fill="none"/><path d="M0 6 L5 6 L10 10" stroke="hsl(var(--destructive))" strokeWidth="0.5" fill="none"/></svg> },
+  { id: 'bull-put-spread', name: 'Bull Put Spread', type: 'bullish', payoffGraph: <svg viewBox="0 0 20 10"><path d="M0 4 L5 4 L10 0" stroke="hsl(var(--positive))" strokeWidth="0.5" fill="none"/><path d="M5 4 L10 8 L15 8" stroke="hsl(var(--destructive))" strokeWidth="0.5" fill="none"/></svg> },
+  { id: 'call-ratio-backspread', name: 'Call Ratio Backspread', type: 'bullish', payoffGraph: <svg viewBox="0 0 20 10"><path d="M5 6 L10 0 L15 0" stroke="hsl(var(--positive))" strokeWidth="0.5" fill="none"/><path d="M0 4 L5 4 L10 10" stroke="hsl(var(--destructive))" strokeWidth="0.5" fill="none"/></svg> },
+  
+  // Bearish
+  { id: 'long-put', name: 'Long Put', type: 'bearish', payoffGraph: <svg viewBox="0 0 20 10"><path d="M0 0 L10 8 L20 8" stroke="hsl(var(--positive))" strokeWidth="0.5" fill="none"/><path d="M10 8 L20 8" stroke="hsl(var(--destructive))" strokeWidth="0.5" fill="none"/></svg> },
+  { id: 'short-call', name: 'Short Call', type: 'bearish', payoffGraph: <svg viewBox="0 0 20 10"><path d="M0 8 L10 2 L20 2" stroke="hsl(var(--positive))" strokeWidth="0.5" fill="none"/><path d="M10 2 L0 10" stroke="hsl(var(--destructive))" strokeWidth="0.5" fill="none"/></svg> },
+  { id: 'bear-call-spread', name: 'Bear Call Spread', type: 'bearish', payoffGraph: <svg viewBox="0 0 20 10"><path d="M0 4 L5 4 L10 8" stroke="hsl(var(--positive))" strokeWidth="0.5" fill="none"/><path d="M5 4 L10 0 L15 0" stroke="hsl(var(--destructive))" strokeWidth="0.5" fill="none"/></svg> },
+  { id: 'bear-put-spread', name: 'Bear Put Spread', type: 'bearish', payoffGraph: <svg viewBox="0 0 20 10"><path d="M0 2 L5 2 L10 6" stroke="hsl(var(--positive))" strokeWidth="0.5" fill="none"/><path d="M5 2 L10 8 L15 8" stroke="hsl(var(--destructive))" strokeWidth="0.5" fill="none"/></svg> },
+  { id: 'put-ratio-backspread', name: 'Put Ratio Backspread', type: 'bearish', payoffGraph: <svg viewBox="0 0 20 10"><path d="M0 0 L5 4 L10 4" stroke="hsl(var(--positive))" strokeWidth="0.5" fill="none"/><path d="M5 4 L10 10 L15 10" stroke="hsl(var(--destructive))" strokeWidth="0.5" fill="none"/></svg> },
+  
+  // Non-Directional
+  { id: 'long-straddle', name: 'Long Straddle', type: 'non-directional', payoffGraph: <svg viewBox="0 0 20 10"><path d="M0 0 L10 8 L20 0" stroke="hsl(var(--positive))" strokeWidth="0.5" fill="none"/><path d="M10 8 L10 10" stroke="hsl(var(--destructive))" strokeWidth="0.5" fill="none"/></svg> },
+  { id: 'short-straddle', name: 'Short Straddle', type: 'non-directional', payoffGraph: <svg viewBox="0 0 20 10"><path d="M0 10 L10 2 L20 10" stroke="hsl(var(--destructive))" strokeWidth="0.5" fill="none"/><path d="M10 2 L10 0" stroke="hsl(var(--positive))" strokeWidth="0.5" fill="none"/></svg> },
+  { id: 'long-strangle', name: 'Long Strangle', type: 'non-directional', payoffGraph: <svg viewBox="0 0 20 10"><path d="M0 0 L8 6 L12 6 L20 0" stroke="hsl(var(--positive))" strokeWidth="0.5" fill="none"/><path d="M8 6 L12 6" stroke="hsl(var(--destructive))" strokeWidth="0.5" fill="none"/></svg> },
+  { id: 'short-strangle', name: 'Short Strangle', type: 'non-directional', payoffGraph: <svg viewBox="0 0 20 10"><path d="M0 10 L8 4 L12 4 L20 10" stroke="hsl(var(--destructive))" strokeWidth="0.5" fill="none"/><path d="M8 4 L12 4" stroke="hsl(var(--positive))" strokeWidth="0.5" fill="none"/></svg> },
+  { id: 'iron-condor', name: 'Iron Condor', type: 'non-directional', payoffGraph: <svg viewBox="0 0 20 10"><path d="M5 6 L8 4 L12 4 L15 6" stroke="hsl(var(--positive))" strokeWidth="0.5" fill="none"/><path d="M0 6 L5 6 M15 6 L20 6" stroke="hsl(var(--destructive))" strokeWidth="0.5" fill="none"/></svg> },
+  { id: 'iron-butterfly', name: 'Iron Butterfly', type: 'non-directional', payoffGraph: <svg viewBox="0 0 20 10"><path d="M5 6 L10 2 L15 6" stroke="hsl(var(--positive))" strokeWidth="0.5" fill="none"/><path d="M0 6 L5 6 M15 6 L20 6" stroke="hsl(var(--destructive))" strokeWidth="0.5" fill="none"/></svg> },
 ];
 
 const InfoBadge = ({ label, value, colorClass }: { label: string, value: string | number, colorClass: string }) => (
@@ -49,12 +58,10 @@ export function ReadymadeStrategiesSection() {
   const { toast } = useToast();
   const [selectedUnderlying, setSelectedUnderlying] = useState('NIFTY');
   const [activeFilter, setActiveFilter] = useState<StrategyType>('bullish');
-  const [lotQty, setLotQty] = useState(1);
 
   const underlyingData = useMemo(() => {
-    // This would fetch real data in a real app
     const baseData = {
-        NIFTY: { spot: 24841.5, futures: 24859, lotSize: 75, iv: 16.39, ivPercentile: 82.8, dte: 0 },
+        NIFTY: { spot: 24841.5, futures: 24859, lotSize: 25, iv: 16.39, ivPercentile: 82.8, dte: 0 },
         BANKNIFTY: { spot: 47500.2, futures: 47550, lotSize: 15, iv: 18.5, ivPercentile: 75.1, dte: 0 },
         BTC: { spot: 65123.4, futures: 65180, lotSize: 1, iv: 65.2, ivPercentile: 60.5, dte: 1 },
         ETH: { spot: 3456.7, futures: 3460, lotSize: 1, iv: 72.8, ivPercentile: 68.3, dte: 1 },
@@ -70,13 +77,6 @@ export function ReadymadeStrategiesSection() {
       description: `${strategyName} selected for ${selectedUnderlying}. Legs would be added to builder.`,
     });
   };
-  
-  const handlePlaceFutureOrder = () => {
-     toast({
-      title: "Futures Order Placed (Mock)",
-      description: `Order placed for ${lotQty} lot(s) of ${selectedUnderlying} futures.`,
-    });
-  }
 
   return (
     <div className="space-y-6">
