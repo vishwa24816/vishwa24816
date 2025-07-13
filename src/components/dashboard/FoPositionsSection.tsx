@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState } from 'react';
@@ -65,15 +64,9 @@ export function FoPositionsSection() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="min-w-[200px]">Instrument</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead className="text-right">Lots</TableHead>
-                <TableHead className="text-right">Qty.</TableHead>
-                <TableHead className="text-right">Avg. Price</TableHead>
-                <TableHead className="text-right">LTP</TableHead>
-                <TableHead className="text-right">MTM P&L</TableHead>
-                <TableHead className="text-right">Overall P&L (%)</TableHead>
-                <TableHead className="text-right">Expiry</TableHead>
+                <TableHead className="w-[40%]">Instrument</TableHead>
+                <TableHead className="w-[30%]">Qty. / Type</TableHead>
+                <TableHead className="text-right w-[30%]">Overall P&L (%)</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -83,26 +76,24 @@ export function FoPositionsSection() {
                     onClick={() => handleRowClick(pos.id)}
                     className="cursor-pointer"
                   >
-                    <TableCell className="font-medium">{pos.instrumentName}</TableCell>
-                    <TableCell>
-                      <span className={cn(pos.transactionType === 'BUY' ? 'text-green-600' : 'text-red-600')}>{pos.transactionType}</span>
-                      <span className="ml-1 text-xs text-muted-foreground">({pos.optionType})</span>
+                    <TableCell className="font-medium">
+                        <div>{pos.instrumentName}</div>
+                        <div className="text-xs text-muted-foreground">LTP: {formatCurrency(pos.ltp)}</div>
                     </TableCell>
-                    <TableCell className="text-right">{pos.lots}</TableCell>
-                    <TableCell className="text-right">{totalQuantity(pos).toLocaleString()}</TableCell>
-                    <TableCell className="text-right">{formatCurrency(pos.avgPrice)}</TableCell>
-                    <TableCell className="text-right">{formatCurrency(pos.ltp)}</TableCell>
-                    <TableCell className={cn("text-right", pos.mtmPnl >= 0 ? 'text-green-600' : 'text-red-600')}>
-                      {formatCurrency(pos.mtmPnl)}
+                    <TableCell>
+                      <div>{totalQuantity(pos).toLocaleString()} ({pos.lots} lots)</div>
+                      <div className={cn("text-xs", pos.transactionType === 'BUY' ? 'text-green-600' : 'text-red-600')}>
+                        {pos.transactionType} ({pos.optionType})
+                      </div>
                     </TableCell>
                     <TableCell className={cn("text-right whitespace-nowrap", pos.pAndL >= 0 ? 'text-green-600' : 'text-red-600')}>
-                      {formatCurrency(pos.pAndL)}<br/>({pos.pAndLPercent.toFixed(2)}%)
+                        <div>{formatCurrency(pos.pAndL)}</div>
+                        <div className="text-xs">({pos.pAndLPercent.toFixed(2)}%)</div>
                     </TableCell>
-                    <TableCell className="text-right">{new Date(pos.expiryDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric'})}</TableCell>
                   </TableRow>
                   {expandedRowId === pos.id && (
                     <TableRow className="bg-muted/50 hover:bg-muted/60">
-                      <TableCell colSpan={9} className="p-0">
+                      <TableCell colSpan={3} className="p-0">
                         <div className="p-4 space-y-3">
                           <h4 className="font-semibold text-md text-foreground">
                             {pos.instrumentName} - Actions

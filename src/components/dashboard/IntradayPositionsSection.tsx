@@ -55,12 +55,9 @@ export function IntradayPositionsSection() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="min-w-[150px]">Instrument</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead className="text-right">Qty.</TableHead>
-                <TableHead className="text-right">Avg. Price</TableHead>
-                <TableHead className="text-right">LTP</TableHead>
-                <TableHead className="text-right">P&L (%)</TableHead>
+                <TableHead className="w-[40%]">Instrument</TableHead>
+                <TableHead className="w-[30%]">Qty. / Type</TableHead>
+                <TableHead className="text-right w-[30%]">P&L (%)</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -72,25 +69,27 @@ export function IntradayPositionsSection() {
                   >
                     <TableCell className="font-medium">
                       <div>{pos.name}</div>
-                      <div className="text-xs text-muted-foreground">{pos.symbol}</div>
+                      <div className="text-xs text-muted-foreground">LTP: {formatCurrency(pos.ltp)}</div>
                     </TableCell>
-                    <TableCell
-                      className={cn(
-                        pos.transactionType === 'BUY' ? 'text-green-600' : 'text-red-600'
-                      )}
-                    >
-                      {pos.transactionType}
+                    <TableCell>
+                      <div>{pos.quantity.toLocaleString()}</div>
+                      <div
+                        className={cn(
+                          "text-xs",
+                          pos.transactionType === 'BUY' ? 'text-green-600' : 'text-red-600'
+                        )}
+                      >
+                        {pos.transactionType}
+                      </div>
                     </TableCell>
-                    <TableCell className="text-right">{pos.quantity.toLocaleString()}</TableCell>
-                    <TableCell className="text-right">{formatCurrency(pos.avgPrice)}</TableCell>
-                    <TableCell className="text-right">{formatCurrency(pos.ltp)}</TableCell>
                     <TableCell className={cn("text-right whitespace-nowrap", pos.pAndL >= 0 ? 'text-green-600' : 'text-red-600')}>
-                      {formatCurrency(pos.pAndL)}<br/>({pos.pAndLPercent.toFixed(2)}%)
+                      <div>{formatCurrency(pos.pAndL)}</div>
+                      <div className="text-xs">({pos.pAndLPercent.toFixed(2)}%)</div>
                     </TableCell>
                   </TableRow>
                   {expandedRowId === pos.id && (
                     <TableRow className="bg-muted/50 hover:bg-muted/60">
-                      <TableCell colSpan={6} className="p-0">
+                      <TableCell colSpan={3} className="p-0">
                         <div className="p-4 space-y-3">
                           <h4 className="font-semibold text-md text-foreground">
                             {pos.name} ({pos.symbol}) - Actions
