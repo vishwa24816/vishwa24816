@@ -1,6 +1,8 @@
+
 "use client";
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   Table,
   TableBody,
@@ -13,14 +15,14 @@ import { Button } from "@/components/ui/button";
 import { mockFoPositions } from '@/lib/mockData';
 import type { FoPosition } from '@/types';
 import { cn } from '@/lib/utils';
-import { Layers, PlusCircle, MinusCircle, XCircle } from 'lucide-react';
+import { Layers, PlusCircle, MinusCircle, XCircle, Settings2 } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export function FoPositionsSection() {
   const positions = mockFoPositions;
   const [expandedRowId, setExpandedRowId] = useState<string | null>(null);
-  const { toast } = useToast();
+  const router = useRouter();
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
@@ -28,6 +30,18 @@ export function FoPositionsSection() {
 
   const handleRowClick = (positionId: string) => {
     setExpandedRowId(prevId => (prevId === positionId ? null : positionId));
+  };
+  
+  const handleAdjustPosition = (pos: FoPosition) => {
+    let path = '';
+    if (pos.optionType === 'FUT') {
+        path = `/order/future/${encodeURIComponent(pos.instrumentName)}`;
+    } else if (pos.optionType === 'CE' || pos.optionType === 'PE') {
+        path = `/order/option/${encodeURIComponent(pos.instrumentName)}`;
+    }
+    if (path) {
+        router.push(path);
+    }
   };
 
   const totalPandL = positions.reduce((acc, pos) => acc + pos.pAndL, 0);
@@ -64,7 +78,7 @@ export function FoPositionsSection() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[40%]">Instrument</TableHead>
+                <TableHead className="w-[40%]">Instrument / MTM</TableHead>
                 <TableHead className="w-[30%]">Qty. / Type</TableHead>
                 <TableHead className="text-right w-[30%]">Overall P&L (%)</TableHead>
               </TableRow>
@@ -78,7 +92,7 @@ export function FoPositionsSection() {
                   >
                     <TableCell className="font-medium">
                         <div>{pos.instrumentName}</div>
-                        <div className="text-xs text-muted-foreground">LTP: {formatCurrency(pos.ltp)}</div>
+                        <div className={cn("text-xs", pos.mtmPnl >= 0 ? 'text-green-500' : 'text-red-500')}>MTM: {formatCurrency(pos.mtmPnl)}</div>
                     </TableCell>
                     <TableCell>
                       <div>{totalQuantity(pos).toLocaleString()} ({pos.lots} lots)</div>
@@ -102,39 +116,13 @@ export function FoPositionsSection() {
                             <Button 
                               size="sm" 
                               variant="outline" 
-                              className="flex-1 justify-center text-green-600 border-green-500 hover:bg-green-500/10 hover:text-green-700" 
-                              onClick={(e) => {
-                                  e.stopPropagation();
-                                  toast({ title: `Add Lots: ${pos.instrumentName}`});
-                              }}
-                            >
-                              <PlusCircle className="mr-2 h-4 w-4" /> Add Lots
-                            </Button>
-                            <Button 
-                              size="sm" 
-                              variant="outline" 
-                              className="flex-1 justify-center text-orange-600 border-orange-500 hover:bg-orange-500/10 hover:text-orange-700" 
-                              onClick={(e) => {
-                                  e.stopPropagation();
-                                  toast({ title: `Reduce Lots: ${pos.instrumentName}`});
-                              }}
-                            >
-                              <MinusCircle className="mr-2 h-4 w-4" /> Reduce Lots
-                            </Button>
-                            <Button 
-                              size="sm" 
-                              variant="destructive" 
                               className="flex-1 justify-center" 
                               onClick={(e) => {
                                   e.stopPropagation();
-                                  toast({ 
-                                      title: `Square Off: ${pos.instrumentName}`,
-                                      description: "This action would square off your F&O position.",
-                                      variant: "destructive"
-                                  });
+                                  handleAdjustPosition(pos);
                               }}
                             >
-                              <XCircle className="mr-2 h-4 w-4" /> Square Off Position
+                              <Settings2 className="mr-2 h-4 w-4" /> Adjust Position
                             </Button>
                           </div>
                         </div>

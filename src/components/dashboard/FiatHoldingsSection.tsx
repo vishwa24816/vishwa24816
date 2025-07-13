@@ -2,6 +2,7 @@
 "use client";
 
 import React, { useState, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   Table,
   TableBody,
@@ -15,7 +16,7 @@ import { Separator } from "@/components/ui/separator";
 import { mockPortfolioHoldings } from '@/lib/mockData';
 import type { PortfolioHolding } from '@/types';
 import { cn } from '@/lib/utils';
-import { Briefcase, Info, PlusCircle, MinusCircle, XCircle, Coins, Landmark, BarChart2, PieChart as PieChartIcon, Table2 } from 'lucide-react'; 
+import { Briefcase, Info, PlusCircle, MinusCircle, XCircle, Coins, Landmark, BarChart2, PieChart as PieChartIcon, Table2, Settings2 } from 'lucide-react'; 
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -42,14 +43,24 @@ export function FiatHoldingsSection({ mainPortfolioCashBalance, setMainPortfolio
   const [activeFilter, setActiveFilter] = useState<HoldingFilterType>('All');
   const [expandedRowId, setExpandedRowId] = useState<string | null>(null);
   const [viewType, setViewType] = useState<'table' | 'bar' | 'pie'>('table');
-  const { toast } = useToast();
+  const router = useRouter();
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
   };
 
   const handleRowClick = (holdingId: string) => {
-    setExpandedRowId(prevId => (prevId === holdingId ? null : holdingId));
+    setExpandedRowId(prevId => (prevId === holdingId ? null : prevId));
+  };
+
+  const handleAdjustPosition = (holding: PortfolioHolding) => {
+      let path = `/order/stock/${encodeURIComponent(holding.symbol || holding.name)}`;
+      if (holding.type === 'Mutual Fund') {
+          path = `/order/mutual-fund/${encodeURIComponent(holding.symbol || holding.name)}`;
+      } else if (holding.type === 'Bond') {
+          path = `/order/bond/${encodeURIComponent(holding.symbol || holding.name)}`;
+      }
+      router.push(path);
   };
 
   const filterOptions: { label: string; value: HoldingFilterType }[] = [
@@ -229,29 +240,13 @@ export function FiatHoldingsSection({ mainPortfolioCashBalance, setMainPortfolio
                                     {holding.name} ({holding.symbol || holding.type}) - Actions
                                     </h4>
                                     <div className="flex gap-2">
-                                    <Button 
+                                     <Button 
                                         size="sm" 
                                         variant="outline" 
-                                        className="flex-1 justify-center text-green-600 border-green-500 hover:bg-green-500/10 hover:text-green-700" 
-                                        onClick={(e) => { e.stopPropagation(); toast({ title: `Buy More: ${holding.symbol || holding.name}`}); }}
+                                        className="flex-1 justify-center"
+                                        onClick={(e) => { e.stopPropagation(); handleAdjustPosition(holding); }}
                                     >
-                                        <PlusCircle className="mr-2 h-4 w-4" /> Buy More
-                                    </Button>
-                                    <Button 
-                                        size="sm" 
-                                        variant="outline" 
-                                        className="flex-1 justify-center text-orange-600 border-orange-500 hover:bg-orange-500/10 hover:text-orange-700" 
-                                        onClick={(e) => { e.stopPropagation(); toast({ title: `Sell/Reduce: ${holding.symbol || holding.name}`}); }}
-                                    >
-                                        <MinusCircle className="mr-2 h-4 w-4" /> Sell/Reduce
-                                    </Button>
-                                    <Button 
-                                        size="sm" 
-                                        variant="destructive" 
-                                        className="flex-1 justify-center" 
-                                        onClick={(e) => { e.stopPropagation(); toast({ title: `Exit Position: ${holding.symbol || holding.name}`, description: "This action would close your entire position.", variant: "destructive" }); }}
-                                    >
-                                        <XCircle className="mr-2 h-4 w-4" /> Exit Position
+                                        <Settings2 className="mr-2 h-4 w-4" /> Adjust Position
                                     </Button>
                                     </div>
                                 </div>

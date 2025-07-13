@@ -2,6 +2,7 @@
 "use client";
 
 import React, { useState, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   Table,
   TableBody,
@@ -14,7 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import type { PortfolioHolding } from '@/types';
 import { cn } from '@/lib/utils';
-import { Bitcoin, PlusCircle, MinusCircle, XCircle, Coins, Landmark, BarChart2, PieChart as PieChartIcon, Table2 } from 'lucide-react';
+import { Bitcoin, PlusCircle, MinusCircle, XCircle, Coins, Landmark, BarChart2, PieChart as PieChartIcon, Table2, Settings2 } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { FundTransferDialog } from '@/components/shared/FundTransferDialog';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -54,6 +55,7 @@ export function CryptoHoldingsSection({
   const cryptoHoldings = holdings;
   const [expandedRowId, setExpandedRowId] = useState<string | null>(null);
   const { toast } = useToast();
+  const router = useRouter();
   const [isFundTransferDialogOpen, setIsFundTransferDialogOpen] = useState(false);
   const [transferDirection, setTransferDirection] = useState<'toCrypto' | 'fromCrypto'>('toCrypto');
   const [currencyMode, setCurrencyMode] = useState<'INR' | 'USDT'>('INR');
@@ -139,6 +141,10 @@ export function CryptoHoldingsSection({
   const tickFormatter = (value: string) => {
     return chartConfig[value]?.label || value;
   }
+  
+  const handleAdjustPosition = (holding: PortfolioHolding) => {
+      router.push(`/order/crypto/${encodeURIComponent(holding.symbol || holding.name)}`);
+  };
 
   if (cryptoHoldings.length === 0 && cashBalance === 0) {
     return (
@@ -275,14 +281,13 @@ export function CryptoHoldingsSection({
                                 <div className="p-4 space-y-3">
                                   <h4 className="font-semibold text-md text-foreground">{holding.name} ({holding.symbol || holding.type}) - Actions</h4>
                                   <div className="flex gap-2">
-                                    <Button size="sm" variant="outline" className="flex-1 justify-center text-green-600 border-green-500 hover:bg-green-500/10 hover:text-green-700" onClick={(e) => { e.stopPropagation(); toast({ title: `Buy More: ${holding.symbol || holding.name}` }); }}>
-                                      <PlusCircle className="mr-2 h-4 w-4" /> Buy More
-                                    </Button>
-                                    <Button size="sm" variant="outline" className="flex-1 justify-center text-orange-600 border-orange-500 hover:bg-orange-500/10 hover:text-orange-700" onClick={(e) => { e.stopPropagation(); toast({ title: `Sell/Reduce: ${holding.symbol || holding.name}` }); }}>
-                                      <MinusCircle className="mr-2 h-4 w-4" /> Sell/Reduce
-                                    </Button>
-                                    <Button size="sm" variant="destructive" className="flex-1 justify-center" onClick={(e) => { e.stopPropagation(); toast({ title: `Exit Position: ${holding.symbol || holding.name}`, description: "This action would close your entire position.", variant: "destructive" }); }}>
-                                      <XCircle className="mr-2 h-4 w-4" /> Exit Position
+                                     <Button 
+                                        size="sm" 
+                                        variant="outline" 
+                                        className="flex-1 justify-center"
+                                        onClick={(e) => { e.stopPropagation(); handleAdjustPosition(holding); }}
+                                    >
+                                        <Settings2 className="mr-2 h-4 w-4" /> Adjust Position
                                     </Button>
                                   </div>
                                 </div>

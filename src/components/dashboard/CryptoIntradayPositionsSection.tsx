@@ -1,6 +1,8 @@
+
 "use client";
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   Table,
   TableBody,
@@ -12,9 +14,9 @@ import {
 import { Button } from "@/components/ui/button";
 import type { IntradayPosition } from '@/types';
 import { cn } from '@/lib/utils';
-import { TrendingUp, PlusCircle, MinusCircle, XCircle } from 'lucide-react';
+import { TrendingUp, PlusCircle, MinusCircle, XCircle, Settings2 } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface CryptoIntradayPositionsSectionProps {
   positions: IntradayPosition[];
@@ -22,7 +24,7 @@ interface CryptoIntradayPositionsSectionProps {
 
 export function CryptoIntradayPositionsSection({ positions }: CryptoIntradayPositionsSectionProps) {
   const [expandedRowId, setExpandedRowId] = useState<string | null>(null);
-  const { toast } = useToast();
+  const router = useRouter();
 
   const formatCurrency = (value: number) => {
      return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
@@ -30,6 +32,10 @@ export function CryptoIntradayPositionsSection({ positions }: CryptoIntradayPosi
 
   const handleRowClick = (positionId: string) => {
     setExpandedRowId(prevId => (prevId === positionId ? null : positionId));
+  };
+  
+  const handleAdjustPosition = (pos: IntradayPosition) => {
+      router.push(`/order/crypto/${encodeURIComponent(pos.symbol)}`);
   };
 
   const totalPandL = positions.reduce((acc, pos) => acc + pos.pAndL, 0);
@@ -56,7 +62,7 @@ export function CryptoIntradayPositionsSection({ positions }: CryptoIntradayPosi
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[40%]">Instrument</TableHead>
+                <TableHead className="w-[40%]">Instrument / LTP</TableHead>
                 <TableHead className="w-[30%]">Qty. / Type</TableHead>
                 <TableHead className="text-right w-[30%]">P&L (%)</TableHead>
               </TableRow>
@@ -99,39 +105,13 @@ export function CryptoIntradayPositionsSection({ positions }: CryptoIntradayPosi
                             <Button 
                               size="sm" 
                               variant="outline" 
-                              className="flex-1 justify-center text-green-600 border-green-500 hover:bg-green-500/10 hover:text-green-700" 
-                              onClick={(e) => {
-                                  e.stopPropagation();
-                                  toast({ title: `Add to ${pos.symbol}`, description: "Action for adding more to this intraday position."});
-                              }}
-                            >
-                              <PlusCircle className="mr-2 h-4 w-4" /> Add Quantity
-                            </Button>
-                            <Button 
-                              size="sm" 
-                              variant="outline" 
-                              className="flex-1 justify-center text-orange-600 border-orange-500 hover:bg-orange-500/10 hover:text-orange-700" 
-                              onClick={(e) => {
-                                  e.stopPropagation();
-                                  toast({ title: `Reduce from ${pos.symbol}`, description: "Action for reducing quantity from this intraday position."});
-                              }}
-                            >
-                              <MinusCircle className="mr-2 h-4 w-4" /> Reduce Quantity
-                            </Button>
-                            <Button 
-                              size="sm" 
-                              variant="destructive" 
                               className="flex-1 justify-center" 
                               onClick={(e) => {
                                   e.stopPropagation();
-                                  toast({ 
-                                      title: `Square Off: ${pos.symbol}`,
-                                      description: "This action would square off your intraday position.",
-                                      variant: "destructive"
-                                  });
+                                  handleAdjustPosition(pos);
                               }}
                             >
-                              <XCircle className="mr-2 h-4 w-4" /> Square Off
+                              <Settings2 className="mr-2 h-4 w-4" /> Adjust Position
                             </Button>
                           </div>
                         </div>

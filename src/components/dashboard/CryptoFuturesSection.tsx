@@ -1,6 +1,8 @@
+
 "use client";
 
 import React, { useState, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   Table,
   TableBody,
@@ -12,7 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import type { CryptoFuturePosition } from '@/types';
 import { cn } from '@/lib/utils';
-import { Repeat, PlusCircle, MinusCircle, XCircle, Table2, BarChart2, PieChart as PieChartIcon } from 'lucide-react';
+import { Repeat, PlusCircle, MinusCircle, XCircle, Table2, BarChart2, PieChart as PieChartIcon, Settings2 } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -36,7 +38,7 @@ const slugify = (str: string) => str.toLowerCase().replace(/[^a-z0-9]+/g, '-').r
 export function CryptoFuturesSection({ positions, cashBalance }: CryptoFuturesSectionProps) {
   const [expandedRowId, setExpandedRowId] = useState<string | null>(null);
   const [viewType, setViewType] = useState<'table' | 'bar' | 'pie'>('table');
-  const { toast } = useToast();
+  const router = useRouter();
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
@@ -92,6 +94,10 @@ export function CryptoFuturesSection({ positions, cashBalance }: CryptoFuturesSe
   const tickFormatter = (value: string) => {
     return chartConfig[value]?.label || value;
   }
+  
+  const handleAdjustPosition = (pos: CryptoFuturePosition) => {
+      router.push(`/order/crypto-future/${encodeURIComponent(pos.symbol)}`);
+  };
 
   return (
     <Card className="shadow-md">
@@ -138,11 +144,11 @@ export function CryptoFuturesSection({ positions, cashBalance }: CryptoFuturesSe
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Symbol / Mark Price</TableHead>
+                  <TableHead>Symbol / Mark</TableHead>
                   <TableHead>Side / Qty</TableHead>
-                  <TableHead>Entry / Liq. Price</TableHead>
-                  <TableHead className="text-right">P&L (MTM / Overall)</TableHead>
-                  <TableHead className="text-right">Margin / Leverage</TableHead>
+                  <TableHead>Entry / Liq.</TableHead>
+                  <TableHead className="text-right">MTM / P&L</TableHead>
+                  <TableHead className="text-right">Margin / Lev</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -190,39 +196,13 @@ export function CryptoFuturesSection({ positions, cashBalance }: CryptoFuturesSe
                               <Button 
                                 size="sm" 
                                 variant="outline" 
-                                className="flex-1 justify-center text-green-600 border-green-500 hover:bg-green-500/10 hover:text-green-700" 
+                                className="flex-1 justify-center"
                                 onClick={(e) => {
                                     e.stopPropagation();
-                                    toast({ title: `Increase Position: ${pos.symbol}`});
+                                    handleAdjustPosition(pos);
                                 }}
                               >
-                                <PlusCircle className="mr-2 h-4 w-4" /> Increase Position
-                              </Button>
-                              <Button 
-                                size="sm" 
-                                variant="outline" 
-                                className="flex-1 justify-center text-orange-600 border-orange-500 hover:bg-orange-500/10 hover:text-orange-700" 
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    toast({ title: `Reduce Position: ${pos.symbol}`});
-                                }}
-                              >
-                                <MinusCircle className="mr-2 h-4 w-4" /> Reduce Position
-                              </Button>
-                              <Button 
-                                size="sm" 
-                                variant="destructive" 
-                                className="flex-1 justify-center" 
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    toast({ 
-                                        title: `Close Position: ${pos.symbol}`,
-                                        description: "This action would close your crypto future position.",
-                                        variant: "destructive"
-                                    });
-                                }}
-                              >
-                                <XCircle className="mr-2 h-4 w-4" /> Close Position
+                                <Settings2 className="mr-2 h-4 w-4" /> Adjust Position
                               </Button>
                             </div>
                           </div>
