@@ -6,6 +6,7 @@ import type { SelectedOptionLeg } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
 import { Trash2, Edit, Copy, BarChart2 as PayoffIcon, BookOpen, Scaling } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
@@ -66,6 +67,7 @@ const generatePayoffData = (legs: SelectedOptionLeg[]) => {
 export function StrategyBuilder({ legs, setLegs }: StrategyBuilderProps) {
     const { toast } = useToast();
     const [editingLegId, setEditingLegId] = useState<string | null>(null);
+    const [strategyName, setStrategyName] = useState('');
 
     const removeLeg = (id: string) => {
         setLegs(legs.filter(leg => leg.id !== id));
@@ -97,12 +99,27 @@ export function StrategyBuilder({ legs, setLegs }: StrategyBuilderProps) {
             ) : (
                 <Card>
                     <CardContent className="p-4 space-y-4">
-                        {/* Selected Legs */}
-                        <div className="space-y-2">
-                            <div className="flex items-center space-x-3">
-                                <Checkbox id="select-all-legs" />
-                                <Label htmlFor="select-all-legs" className="text-sm font-medium">Select All</Label>
+                        
+                        {legs.length >= 2 && (
+                             <div className="space-y-2">
+                                <Label htmlFor="strategy-name">Strategy Name</Label>
+                                <Input 
+                                    id="strategy-name"
+                                    type="text"
+                                    value={strategyName}
+                                    onChange={e => setStrategyName(e.target.value)}
+                                    placeholder="e.g., Nifty Bullish Spread"
+                                />
                             </div>
+                        )}
+
+                        <div className="space-y-2">
+                            {legs.length > 1 && (
+                                <div className="flex items-center space-x-3">
+                                    <Checkbox id="select-all-legs" />
+                                    <Label htmlFor="select-all-legs" className="text-sm font-medium">Select All</Label>
+                                </div>
+                            )}
                             {legs.map(leg => (
                                 <React.Fragment key={leg.id}>
                                 <div className="flex items-center space-x-2 p-2 rounded-md hover:bg-muted/50">
