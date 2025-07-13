@@ -1,152 +1,170 @@
-
 "use client";
 
-import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import React, { useState, useMemo } from 'react';
 import { Button } from "@/components/ui/button";
-import { TrendingUp, TrendingDown, Minus, Shuffle, Zap, ShieldCheck, Route } from 'lucide-react'; // Added Zap, ShieldCheck, Route
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Card, CardContent } from "@/components/ui/card";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { cn } from '@/lib/utils';
 import { useToast } from "@/hooks/use-toast";
+import { mockUnderlyings } from '@/lib/mockData';
 
-interface OptionStrategy {
+type StrategyType = 'bullish' | 'bearish' | 'non-directional';
+
+interface Strategy {
   id: string;
   name: string;
-  description: string;
-  type: 'bullish' | 'bearish' | 'neutral' | 'volatile';
-  complexity: 'simple' | 'moderate' | 'advanced';
-  icon: React.ElementType;
+  type: StrategyType;
+  payoffGraph: React.ReactNode;
 }
 
-const strategies: OptionStrategy[] = [
-  {
-    id: 'bull-call-spread',
-    name: 'Bull Call Spread',
-    description: 'Buy a call, sell a higher strike call. Limited profit, limited risk.',
-    type: 'bullish',
-    complexity: 'simple',
-    icon: TrendingUp,
-  },
-  {
-    id: 'bear-put-spread',
-    name: 'Bear Put Spread',
-    description: 'Buy a put, sell a lower strike put. Limited profit, limited risk.',
-    type: 'bearish',
-    complexity: 'simple',
-    icon: TrendingDown,
-  },
-  {
-    id: 'long-straddle',
-    name: 'Long Straddle',
-    description: 'Buy a call and a put at the same strike. Profits from large price moves.',
-    type: 'volatile',
-    complexity: 'moderate',
-    icon: Shuffle,
-  },
-  {
-    id: 'long-strangle',
-    name: 'Long Strangle',
-    description: 'Buy an OTM call and an OTM put. Cheaper than straddle, needs larger move.',
-    type: 'volatile',
-    complexity: 'moderate',
-    icon: Zap,
-  },
-  {
-    id: 'iron-condor',
-    name: 'Iron Condor',
-    description: 'Sell OTM call spread & put spread. Profits if stock stays in range.',
-    type: 'neutral',
-    complexity: 'advanced',
-    icon: Minus,
-  },
-  {
-    id: 'covered-call',
-    name: 'Covered Call',
-    description: 'Own stock, sell a call option. Generates income, limits upside.',
-    type: 'neutral', // or slightly bullish
-    complexity: 'simple',
-    icon: ShieldCheck,
-  },
-  {
-    id: 'protective-put',
-    name: 'Protective Put',
-    description: 'Own stock, buy a put option. Limits downside risk, like insurance.',
-    type: 'bullish', // as it's a hedge on a long stock position
-    complexity: 'simple',
-    icon: Route,
-  }
+const strategies: Strategy[] = [
+  { id: 'long-call', name: 'Long Call', type: 'bullish', payoffGraph: <svg viewBox="0 0 20 10"><path d="M0 5 L5 5 L15 0" stroke="hsl(var(--positive))" strokeWidth="0.5" fill="none"/><path d="M0 5 L5 5 L15 10" stroke="hsl(var(--destructive))" strokeWidth="0.5" fill="none"/></svg> },
+  { id: 'short-put', name: 'Short Put', type: 'bullish', payoffGraph: <svg viewBox="0 0 20 10"><path d="M0 10 L5 5 L15 5" stroke="hsl(var(--positive))" strokeWidth="0.5" fill="none"/><path d="M0 0 L5 5" stroke="hsl(var(--destructive))" strokeWidth="0.5" fill="none"/></svg> },
+  { id: 'bull-call-spread', name: 'Bull Call Spread', type: 'bullish', payoffGraph: <svg viewBox="0 0 20 10"><path d="M0 6 L5 6 L10 1 L15 1" stroke="hsl(var(--positive))" strokeWidth="0.5" fill="none"/><path d="M0 4 L5 4 L10 9" stroke="hsl(var(--destructive))" strokeWidth="0.5" fill="none"/></svg> },
+  { id: 'bull-put-spread', name: 'Bull Put Spread', type: 'bullish', payoffGraph: <svg viewBox="0 0 20 10"><path d="M0 9 L5 4 L10 4" stroke="hsl(var(--positive))" strokeWidth="0.5" fill="none"/><path d="M0 1 L5 6 L10 6" stroke="hsl(var(--destructive))" strokeWidth="0.5" fill="none"/></svg> },
+  { id: 'call-ratio-back', name: 'Call Ratio Back Spread', type: 'bullish', payoffGraph: <svg viewBox="0 0 20 10"><path d="M0 6 L8 6 L15 0" stroke="hsl(var(--positive))" strokeWidth="0.5" fill="none"/><path d="M0 4 L8 4 L15 10" stroke="hsl(var(--destructive))" strokeWidth="0.5" fill="none"/></svg> },
+  { id: 'long-synthetic', name: 'Long Synthetic', type: 'bullish', payoffGraph: <svg viewBox="0 0 20 10"><path d="M0 10 L15 0" stroke="hsl(var(--positive))" strokeWidth="0.5" fill="none"/><path d="M0 0 L15 10" stroke="hsl(var(--destructive))" strokeWidth="0.5" fill="none"/></svg> },
+  { id: 'range-forward', name: 'Range Forward', type: 'bullish', payoffGraph: <svg viewBox="0 0 20 10"><path d="M3 8 L15 2" stroke="hsl(var(--positive))" strokeWidth="0.5" fill="none"/><path d="M3 2 L15 8" stroke="hsl(var(--destructive))" strokeWidth="0.5" fill="none"/></svg> },
+  { id: 'bullish-butterfly', name: 'Bullish Butterfly', type: 'bearish', payoffGraph: <svg viewBox="0 0 20 10"><path d="M0 5 L5 1 L10 5 L15 5" stroke="hsl(var(--positive))" strokeWidth="0.5" fill="none"/><path d="M0 5 L15 5" stroke="hsl(var(--destructive))" strokeWidth="0.5" fill="none"/></svg> },
+  { id: 'bullish-condor', name: 'Bullish Condor', type: 'non-directional', payoffGraph: <svg viewBox="0 0 20 10"><path d="M3 5 L7 2 L12 2 L16 5" stroke="hsl(var(--positive))" strokeWidth="0.5" fill="none"/><path d="M0 5 L3 5 M16 5 L20 5" stroke="hsl(var(--destructive))" strokeWidth="0.5" fill="none"/></svg> },
 ];
 
-const getStrategyTypeColor = (type: OptionStrategy['type']) => {
-  switch (type) {
-    case 'bullish': return 'text-green-600 dark:text-green-500';
-    case 'bearish': return 'text-red-600 dark:text-red-500';
-    case 'neutral': return 'text-blue-600 dark:text-blue-500';
-    case 'volatile': return 'text-purple-600 dark:text-purple-500';
-    default: return 'text-muted-foreground';
-  }
-};
+const InfoBadge = ({ label, value, colorClass }: { label: string, value: string | number, colorClass: string }) => (
+  <div className={cn("text-xs px-2.5 py-1.5 rounded-md flex justify-center items-center font-medium", colorClass)}>
+    {label}: {value}
+  </div>
+);
 
 export function ReadymadeStrategiesSection() {
   const { toast } = useToast();
+  const [selectedUnderlying, setSelectedUnderlying] = useState('NIFTY');
+  const [activeFilter, setActiveFilter] = useState<StrategyType>('bullish');
+  const [lotQty, setLotQty] = useState(1);
 
+  const underlyingData = useMemo(() => {
+    // This would fetch real data in a real app
+    const baseData = {
+        NIFTY: { spot: 24841.5, futures: 24859, lotSize: 75, iv: 16.39, ivPercentile: 82.8, dte: 0 },
+        BANKNIFTY: { spot: 47500.2, futures: 47550, lotSize: 15, iv: 18.5, ivPercentile: 75.1, dte: 0 },
+        BTC: { spot: 65123.4, futures: 65180, lotSize: 1, iv: 65.2, ivPercentile: 60.5, dte: 1 },
+        ETH: { spot: 3456.7, futures: 3460, lotSize: 1, iv: 72.8, ivPercentile: 68.3, dte: 1 },
+    };
+    return baseData[selectedUnderlying as keyof typeof baseData] || baseData.NIFTY;
+  }, [selectedUnderlying]);
+
+  const filteredStrategies = strategies.filter(s => s.type === activeFilter);
+  
   const handleStrategyClick = (strategyName: string) => {
     toast({
-      title: "Strategy Selected (Mock)",
-      description: `Exploring ${strategyName}. Further details and execution options would appear here.`,
+      title: "Strategy Selected",
+      description: `${strategyName} selected for ${selectedUnderlying}. Legs would be added to builder.`,
     });
   };
+  
+  const handlePlaceFutureOrder = () => {
+     toast({
+      title: "Futures Order Placed (Mock)",
+      description: `Order placed for ${lotQty} lot(s) of ${selectedUnderlying} futures.`,
+    });
+  }
 
   return (
-    <section className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-semibold font-headline text-primary">
-          Readymade Option Strategies
-        </h2>
-      </div>
-      <p className="text-muted-foreground">
-        Explore common option strategies. Click on a strategy to learn more or (mock) initiate.
-      </p>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 xl:gap-6">
-        {strategies.map((strategy) => (
-          <Card 
-            key={strategy.id} 
-            className="shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col cursor-pointer"
-            onClick={() => handleStrategyClick(strategy.name)}
-            data-ai-hint={`${strategy.type} option strategy ${strategy.name.toLowerCase().replace(/\s+/g, ' ')}`}
-          >
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-lg font-semibold">{strategy.name}</CardTitle>
-                <strategy.icon className={`h-6 w-6 ${getStrategyTypeColor(strategy.type)}`} />
+    <div className="space-y-6">
+      <Card className="p-4">
+        <div className="space-y-4">
+          <Select value={selectedUnderlying} onValueChange={setSelectedUnderlying}>
+            <SelectTrigger className="w-full sm:w-[280px]">
+              <SelectValue placeholder="Select Index/Stock" />
+            </SelectTrigger>
+            <SelectContent>
+              {mockUnderlyings.map(u => (
+                <SelectItem key={u.id} value={u.symbol}>{u.name}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
+            <InfoBadge label="Spot Price" value={underlyingData.spot} colorClass="bg-cyan-100 text-cyan-800" />
+            <InfoBadge label="Futures Price" value={underlyingData.futures} colorClass="bg-orange-100 text-orange-800" />
+            <InfoBadge label="Lot Size" value={underlyingData.lotSize} colorClass="bg-lime-100 text-lime-800" />
+            <InfoBadge label="IV" value={underlyingData.iv} colorClass="bg-yellow-100 text-yellow-800" />
+            <InfoBadge label="IV Percentile" value={underlyingData.ivPercentile} colorClass="bg-purple-100 text-purple-800" />
+            <InfoBadge label="DTE" value={underlyingData.dte} colorClass="bg-red-100 text-red-800" />
+          </div>
+          
+          <div>
+            <p className="text-sm text-muted-foreground mb-1">Select Pay-off Date</p>
+            <p className="text-lg font-semibold">17-06-2025</p>
+          </div>
+        </div>
+      </Card>
+      
+      <div className="flex flex-col md:flex-row gap-6">
+        <div className="flex md:flex-col gap-2 w-full md:w-40 shrink-0">
+          {(['bullish', 'bearish', 'non-directional'] as StrategyType[]).map(type => (
+            <Button
+              key={type}
+              onClick={() => setActiveFilter(type)}
+              variant={activeFilter === type ? 'default' : 'outline'}
+              className={cn("capitalize w-full justify-center py-3", 
+                activeFilter === type && type === 'bullish' && 'bg-green-600 hover:bg-green-700',
+                activeFilter === type && type === 'bearish' && 'bg-red-600 hover:bg-red-700',
+              )}
+            >
+              {type}
+            </Button>
+          ))}
+        </div>
+        
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 flex-grow">
+          {filteredStrategies.map(strategy => (
+            <Card 
+              key={strategy.id} 
+              className="flex flex-col items-center justify-center p-2 text-center cursor-pointer hover:shadow-md hover:border-primary"
+              onClick={() => handleStrategyClick(strategy.name)}
+            >
+              <div className="w-full h-16 bg-muted/50 rounded-md mb-2 flex items-center justify-center p-1">
+                {strategy.payoffGraph}
               </div>
-            </CardHeader>
-            <CardContent className="flex-grow space-y-2">
-              <CardDescription className="text-sm min-h-[60px]">{strategy.description}</CardDescription>
-              <div className="flex justify-between items-center text-xs pt-2">
-                <span className={`font-medium capitalize px-2 py-0.5 rounded-full ${
-                  strategy.type === 'bullish' ? 'bg-green-100 text-green-700 dark:bg-green-700/30 dark:text-green-300' :
-                  strategy.type === 'bearish' ? 'bg-red-100 text-red-700 dark:bg-red-700/30 dark:text-red-300' :
-                  strategy.type === 'neutral' ? 'bg-blue-100 text-blue-700 dark:bg-blue-700/30 dark:text-blue-300' :
-                  'bg-purple-100 text-purple-700 dark:bg-purple-700/30 dark:text-purple-300'
-                }`}>
-                  {strategy.type}
-                </span>
-                <span className={`font-medium capitalize px-2 py-0.5 rounded-full ${
-                    strategy.complexity === 'simple' ? 'bg-gray-100 text-gray-700 dark:bg-gray-700/30 dark:text-gray-300' :
-                    strategy.complexity === 'moderate' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-700/30 dark:text-yellow-300' :
-                    'bg-orange-100 text-orange-700 dark:bg-orange-700/30 dark:text-orange-300'
-                }`}>
-                  {strategy.complexity}
-                </span>
-              </div>
-            </CardContent>
-            {/* <CardFooter className="pt-3">
-              <Button variant="outline" size="sm" className="w-full">
-                Explore Strategy
-              </Button>
-            </CardFooter> */}
-          </Card>
-        ))}
+              <p className="text-xs font-medium">{strategy.name}</p>
+            </Card>
+          ))}
+        </div>
       </div>
-    </section>
+      
+      <Card className="p-4 space-y-4">
+        <h3 className="text-lg font-semibold">Futures</h3>
+        <Select defaultValue="futures">
+            <SelectTrigger><SelectValue placeholder="Select Segment" /></SelectTrigger>
+            <SelectContent><SelectItem value="futures">Futures</SelectItem></SelectContent>
+        </Select>
+        <Select defaultValue="26JUN2025">
+            <SelectTrigger><SelectValue placeholder="Select Expiry" /></SelectTrigger>
+            <SelectContent><SelectItem value="26JUN2025">26JUN2025</SelectItem></SelectContent>
+        </Select>
+        <RadioGroup defaultValue="buy" className="flex space-x-4">
+            <div className="flex items-center space-x-2"><RadioGroupItem value="buy" id="f-buy" /><Label htmlFor="f-buy">Buy</Label></div>
+            <div className="flex items-center space-x-2"><RadioGroupItem value="sell" id="f-sell" /><Label htmlFor="f-sell">Sell</Label></div>
+        </RadioGroup>
+        <div className="flex items-center justify-between">
+            <Label>Lot Qty.</Label>
+            <div className="flex items-center border rounded-md">
+                <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => setLotQty(q => Math.max(1, q - 1))}>-</Button>
+                <Input type="number" value={lotQty} onChange={e => setLotQty(Number(e.target.value))} className="w-14 h-8 text-center border-x border-y-0 rounded-none focus-visible:ring-0" />
+                <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => setLotQty(q => q + 1)}>+</Button>
+            </div>
+        </div>
+        <Button className="w-full" onClick={handlePlaceFutureOrder}>Place Order</Button>
+      </Card>
+    </div>
   );
 }
