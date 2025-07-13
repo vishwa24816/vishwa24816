@@ -286,8 +286,7 @@ export function CryptoHoldingsSection({
                           {expandedRowId === holding.id && (
                             <TableRow className="bg-muted/50 hover:bg-muted/60 data-[state=selected]:bg-muted/70">
                               <TableCell colSpan={4} className="p-0">
-                                <div className="p-4 space-y-3">
-                                  <h4 className="font-semibold text-md text-foreground">{holding.name} ({holding.symbol || holding.type}) - Actions</h4>
+                                <div className="p-4">
                                   <div className="flex gap-2">
                                      <Button 
                                         size="sm" 

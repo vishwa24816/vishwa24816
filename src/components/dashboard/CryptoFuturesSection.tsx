@@ -197,10 +197,7 @@ export function CryptoFuturesSection({ positions, cashBalance }: CryptoFuturesSe
                     {expandedRowId === pos.id && (
                       <TableRow className="bg-muted/50 hover:bg-muted/60">
                         <TableCell colSpan={5} className="p-0">
-                          <div className="p-4 space-y-3">
-                            <h4 className="font-semibold text-md text-foreground">
-                              {pos.symbol} ({pos.positionSide}) - Actions
-                            </h4>
+                          <div className="p-4">
                             <div className="flex gap-2">
                               <Button 
                                 size="sm" 

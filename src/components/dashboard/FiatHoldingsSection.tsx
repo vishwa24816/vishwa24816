@@ -244,27 +244,24 @@ export function FiatHoldingsSection({ mainPortfolioCashBalance, setMainPortfolio
                             {expandedRowId === holding.id && (
                             <TableRow className="bg-muted/50 hover:bg-muted/60 data-[state=selected]:bg-muted/70">
                                 <TableCell colSpan={4} className="p-0">
-                                <div className="p-4 space-y-3">
-                                    <h4 className="font-semibold text-md text-foreground">
-                                    {holding.name} ({holding.symbol || holding.type}) - Actions
-                                    </h4>
+                                <div className="p-4">
                                     <div className="flex gap-2">
-                                     <Button 
-                                        size="sm" 
-                                        variant="outline" 
-                                        className="flex-1 justify-center"
-                                        onClick={(e) => { e.stopPropagation(); handleAdjustPosition(holding); }}
-                                    >
-                                        <Settings2 className="mr-2 h-4 w-4" /> Adjust Position
-                                    </Button>
-                                    <Button 
-                                        size="sm" 
-                                        variant="destructive" 
-                                        className="flex-1 justify-center"
-                                        onClick={(e) => { e.stopPropagation(); handleExitPosition(holding); }}
-                                    >
-                                        <XCircle className="mr-2 h-4 w-4" /> Exit Position
-                                    </Button>
+                                        <Button 
+                                            size="sm" 
+                                            variant="outline" 
+                                            className="flex-1 justify-center"
+                                            onClick={(e) => { e.stopPropagation(); handleAdjustPosition(holding); }}
+                                        >
+                                            <Settings2 className="mr-2 h-4 w-4" /> Adjust Position
+                                        </Button>
+                                        <Button 
+                                            size="sm" 
+                                            variant="destructive" 
+                                            className="flex-1 justify-center"
+                                            onClick={(e) => { e.stopPropagation(); handleExitPosition(holding); }}
+                                        >
+                                            <XCircle className="mr-2 h-4 w-4" /> Exit Position
+                                        </Button>
                                     </div>
                                 </div>
                                 </TableCell>
