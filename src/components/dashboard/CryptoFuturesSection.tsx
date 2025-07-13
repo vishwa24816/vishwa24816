@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useMemo } from 'react';
@@ -139,16 +138,11 @@ export function CryptoFuturesSection({ positions, cashBalance }: CryptoFuturesSe
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Symbol</TableHead>
-                  <TableHead>Side</TableHead>
-                  <TableHead className="text-right">Qty.</TableHead>
-                  <TableHead className="text-right">Entry Price</TableHead>
-                  <TableHead className="text-right">Mark Price</TableHead>
-                  <TableHead className="text-right">Liq. Price</TableHead>
-                  <TableHead className="text-right">MTM P&L</TableHead>
-                  <TableHead className="text-right">Overall P&L</TableHead>
-                  <TableHead className="text-right">Margin (INR)</TableHead>
-                  <TableHead className="text-right">Leverage</TableHead>
+                  <TableHead>Symbol / Mark Price</TableHead>
+                  <TableHead>Side / Qty</TableHead>
+                  <TableHead>Entry / Liq. Price</TableHead>
+                  <TableHead className="text-right">P&L (MTM / Overall)</TableHead>
+                  <TableHead className="text-right">Margin / Leverage</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -158,26 +152,36 @@ export function CryptoFuturesSection({ positions, cashBalance }: CryptoFuturesSe
                       onClick={() => handleRowClick(pos.id)}
                       className="cursor-pointer"
                     >
-                      <TableCell className="font-medium">{pos.symbol}</TableCell>
-                      <TableCell className={cn(pos.positionSide === 'LONG' ? 'text-green-600' : 'text-red-600')}>
-                        {pos.positionSide}
+                      <TableCell className="font-medium">
+                        <div>{pos.symbol}</div>
+                        <div className="text-xs text-muted-foreground">Mark: {formatPrice(pos.markPrice)}</div>
                       </TableCell>
-                      <TableCell className="text-right">{pos.quantity.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 4})}</TableCell>
-                      <TableCell className="text-right">{formatPrice(pos.entryPrice)}</TableCell>
-                      <TableCell className="text-right">{formatPrice(pos.markPrice)}</TableCell>
-                      <TableCell className="text-right">{pos.liquidationPrice ? formatPrice(pos.liquidationPrice) : '-'}</TableCell>
-                       <TableCell className={cn("text-right", pos.mtmPnl >= 0 ? 'text-green-600' : 'text-red-600')}>
-                        {formatCurrency(pos.mtmPnl)}
+                      <TableCell>
+                        <div className={cn(pos.positionSide === 'LONG' ? 'text-green-600' : 'text-red-600')}>
+                          {pos.positionSide}
+                        </div>
+                        <div className="text-xs text-muted-foreground">Qty: {pos.quantity.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 4})}</div>
                       </TableCell>
-                      <TableCell className={cn("text-right", pos.unrealizedPnL >= 0 ? 'text-green-600' : 'text-red-600')}>
-                        {formatCurrency(pos.unrealizedPnL)}
+                      <TableCell>
+                        <div>{formatPrice(pos.entryPrice)}</div>
+                        <div className="text-xs text-muted-foreground">Liq: {pos.liquidationPrice ? formatPrice(pos.liquidationPrice) : '-'}</div>
                       </TableCell>
-                      <TableCell className="text-right">{formatPrice(pos.margin)}</TableCell>
-                      <TableCell className="text-right">{pos.leverage}x</TableCell>
+                      <TableCell className="text-right">
+                        <div className={cn(pos.mtmPnl >= 0 ? 'text-green-600' : 'text-red-600')}>
+                          {formatCurrency(pos.mtmPnl)}
+                        </div>
+                        <div className={cn("text-xs", pos.unrealizedPnL >= 0 ? 'text-green-500' : 'text-red-500')}>
+                          {formatCurrency(pos.unrealizedPnL)}
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div>{formatPrice(pos.margin)}</div>
+                        <div className="text-xs text-muted-foreground">{pos.leverage}x</div>
+                      </TableCell>
                     </TableRow>
                     {expandedRowId === pos.id && (
                       <TableRow className="bg-muted/50 hover:bg-muted/60">
-                        <TableCell colSpan={10} className="p-0">
+                        <TableCell colSpan={5} className="p-0">
                           <div className="p-4 space-y-3">
                             <h4 className="font-semibold text-md text-foreground">
                               {pos.symbol} ({pos.positionSide}) - Actions
