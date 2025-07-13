@@ -67,6 +67,9 @@ const InfoBadge = ({ label, value, colorClass }: { label: string, value: string 
   </div>
 );
 
+// Helper to generate a random mock greek value
+const mockGreek = (base: number) => base * (Math.random() * 0.4 + 0.8);
+
 interface StrategyDialogProps {
     strategy: Strategy | null;
     underlyingSymbol: string;
@@ -82,17 +85,16 @@ const StrategyDialog: React.FC<StrategyDialogProps> = ({ strategy, underlyingSym
     const handleCreate = () => {
         if (!strategy) return;
 
-        // Simplified leg creation logic for demonstration
         const legs: SelectedOptionLeg[] = [];
         const strikePrice1 = parseFloat(strike1);
         const strikePrice2 = parseFloat(strike2);
 
         // This is a mock implementation. A real one would be more complex.
         if (strategy.name === 'Long Call' && !isNaN(strikePrice1)) {
-            legs.push({ id: `leg1-${Date.now()}`, underlyingSymbol, instrumentName: `${underlyingSymbol} ${strikePrice1} CE`, expiryDate: '25 JUL 2024', strikePrice: strikePrice1, optionType: 'Call', action: 'Buy', ltp: 100, quantity: 1 });
+            legs.push({ id: `leg1-${Date.now()}`, underlyingSymbol, instrumentName: `${underlyingSymbol} ${strikePrice1} CE`, expiryDate: '25 JUL 2024', strikePrice: strikePrice1, optionType: 'Call', action: 'Buy', ltp: 100, quantity: 1, delta: mockGreek(0.5), gamma: mockGreek(0.02), theta: mockGreek(-5), vega: mockGreek(2) });
         } else if (strategy.name === 'Bull Call Spread' && !isNaN(strikePrice1) && !isNaN(strikePrice2)) {
-            legs.push({ id: `leg1-${Date.now()}`, underlyingSymbol, instrumentName: `${underlyingSymbol} ${strikePrice1} CE`, expiryDate: '25 JUL 2024', strikePrice: strikePrice1, optionType: 'Call', action: 'Buy', ltp: 120, quantity: 1 });
-            legs.push({ id: `leg2-${Date.now()}`, underlyingSymbol, instrumentName: `${underlyingSymbol} ${strikePrice2} CE`, expiryDate: '25 JUL 2024', strikePrice: strikePrice2, optionType: 'Call', action: 'Sell', ltp: 80, quantity: 1 });
+            legs.push({ id: `leg1-${Date.now()}`, underlyingSymbol, instrumentName: `${underlyingSymbol} ${strikePrice1} CE`, expiryDate: '25 JUL 2024', strikePrice: strikePrice1, optionType: 'Call', action: 'Buy', ltp: 120, quantity: 1, delta: mockGreek(0.6), gamma: mockGreek(0.018), theta: mockGreek(-4.5), vega: mockGreek(2.2) });
+            legs.push({ id: `leg2-${Date.now()}`, underlyingSymbol, instrumentName: `${underlyingSymbol} ${strikePrice2} CE`, expiryDate: '25 JUL 2024', strikePrice: strikePrice2, optionType: 'Call', action: 'Sell', ltp: 80, quantity: 1, delta: mockGreek(0.4), gamma: mockGreek(0.015), theta: mockGreek(-3.8), vega: mockGreek(1.8) });
         }
         // ... add logic for other strategies
 

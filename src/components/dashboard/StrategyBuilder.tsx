@@ -12,6 +12,7 @@ import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from '@/components/ui/badge';
 import { ChartContainer, Chart } from "@/components/ui/chart";
 import { EditLegForm } from './EditLegForm'; 
@@ -89,6 +90,20 @@ export function StrategyBuilder({ legs, setLegs }: StrategyBuilderProps) {
     };
 
     const payoffData = React.useMemo(() => generatePayoffData(legs), [legs]);
+
+    // Greeks calculations
+    const totalGreeks = React.useMemo(() => {
+        return legs.reduce((totals, leg) => {
+            const multiplier = (leg.action === 'Buy' ? 1 : -1) * leg.quantity;
+            return {
+                delta: totals.delta + (leg.delta ?? 0) * multiplier,
+                gamma: totals.gamma + (leg.gamma ?? 0) * multiplier,
+                theta: totals.theta + (leg.theta ?? 0) * multiplier,
+                vega: totals.vega + (leg.vega ?? 0) * multiplier,
+            };
+        }, { delta: 0, gamma: 0, theta: 0, vega: 0 });
+    }, [legs]);
+
 
     // Placeholder calculations
     const lotSize = 50; 
@@ -173,11 +188,9 @@ export function StrategyBuilder({ legs, setLegs }: StrategyBuilderProps) {
                         {/* Payoff Chart Section */}
                         <div className="pt-4 border-t">
                              <Tabs defaultValue="payoff" className="w-full">
-                                <TabsList className="grid w-full grid-cols-4">
+                                <TabsList className="grid w-full grid-cols-2">
                                     <TabsTrigger value="payoff"><PayoffIcon className="mr-2 h-4 w-4"/>Payoff Chart</TabsTrigger>
                                     <TabsTrigger value="greeks"><BookOpen className="mr-2 h-4 w-4"/>Greeks</TabsTrigger>
-                                    <TabsTrigger value="pnl_table"><Scaling className="mr-2 h-4 w-4"/>P&L Table</TabsTrigger>
-                                    <TabsTrigger value="futures_chart" disabled>Futures Chart</TabsTrigger>
                                 </TabsList>
                                 <TabsContent value="payoff" className="mt-4">
                                     <ChartContainer config={{}} className="h-[300px] w-full">
@@ -218,8 +231,42 @@ export function StrategyBuilder({ legs, setLegs }: StrategyBuilderProps) {
                                         </Chart.ResponsiveContainer>
                                     </ChartContainer>
                                 </TabsContent>
-                                <TabsContent value="greeks" className="mt-4 text-center text-muted-foreground py-10">Greeks data would be displayed here.</TabsContent>
-                                <TabsContent value="pnl_table" className="mt-4 text-center text-muted-foreground py-10">P&L table would be displayed here.</TabsContent>
+                                <TabsContent value="greeks" className="mt-4 text-center text-muted-foreground py-10">
+                                     <Table>
+                                        <TableHeader>
+                                            <TableRow>
+                                                <TableHead>Leg</TableHead>
+                                                <TableHead className="text-right">Delta</TableHead>
+                                                <TableHead className="text-right">Gamma</TableHead>
+                                                <TableHead className="text-right">Theta</TableHead>
+                                                <TableHead className="text-right">Vega</TableHead>
+                                            </TableRow>
+                                        </TableHeader>
+                                        <TableBody>
+                                            {legs.map(leg => {
+                                                const multiplier = (leg.action === 'Buy' ? 1 : -1) * leg.quantity;
+                                                return (
+                                                    <TableRow key={leg.id}>
+                                                        <TableCell className="text-left font-medium">{leg.quantity}x {leg.instrumentName}</TableCell>
+                                                        <TableCell className="text-right">{(leg.delta * multiplier).toFixed(2)}</TableCell>
+                                                        <TableCell className="text-right">{(leg.gamma * multiplier).toFixed(4)}</TableCell>
+                                                        <TableCell className="text-right">{(leg.theta * multiplier).toFixed(2)}</TableCell>
+                                                        <TableCell className="text-right">{(leg.vega * multiplier).toFixed(2)}</TableCell>
+                                                    </TableRow>
+                                                );
+                                            })}
+                                        </TableBody>
+                                        <TableBody>
+                                          <TableRow className="border-t-2 border-primary/50 font-bold bg-muted/50">
+                                                <TableCell className="text-left">Total</TableCell>
+                                                <TableCell className="text-right">{totalGreeks.delta.toFixed(2)}</TableCell>
+                                                <TableCell className="text-right">{totalGreeks.gamma.toFixed(4)}</TableCell>
+                                                <TableCell className="text-right">{totalGreeks.theta.toFixed(2)}</TableCell>
+                                                <TableCell className="text-right">{totalGreeks.vega.toFixed(2)}</TableCell>
+                                            </TableRow>
+                                        </TableBody>
+                                    </Table>
+                                </TabsContent>
                             </Tabs>
                         </div>
                         <div className="pt-6">

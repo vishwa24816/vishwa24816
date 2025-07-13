@@ -246,7 +246,11 @@ export interface SelectedOptionLeg {
   optionType: 'Call' | 'Put';
   action: 'Buy' | 'Sell';
   ltp: number;
-  quantity: number; 
+  quantity: number;
+  delta: number;
+  gamma: number;
+  theta: number;
+  vega: number;
 }
 
 export interface CommunityPost {
