@@ -160,13 +160,9 @@ export function PortfolioHoldingsTable({ mainPortfolioCashBalance, setMainPortfo
                 <TableHeader>
                 <TableRow>
                     <TableHead className="w-[200px] min-w-[150px]">Instrument</TableHead>
-                    <TableHead>Type</TableHead>
                     <TableHead className="text-right">Qty.</TableHead>
-                    <TableHead className="text-right">Avg. Cost</TableHead>
-                    <TableHead className="text-right">LTP</TableHead>
-                    <TableHead className="text-right">Current Val.</TableHead>
-                    <TableHead className="text-right">P&L (%)</TableHead>
-                    <TableHead className="text-right">Day's Chg (%)</TableHead>
+                    <TableHead className="text-right">LTP / Value</TableHead>
+                    <TableHead className="text-right">Overall / Day P&L</TableHead>
                 </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -181,21 +177,23 @@ export function PortfolioHoldingsTable({ mainPortfolioCashBalance, setMainPortfo
                             <div>{holding.name}</div>
                             {holding.symbol && <div className="text-xs text-muted-foreground">{holding.symbol}</div>}
                         </TableCell>
-                        <TableCell>{holding.type}</TableCell>
                         <TableCell className="text-right">{holding.quantity.toLocaleString()}</TableCell>
-                        <TableCell className="text-right">{formatCurrency(holding.avgCostPrice)}</TableCell>
-                        <TableCell className="text-right">{formatCurrency(holding.ltp)}</TableCell>
-                        <TableCell className="text-right">{formatCurrency(holding.currentValue)}</TableCell>
-                        <TableCell className={cn("text-right whitespace-nowrap", holding.profitAndLoss >= 0 ? 'text-green-600' : 'text-red-600')}>
-                            {formatCurrency(holding.profitAndLoss)}<br/>({holding.profitAndLossPercent.toFixed(2)}%)
+                        <TableCell className="text-right">
+                            <div>{formatCurrency(holding.ltp)}</div>
+                            <div className="text-xs text-muted-foreground">{formatCurrency(holding.currentValue)}</div>
                         </TableCell>
-                        <TableCell className={cn("text-right whitespace-nowrap", holding.dayChangeAbsolute >= 0 ? 'text-green-600' : 'text-red-600')}>
-                            {formatCurrency(holding.dayChangeAbsolute)}<br/>({holding.dayChangePercent.toFixed(2)}%)
+                        <TableCell className={cn("text-right whitespace-nowrap")}>
+                            <div className={cn(holding.profitAndLoss >= 0 ? 'text-green-600' : 'text-red-600')}>
+                                {formatCurrency(holding.profitAndLoss)} ({holding.profitAndLossPercent.toFixed(2)}%)
+                            </div>
+                            <div className={cn("text-xs", holding.dayChangeAbsolute >= 0 ? 'text-green-500' : 'text-red-500')}>
+                                {formatCurrency(holding.dayChangeAbsolute)} ({holding.dayChangePercent.toFixed(2)}%)
+                            </div>
                         </TableCell>
                         </TableRow>
                         {expandedRowId === holding.id && (
                         <TableRow className="bg-muted/50 hover:bg-muted/60 data-[state=selected]:bg-muted/70">
-                            <TableCell colSpan={8} className="p-0">
+                            <TableCell colSpan={4} className="p-0">
                             <div className="p-4 space-y-3">
                                 <h4 className="font-semibold text-md text-foreground">
                                 {holding.name} ({holding.symbol || holding.type}) - Actions
@@ -247,7 +245,7 @@ export function PortfolioHoldingsTable({ mainPortfolioCashBalance, setMainPortfo
                     ))
                 ) : (
                     <TableRow>
-                    <TableCell colSpan={8} className="text-center text-muted-foreground py-8">
+                    <TableCell colSpan={4} className="text-center text-muted-foreground py-8">
                         No holdings match the selected filter.
                     </TableCell>
                     </TableRow>
