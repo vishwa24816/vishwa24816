@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState } from 'react';
@@ -104,128 +105,13 @@ export function StockOrderPageContent({ asset, assetSpecificNews }: StockOrderPa
             
             <OrderPlacementForm asset={asset} productType={productTypeForOrder} onProductTypeChange={setProductTypeForOrder} assetType="stock"/>
 
-            <Tabs defaultValue="overview" className="w-full">
+            <Tabs defaultValue="technicals" className="w-full">
               <TabsList className="w-full bg-muted/30 flex overflow-x-auto whitespace-nowrap no-scrollbar rounded-none p-0 h-auto border-b mb-1">
-                <TabsTrigger value="overview" className="flex-shrink-0 px-4 py-3 text-sm rounded-t-md rounded-b-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=inactive]:border-b-2 data-[state=inactive]:border-transparent data-[state=active]:shadow-none hover:text-primary">Overview</TabsTrigger>
-                <TabsTrigger value="technicals" className="flex-shrink-0 px-4 py-3 text-sm rounded-t-md rounded-b-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=inactive]:border-b-2 data-[state=inactive]:border-transparent data-[state=active]:shadow-none hover:text-primary">Technicals</TabsTrigger>
+                <TabsTrigger value="technicals" className="flex-shrink-0 px-4 py-3 text-sm rounded-t-md rounded-b-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=inactive]:border-b-2 data-[state=inactive]:border-transparent data-[state=active]:shadow-none hover:text-primary">Technicals & Overview</TabsTrigger>
                 <TabsTrigger value="fundamentals" className="flex-shrink-0 px-4 py-3 text-sm rounded-t-md rounded-b-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=inactive]:border-b-2 data-[state=inactive]:border-transparent data-[state=active]:shadow-none hover:text-primary">Fundamentals</TabsTrigger>
                 <TabsTrigger value="financials" className="flex-shrink-0 px-4 py-3 text-sm rounded-t-md rounded-b-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=inactive]:border-b-2 data-[state=inactive]:border-transparent data-[state=active]:shadow-none hover:text-primary">Financials</TabsTrigger>
                 <TabsTrigger value="news" className="flex-shrink-0 px-4 py-3 text-sm rounded-t-md rounded-b-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=inactive]:border-b-2 data-[state=inactive]:border-transparent data-[state=active]:shadow-none hover:text-primary">News</TabsTrigger>
               </TabsList>
-
-              <TabsContent value="overview" className="mt-4 space-y-6">
-                {asset.aboutCompany && (
-                  <CollapsibleSection title="About Company" icon={Info} defaultOpen>
-                    <p className="text-sm text-foreground leading-relaxed">{asset.aboutCompany}</p>
-                  </CollapsibleSection>
-                )}
-
-                {asset.similarStocks && asset.similarStocks.length > 0 && (
-                  <CollapsibleSection title="Similar Stocks" icon={Landmark} defaultOpen>
-                     <div className="space-y-3">
-                      {asset.similarStocks.map(simStock => {
-                        const isSimPositive = simStock.changePercent >= 0;
-                        return (
-                          <Link href={`/order/stock/${simStock.symbol}`} key={simStock.id} className="block p-3 bg-muted/30 rounded-md hover:bg-muted/50 transition-colors">
-                            <div className="flex justify-between items-center">
-                              <div>
-                                <p className="font-semibold text-foreground text-sm">{simStock.name} <span className="text-xs text-muted-foreground">({simStock.symbol})</span></p>
-                                {simStock.marketCap && <p className="text-xs text-muted-foreground">Mkt Cap: {simStock.marketCap}</p>}
-                              </div>
-                              <div className="text-right">
-                                <p className={`font-medium ${isSimPositive ? 'text-green-500' : 'text-red-500'}`}>₹{simStock.price.toFixed(2)}</p>
-                                <p className={`text-xs ${isSimPositive ? 'text-green-500' : 'text-red-500'}`}>
-                                  {isSimPositive ? '+' : ''}{simStock.changePercent.toFixed(2)}%
-                                </p>
-                              </div>
-                            </div>
-                          </Link>
-                        );
-                      })}
-                    </div>
-                  </CollapsibleSection>
-                )}
-
-                <CollapsibleSection title="Scores" icon={Star} defaultOpen>
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
-                        <div className="p-3 bg-muted/40 rounded-lg">
-                            <p className="text-sm text-muted-foreground">DVM Score</p>
-                            <p className="text-2xl font-bold text-primary">72</p>
-                            <p className="text-xs text-green-600">Bullish</p>
-                        </div>
-                        <div className="p-3 bg-muted/40 rounded-lg">
-                            <p className="text-sm text-muted-foreground">SWOT Score</p>
-                            <p className="text-2xl font-bold text-primary">65</p>
-                            <p className="text-xs text-yellow-600">Neutral</p>
-                        </div>
-                        <div className="p-3 bg-muted/40 rounded-lg">
-                            <p className="text-sm text-muted-foreground">QVT Score</p>
-                            <p className="text-2xl font-bold text-primary">80</p>
-                            <p className="text-xs text-green-600">Very Bullish</p>
-                        </div>
-                    </div>
-                    <p className="text-xs text-muted-foreground mt-2 text-center">Scores are based on mock data and for demonstration purposes only.</p>
-                </CollapsibleSection>
-              </TabsContent>
-              
-              <TabsContent value="fundamentals" className="mt-4 space-y-6">
-                 {asset.fundamentals && (
-                  <CollapsibleSection title="Fundamentals" icon={SearchIcon} defaultOpen>
-                    <div className="grid grid-cols-2 gap-x-6 gap-y-3 text-sm">
-                      <div><span className="text-muted-foreground">Mkt Cap</span><p className="font-semibold text-foreground">{asset.fundamentals.marketCap || 'N/A'}</p></div>
-                      <div><span className="text-muted-foreground">ROE</span><p className="font-semibold text-foreground">{asset.fundamentals.roe?.toFixed(2) || 'N/A'}%</p></div>
-                      <div><span className="text-muted-foreground">P/E Ratio (TTM)</span><p className="font-semibold text-foreground">{asset.fundamentals.peRatioTTM?.toFixed(2) || 'N/A'}</p></div>
-                      <div><span className="text-muted-foreground">EPS (TTM)</span><p className="font-semibold text-foreground">{asset.fundamentals.epsTTM?.toFixed(2) || 'N/A'}</p></div>
-                      <div><span className="text-muted-foreground">P/B Ratio</span><p className="font-semibold text-foreground">{asset.fundamentals.pbRatio?.toFixed(2) || 'N/A'}</p></div>
-                      <div><span className="text-muted-foreground">Div Yield</span><p className="font-semibold text-foreground">{asset.fundamentals.divYield?.toFixed(2) || 'N/A'}%</p></div>
-                      <div><span className="text-muted-foreground">Industry P/E</span><p className="font-semibold text-foreground">{asset.fundamentals.industryPe?.toFixed(2) || 'N/A'}</p></div>
-                      <div><span className="text-muted-foreground">Book Value</span><p className="font-semibold text-foreground">{asset.fundamentals.bookValue?.toFixed(2) || 'N/A'}</p></div>
-                      <div><span className="text-muted-foreground">Debt to Equity</span><p className="font-semibold text-foreground">{asset.fundamentals.debtToEquity?.toFixed(2) || 'N/A'}</p></div>
-                      <div><span className="text-muted-foreground">Face Value</span><p className="font-semibold text-foreground">{asset.fundamentals.faceValue?.toFixed(2) || 'N/A'}</p></div>
-                    </div>
-                  </CollapsibleSection>
-                )}
-              </TabsContent>
-              
-              <TabsContent value="financials" className="mt-4 space-y-6">
-                {asset.financials && (
-                  <CollapsibleSection title="Financials" icon={BarChart2} defaultOpen>
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="flex space-x-1 sm:space-x-2 overflow-x-auto no-scrollbar">
-                        {(['revenue', 'profit', 'netWorth'] as const).map(cat => (
-                          <Button 
-                            key={cat}
-                            variant={activeFinancialsCategory === cat ? 'secondary' : 'ghost'} 
-                            size="sm" 
-                            className="rounded-full text-xs px-3 shrink-0"
-                            onClick={() => setActiveFinancialsCategory(cat)}
-                          >
-                            {cat.charAt(0).toUpperCase() + cat.slice(1)}
-                          </Button>
-                        ))}
-                      </div>
-                      <Button variant="outline" size="sm" className="rounded-full text-xs px-3 shrink-0 flex items-center">
-                        <ChevronLeftIcon className="h-3 w-3 mr-0.5" />
-                        <ChevronRightIcon className="h-3 w-3 mr-1" />
-                        Quarterly
-                      </Button>
-                    </div>
-                    <div className="flex justify-between items-end h-40 bg-muted/20 p-4 rounded-md relative" data-ai-hint="financials bar chart">
-                       {currentFinancialsData.length > 0 ? (
-                        currentFinancialsData.map((data) => (
-                          <FinancialBar key={data.period} value={data.value} maxValue={maxFinancialValue} label={data.period} />
-                        ))
-                      ) : (
-                        <p className="absolute inset-0 flex items-center justify-center text-muted-foreground text-sm">No financial data available for {activeFinancialsCategory}.</p>
-                      )}
-                    </div>
-                    <div className="flex justify-between items-center mt-3 text-xs">
-                      <Link href="#" className="text-primary hover:underline">View details</Link>
-                      <p className="text-muted-foreground">*All values are in crore</p>
-                    </div>
-                  </CollapsibleSection>
-                )}
-              </TabsContent>
 
               <TabsContent value="technicals" className="mt-4 space-y-6">
                 <div>
@@ -269,6 +155,38 @@ export function StockOrderPageContent({ asset, assetSpecificNews }: StockOrderPa
                     <p className="font-semibold text-foreground">{asset.volume?.toLocaleString() || 'N/A'}</p>
                   </div>
                 </div>
+
+                {asset.aboutCompany && (
+                  <CollapsibleSection title="About Company" icon={Info} defaultOpen>
+                    <p className="text-sm text-foreground leading-relaxed">{asset.aboutCompany}</p>
+                  </CollapsibleSection>
+                )}
+
+                {asset.similarStocks && asset.similarStocks.length > 0 && (
+                  <CollapsibleSection title="Similar Stocks" icon={Landmark} defaultOpen>
+                     <div className="space-y-3">
+                      {asset.similarStocks.map(simStock => {
+                        const isSimPositive = simStock.changePercent >= 0;
+                        return (
+                          <Link href={`/order/stock/${simStock.symbol}`} key={simStock.id} className="block p-3 bg-muted/30 rounded-md hover:bg-muted/50 transition-colors">
+                            <div className="flex justify-between items-center">
+                              <div>
+                                <p className="font-semibold text-foreground text-sm">{simStock.name} <span className="text-xs text-muted-foreground">({simStock.symbol})</span></p>
+                                {simStock.marketCap && <p className="text-xs text-muted-foreground">Mkt Cap: {simStock.marketCap}</p>}
+                              </div>
+                              <div className="text-right">
+                                <p className={`font-medium ${isSimPositive ? 'text-green-500' : 'text-red-500'}`}>₹{simStock.price.toFixed(2)}</p>
+                                <p className={`text-xs ${isSimPositive ? 'text-green-500' : 'text-red-500'}`}>
+                                  {isSimPositive ? '+' : ''}{simStock.changePercent.toFixed(2)}%
+                                </p>
+                              </div>
+                            </div>
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  </CollapsibleSection>
+                )}
                 
                 <CollapsibleSection title="Technical Analysis" icon={LineChart} defaultOpen>
                     <p>Detailed technical indicators and charts will be displayed here.</p>
@@ -276,6 +194,85 @@ export function StockOrderPageContent({ asset, assetSpecificNews }: StockOrderPa
                       <p className="text-muted-foreground">Technical Chart Placeholder</p>
                     </div>
                 </CollapsibleSection>
+              </TabsContent>
+              
+              <TabsContent value="fundamentals" className="mt-4 space-y-6">
+                 {asset.fundamentals && (
+                  <CollapsibleSection title="Fundamentals" icon={SearchIcon} defaultOpen>
+                    <div className="grid grid-cols-2 gap-x-6 gap-y-3 text-sm">
+                      <div><span className="text-muted-foreground">Mkt Cap</span><p className="font-semibold text-foreground">{asset.fundamentals.marketCap || 'N/A'}</p></div>
+                      <div><span className="text-muted-foreground">ROE</span><p className="font-semibold text-foreground">{asset.fundamentals.roe?.toFixed(2) || 'N/A'}%</p></div>
+                      <div><span className="text-muted-foreground">P/E Ratio (TTM)</span><p className="font-semibold text-foreground">{asset.fundamentals.peRatioTTM?.toFixed(2) || 'N/A'}</p></div>
+                      <div><span className="text-muted-foreground">EPS (TTM)</span><p className="font-semibold text-foreground">{asset.fundamentals.epsTTM?.toFixed(2) || 'N/A'}</p></div>
+                      <div><span className="text-muted-foreground">P/B Ratio</span><p className="font-semibold text-foreground">{asset.fundamentals.pbRatio?.toFixed(2) || 'N/A'}</p></div>
+                      <div><span className="text-muted-foreground">Div Yield</span><p className="font-semibold text-foreground">{asset.fundamentals.divYield?.toFixed(2) || 'N/A'}%</p></div>
+                      <div><span className="text-muted-foreground">Industry P/E</span><p className="font-semibold text-foreground">{asset.fundamentals.industryPe?.toFixed(2) || 'N/A'}</p></div>
+                      <div><span className="text-muted-foreground">Book Value</span><p className="font-semibold text-foreground">{asset.fundamentals.bookValue?.toFixed(2) || 'N/A'}</p></div>
+                      <div><span className="text-muted-foreground">Debt to Equity</span><p className="font-semibold text-foreground">{asset.fundamentals.debtToEquity?.toFixed(2) || 'N/A'}</p></div>
+                      <div><span className="text-muted-foreground">Face Value</span><p className="font-semibold text-foreground">{asset.fundamentals.faceValue?.toFixed(2) || 'N/A'}</p></div>
+                    </div>
+                  </CollapsibleSection>
+                )}
+                 <CollapsibleSection title="Scores" icon={Star} defaultOpen>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
+                        <div className="p-3 bg-muted/40 rounded-lg">
+                            <p className="text-sm text-muted-foreground">DVM Score</p>
+                            <p className="text-2xl font-bold text-primary">72</p>
+                            <p className="text-xs text-green-600">Bullish</p>
+                        </div>
+                        <div className="p-3 bg-muted/40 rounded-lg">
+                            <p className="text-sm text-muted-foreground">SWOT Score</p>
+                            <p className="text-2xl font-bold text-primary">65</p>
+                            <p className="text-xs text-yellow-600">Neutral</p>
+                        </div>
+                        <div className="p-3 bg-muted/40 rounded-lg">
+                            <p className="text-sm text-muted-foreground">QVT Score</p>
+                            <p className="text-2xl font-bold text-primary">80</p>
+                            <p className="text-xs text-green-600">Very Bullish</p>
+                        </div>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-2 text-center">Scores are based on mock data and for demonstration purposes only.</p>
+                </CollapsibleSection>
+              </TabsContent>
+              
+              <TabsContent value="financials" className="mt-4 space-y-6">
+                {asset.financials && (
+                  <CollapsibleSection title="Financials" icon={BarChart2} defaultOpen>
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex space-x-1 sm:space-x-2 overflow-x-auto no-scrollbar">
+                        {(['revenue', 'profit', 'netWorth'] as const).map(cat => (
+                          <Button 
+                            key={cat}
+                            variant={activeFinancialsCategory === cat ? 'secondary' : 'ghost'} 
+                            size="sm" 
+                            className="rounded-full text-xs px-3 shrink-0"
+                            onClick={() => setActiveFinancialsCategory(cat)}
+                          >
+                            {cat.charAt(0).toUpperCase() + cat.slice(1)}
+                          </Button>
+                        ))}
+                      </div>
+                      <Button variant="outline" size="sm" className="rounded-full text-xs px-3 shrink-0 flex items-center">
+                        <ChevronLeftIcon className="h-3 w-3 mr-0.5" />
+                        <ChevronRightIcon className="h-3 w-3 mr-1" />
+                        Quarterly
+                      </Button>
+                    </div>
+                    <div className="flex justify-between items-end h-40 bg-muted/20 p-4 rounded-md relative" data-ai-hint="financials bar chart">
+                       {currentFinancialsData.length > 0 ? (
+                        currentFinancialsData.map((data) => (
+                          <FinancialBar key={data.period} value={data.value} maxValue={maxFinancialValue} label={data.period} />
+                        ))
+                      ) : (
+                        <p className="absolute inset-0 flex items-center justify-center text-muted-foreground text-sm">No financial data available for {activeFinancialsCategory}.</p>
+                      )}
+                    </div>
+                    <div className="flex justify-between items-center mt-3 text-xs">
+                      <Link href="#" className="text-primary hover:underline">View details</Link>
+                      <p className="text-muted-foreground">*All values are in crore</p>
+                    </div>
+                  </CollapsibleSection>
+                )}
               </TabsContent>
 
               <TabsContent value="news" className="mt-4">
