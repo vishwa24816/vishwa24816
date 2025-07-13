@@ -255,10 +255,10 @@ export function FiatHoldingsSection({ mainPortfolioCashBalance, setMainPortfolio
                                 </TableCell>
                             </TableRow>
                             {expandedRowId === holding.id && (
-                                <TableRow className="bg-muted/50 hover:bg-muted/60 data-[state=selected]:bg-muted/70">
-                                    <TableCell colSpan={4} className="p-0">
-                                        <div className="p-4 flex gap-2">
-                                            <Button 
+                                <TableRow className="bg-muted/50 hover:bg-muted/60">
+                                   <TableCell colSpan={4}>
+                                        <div className="p-2 flex gap-2" onClick={(e) => e.stopPropagation()}>
+                                           <Button 
                                                 size="sm" 
                                                 variant="outline" 
                                                 className="flex-1 justify-center"
