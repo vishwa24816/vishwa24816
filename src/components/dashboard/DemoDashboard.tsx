@@ -7,7 +7,7 @@ import { WatchlistSection } from '@/components/dashboard/WatchlistSection';
 import { CryptoHoldingsSection } from '@/components/dashboard/CryptoHoldingsSection';
 import { CryptoIntradayPositionsSection } from '@/components/dashboard/CryptoIntradayPositionsSection';
 import { CryptoFuturesSection } from '@/components/dashboard/CryptoFuturesSection';
-import { PackageOpen } from 'lucide-react';
+import { PackageOpen, Briefcase } from 'lucide-react';
 import { PortfolioHoldingsTable } from '@/components/dashboard/PortfolioHoldingsTable';
 import { IntradayPositionsSection } from '@/components/dashboard/IntradayPositionsSection';
 import { FoPositionsSection } from '@/components/dashboard/FoPositionsSection';
@@ -165,7 +165,7 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
             secondaryNavTriggerCategories: {
                 Fiat: ["Holdings", "Positions", "Portfolio Watchlist"],
                 Crypto: ["Holdings", "Positions", "Portfolio Watchlist"],
-                Web3: ["Holdings", "Portfolio Watchlist"],
+                Web3: ["Holdings", "Positions", "Portfolio Watchlist"],
             }
         }
     }
@@ -265,6 +265,7 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
           }
       } else if (activePrimaryItem === 'Web3') {
           if (isHoldingsView) newsForView = getRelevantNewsForHoldings(mockWeb3Holdings, mockNewsArticles);
+          if (isPositionsView) newsForView = getRelevantNewsForPositions([], [], [], mockNewsArticles); // Web3 has no positions in mock data
           if (isWatchlistView) {
               itemsForWatchlist = web3PortfolioWatchlistItems;
               newsForView = getRelevantNewsForWatchlistItems(itemsForWatchlist, mockNewsArticles);
@@ -334,6 +335,7 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
             return null;
         case 'Web3':
             if (isHoldingsView) return <><CryptoHoldingsSection title="Web3 Wallet & Holdings" holdings={mockWeb3Holdings} cashBalance={web3CashBalance} setCashBalance={setWeb3CashBalance} mainPortfolioCashBalance={mainPortfolioCashBalance} setMainPortfolioCashBalance={setMainPortfolioCashBalance} isRealMode={false} /><NewsSection articles={newsForView} /></>;
+            if (isPositionsView) return <div className="flex flex-col items-center justify-center text-center py-12 text-muted-foreground"><Briefcase className="h-16 w-16 mb-4" /><h2 className="text-2xl font-semibold mb-2 text-foreground">No Web3 Positions</h2><p className="max-w-md">You currently have no open positions in your Web3 portfolio.</p></div>
             if (isWatchlistView) return <div className="space-y-8"><WatchlistSection title="My Web3 Watchlist" defaultInitialItems={itemsForWatchlist} localStorageKeyOverride={'simWeb3Watchlist'} /><NewsSection articles={newsForView} /></div>;
             return null;
         default: return null;
