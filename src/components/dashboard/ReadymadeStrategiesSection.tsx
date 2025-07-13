@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useMemo } from 'react';
@@ -140,31 +141,6 @@ export function ReadymadeStrategiesSection() {
           ))}
         </div>
       </div>
-      
-      <Card className="p-4 space-y-4">
-        <h3 className="text-lg font-semibold">Futures</h3>
-        <Select defaultValue="futures">
-            <SelectTrigger><SelectValue placeholder="Select Segment" /></SelectTrigger>
-            <SelectContent><SelectItem value="futures">Futures</SelectItem></SelectContent>
-        </Select>
-        <Select defaultValue="26JUN2025">
-            <SelectTrigger><SelectValue placeholder="Select Expiry" /></SelectTrigger>
-            <SelectContent><SelectItem value="26JUN2025">26JUN2025</SelectItem></SelectContent>
-        </Select>
-        <RadioGroup defaultValue="buy" className="flex space-x-4">
-            <div className="flex items-center space-x-2"><RadioGroupItem value="buy" id="f-buy" /><Label htmlFor="f-buy">Buy</Label></div>
-            <div className="flex items-center space-x-2"><RadioGroupItem value="sell" id="f-sell" /><Label htmlFor="f-sell">Sell</Label></div>
-        </RadioGroup>
-        <div className="flex items-center justify-between">
-            <Label>Lot Qty.</Label>
-            <div className="flex items-center border rounded-md">
-                <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => setLotQty(q => Math.max(1, q - 1))}>-</Button>
-                <Input type="number" value={lotQty} onChange={e => setLotQty(Number(e.target.value))} className="w-14 h-8 text-center border-x border-y-0 rounded-none focus-visible:ring-0" />
-                <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => setLotQty(q => q + 1)}>+</Button>
-            </div>
-        </div>
-        <Button className="w-full" onClick={handlePlaceFutureOrder}>Place Order</Button>
-      </Card>
     </div>
   );
 }
