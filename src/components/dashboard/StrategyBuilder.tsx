@@ -1,7 +1,7 @@
 
 "use client";
 
-import React from 'react';
+import React, { useState } from 'react';
 import type { SelectedOptionLeg } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -13,6 +13,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from '@/components/ui/badge';
 import { ChartContainer, Chart } from "@/components/ui/chart";
+import { EditLegForm } from './EditLegForm'; 
+
 
 interface StrategyBuilderProps {
   legs: SelectedOptionLeg[];
@@ -63,10 +65,17 @@ const generatePayoffData = (legs: SelectedOptionLeg[]) => {
 
 export function StrategyBuilder({ legs, setLegs }: StrategyBuilderProps) {
     const { toast } = useToast();
+    const [editingLegId, setEditingLegId] = useState<string | null>(null);
 
     const removeLeg = (id: string) => {
         setLegs(legs.filter(leg => leg.id !== id));
         toast({ title: 'Leg Removed', description: 'The option leg has been removed from the strategy.' });
+    };
+    
+    const handleUpdateLeg = (updatedLeg: SelectedOptionLeg) => {
+        setLegs(prevLegs => prevLegs.map(leg => (leg.id === updatedLeg.id ? updatedLeg : leg)));
+        setEditingLegId(null);
+        toast({ title: 'Leg Updated', description: `${updatedLeg.instrumentName} has been updated.` });
     };
 
     const payoffData = React.useMemo(() => generatePayoffData(legs), [legs]);
@@ -95,7 +104,8 @@ export function StrategyBuilder({ legs, setLegs }: StrategyBuilderProps) {
                                 <Label htmlFor="select-all-legs" className="text-sm font-medium">Select All</Label>
                             </div>
                             {legs.map(leg => (
-                                <div key={leg.id} className="flex items-center space-x-2 p-2 rounded-md hover:bg-muted/50">
+                                <React.Fragment key={leg.id}>
+                                <div className="flex items-center space-x-2 p-2 rounded-md hover:bg-muted/50">
                                     <Checkbox id={`leg-${leg.id}`} defaultChecked />
                                     <Badge variant={leg.action === 'Buy' ? 'default' : 'destructive'} className={cn("w-6 h-6 justify-center p-0", leg.action === 'Buy' ? 'bg-green-600' : 'bg-red-600')}>{leg.action.charAt(0)}</Badge>
                                     <div className="flex-grow text-sm">
@@ -105,11 +115,21 @@ export function StrategyBuilder({ legs, setLegs }: StrategyBuilderProps) {
                                         </span>
                                     </div>
                                     <div className="flex items-center space-x-1">
-                                        <Button variant="ghost" size="icon" className="h-7 w-7"><Edit className="h-4 w-4" /></Button>
+                                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setEditingLegId(editingLegId === leg.id ? null : leg.id)}>
+                                            <Edit className="h-4 w-4" />
+                                        </Button>
                                         <Button variant="ghost" size="icon" className="h-7 w-7"><Copy className="h-4 w-4" /></Button>
                                         <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => removeLeg(leg.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
                                     </div>
                                 </div>
+                                {editingLegId === leg.id && (
+                                    <EditLegForm 
+                                        leg={leg}
+                                        onUpdate={handleUpdateLeg}
+                                        onCancel={() => setEditingLegId(null)}
+                                    />
+                                )}
+                                </React.Fragment>
                             ))}
                         </div>
 
