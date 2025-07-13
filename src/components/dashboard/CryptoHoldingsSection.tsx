@@ -67,10 +67,10 @@ export function CryptoHoldingsSection({
   const handleRowClick = (holdingId: string) => {
     setExpandedRowId(prevId => (prevId === holdingId ? null : prevId));
   };
-  
+
   const handleAdjustPosition = (e: React.MouseEvent, holding: PortfolioHolding) => {
-    e.stopPropagation();
-    router.push(`/order/crypto/${encodeURIComponent(holding.symbol || holding.name)}`);
+      e.stopPropagation();
+      router.push(`/order/crypto/${encodeURIComponent(holding.symbol || holding.name)}`);
   };
 
   const handleExitPosition = (e: React.MouseEvent, holding: PortfolioHolding) => {
@@ -272,28 +272,28 @@ export function CryptoHoldingsSection({
                             </TableCell>
                           </TableRow>
                           {expandedRowId === holding.id && (
-                            <TableRow className="bg-muted/50 hover:bg-muted/60 data-[state=selected]:bg-muted/70">
-                              <TableCell colSpan={4}>
-                                <div className="p-4 flex gap-2">
-                                     <Button 
-                                        size="sm" 
-                                        variant="outline" 
-                                        className="flex-1 justify-center"
-                                        onClick={(e) => handleAdjustPosition(e, holding)}
-                                    >
-                                        <Settings2 className="mr-2 h-4 w-4" /> Adjust Position
-                                    </Button>
-                                    <Button 
-                                        size="sm" 
-                                        variant="destructive" 
-                                        className="flex-1 justify-center"
-                                        onClick={(e) => handleExitPosition(e, holding)}
-                                    >
-                                        <XCircle className="mr-2 h-4 w-4" /> Exit Position
-                                    </Button>
-                                </div>
-                              </TableCell>
-                            </TableRow>
+                            <TableRow className="bg-muted/50 hover:bg-muted/60">
+                               <TableCell colSpan={4} className="p-0">
+                                   <div className="p-2 flex gap-2">
+                                       <Button 
+                                          size="sm" 
+                                          variant="outline" 
+                                          className="flex-1 justify-center"
+                                          onClick={(e) => handleAdjustPosition(e, holding)}
+                                      >
+                                          <Settings2 className="mr-2 h-4 w-4" /> Adjust Position
+                                      </Button>
+                                      <Button 
+                                          size="sm" 
+                                          variant="destructive" 
+                                          className="flex-1 justify-center"
+                                          onClick={(e) => handleExitPosition(e, holding)}
+                                      >
+                                          <XCircle className="mr-2 h-4 w-4" /> Exit Position
+                                      </Button>
+                                  </div>
+                               </TableCell>
+                           </TableRow>
                           )}
                         </React.Fragment>
                       ))}
@@ -339,7 +339,7 @@ export function CryptoHoldingsSection({
         onOpenChange={setIsFundTransferDialogOpen}
         transferDirection={transferDirection}
         mainPortfolioCashBalance={mainPortfolioCashBalance}
-        cryptoCashBalance={cryptoCashBalance}
+        cryptoCashBalance={cashBalance}
         onTransferConfirm={handleTransferConfirm}
         currencyMode={'USD'}
       />
