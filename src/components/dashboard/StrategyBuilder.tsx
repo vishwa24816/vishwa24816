@@ -15,6 +15,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from '@/components/ui/badge';
 import { ChartContainer, Chart } from "@/components/ui/chart";
 import { EditLegForm } from './EditLegForm'; 
+import { SwipeButton } from '@/components/ui/swipe-button';
 
 
 interface StrategyBuilderProps {
@@ -78,6 +79,13 @@ export function StrategyBuilder({ legs, setLegs }: StrategyBuilderProps) {
         setLegs(prevLegs => prevLegs.map(leg => (leg.id === updatedLeg.id ? updatedLeg : leg)));
         setEditingLegId(null);
         toast({ title: 'Leg Updated', description: `${updatedLeg.instrumentName} has been updated.` });
+    };
+    
+    const handleStrategyPlacement = () => {
+        toast({
+            title: "Strategy Placed (Mock)",
+            description: `${strategyName || 'Your custom strategy'} has been sent for execution.`,
+        });
     };
 
     const payoffData = React.useMemo(() => generatePayoffData(legs), [legs]);
@@ -213,6 +221,9 @@ export function StrategyBuilder({ legs, setLegs }: StrategyBuilderProps) {
                                 <TabsContent value="greeks" className="mt-4 text-center text-muted-foreground py-10">Greeks data would be displayed here.</TabsContent>
                                 <TabsContent value="pnl_table" className="mt-4 text-center text-muted-foreground py-10">P&L table would be displayed here.</TabsContent>
                             </Tabs>
+                        </div>
+                        <div className="pt-6">
+                            <SwipeButton onConfirm={handleStrategyPlacement} />
                         </div>
                     </CardContent>
                 </Card>
