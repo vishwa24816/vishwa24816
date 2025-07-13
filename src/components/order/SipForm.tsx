@@ -28,6 +28,9 @@ export const SipForm = ({ asset, assetType, onSipStart }: SipFormProps) => {
     const [sipFrequency, setSipFrequency] = useState<'Daily' | 'Weekly' | 'Monthly' | 'Annually'>('Monthly');
     const [sipStartDate, setSipStartDate] = useState<Date | undefined>(new Date());
     const [sipInstallments, setSipInstallments] = useState('');
+    
+    const isCrypto = assetType.toLowerCase().includes('crypto');
+    const currencySymbol = isCrypto ? '$' : '₹';
 
     useEffect(() => {
         if (assetType === 'mutual-fund' || assetType === 'bond') {
@@ -41,7 +44,7 @@ export const SipForm = ({ asset, assetType, onSipStart }: SipFormProps) => {
     }, [assetType, sipInvestmentType]);
 
     const handleStartSip = () => {
-        const investmentValue = isSipAmountBased ? `$${sipAmount}` : `${sipQuantity} Qty`;
+        const investmentValue = isSipAmountBased ? `${currencySymbol}${sipAmount}` : `${sipQuantity} Qty`;
         const startDateFormatted = sipStartDate ? format(sipStartDate, "PPP") : "Not set";
         const installmentsInfo = sipInstallments ? `${sipInstallments} installments` : "Ongoing";
         toast({
@@ -76,7 +79,7 @@ export const SipForm = ({ asset, assetType, onSipStart }: SipFormProps) => {
             )}
             {isSipAmountBased ? (
                 <div className="space-y-2">
-                    <Label htmlFor="sip-amount">Investment Amount ($)</Label>
+                    <Label htmlFor="sip-amount">Investment Amount ({currencySymbol})</Label>
                     <Input id="sip-amount" type="number" value={sipAmount} onChange={(e) => setSipAmount(e.target.value)} placeholder="e.g., 100" />
                 </div>
             ) : (

@@ -17,7 +17,8 @@ interface SipItemProps {
 
 const SipItem: React.FC<SipItemProps> = ({ sip }) => {
   const { toast } = useToast();
-  const valueDisplay = sip.amount ? `$${sip.amount.toLocaleString()}` : `${sip.quantity} units`;
+  const currencySymbol = sip.assetType === 'Crypto' ? '$' : '₹';
+  const valueDisplay = sip.amount ? `${currencySymbol}${sip.amount.toLocaleString()}` : `${sip.quantity} units`;
 
   return (
     <Card className="mb-3 shadow-sm">

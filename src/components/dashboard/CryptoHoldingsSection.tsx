@@ -339,7 +339,7 @@ export function CryptoHoldingsSection({
         onOpenChange={setIsFundTransferDialogOpen}
         transferDirection={transferDirection}
         mainPortfolioCashBalance={mainPortfolioCashBalance}
-        cryptoCashBalance={cashBalance}
+        cryptoCashBalance={cryptoCashBalance}
         onTransferConfirm={handleTransferConfirm}
         currencyMode={'USD'}
       />

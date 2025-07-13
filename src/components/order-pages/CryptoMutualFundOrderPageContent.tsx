@@ -142,7 +142,7 @@ export function CryptoMutualFundOrderPageContent({ asset, assetSpecificNews }: C
             </TabsContent>
             <TabsContent value="calculator" className="mt-4">
               {asset.annualisedReturn ? (
-                  <ReturnCalculator defaultReturnRate={asset.annualisedReturn} />
+                  <ReturnCalculator defaultReturnRate={asset.annualisedReturn} currency="USD" />
               ) : (
                   <div className="text-center text-muted-foreground py-4">Return rate not available for this fund.</div>
               )}

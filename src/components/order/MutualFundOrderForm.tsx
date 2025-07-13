@@ -20,6 +20,9 @@ export function MutualFundOrderForm({ asset, assetType }: MutualFundOrderFormPro
     const [oneTimeAmount, setOneTimeAmount] = useState('');
     const [activeTab, setActiveTab] = useState("one-time");
 
+    const isCrypto = asset.exchange?.toLowerCase().includes('crypto');
+    const currencySymbol = isCrypto ? '$' : '₹';
+
     const handleOneTimeBuy = () => {
         if (!oneTimeAmount || parseFloat(oneTimeAmount) <= 0) {
             toast({ title: "Invalid Amount", description: "Please enter a valid amount.", variant: "destructive"});
@@ -27,7 +30,7 @@ export function MutualFundOrderForm({ asset, assetType }: MutualFundOrderFormPro
         }
         toast({
             title: "One-Time Investment (Mock)",
-            description: `Investing ₹${oneTimeAmount} in ${asset.name}.`,
+            description: `Investing ${currencySymbol}${oneTimeAmount} in ${asset.name}.`,
         });
     };
 
@@ -51,7 +54,7 @@ export function MutualFundOrderForm({ asset, assetType }: MutualFundOrderFormPro
             <TabsContent value="one-time" className="mt-4">
                 <div className="space-y-4">
                     <div className="space-y-2">
-                        <Label htmlFor="one-time-amount">Investment Amount (₹)</Label>
+                        <Label htmlFor="one-time-amount">Investment Amount ({currencySymbol})</Label>
                         <Input id="one-time-amount" type="number" value={oneTimeAmount} onChange={(e) => setOneTimeAmount(e.target.value)} placeholder="e.g., 5000" />
                     </div>
                     <Button onClick={handleOneTimeBuy} className="w-full text-base py-3 h-12">Invest Now</Button>

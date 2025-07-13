@@ -32,7 +32,7 @@ export function CryptoIntradayPositionsSection({ positions }: CryptoIntradayPosi
   };
 
   const handleRowClick = (positionId: string) => {
-    setExpandedRowId(prevId => (prevId === positionId ? null : positionId));
+    setExpandedRowId(prevId => (prevId === positionId ? null : prevId));
   };
   
   const handleAdjustPosition = (e: React.MouseEvent, pos: IntradayPosition) => {
@@ -106,27 +106,27 @@ export function CryptoIntradayPositionsSection({ positions }: CryptoIntradayPosi
                     </TableCell>
                   </TableRow>
                   {expandedRowId === pos.id && (
-                    <TableRow className="bg-muted/50 hover:bg-muted/60">
+                     <TableRow className="bg-muted/50 hover:bg-muted/60">
                       <TableCell colSpan={3}>
-                        <div className="p-4 flex gap-2">
-                            <Button 
-                              size="sm" 
-                              variant="outline" 
-                              className="flex-1 justify-center" 
-                              onClick={(e) => handleAdjustPosition(e, pos)}
-                            >
-                              <Settings2 className="mr-2 h-4 w-4" /> Adjust Position
-                            </Button>
-                            <Button 
-                              size="sm" 
-                              variant="destructive" 
-                              className="flex-1 justify-center"
-                              onClick={(e) => handleExitPosition(e, pos)}
-                            >
-                              <XCircle className="mr-2 h-4 w-4" /> Exit Position
-                            </Button>
-                        </div>
-                      </TableCell>
+                          <div className="p-4 flex gap-2">
+                              <Button 
+                                size="sm" 
+                                variant="outline" 
+                                className="flex-1 justify-center" 
+                                onClick={(e) => handleAdjustPosition(e, pos)}
+                              >
+                                <Settings2 className="mr-2 h-4 w-4" /> Adjust Position
+                              </Button>
+                              <Button 
+                                size="sm" 
+                                variant="destructive" 
+                                className="flex-1 justify-center"
+                                onClick={(e) => handleExitPosition(e, pos)}
+                              >
+                                <XCircle className="mr-2 h-4 w-4" /> Exit Position
+                              </Button>
+                          </div>
+                        </TableCell>
                     </TableRow>
                   )}
                 </React.Fragment>

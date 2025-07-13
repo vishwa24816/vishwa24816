@@ -18,9 +18,10 @@ interface CalculationResult {
 
 interface ReturnCalculatorProps {
   defaultReturnRate: number;
+  currency?: 'INR' | 'USD';
 }
 
-export function ReturnCalculator({ defaultReturnRate }: ReturnCalculatorProps) {
+export function ReturnCalculator({ defaultReturnRate, currency = 'INR' }: ReturnCalculatorProps) {
   const [investmentMode, setInvestmentMode] = useState<'lumpsum' | 'sip'>('lumpsum');
 
   // Lumpsum state
@@ -33,6 +34,16 @@ export function ReturnCalculator({ defaultReturnRate }: ReturnCalculatorProps) {
   const [timePeriod, setTimePeriod] = useState(10);
   
   const [result, setResult] = useState<CalculationResult | null>(null);
+
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat(currency === 'USD' ? 'en-US' : 'en-IN', {
+      style: 'currency',
+      currency: currency,
+      maximumFractionDigits: 0,
+    }).format(value);
+  };
+  
+  const currencySymbol = currency === 'USD' ? '$' : '₹';
 
   const handleCalculate = () => {
     const rate = defaultReturnRate / 100;
@@ -64,8 +75,6 @@ export function ReturnCalculator({ defaultReturnRate }: ReturnCalculatorProps) {
     });
   };
 
-  const formatCurrency = (value: number) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(value);
-
   return (
     <Card>
       <CardHeader>
@@ -85,13 +94,13 @@ export function ReturnCalculator({ defaultReturnRate }: ReturnCalculatorProps) {
           </TabsList>
           <TabsContent value="lumpsum" className="mt-4 space-y-6">
              <div className="space-y-2">
-                <Label htmlFor="lumpsum-amount">Total Investment ($)</Label>
+                <Label htmlFor="lumpsum-amount">Total Investment ({currencySymbol})</Label>
                 <Input id="lumpsum-amount" type="text" value={lumpsumAmount} onChange={(e) => setLumpsumAmount(e.target.value.replace(/,/g, ''))} />
               </div>
           </TabsContent>
           <TabsContent value="sip" className="mt-4 space-y-6">
               <div className="space-y-2">
-                <Label htmlFor="sip-amount">Monthly Investment ($)</Label>
+                <Label htmlFor="sip-amount">Monthly Investment ({currencySymbol})</Label>
                 <Input id="sip-amount" type="text" value={sipAmount} onChange={(e) => setSipAmount(e.target.value.replace(/,/g, ''))} />
               </div>
           </TabsContent>
