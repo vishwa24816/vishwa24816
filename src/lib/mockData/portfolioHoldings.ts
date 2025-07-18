@@ -131,3 +131,34 @@ export const mockRealPortfolioHoldings: PortfolioHolding[] = [
     dayChangePercent: 1.88,
   },
 ];
+
+export const mockWeb3Holdings: PortfolioHolding[] = [
+    {
+        id: 'web3_holding_link',
+        name: 'Chainlink',
+        symbol: 'LINK',
+        type: 'Crypto',
+        quantity: 100,
+        avgCostPrice: 15.50,
+        ltp: 18.20,
+        currentValue: 1820.00,
+        profitAndLoss: 270.00,
+        profitAndLossPercent: 17.42,
+        dayChangeAbsolute: 81.90,
+        dayChangePercent: 4.71,
+    },
+    {
+        id: 'web3_holding_uni',
+        name: 'Uniswap',
+        symbol: 'UNI',
+        type: 'Crypto',
+        quantity: 200,
+        avgCostPrice: 7.80,
+        ltp: 11.50,
+        currentValue: 2300.00,
+        profitAndLoss: 740.00,
+        profitAndLossPercent: 47.44,
+        dayChangeAbsolute: 161.00,
+        dayChangePercent: 7.52,
+    },
+];

@@ -4,7 +4,7 @@
 import React, { useState } from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import type { PortfolioHolding, IntradayPosition, FoPosition, CryptoFuturePosition } from '@/types';
-import { mockPortfolioHoldings, mockIntradayPositions, mockFoPositions, mockCryptoFutures, mockWeb3Holdings } from '@/lib/mockData';
+import { mockPortfolioHoldings, mockIntradayPositions, mockFoPositions, mockCryptoFutures, mockWeb3Holdings } from '@/lib/mockData/portfolioHoldings';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { Briefcase, XCircle, Settings2 } from 'lucide-react';
@@ -19,6 +19,7 @@ interface PositionItemProps {
 const PositionItem: React.FC<PositionItemProps> = ({ item, type }) => {
   const { toast } = useToast();
   const router = useRouter();
+  const [isOpen, setIsOpen] = useState(false);
 
   let name = '', symbolDisplay = '', qty = '', avgPrice = '', ltp = '', pnl = '', pnlPercent = '', details = '';
   let isProfit = true;
@@ -144,7 +145,7 @@ const PositionItem: React.FC<PositionItemProps> = ({ item, type }) => {
 
 
   return (
-    <div className="border-b">
+     <div className="border-b" onClick={() => setIsOpen(!isOpen)}>
         <div className="p-3">
             <div className="flex justify-between items-center">
                 <p className="font-semibold text-sm text-foreground">{name} {symbolDisplay && `(${symbolDisplay})`}</p>
@@ -156,16 +157,18 @@ const PositionItem: React.FC<PositionItemProps> = ({ item, type }) => {
                 {details && <p className="text-muted-foreground">{details}</p>}
             </div>
         </div>
-        <div className="px-3 pb-2 flex space-x-2">
-            <Button variant="outline" size="sm" className="flex-1" onClick={handleAdjustPosition}>
-            <Settings2 className="mr-2 h-4 w-4" />
-            Adjust Position
-            </Button>
-            <Button variant="destructive" size="sm" className="flex-1" onClick={handleExitClick}>
-            <XCircle className="mr-2 h-4 w-4" />
-            Exit
-            </Button>
-        </div>
+        {isOpen && (
+            <div className="px-3 pb-2 flex space-x-2 animate-accordion-down">
+                <Button variant="outline" size="sm" className="flex-1" onClick={handleAdjustPosition}>
+                <Settings2 className="mr-2 h-4 w-4" />
+                Adjust Position
+                </Button>
+                <Button variant="destructive" size="sm" className="flex-1" onClick={handleExitClick}>
+                <XCircle className="mr-2 h-4 w-4" />
+                Exit
+                </Button>
+            </div>
+        )}
     </div>
   );
 };

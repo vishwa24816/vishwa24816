@@ -26,5 +26,3 @@ export * from './cryptoMutualFunds';
 export * from './cryptoETFs';
 export * from './cryptoIntradayPositions';
 export * from './marketSectorData';
-
-    
