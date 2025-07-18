@@ -2,7 +2,6 @@
 "use client";
 
 import React, { useState } from 'react';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import type { FoBasket, FoInstrumentInBasket } from '@/types';
@@ -52,35 +51,32 @@ const BasketItem: React.FC<BasketItemProps> = ({ basket }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <Card className="mb-3 shadow-sm">
-      <CardHeader 
-        className="pb-2 pt-3 px-4 cursor-pointer"
-        onClick={() => setIsOpen(!isOpen)}
-      >
-        <div className="flex justify-between items-center">
-          <CardTitle className="text-md font-semibold flex items-center">
-            <span>{basket.name}</span>
-          </CardTitle>
-          <div className='flex items-center gap-2'>
-            <span className={cn("text-xs px-2 py-0.5 rounded-full capitalize",
-              basket.status === 'Active' ? 'bg-green-100 text-green-700 dark:bg-green-700/30 dark:text-green-300' :
-              basket.status === 'Pending Execution' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-700/30 dark:text-yellow-300' :
-              basket.status === 'Executed' ? 'bg-blue-100 text-blue-700 dark:bg-blue-700/30 dark:text-blue-300' :
-              'bg-muted text-muted-foreground'
-            )}>{basket.status.toLowerCase()}</span>
-            <ChevronDown className={cn("h-4 w-4 transition-transform duration-200", isOpen && "rotate-180")} />
-          </div>
+    <div className="border-b">
+        <div 
+            className="p-3 cursor-pointer hover:bg-muted/50"
+            onClick={() => setIsOpen(!isOpen)}
+        >
+            <div className="flex justify-between items-center">
+                <p className="font-semibold text-sm text-foreground">{basket.name}</p>
+                 <div className='flex items-center gap-2'>
+                    <span className={cn("text-xs px-2 py-0.5 rounded-full capitalize",
+                    basket.status === 'Active' ? 'bg-green-100 text-green-700 dark:bg-green-700/30 dark:text-green-300' :
+                    basket.status === 'Pending Execution' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-700/30 dark:text-yellow-300' :
+                    basket.status === 'Executed' ? 'bg-blue-100 text-blue-700 dark:bg-blue-700/30 dark:text-blue-300' :
+                    'bg-muted text-muted-foreground'
+                    )}>{basket.status.toLowerCase()}</span>
+                    <ChevronDown className={cn("h-4 w-4 transition-transform duration-200", isOpen && "rotate-180")} />
+                </div>
+            </div>
+            <p className="text-xs text-muted-foreground">
+                {basket.instrumentsCount} instruments | Margin: {formatCurrency(basket.requiredMargin)}
+                {basket.pnl !== undefined && ` | P&L: ${formatCurrency(basket.pnl)}`}
+            </p>
         </div>
-        <CardDescription className="text-xs">
-          {basket.instrumentsCount} instruments | Margin: {formatCurrency(basket.requiredMargin)}
-          {basket.pnl !== undefined && ` | P&L: ${formatCurrency(basket.pnl)}`}
-        </CardDescription>
-      </CardHeader>
       
       {isOpen && (
-        <>
-          <CardContent className="text-xs px-4 pb-3 space-y-4">
-            <p>Created: {new Date(basket.createdDate).toLocaleDateString()}</p>
+        <div className="bg-muted/30 px-3 py-3 space-y-4 animate-accordion-down">
+            <p className="text-xs">Created: {new Date(basket.createdDate).toLocaleDateString()}</p>
             <div>
               <h4 className="text-sm font-semibold mb-1.5 text-foreground">Instruments:</h4>
               {basket.instruments && basket.instruments.length > 0 ? (
@@ -108,23 +104,22 @@ const BasketItem: React.FC<BasketItemProps> = ({ basket }) => {
                     </div>
                 </div>
              )}
-          </CardContent>
-          <CardFooter className="px-4 py-2 border-t flex justify-end space-x-2">
-            {basket.status === 'Pending Execution' && (
-              <Button variant="default" size="sm" className="bg-primary" onClick={() => toast({ title: `Execute Basket: ${basket.name}`})}>
-                <PlayCircle className="mr-1 h-3 w-3" /> Execute
-              </Button>
-            )}
-            <Button variant="outline" size="sm" onClick={() => toast({ title: `Edit Basket: ${basket.name}`})}>
-                <Edit3 className="mr-1 h-3 w-3" /> Edit
-            </Button>
-            <Button variant="outline" size="sm" onClick={() => toast({ title: `Duplicate Basket: ${basket.name}`})}>
-                <Copy className="mr-1 h-3 w-3" /> Duplicate
-            </Button>
-          </CardFooter>
-        </>
+            <div className="pt-2 flex justify-end space-x-2">
+                {basket.status === 'Pending Execution' && (
+                <Button variant="default" size="sm" className="bg-primary" onClick={() => toast({ title: `Execute Basket: ${basket.name}`})}>
+                    <PlayCircle className="mr-1 h-3 w-3" /> Execute
+                </Button>
+                )}
+                <Button variant="outline" size="sm" onClick={() => toast({ title: `Edit Basket: ${basket.name}`})}>
+                    <Edit3 className="mr-1 h-3 w-3" /> Edit
+                </Button>
+                <Button variant="outline" size="sm" onClick={() => toast({ title: `Duplicate Basket: ${basket.name}`})}>
+                    <Copy className="mr-1 h-3 w-3" /> Duplicate
+                </Button>
+            </div>
+        </div>
       )}
-    </Card>
+    </div>
   );
 };
 
@@ -164,5 +159,3 @@ export function BasketsDisplay({ isRealMode = false, activeMode }: BasketsDispla
     </ScrollArea>
   );
 }
-
-    

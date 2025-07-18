@@ -2,7 +2,6 @@
 "use client";
 
 import React from 'react';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import type { BondBid } from '@/types';
@@ -18,31 +17,31 @@ interface BondBidItemProps {
 const BondBidItem: React.FC<BondBidItemProps> = ({ bid }) => {
   const { toast } = useToast();
   return (
-    <Card className="mb-3 shadow-sm">
-      <CardHeader className="pb-2 pt-3 px-4">
-        <CardTitle className="text-md font-semibold flex justify-between items-center">
-          <span>{bid.bondName}</span>
-          <span className="text-xs px-2 py-0.5 rounded-full bg-muted text-muted-foreground">{bid.platform}</span>
-        </CardTitle>
-        <CardDescription className="text-xs">ISIN: {bid.isin}</CardDescription>
-      </CardHeader>
-      <CardContent className="text-xs px-4 pb-3 space-y-1">
-        <div className="flex justify-between"><span>Bid Price: ₹{bid.bidPrice.toFixed(2)}</span> <span>Qty: {bid.quantity}</span></div>
-        {bid.bidYield && <div className="flex justify-between"><span>Bid Yield: {bid.bidYield}</span></div>}
-        <div className="flex justify-between">
-          <span>Status: <span className={cn("font-medium", bid.status === 'Pending' ? 'text-primary' : bid.status === 'Filled' ? 'text-green-600' : 'text-muted-foreground')}>{bid.status}</span></span>
-          <span>Date: {new Date(bid.bidDate).toLocaleDateString()}</span>
+    <div className="border-b">
+        <div className="p-3">
+            <div className="flex justify-between items-center">
+                <p className="font-semibold text-sm text-foreground">{bid.bondName}</p>
+                <span className="text-xs px-2 py-0.5 rounded-full bg-muted text-muted-foreground">{bid.platform}</span>
+            </div>
+            <p className="text-xs text-muted-foreground">ISIN: {bid.isin}</p>
         </div>
-      </CardContent>
-       <CardFooter className="px-4 py-2 border-t flex justify-end space-x-2">
-        <Button variant="outline" size="sm" onClick={() => toast({ title: `Modify Bid: ${bid.isin}`})}>
-           <Edit3 className="mr-1 h-3 w-3" /> Modify
-        </Button>
-        <Button variant="destructive" size="sm" onClick={() => toast({ title: `Cancel Bid: ${bid.isin}`, variant: "destructive"})}>
-           <XCircle className="mr-1 h-3 w-3" /> Cancel
-        </Button>
-      </CardFooter>
-    </Card>
+        <div className="text-xs px-3 pb-2 space-y-1">
+            <div className="flex justify-between"><span>Bid Price: ₹{bid.bidPrice.toFixed(2)}</span> <span>Qty: {bid.quantity}</span></div>
+            {bid.bidYield && <div className="flex justify-between"><span>Bid Yield: {bid.bidYield}</span></div>}
+            <div className="flex justify-between">
+            <span>Status: <span className={cn("font-medium", bid.status === 'Pending' ? 'text-primary' : bid.status === 'Filled' ? 'text-green-600' : 'text-muted-foreground')}>{bid.status}</span></span>
+            <span>Date: {new Date(bid.bidDate).toLocaleDateString()}</span>
+            </div>
+        </div>
+        <div className="px-3 pb-2 flex justify-end space-x-2">
+            <Button variant="outline" size="sm" onClick={() => toast({ title: `Modify Bid: ${bid.isin}`})}>
+                <Edit3 className="mr-1 h-3 w-3" /> Modify
+            </Button>
+            <Button variant="destructive" size="sm" onClick={() => toast({ title: `Cancel Bid: ${bid.isin}`, variant: "destructive"})}>
+                <XCircle className="mr-1 h-3 w-3" /> Cancel
+            </Button>
+        </div>
+    </div>
   );
 };
 

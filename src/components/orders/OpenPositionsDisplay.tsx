@@ -1,23 +1,22 @@
 
 "use client";
 
-import React from 'react';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from '@/components/ui/button';
+import React, { useState } from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import type { PortfolioHolding, IntradayPosition, FoPosition, CryptoFuturePosition } from '@/types';
-import { mockPortfolioHoldings, mockIntradayPositions, mockFoPositions, mockCryptoFutures } from '@/lib/mockData';
+import { mockPortfolioHoldings, mockIntradayPositions, mockFoPositions, mockCryptoFutures, mockWeb3Holdings } from '@/lib/mockData';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
-import { Briefcase, InfoIcon, XCircle, Settings2 } from 'lucide-react';
+import { Briefcase, XCircle, Settings2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { Button } from '../ui/button';
 
 interface PositionItemProps {
   item: PortfolioHolding | IntradayPosition | FoPosition | CryptoFuturePosition;
   type: string;
 }
 
-const PositionItemCard: React.FC<PositionItemProps> = ({ item, type }) => {
+const PositionItem: React.FC<PositionItemProps> = ({ item, type }) => {
   const { toast } = useToast();
   const router = useRouter();
 
@@ -66,8 +65,8 @@ const PositionItemCard: React.FC<PositionItemProps> = ({ item, type }) => {
     pnl = `${cryptoFutItem.unrealizedPnL.toFixed(2)} USDT`;
     isProfit = cryptoFutItem.unrealizedPnL >= 0;
     details = `Leverage: ${cryptoFutItem.leverage}x`;
-  } else if (type === 'Crypto') { 
-    const cryptoItem = item as PortfolioHolding; 
+  } else if (type === 'Crypto' || type === 'Web3') { // Explicitly handling 'Crypto' passed as type prop
+    const cryptoItem = item as PortfolioHolding; // Assuming it's from portfolio holdings
     name = cryptoItem.name;
     symbolDisplay = cryptoItem.symbol || '';
     qty = `${cryptoItem.quantity.toLocaleString()} units`;
@@ -112,6 +111,10 @@ const PositionItemCard: React.FC<PositionItemProps> = ({ item, type }) => {
       const cryptoItem = item as PortfolioHolding; 
       routerSymbolForPath = cryptoItem.symbol;
       if (routerSymbolForPath) path = `/order/crypto/${encodeURIComponent(routerSymbolForPath)}`;
+    } else if (type === "Web3") {
+      const web3Item = item as PortfolioHolding;
+      routerSymbolForPath = web3Item.symbol;
+      if (routerSymbolForPath) path = `/order/crypto/${encodeURIComponent(routerSymbolForPath)}`; // Web3 assets use the crypto order page for now
     } else if (type === "Crypto Future") {
       const cryptoFutItem = item as CryptoFuturePosition;
       routerSymbolForPath = cryptoFutItem.symbol;
@@ -141,35 +144,35 @@ const PositionItemCard: React.FC<PositionItemProps> = ({ item, type }) => {
 
 
   return (
-    <Card className="mb-3 shadow-sm">
-      <CardHeader className="pb-2 pt-3 px-4">
-        <CardTitle className="text-md font-semibold flex justify-between items-center">
-          <span>{name} {symbolDisplay && `(${symbolDisplay})`}</span>
-          <span className="text-xs px-2 py-0.5 rounded-full bg-muted text-muted-foreground">{type}</span>
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="text-xs px-4 pb-3 space-y-1">
-        <div className="flex justify-between"><span>Qty: {qty}</span> <span className={cn(isProfit ? "text-green-600" : "text-red-600")}>P&L: {pnl} {pnlPercent}</span></div>
-        <div className="flex justify-between text-muted-foreground"><span>{avgPrice}</span> <span>{ltp}</span></div>
-        {details && <p className="text-muted-foreground">{details}</p>}
-      </CardContent>
-      <CardFooter className="px-4 py-2 border-t flex space-x-2">
-        <Button variant="outline" size="sm" className="flex-1" onClick={handleAdjustPosition}>
-          <Settings2 className="mr-2 h-4 w-4" />
-          Adjust Position
-        </Button>
-        <Button variant="destructive" size="sm" className="flex-1" onClick={handleExitClick}>
-          <XCircle className="mr-2 h-4 w-4" />
-          Exit
-        </Button>
-      </CardFooter>
-    </Card>
+    <div className="border-b">
+        <div className="p-3">
+            <div className="flex justify-between items-center">
+                <p className="font-semibold text-sm text-foreground">{name} {symbolDisplay && `(${symbolDisplay})`}</p>
+                <span className="text-xs px-2 py-0.5 rounded-full bg-muted text-muted-foreground">{type}</span>
+            </div>
+            <div className="text-xs mt-1 space-y-1">
+                <div className="flex justify-between"><span>Qty: {qty}</span> <span className={cn(isProfit ? "text-green-600" : "text-red-600")}>P&L: {pnl} {pnlPercent}</span></div>
+                <div className="flex justify-between text-muted-foreground"><span>{avgPrice}</span> <span>{ltp}</span></div>
+                {details && <p className="text-muted-foreground">{details}</p>}
+            </div>
+        </div>
+        <div className="px-3 pb-2 flex space-x-2">
+            <Button variant="outline" size="sm" className="flex-1" onClick={handleAdjustPosition}>
+            <Settings2 className="mr-2 h-4 w-4" />
+            Adjust Position
+            </Button>
+            <Button variant="destructive" size="sm" className="flex-1" onClick={handleExitClick}>
+            <XCircle className="mr-2 h-4 w-4" />
+            Exit
+            </Button>
+        </div>
+    </div>
   );
 };
 
 interface OpenPositionsDisplayProps {
   isRealMode?: boolean;
-  activeMode: 'Fiat' | 'Crypto';
+  activeMode: 'Fiat' | 'Crypto' | 'Web3';
 }
 
 export function OpenPositionsDisplay({ isRealMode = false, activeMode }: OpenPositionsDisplayProps) {
@@ -181,12 +184,14 @@ export function OpenPositionsDisplay({ isRealMode = false, activeMode }: OpenPos
       ...mockFoPositions.map(item => ({ item, typeLabel: "F&O", category: 'Fiat' as const })),
       ...mockPortfolioHoldings.filter(h => h.type === 'Crypto').map(item => ({ item, typeLabel: "Crypto", category: 'Crypto' as const })),
       ...mockCryptoFutures.map(item => ({ item, typeLabel: "Crypto Future", category: 'Crypto' as const })),
+      ...mockWeb3Holdings.map(item => ({ item, typeLabel: "Web3", category: 'Web3' as const })),
     ];
     
-    // Real mode is focused on crypto
+    // Real mode is focused on crypto/web3
     const realPositions = [
       ...mockPortfolioHoldings.filter(h => h.type === 'Crypto').map(item => ({ item, typeLabel: "Crypto", category: 'Crypto' as const })),
       ...mockCryptoFutures.map(item => ({ item, typeLabel: "Crypto Future", category: 'Crypto' as const })),
+      ...mockWeb3Holdings.map(item => ({ item, typeLabel: "Web3", category: 'Web3' as const })),
     ];
     
     const basePositions = isRealMode ? realPositions : demoPositions;
@@ -207,10 +212,8 @@ export function OpenPositionsDisplay({ isRealMode = false, activeMode }: OpenPos
   return (
     <ScrollArea className="h-[calc(100vh-200px)] p-1">
       {allPositions.map((pos, index) => (
-        <PositionItemCard key={`${pos.typeLabel}-${pos.item.id}-${index}`} item={pos.item} type={pos.typeLabel} />
+        <PositionItem key={`${pos.typeLabel}-${pos.item.id}-${index}`} item={pos.item} type={pos.typeLabel} />
       ))}
     </ScrollArea>
   );
 }
-
-    

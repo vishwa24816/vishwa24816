@@ -2,7 +2,6 @@
 "use client";
 
 import React from 'react';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import type { PriceAlert } from '@/types';
@@ -19,17 +18,17 @@ const AlertItem: React.FC<AlertItemProps> = ({ alert }) => {
   const { toast } = useToast();
   const conditionText = `${alert.condition} ₹${alert.targetPrice.toFixed(2)}`;
   return (
-    <Card className="mb-3 shadow-sm">
-      <CardHeader className="pb-2 pt-3 px-4">
-        <CardTitle className="text-md font-semibold flex justify-between items-center">
-          <span>{alert.instrumentName} ({alert.symbol})</span>
+    <div className="border-b">
+      <div className="p-3">
+        <div className="flex justify-between items-center">
+          <p className="font-semibold text-sm text-foreground">{alert.instrumentName} ({alert.symbol})</p>
           <span className="text-xs px-2 py-0.5 rounded-full bg-muted text-muted-foreground">{alert.assetType}</span>
-        </CardTitle>
-        <CardDescription className="text-xs">
+        </div>
+        <p className="text-xs text-muted-foreground">
           Alert: {conditionText} {alert.currentPrice && `(Current: ₹${alert.currentPrice.toFixed(2)})`}
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="text-xs px-4 pb-3 space-y-1">
+        </p>
+      </div>
+      <div className="text-xs px-3 pb-2 space-y-1">
          <div className="flex justify-between">
             <span>Status: <span className={cn("font-medium",
                 alert.status === 'Active' ? 'text-primary' :
@@ -38,8 +37,8 @@ const AlertItem: React.FC<AlertItemProps> = ({ alert }) => {
             <span>Created: {new Date(alert.createdDate).toLocaleDateString()}</span>
         </div>
         {alert.notes && <p className="text-muted-foreground italic">Notes: {alert.notes}</p>}
-      </CardContent>
-       <CardFooter className="px-4 py-2 border-t flex justify-end space-x-2">
+      </div>
+       <div className="px-3 pb-2 flex justify-end space-x-2">
         {alert.status === 'Active' && (
           <Button variant="outline" size="sm" onClick={() => toast({ title: `Modify Alert: ${alert.symbol}`})}>
             <Edit3 className="mr-1 h-3 w-3" /> Modify
@@ -50,8 +49,8 @@ const AlertItem: React.FC<AlertItemProps> = ({ alert }) => {
             <XCircle className="mr-1 h-3 w-3" /> {alert.status === 'Triggered' ? 'Delete' : 'Cancel'}
           </Button>
         )}
-      </CardFooter>
-    </Card>
+      </div>
+    </div>
   );
 };
 

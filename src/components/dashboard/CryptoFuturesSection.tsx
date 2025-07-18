@@ -3,63 +3,83 @@
 
 import React, { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import type { CryptoFuturePosition } from '@/types';
 import { cn } from '@/lib/utils';
-import { Repeat, XCircle, Table2, BarChart2, LayoutGrid, Settings2 } from 'lucide-react';
+import { Repeat, XCircle, Settings2, ChevronDown } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-  ChartLegend,
-  ChartLegendContent,
-  type ChartConfig,
-  Chart,
-} from "@/components/ui/chart";
-import { PortfolioHeatmap, type HeatmapItem } from './PortfolioHeatmap';
-
 
 interface CryptoFuturesSectionProps {
   positions: CryptoFuturePosition[];
   cashBalance: number;
 }
 
-const slugify = (str: string) => str.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+const PositionRow = ({ position, onAdjust, onExit }: { position: CryptoFuturePosition, onAdjust: () => void, onExit: () => void }) => {
+    const [isExpanded, setIsExpanded] = useState(false);
+    
+    const formatCurrency = (value: number) => {
+        return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
+    };
+    const formatPrice = (value: number) => {
+        return value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    };
+
+    const isPnlPositive = position.unrealizedPnL >= 0;
+    const isMtmPositive = position.mtmPnl >= 0;
+
+    return (
+        <div className="border-b transition-all duration-300">
+            <div 
+                className="flex items-center justify-between p-3 cursor-pointer hover:bg-muted/50"
+                onClick={() => setIsExpanded(!isExpanded)}
+            >
+                <div className="flex-1">
+                    <p className="font-semibold text-sm text-foreground">{position.symbol}</p>
+                    <p className={cn("text-xs font-medium", position.positionSide === 'LONG' ? 'text-green-600' : 'text-red-600')}>{position.positionSide}</p>
+                </div>
+                <div className="text-right ml-2 shrink-0">
+                    <p className={cn("text-sm font-medium", isPnlPositive ? 'text-green-600' : 'text-red-600')}>
+                        {formatCurrency(position.unrealizedPnL)}
+                    </p>
+                    <p className={cn("text-xs", isMtmPositive ? 'text-green-500' : 'text-red-500')}>MTM: {formatCurrency(position.mtmPnl)}</p>
+                </div>
+                <ChevronDown className={cn("h-4 w-4 ml-3 text-muted-foreground transition-transform", isExpanded && "rotate-180")} />
+            </div>
+
+            {isExpanded && (
+                <div className="bg-muted/30 px-3 py-3 space-y-3 animate-accordion-down">
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-xs">
+                        <div><p className="text-muted-foreground">Quantity</p><p className="font-medium text-foreground">{position.quantity.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 4})}</p></div>
+                        <div className="text-right"><p className="text-muted-foreground">Leverage</p><p className="font-medium text-foreground">{position.leverage}x</p></div>
+                        <div><p className="text-muted-foreground">Entry / Mark Price</p><p className="font-medium text-foreground">{formatPrice(position.entryPrice)} / {formatPrice(position.markPrice)}</p></div>
+                        <div className="text-right"><p className="text-muted-foreground">Liq. Price</p><p className="font-medium text-foreground">{position.liquidationPrice ? formatPrice(position.liquidationPrice) : '-'}</p></div>
+                        <div><p className="text-muted-foreground">Margin</p><p className="font-medium text-foreground">{formatCurrency(position.margin)}</p></div>
+                    </div>
+                    <div className="pt-2 flex gap-2">
+                        <Button size="sm" variant="outline" className="flex-1 justify-center" onClick={onAdjust}><Settings2 className="mr-2 h-4 w-4" /> Adjust</Button>
+                        <Button size="sm" variant="destructive" className="flex-1 justify-center" onClick={onExit}><XCircle className="mr-2 h-4 w-4" /> Exit</Button>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+};
+
 
 export function CryptoFuturesSection({ positions, cashBalance }: CryptoFuturesSectionProps) {
-  const [expandedRowId, setExpandedRowId] = useState<string | null>(null);
-  const [viewType, setViewType] = useState<'table' | 'bar' | 'heatmap'>('table');
   const router = useRouter();
   const { toast } = useToast();
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
   };
-   const formatPrice = (value: number) => {
-    return value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  };
 
-  const handleRowClick = (positionId: string) => {
-    setExpandedRowId(prevId => (prevId === positionId ? null : positionId));
-  };
-  
-  const handleAdjustPosition = (e: React.MouseEvent, pos: CryptoFuturePosition) => {
-      e.stopPropagation();
+  const handleAdjustPosition = (pos: CryptoFuturePosition) => {
       router.push(`/order/crypto-future/${encodeURIComponent(pos.symbol)}`);
   };
 
-  const handleExitPosition = (e: React.MouseEvent, pos: CryptoFuturePosition) => {
-    e.stopPropagation();
+  const handleExitPosition = (pos: CryptoFuturePosition) => {
     toast({
       title: `Exiting Position (Mock): ${pos.symbol}`,
       description: `A market order would be placed to close this position.`,
@@ -70,55 +90,6 @@ export function CryptoFuturesSection({ positions, cashBalance }: CryptoFuturesSe
   const totalUnrealizedPnL = positions.reduce((acc, pos) => acc + pos.unrealizedPnL, 0);
   const totalMtmPnl = positions.reduce((acc, pos) => acc + pos.mtmPnl, 0);
   const totalMargin = positions.reduce((acc, pos) => acc + pos.margin, 0);
-
-  const chartConfig = useMemo(() => {
-    const config = positions.reduce((acc, pos, index) => {
-      const key = slugify(pos.symbol);
-      acc[key] = {
-        label: pos.symbol,
-        color: `hsl(var(--chart-${(index % 4) + 1}))`,
-      };
-      return acc;
-    }, {} as ChartConfig);
-
-    config["cash"] = {
-      label: "Available Margin",
-      color: `hsl(var(--chart-5))`,
-    }
-    
-    return config
-  }, [positions]);
-
-  const chartData = useMemo(() => {
-    const positionsData = positions.map(p => ({
-      name: slugify(p.symbol),
-      value: parseFloat(p.margin.toFixed(2)),
-      label: p.symbol
-    }));
-    
-    if (cashBalance > 0) {
-      positionsData.push({
-          name: 'cash',
-          value: parseFloat(cashBalance.toFixed(2)),
-          label: 'Available Margin'
-      });
-    }
-
-    return positionsData;
-  }, [positions, cashBalance]);
-
-  const heatmapData: HeatmapItem[] = useMemo(() => {
-    return positions.map(p => ({
-      name: p.symbol,
-      value: p.margin,
-      pnl: p.unrealizedPnL,
-      pnlPercent: (p.unrealizedPnL / p.margin) * 100, // Approximate PnL %
-    }));
-  }, [positions]);
-
-  const tickFormatter = (value: string) => {
-    return chartConfig[value]?.label || value;
-  }
   
   return (
     <Card className="shadow-md">
@@ -127,11 +98,6 @@ export function CryptoFuturesSection({ positions, cashBalance }: CryptoFuturesSe
             <CardTitle className="text-xl font-semibold font-headline text-primary flex items-center">
               <Repeat className="h-6 w-6 mr-2" /> Crypto Futures
             </CardTitle>
-            <div className="flex items-center gap-1 rounded-md bg-muted p-1">
-                <Button variant={viewType === 'table' ? 'secondary' : 'ghost'} size="sm" className="h-7 px-2" onClick={() => setViewType('table')} aria-label="Table View"><Table2 className="h-4 w-4" /></Button>
-                <Button variant={viewType === 'bar' ? 'secondary' : 'ghost'} size="sm" className="h-7 px-2" onClick={() => setViewType('bar')} aria-label="Bar Chart View"><BarChart2 className="h-4 w-4" /></Button>
-                <Button variant={viewType === 'heatmap' ? 'secondary' : 'ghost'} size="sm" className="h-7 px-2" onClick={() => setViewType('heatmap')} aria-label="Heatmap View"><LayoutGrid className="h-4 w-4" /></Button>
-            </div>
         </div>
       </CardHeader>
       <CardContent className="p-0">
@@ -160,111 +126,20 @@ export function CryptoFuturesSection({ positions, cashBalance }: CryptoFuturesSe
           </div>
         </div>
         
-        {viewType === 'table' && (
-          positions.length > 0 ? (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Symbol / Mark</TableHead>
-                  <TableHead>Side / Qty</TableHead>
-                  <TableHead>Entry / Liq.</TableHead>
-                  <TableHead className="text-right">MTM P&L / Overall P&L</TableHead>
-                  <TableHead className="text-right">Margin / Lev</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {positions.map((pos) => (
-                  <React.Fragment key={pos.id}>
-                    <TableRow
-                      onClick={() => handleRowClick(pos.id)}
-                      className="cursor-pointer"
-                    >
-                      <TableCell className="font-medium">
-                        <div>{pos.symbol}</div>
-                        <div className="text-xs text-muted-foreground">Mark: {formatPrice(pos.markPrice)}</div>
-                      </TableCell>
-                      <TableCell>
-                        <div className={cn(pos.positionSide === 'LONG' ? 'text-green-600' : 'text-red-600')}>
-                          {pos.positionSide}
-                        </div>
-                        <div className="text-xs text-muted-foreground">Qty: {pos.quantity.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 4})}</div>
-                      </TableCell>
-                      <TableCell>
-                        <div>{formatPrice(pos.entryPrice)}</div>
-                        <div className="text-xs text-muted-foreground">Liq: {pos.liquidationPrice ? formatPrice(pos.liquidationPrice) : '-'}</div>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className={cn(pos.mtmPnl >= 0 ? 'text-green-600' : 'text-red-600')}>
-                          {formatCurrency(pos.mtmPnl)}
-                        </div>
-                        <div className={cn("text-xs", pos.unrealizedPnL >= 0 ? 'text-green-500' : 'text-red-500')}>
-                          {formatCurrency(pos.unrealizedPnL)}
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div>{formatPrice(pos.margin)}</div>
-                        <div className="text-xs text-muted-foreground">{pos.leverage}x</div>
-                      </TableCell>
-                    </TableRow>
-                    {expandedRowId === pos.id && (
-                      <TableRow className="bg-muted/50 hover:bg-muted/60">
-                        <TableCell colSpan={5}>
-                           <div className="p-4 flex gap-2">
-                              <Button 
-                                size="sm" 
-                                variant="outline" 
-                                className="flex-1 justify-center"
-                                onClick={(e) => handleAdjustPosition(e, pos)}
-                              >
-                                <Settings2 className="mr-2 h-4 w-4" /> Adjust Position
-                              </Button>
-                               <Button 
-                                size="sm" 
-                                variant="destructive" 
-                                className="flex-1 justify-center"
-                                onClick={(e) => handleExitPosition(e, pos)}
-                              >
-                                <XCircle className="mr-2 h-4 w-4" /> Exit Position
-                              </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </React.Fragment>
-                ))}
-              </TableBody>
-            </Table>
-          ) : (
-            <p className="text-muted-foreground text-center py-8">You have no open crypto futures positions.</p>
-          )
-        )}
-        
-        {viewType === 'bar' && (
-            <div className="p-4">
-            <ChartContainer config={chartConfig} className="h-[300px] w-full">
-                <Chart.ResponsiveContainer>
-                <Chart.BarChart layout="vertical" data={chartData} margin={{ right: 20 }}>
-                    <Chart.YAxis dataKey="name" type="category" tickLine={false} axisLine={false} tickMargin={10} width={80} tick={{ fill: "hsl(var(--muted-foreground))" }} tickFormatter={tickFormatter} />
-                    <Chart.XAxis type="number" hide />
-                    <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
-                    <Chart.Bar dataKey="value" layout="vertical" radius={5}>
-                        {chartData.map((entry) => (
-                            <Chart.Cell key={`cell-${entry.name}`} fill={`var(--color-${entry.name})`} />
-                        ))}
-                    </Chart.Bar>
-                    <ChartLegend content={<ChartLegendContent nameKey="label" />} />
-                </Chart.BarChart>
-                </Chart.ResponsiveContainer>
-            </ChartContainer>
-            </div>
-        )}
-
-        {viewType === 'heatmap' && (
-          <div className="p-4 min-h-[300px]">
-            <PortfolioHeatmap items={heatmapData} />
+        {positions.length > 0 ? (
+          <div>
+            {positions.map((pos) => (
+              <PositionRow 
+                key={pos.id} 
+                position={pos}
+                onAdjust={() => handleAdjustPosition(pos)}
+                onExit={() => handleExitPosition(pos)}
+              />
+            ))}
           </div>
+        ) : (
+          <p className="text-muted-foreground text-center py-8">You have no open crypto futures positions.</p>
         )}
-
       </CardContent>
     </Card>
   );

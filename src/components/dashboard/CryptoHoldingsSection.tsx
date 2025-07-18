@@ -3,33 +3,14 @@
 
 import React, { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import type { PortfolioHolding } from '@/types';
 import { cn } from '@/lib/utils';
-import { Bitcoin, XCircle, Coins, Landmark, BarChart2, LayoutGrid, Table2, Settings2 } from 'lucide-react';
+import { Bitcoin, XCircle, Coins, Landmark, Settings2, ChevronDown } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { FundTransferDialog } from '@/components/shared/FundTransferDialog';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-  ChartLegend,
-  ChartLegendContent,
-  type ChartConfig,
-  Chart,
-} from "@/components/ui/chart";
-import { PortfolioHeatmap, type HeatmapItem } from './PortfolioHeatmap';
-
 
 interface CryptoHoldingsSectionProps {
   holdings: PortfolioHolding[];
@@ -41,7 +22,74 @@ interface CryptoHoldingsSectionProps {
   isRealMode?: boolean;
 }
 
-const slugify = (str: string) => str.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+const HoldingRow = ({ holding, onAdjust, onExit }: { holding: PortfolioHolding, onAdjust: () => void, onExit: () => void }) => {
+    const [isExpanded, setIsExpanded] = useState(false);
+
+    const formatCurrency = (value: number) => {
+        return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
+    };
+
+    const isProfit = holding.profitAndLoss >= 0;
+    const isDayProfit = holding.dayChangeAbsolute >= 0;
+
+    return (
+        <div className="border-b transition-all duration-300">
+            <div 
+                className="flex items-center justify-between p-3 cursor-pointer hover:bg-muted/50"
+                onClick={() => setIsExpanded(!isExpanded)}
+            >
+                <div className="flex-1">
+                    <p className="font-semibold text-sm text-foreground">{holding.name}</p>
+                    <p className="text-xs text-muted-foreground">{holding.symbol}</p>
+                </div>
+                <div className="text-right ml-2 shrink-0">
+                    <p className={cn("text-sm font-medium", isProfit ? 'text-green-600' : 'text-red-600')}>
+                        {formatCurrency(holding.profitAndLoss)}
+                    </p>
+                    <p className="text-xs text-muted-foreground">({holding.profitAndLossPercent.toFixed(2)}%)</p>
+                </div>
+                <ChevronDown className={cn("h-4 w-4 ml-3 text-muted-foreground transition-transform", isExpanded && "rotate-180")} />
+            </div>
+
+            {isExpanded && (
+                <div className="bg-muted/30 px-3 py-3 space-y-3 animate-accordion-down">
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-xs">
+                        <div>
+                            <p className="text-muted-foreground">Quantity</p>
+                            <p className="font-medium text-foreground">{holding.quantity.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 8 })}</p>
+                        </div>
+                        <div className="text-right">
+                             <p className="text-muted-foreground">Avg. Cost</p>
+                            <p className="font-medium text-foreground">{formatCurrency(holding.avgCostPrice)}</p>
+                        </div>
+                         <div>
+                            <p className="text-muted-foreground">LTP</p>
+                            <p className="font-medium text-foreground">{formatCurrency(holding.ltp)}</p>
+                        </div>
+                        <div className="text-right">
+                             <p className="text-muted-foreground">Current Value</p>
+                            <p className="font-medium text-foreground">{formatCurrency(holding.currentValue)}</p>
+                        </div>
+                         <div>
+                            <p className="text-muted-foreground">Day's P&L</p>
+                            <p className={cn("font-medium", isDayProfit ? 'text-green-600' : 'text-red-600')}>
+                                {formatCurrency(holding.dayChangeAbsolute)} ({holding.dayChangePercent.toFixed(2)}%)
+                            </p>
+                        </div>
+                    </div>
+                    <div className="pt-2 flex gap-2">
+                        <Button size="sm" variant="outline" className="flex-1 justify-center" onClick={onAdjust}>
+                            <Settings2 className="mr-2 h-4 w-4" /> Adjust Position
+                        </Button>
+                        <Button size="sm" variant="destructive" className="flex-1 justify-center" onClick={onExit}>
+                            <XCircle className="mr-2 h-4 w-4" /> Exit Position
+                        </Button>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+};
 
 export function CryptoHoldingsSection({
   holdings,
@@ -52,28 +100,21 @@ export function CryptoHoldingsSection({
   setMainPortfolioCashBalance,
   isRealMode = false
 }: CryptoHoldingsSectionProps) {
-  const cryptoHoldings = holdings;
-  const [expandedRowId, setExpandedRowId] = useState<string | null>(null);
   const { toast } = useToast();
   const router = useRouter();
   const [isFundTransferDialogOpen, setIsFundTransferDialogOpen] = useState(false);
   const [transferDirection, setTransferDirection] = useState<'toCrypto' | 'fromCrypto'>('toCrypto');
-  const [viewType, setViewType] = useState<'table' | 'bar' | 'heatmap'>('table');
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
   };
   
-  const handleRowClick = (holdingId: string) => {
-    setExpandedRowId(prevId => (prevId === holdingId ? null : prevId));
-  };
-
-  const handleAdjustPosition = (e: React.MouseEvent, holding: PortfolioHolding) => {
+  const handleAdjustPosition = (holding: PortfolioHolding) => {
       e.stopPropagation();
       router.push(`/order/crypto/${encodeURIComponent(holding.symbol || holding.name)}`);
   };
 
-  const handleExitPosition = (e: React.MouseEvent, holding: PortfolioHolding) => {
+  const handleExitPosition = (holding: PortfolioHolding) => {
     e.stopPropagation();
     toast({
       title: `Exiting Position (Mock): ${holding.symbol}`,
@@ -82,12 +123,12 @@ export function CryptoHoldingsSection({
     });
   };
 
-  const totalCurrentValue = cryptoHoldings.reduce((acc, holding) => acc + holding.currentValue, 0);
-  const totalInvestmentValue = cryptoHoldings.reduce((acc, holding) => acc + (holding.quantity * holding.avgCostPrice), 0);
+  const totalCurrentValue = holdings.reduce((acc, holding) => acc + holding.currentValue, 0);
+  const totalInvestmentValue = holdings.reduce((acc, holding) => acc + (holding.quantity * holding.avgCostPrice), 0);
   const overallPandL = totalCurrentValue - totalInvestmentValue;
   const overallPandLPercent = totalInvestmentValue !== 0 ? (overallPandL / totalInvestmentValue) * 100 : 0;
 
-  const totalDayChangeAbsolute = cryptoHoldings.reduce((acc, holding) => acc + holding.dayChangeAbsolute, 0);
+  const totalDayChangeAbsolute = holdings.reduce((acc, holding) => acc + holding.dayChangeAbsolute, 0);
   const totalPreviousDayValue = totalCurrentValue - totalDayChangeAbsolute;
   const totalDayChangePercent = totalPreviousDayValue !== 0 ? (totalDayChangeAbsolute / totalPreviousDayValue) * 100 : 0;
 
@@ -107,64 +148,6 @@ export function CryptoHoldingsSection({
       toast({ title: "Transfer Successful", description: `${formatCurrency(amount)} transferred to Main Portfolio.` });
     }
   };
-
-  const chartConfig = useMemo(() => {
-    const config = holdings.reduce((acc, holding, index) => {
-      const key = slugify(holding.name);
-      acc[key] = {
-        label: holding.name,
-        color: `hsl(var(--chart-${(index % 4) + 1}))`,
-      };
-      return acc;
-    }, {} as ChartConfig);
-
-    config["cash"] = {
-      label: "Cash",
-      color: `hsl(var(--chart-5))`,
-    }
-    
-    return config
-  }, [holdings])
-
-  const chartData = useMemo(() => {
-    const holdingsData = holdings.map(h => ({
-      name: slugify(h.name),
-      value: parseFloat(h.currentValue.toFixed(2)),
-    }));
-    
-    if (cashBalance > 0) {
-      holdingsData.push({
-          name: 'cash',
-          value: parseFloat(cashBalance.toFixed(2)),
-      });
-    }
-
-    return holdingsData;
-  }, [holdings, cashBalance]);
-
-  const heatmapData: HeatmapItem[] = useMemo(() => {
-    return cryptoHoldings.map(h => ({
-      name: h.name,
-      value: h.currentValue,
-      pnl: h.profitAndLoss,
-      pnlPercent: h.profitAndLossPercent,
-    }));
-  }, [cryptoHoldings]);
-
-  const tickFormatter = (value: string) => {
-    return chartConfig[value]?.label || value;
-  }
-  
-  if (cryptoHoldings.length === 0 && cashBalance === 0) {
-    return (
-      <section className="space-y-4">
-        <h2 className="text-xl font-semibold font-headline text-primary flex items-center">
-          <Bitcoin className="h-6 w-6 mr-2" /> {title}
-        </h2>
-        <p className="text-muted-foreground text-center py-4">You have no crypto assets or balance in this wallet.</p>
-      </section>
-    );
-  }
 
   const walletCardTitle = title.includes('Web3') ? 'Web3 Wallet' : 'Crypto Wallet';
   const holdingsCardTitle = title.includes('Web3') ? 'Web3 Holdings' : 'Crypto Holdings';
@@ -225,106 +208,20 @@ export function CryptoHoldingsSection({
 
         <Card className="w-full shadow-md">
           <CardHeader>
-            <div className="flex justify-between items-center">
-              <CardTitle className="text-xl font-semibold font-headline text-primary flex items-center">
+            <CardTitle className="text-xl font-semibold font-headline text-primary flex items-center">
                 <Coins className="h-6 w-6 mr-2" /> {holdingsCardTitle}
-              </CardTitle>
-              <div className="flex items-center gap-1 rounded-md bg-muted p-1">
-                <Button variant={viewType === 'table' ? 'secondary' : 'ghost'} size="sm" className="h-7 px-2" onClick={() => setViewType('table')} aria-label="Table View"><Table2 className="h-4 w-4" /></Button>
-                <Button variant={viewType === 'bar' ? 'secondary' : 'ghost'} size="sm" className="h-7 px-2" onClick={() => setViewType('bar')} aria-label="Bar Chart View"><BarChart2 className="h-4 w-4" /></Button>
-                <Button variant={viewType === 'heatmap' ? 'secondary' : 'ghost'} size="sm" className="h-7 px-2" onClick={() => setViewType('heatmap')} aria-label="Heatmap View"><LayoutGrid className="h-4 w-4" /></Button>
-              </div>
-            </div>
+            </CardTitle>
           </CardHeader>
           <CardContent className="p-0">
-            {chartData.length > 0 ? (
-              <>
-                {viewType === 'table' && (
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead className="w-[35%]">Asset</TableHead>
-                        <TableHead className="w-[20%] text-right">Qty.</TableHead>
-                        <TableHead className="w-[20%] text-right">LTP / Value</TableHead>
-                        <TableHead className="w-[25%] text-right">Overall / Day P&L</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {cryptoHoldings.map((holding) => (
-                        <React.Fragment key={holding.id}>
-                          <TableRow onClick={() => handleRowClick(holding.id)} className="cursor-pointer">
-                            <TableCell className="font-medium">
-                              <div>{holding.name}</div>
-                              {holding.symbol && <div className="text-xs text-muted-foreground">{holding.symbol}</div>}
-                            </TableCell>
-                            <TableCell className="text-right">{holding.quantity.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 8 })}</TableCell>
-                            <TableCell className="text-right">
-                                <div>{formatCurrency(holding.ltp)}</div>
-                                <div className="text-xs text-muted-foreground">{formatCurrency(holding.currentValue)}</div>
-                            </TableCell>
-                            <TableCell className={cn("text-right whitespace-nowrap")}>
-                                <div className={cn(holding.profitAndLoss >= 0 ? 'text-green-600' : 'text-red-600')}>
-                                    {formatCurrency(holding.profitAndLoss)} ({holding.profitAndLossPercent.toFixed(2)}%)
-                                </div>
-                                <div className={cn("text-xs", holding.dayChangeAbsolute >= 0 ? 'text-green-500' : 'text-red-500')}>
-                                    {formatCurrency(holding.dayChangeAbsolute)} ({holding.dayChangePercent.toFixed(2)}%)
-                                </div>
-                            </TableCell>
-                          </TableRow>
-                          {expandedRowId === holding.id && (
-                            <TableRow className="bg-muted/50 hover:bg-muted/60">
-                               <TableCell colSpan={4} className="p-0">
-                                   <div className="p-2 flex gap-2">
-                                       <Button 
-                                          size="sm" 
-                                          variant="outline" 
-                                          className="flex-1 justify-center"
-                                          onClick={(e) => handleAdjustPosition(e, holding)}
-                                      >
-                                          <Settings2 className="mr-2 h-4 w-4" /> Adjust Position
-                                      </Button>
-                                      <Button 
-                                          size="sm" 
-                                          variant="destructive" 
-                                          className="flex-1 justify-center"
-                                          onClick={(e) => handleExitPosition(e, holding)}
-                                      >
-                                          <XCircle className="mr-2 h-4 w-4" /> Exit Position
-                                      </Button>
-                                  </div>
-                               </TableCell>
-                           </TableRow>
-                          )}
-                        </React.Fragment>
-                      ))}
-                    </TableBody>
-                  </Table>
-                )}
-                {viewType === 'bar' && (
-                  <div className="p-4">
-                    <ChartContainer config={chartConfig} className="h-[300px] w-full">
-                      <Chart.ResponsiveContainer>
-                        <Chart.BarChart layout="vertical" data={chartData} margin={{ right: 20 }}>
-                          <Chart.YAxis dataKey="name" type="category" tickLine={false} axisLine={false} tickMargin={10} width={80} tick={{ fill: "hsl(var(--muted-foreground))" }} tickFormatter={tickFormatter} />
-                          <Chart.XAxis type="number" hide />
-                          <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
-                          <Chart.Bar dataKey="value" layout="vertical" radius={5}>
-                             {chartData.map((entry) => (
-                                <Chart.Cell key={`cell-${entry.name}`} fill={`var(--color-${entry.name})`} />
-                            ))}
-                          </Chart.Bar>
-                          <ChartLegend content={<ChartLegendContent nameKey="label" />} />
-                        </Chart.BarChart>
-                      </Chart.ResponsiveContainer>
-                    </ChartContainer>
-                  </div>
-                )}
-                 {viewType === 'heatmap' && (
-                    <div className="p-4 min-h-[300px]">
-                      <PortfolioHeatmap items={heatmapData} />
-                    </div>
-                )}
-              </>
+            {holdings.length > 0 ? (
+                 holdings.map((holding) => (
+                    <HoldingRow 
+                        key={holding.id} 
+                        holding={holding} 
+                        onAdjust={() => handleAdjustPosition(holding)}
+                        onExit={() => handleExitPosition(holding)}
+                    />
+                ))
             ) : (
               <div className="p-6 text-center text-muted-foreground">
                 You have no crypto assets in this wallet.
