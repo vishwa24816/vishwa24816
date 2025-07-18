@@ -1,15 +1,18 @@
-
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import { mockIntradayPositions } from '@/lib/mockData';
 import type { IntradayPosition } from '@/types';
 import { cn } from '@/lib/utils';
-import { TrendingUp, XCircle, Settings2, ChevronDown } from 'lucide-react';
+import { TrendingUp, XCircle, Settings2, ChevronDown, List, BarChart2, LayoutGrid } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Chart } from "@/components/ui/chart";
+import { PortfolioHeatmap, type HeatmapItem } from './PortfolioHeatmap';
+
+type ViewMode = 'list' | 'bar' | 'heatmap';
 
 const PositionRow = ({ position, onAdjust, onExit }: { position: IntradayPosition, onAdjust: () => void, onExit: () => void }) => {
     const [isExpanded, setIsExpanded] = useState(false);
@@ -60,6 +63,7 @@ export function IntradayPositionsSection() {
   const positions = mockIntradayPositions;
   const router = useRouter();
   const { toast } = useToast();
+  const [viewMode, setViewMode] = useState<ViewMode>('list');
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
@@ -79,6 +83,70 @@ export function IntradayPositionsSection() {
 
   const totalPandL = positions.reduce((acc, pos) => acc + pos.pAndL, 0);
 
+  const chartData = useMemo(() => {
+    return positions.map(pos => ({
+      name: pos.symbol,
+      value: pos.avgPrice * pos.quantity,
+      fill: pos.pAndL >= 0 ? "hsl(var(--positive))" : "hsl(var(--destructive))",
+    }));
+  }, [positions]);
+
+  const heatmapData: HeatmapItem[] = useMemo(() => {
+    return positions.map(pos => ({
+      name: pos.symbol,
+      value: pos.avgPrice * pos.quantity,
+      pnl: pos.pAndL,
+      pnlPercent: pos.pAndLPercent,
+    }));
+  }, [positions]);
+
+  const renderContent = () => {
+    if (positions.length === 0) {
+      return (
+        <p className="text-muted-foreground text-center py-8 px-6">You have no open intraday positions.</p>
+      );
+    }
+    switch(viewMode) {
+      case 'list':
+        return positions.map((pos) => (
+          <PositionRow 
+            key={pos.id} 
+            position={pos}
+            onAdjust={() => handleAdjustPosition(pos)}
+            onExit={() => handleExitPosition(pos)}
+          />
+        ));
+      case 'bar':
+        return (
+          <div className="w-full h-[300px] mt-4">
+             <Chart.Container config={{}} className="h-full w-full">
+              <Chart.BarChart data={chartData} layout="vertical" margin={{ left: 10, right: 10 }}>
+                <Chart.XAxis type="number" hide />
+                <Chart.YAxis type="category" dataKey="name" hide />
+                <Chart.Tooltip
+                  cursor={false}
+                  contentStyle={{
+                    backgroundColor: 'hsl(var(--background))',
+                    borderColor: 'hsl(var(--border))'
+                  }}
+                  formatter={(value) => `Value: ${formatCurrency(value as number)}`}
+                />
+                <Chart.Bar dataKey="value" radius={4} />
+              </Chart.BarChart>
+            </Chart.Container>
+          </div>
+        );
+      case 'heatmap':
+        return (
+          <div className="w-full h-[300px] mt-4">
+            <PortfolioHeatmap items={heatmapData} />
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
+
   return (
     <Card className="shadow-md">
       <CardHeader>
@@ -86,29 +154,23 @@ export function IntradayPositionsSection() {
             <CardTitle className="text-xl font-semibold font-headline text-primary flex items-center mb-2 sm:mb-0">
                 <TrendingUp className="h-6 w-6 mr-2" /> Intraday Positions
             </CardTitle>
-            <div className="text-left sm:text-right">
-                <p className="text-sm text-muted-foreground">Total P&L</p>
-                <p className={cn("text-lg font-semibold", totalPandL >= 0 ? 'text-green-600' : 'text-red-600')}>
-                    {formatCurrency(totalPandL)}
-                </p>
+            <div className="flex items-center gap-4">
+              <div className="text-left sm:text-right">
+                  <p className="text-sm text-muted-foreground">Total P&L</p>
+                  <p className={cn("text-lg font-semibold", totalPandL >= 0 ? 'text-green-600' : 'text-red-600')}>
+                      {formatCurrency(totalPandL)}
+                  </p>
+              </div>
+              <div className="flex items-center gap-1 rounded-md bg-muted p-1">
+                  <Button variant={viewMode === 'list' ? 'secondary' : 'ghost'} size="icon" className="h-7 w-7" onClick={() => setViewMode('list')}><List /></Button>
+                  <Button variant={viewMode === 'bar' ? 'secondary' : 'ghost'} size="icon" className="h-7 w-7" onClick={() => setViewMode('bar')}><BarChart2 /></Button>
+                  <Button variant={viewMode === 'heatmap' ? 'secondary' : 'ghost'} size="icon" className="h-7 w-7" onClick={() => setViewMode('heatmap')}><LayoutGrid /></Button>
+              </div>
             </div>
         </div>
       </CardHeader>
       <CardContent className="p-0">
-        {positions.length === 0 ? (
-          <p className="text-muted-foreground text-center py-8 px-6">You have no open intraday positions.</p>
-        ) : (
-          <div>
-            {positions.map((pos) => (
-              <PositionRow 
-                key={pos.id} 
-                position={pos}
-                onAdjust={() => handleAdjustPosition(pos)}
-                onExit={() => handleExitPosition(pos)}
-              />
-            ))}
-          </div>
-        )}
+        {renderContent()}
       </CardContent>
     </Card>
   );

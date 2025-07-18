@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useMemo } from 'react';
@@ -6,14 +5,18 @@ import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import type { CryptoFuturePosition } from '@/types';
 import { cn } from '@/lib/utils';
-import { Repeat, XCircle, Settings2, ChevronDown } from 'lucide-react';
+import { Repeat, XCircle, Settings2, ChevronDown, List, BarChart2, LayoutGrid } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Chart } from "@/components/ui/chart";
+import { PortfolioHeatmap, type HeatmapItem } from './PortfolioHeatmap';
 
 interface CryptoFuturesSectionProps {
   positions: CryptoFuturePosition[];
   cashBalance: number;
 }
+
+type ViewMode = 'list' | 'bar' | 'heatmap';
 
 const PositionRow = ({ position, onAdjust, onExit }: { position: CryptoFuturePosition, onAdjust: () => void, onExit: () => void }) => {
     const [isExpanded, setIsExpanded] = useState(false);
@@ -70,6 +73,7 @@ const PositionRow = ({ position, onAdjust, onExit }: { position: CryptoFuturePos
 export function CryptoFuturesSection({ positions, cashBalance }: CryptoFuturesSectionProps) {
   const router = useRouter();
   const { toast } = useToast();
+  const [viewMode, setViewMode] = useState<ViewMode>('list');
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
@@ -91,6 +95,70 @@ export function CryptoFuturesSection({ positions, cashBalance }: CryptoFuturesSe
   const totalMtmPnl = positions.reduce((acc, pos) => acc + pos.mtmPnl, 0);
   const totalMargin = positions.reduce((acc, pos) => acc + pos.margin, 0);
   
+  const chartData = useMemo(() => {
+    return positions.map(pos => ({
+      name: pos.symbol,
+      value: pos.margin,
+      fill: pos.unrealizedPnL >= 0 ? "hsl(var(--positive))" : "hsl(var(--destructive))",
+    }));
+  }, [positions]);
+
+  const heatmapData: HeatmapItem[] = useMemo(() => {
+    return positions.map(pos => ({
+      name: pos.symbol,
+      value: pos.margin,
+      pnl: pos.unrealizedPnL,
+      pnlPercent: (pos.unrealizedPnL / pos.margin) * 100, // Approximate PnL %
+    }));
+  }, [positions]);
+  
+  const renderContent = () => {
+    if (positions.length === 0) {
+      return (
+        <p className="text-muted-foreground text-center py-8 px-6">You have no open crypto futures positions.</p>
+      );
+    }
+    switch(viewMode) {
+      case 'list':
+        return positions.map((pos) => (
+          <PositionRow 
+            key={pos.id} 
+            position={pos}
+            onAdjust={() => handleAdjustPosition(pos)}
+            onExit={() => handleExitPosition(pos)}
+          />
+        ));
+      case 'bar':
+        return (
+          <div className="w-full h-[300px] mt-4">
+             <Chart.Container config={{}} className="h-full w-full">
+              <Chart.BarChart data={chartData} layout="vertical" margin={{ left: 10, right: 10 }}>
+                <Chart.XAxis type="number" hide />
+                <Chart.YAxis type="category" dataKey="name" hide />
+                <Chart.Tooltip
+                  cursor={false}
+                  contentStyle={{
+                    backgroundColor: 'hsl(var(--background))',
+                    borderColor: 'hsl(var(--border))'
+                  }}
+                  formatter={(value) => `Margin: ${formatCurrency(value as number)}`}
+                />
+                <Chart.Bar dataKey="value" radius={4} />
+              </Chart.BarChart>
+            </Chart.Container>
+          </div>
+        );
+      case 'heatmap':
+        return (
+          <div className="w-full h-[300px] mt-4">
+            <PortfolioHeatmap items={heatmapData} />
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
+
   return (
     <Card className="shadow-md">
       <CardHeader>
@@ -98,6 +166,11 @@ export function CryptoFuturesSection({ positions, cashBalance }: CryptoFuturesSe
             <CardTitle className="text-xl font-semibold font-headline text-primary flex items-center">
               <Repeat className="h-6 w-6 mr-2" /> Crypto Futures
             </CardTitle>
+            <div className="flex items-center gap-1 rounded-md bg-muted p-1">
+                <Button variant={viewMode === 'list' ? 'secondary' : 'ghost'} size="icon" className="h-7 w-7" onClick={() => setViewMode('list')}><List /></Button>
+                <Button variant={viewMode === 'bar' ? 'secondary' : 'ghost'} size="icon" className="h-7 w-7" onClick={() => setViewMode('bar')}><BarChart2 /></Button>
+                <Button variant={viewMode === 'heatmap' ? 'secondary' : 'ghost'} size="icon" className="h-7 w-7" onClick={() => setViewMode('heatmap')}><LayoutGrid /></Button>
+            </div>
         </div>
       </CardHeader>
       <CardContent className="p-0">
@@ -126,20 +199,8 @@ export function CryptoFuturesSection({ positions, cashBalance }: CryptoFuturesSe
           </div>
         </div>
         
-        {positions.length > 0 ? (
-          <div>
-            {positions.map((pos) => (
-              <PositionRow 
-                key={pos.id} 
-                position={pos}
-                onAdjust={() => handleAdjustPosition(pos)}
-                onExit={() => handleExitPosition(pos)}
-              />
-            ))}
-          </div>
-        ) : (
-          <p className="text-muted-foreground text-center py-8">You have no open crypto futures positions.</p>
-        )}
+        {renderContent()}
+
       </CardContent>
     </Card>
   );
