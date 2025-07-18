@@ -45,7 +45,8 @@ export function FoPositionsSection() {
     setExpandedRowId(prevId => (prevId === positionId ? null : prevId));
   };
   
-  const handleAdjustPosition = (pos: FoPosition) => {
+  const handleAdjustPosition = (e: React.MouseEvent, pos: FoPosition) => {
+    e.stopPropagation();
     let path = '';
     if (pos.optionType === 'FUT') {
         path = `/order/future/${encodeURIComponent(pos.instrumentName)}`;
@@ -57,7 +58,8 @@ export function FoPositionsSection() {
     }
   };
 
-  const handleExitPosition = (pos: FoPosition) => {
+  const handleExitPosition = (e: React.MouseEvent, pos: FoPosition) => {
+    e.stopPropagation();
     toast({
       title: `Exiting Position (Mock): ${pos.instrumentName}`,
       description: `A market order would be placed to close this position.`,
@@ -97,7 +99,8 @@ export function FoPositionsSection() {
   }, [positions]);
 
   const tickFormatter = (value: string) => {
-    return chartConfig[value]?.label || value;
+    const label = chartConfig[value]?.label || value;
+    return typeof label === 'string' ? (label.length > 15 ? label.slice(0, 12) + "..." : label) : label;
   }
 
   return (
@@ -172,7 +175,7 @@ export function FoPositionsSection() {
                                   size="sm" 
                                   variant="outline" 
                                   className="flex-1 justify-center" 
-                                  onClick={() => handleAdjustPosition(pos)}
+                                  onClick={(e) => handleAdjustPosition(e, pos)}
                                 >
                                   <Settings2 className="mr-2 h-4 w-4" /> Adjust Position
                                 </Button>
@@ -180,7 +183,7 @@ export function FoPositionsSection() {
                                   size="sm" 
                                   variant="destructive" 
                                   className="flex-1 justify-center"
-                                  onClick={() => handleExitPosition(pos)}
+                                  onClick={(e) => handleExitPosition(e, pos)}
                                 >
                                   <XCircle className="mr-2 h-4 w-4" /> Exit Position
                                 </Button>
