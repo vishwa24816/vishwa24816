@@ -7,10 +7,14 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import type { PortfolioHolding } from '@/types';
 import { cn } from '@/lib/utils';
-import { Bitcoin, XCircle, Coins, Landmark, Settings2, ChevronDown } from 'lucide-react';
+import { Bitcoin, XCircle, Coins, Landmark, Settings2, ChevronDown, BarChart2, LayoutGrid, List } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { FundTransferDialog } from '@/components/shared/FundTransferDialog';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { PortfolioHeatmap, type HeatmapItem } from './PortfolioHeatmap';
+import { Chart } from "@/components/ui/chart"
+
+type ViewMode = 'list' | 'bar' | 'heatmap';
 
 interface CryptoHoldingsSectionProps {
   holdings: PortfolioHolding[];
@@ -104,18 +108,17 @@ export function CryptoHoldingsSection({
   const router = useRouter();
   const [isFundTransferDialogOpen, setIsFundTransferDialogOpen] = useState(false);
   const [transferDirection, setTransferDirection] = useState<'toCrypto' | 'fromCrypto'>('toCrypto');
+  const [viewMode, setViewMode] = useState<ViewMode>('list');
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
   };
   
   const handleAdjustPosition = (holding: PortfolioHolding) => {
-      e.stopPropagation();
       router.push(`/order/crypto/${encodeURIComponent(holding.symbol || holding.name)}`);
   };
 
   const handleExitPosition = (holding: PortfolioHolding) => {
-    e.stopPropagation();
     toast({
       title: `Exiting Position (Mock): ${holding.symbol}`,
       description: `A market order would be placed to close this position.`,
@@ -151,6 +154,73 @@ export function CryptoHoldingsSection({
 
   const walletCardTitle = title.includes('Web3') ? 'Web3 Wallet' : 'Crypto Wallet';
   const holdingsCardTitle = title.includes('Web3') ? 'Web3 Holdings' : 'Crypto Holdings';
+
+  const chartData = useMemo(() => {
+    return holdings.map(pos => ({
+      name: pos.symbol || pos.name,
+      value: pos.currentValue,
+      fill: pos.profitAndLoss >= 0 ? "hsl(var(--positive))" : "hsl(var(--destructive))",
+    }));
+  }, [holdings]);
+
+  const heatmapData: HeatmapItem[] = useMemo(() => {
+    return holdings.map(pos => ({
+      name: pos.symbol || pos.name,
+      value: pos.currentValue,
+      pnl: pos.profitAndLoss,
+      pnlPercent: pos.profitAndLossPercent,
+    }));
+  }, [holdings]);
+
+  const renderContent = () => {
+    if (holdings.length === 0) {
+      return (
+        <div className="p-6 text-center text-muted-foreground">
+          You have no crypto assets in this wallet.
+        </div>
+      );
+    }
+    switch(viewMode) {
+      case 'list':
+        return holdings.map((holding) => (
+          <HoldingRow 
+              key={holding.id} 
+              holding={holding} 
+              onAdjust={() => handleAdjustPosition(holding)}
+              onExit={() => handleExitPosition(holding)}
+          />
+        ));
+      case 'bar':
+        return (
+          <div className="w-full h-[300px] mt-4">
+             <Chart.Container config={{}} className="h-full w-full">
+              <Chart.BarChart data={chartData} layout="vertical" margin={{ left: 10, right: 10 }}>
+                <Chart.XAxis type="number" hide />
+                <Chart.YAxis type="category" dataKey="name" hide />
+                <Chart.Tooltip
+                  cursor={false}
+                  contentStyle={{
+                    backgroundColor: 'hsl(var(--background))',
+                    borderColor: 'hsl(var(--border))'
+                  }}
+                  formatter={(value) => formatCurrency(value as number)}
+                />
+                <Chart.Bar dataKey="value" radius={4} />
+              </Chart.BarChart>
+            </Chart.Container>
+          </div>
+        );
+      case 'heatmap':
+        return (
+          <div className="w-full h-[300px] mt-4">
+            <PortfolioHeatmap items={heatmapData} />
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
+
 
   return (
     <>
@@ -208,25 +278,19 @@ export function CryptoHoldingsSection({
 
         <Card className="w-full shadow-md">
           <CardHeader>
-            <CardTitle className="text-xl font-semibold font-headline text-primary flex items-center">
-                <Coins className="h-6 w-6 mr-2" /> {holdingsCardTitle}
-            </CardTitle>
+            <div className="flex justify-between items-center">
+                <CardTitle className="text-xl font-semibold font-headline text-primary flex items-center">
+                    <Coins className="h-6 w-6 mr-2" /> {holdingsCardTitle}
+                </CardTitle>
+                 <div className="flex items-center gap-1 rounded-md bg-muted p-1">
+                    <Button variant={viewMode === 'list' ? 'secondary' : 'ghost'} size="icon" className="h-7 w-7" onClick={() => setViewMode('list')}><List /></Button>
+                    <Button variant={viewMode === 'bar' ? 'secondary' : 'ghost'} size="icon" className="h-7 w-7" onClick={() => setViewMode('bar')}><BarChart2 /></Button>
+                    <Button variant={viewMode === 'heatmap' ? 'secondary' : 'ghost'} size="icon" className="h-7 w-7" onClick={() => setViewMode('heatmap')}><LayoutGrid /></Button>
+                </div>
+            </div>
           </CardHeader>
           <CardContent className="p-0">
-            {holdings.length > 0 ? (
-                 holdings.map((holding) => (
-                    <HoldingRow 
-                        key={holding.id} 
-                        holding={holding} 
-                        onAdjust={() => handleAdjustPosition(holding)}
-                        onExit={() => handleExitPosition(holding)}
-                    />
-                ))
-            ) : (
-              <div className="p-6 text-center text-muted-foreground">
-                You have no crypto assets in this wallet.
-              </div>
-            )}
+            {renderContent()}
           </CardContent>
         </Card>
       </div>
@@ -236,7 +300,7 @@ export function CryptoHoldingsSection({
         onOpenChange={setIsFundTransferDialogOpen}
         transferDirection={transferDirection}
         mainPortfolioCashBalance={mainPortfolioCashBalance}
-        cryptoCashBalance={cashBalance}
+        cryptoCashBalance={cryptoCashBalance}
         onTransferConfirm={handleTransferConfirm}
         currencyMode={'USD'}
       />

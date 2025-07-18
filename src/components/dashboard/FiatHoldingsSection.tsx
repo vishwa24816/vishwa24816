@@ -8,12 +8,14 @@ import { Separator } from "@/components/ui/separator";
 import { mockPortfolioHoldings } from '@/lib/mockData';
 import type { PortfolioHolding } from '@/types';
 import { cn } from '@/lib/utils';
-import { Briefcase, Info, XCircle, Settings2, BarChart2, LayoutGrid, Table2, ChevronDown } from 'lucide-react'; 
+import { Briefcase, Info, XCircle, Settings2, BarChart2, LayoutGrid, List, ChevronDown } from 'lucide-react'; 
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { PortfolioHeatmap, type HeatmapItem } from './PortfolioHeatmap';
+import { Chart } from "@/components/ui/chart";
 
 type HoldingFilterType = 'All' | 'Stock' | 'Mutual Fund' | 'Bond';
+type ViewMode = 'list' | 'bar' | 'heatmap';
 
 interface FiatHoldingsSectionProps {
   mainPortfolioCashBalance: number;
@@ -94,6 +96,7 @@ const HoldingRow = ({ holding, onAdjust, onExit }: { holding: PortfolioHolding, 
 export function FiatHoldingsSection({ mainPortfolioCashBalance, setMainPortfolioCashBalance }: FiatHoldingsSectionProps) {
   const holdings = mockPortfolioHoldings.filter(h => h.type !== 'Crypto');
   const [activeFilter, setActiveFilter] = useState<HoldingFilterType>('All');
+  const [viewMode, setViewMode] = useState<ViewMode>('list');
   const router = useRouter();
   const { toast } = useToast();
 
@@ -140,12 +143,90 @@ export function FiatHoldingsSection({ mainPortfolioCashBalance, setMainPortfolio
   
   const totalDayChangeAbsolute = filteredHoldings.reduce((acc, holding) => acc + holding.dayChangeAbsolute, 0);
 
+  const chartData = useMemo(() => {
+    return filteredHoldings.map(pos => ({
+      name: pos.symbol || pos.name,
+      value: pos.currentValue,
+      fill: pos.profitAndLoss >= 0 ? "hsl(var(--positive))" : "hsl(var(--destructive))",
+    }));
+  }, [filteredHoldings]);
+
+  const heatmapData: HeatmapItem[] = useMemo(() => {
+    return filteredHoldings.map(pos => ({
+      name: pos.symbol || pos.name,
+      value: pos.currentValue,
+      pnl: pos.profitAndLoss,
+      pnlPercent: pos.profitAndLossPercent,
+    }));
+  }, [filteredHoldings]);
+
+  const renderContent = () => {
+    if (filteredHoldings.length === 0) {
+      return (
+        <div className="text-center text-muted-foreground py-8">
+          No holdings match the selected filter.
+        </div>
+      );
+    }
+
+    switch (viewMode) {
+      case 'list':
+        return (
+          <div className="mt-4">
+            {filteredHoldings.map((holding) => (
+              <HoldingRow 
+                  key={holding.id} 
+                  holding={holding} 
+                  onAdjust={() => handleAdjustPosition(holding)}
+                  onExit={() => handleExitPosition(holding)}
+              />
+            ))}
+          </div>
+        );
+      case 'bar':
+        return (
+          <div className="w-full h-[300px] mt-4">
+             <Chart.Container config={{}} className="h-full w-full">
+              <Chart.BarChart data={chartData} layout="vertical" margin={{ left: 10, right: 10 }}>
+                <Chart.XAxis type="number" hide />
+                <Chart.YAxis type="category" dataKey="name" hide />
+                <Chart.Tooltip
+                  cursor={false}
+                  contentStyle={{
+                    backgroundColor: 'hsl(var(--background))',
+                    borderColor: 'hsl(var(--border))'
+                  }}
+                  formatter={(value) => formatCurrency(value as number)}
+                />
+                <Chart.Bar dataKey="value" radius={4} />
+              </Chart.BarChart>
+            </Chart.Container>
+          </div>
+        );
+      case 'heatmap':
+        return (
+          <div className="w-full h-[300px] mt-4">
+            <PortfolioHeatmap items={heatmapData} />
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
+
   return (
     <Card className="shadow-md">
         <CardHeader>
-            <CardTitle className="text-xl font-semibold font-headline text-primary flex items-center">
-                <Briefcase className="h-6 w-6 mr-2" /> Fiat Holdings
-            </CardTitle>
+            <div className="flex justify-between items-center">
+                <CardTitle className="text-xl font-semibold font-headline text-primary flex items-center">
+                    <Briefcase className="h-6 w-6 mr-2" /> Fiat Holdings
+                </CardTitle>
+                <div className="flex items-center gap-1 rounded-md bg-muted p-1">
+                    <Button variant={viewMode === 'list' ? 'secondary' : 'ghost'} size="icon" className="h-7 w-7" onClick={() => setViewMode('list')}><List /></Button>
+                    <Button variant={viewMode === 'bar' ? 'secondary' : 'ghost'} size="icon" className="h-7 w-7" onClick={() => setViewMode('bar')}><BarChart2 /></Button>
+                    <Button variant={viewMode === 'heatmap' ? 'secondary' : 'ghost'} size="icon" className="h-7 w-7" onClick={() => setViewMode('heatmap')}><LayoutGrid /></Button>
+                </div>
+            </div>
         </CardHeader>
         <CardContent className="pt-0">
             <div className="space-y-3 pt-2 mb-4">
@@ -204,22 +285,7 @@ export function FiatHoldingsSection({ mainPortfolioCashBalance, setMainPortfolio
                 </div>
             </div>
 
-            <div className="mt-4">
-                {filteredHoldings.length > 0 ? (
-                    filteredHoldings.map((holding) => (
-                       <HoldingRow 
-                            key={holding.id} 
-                            holding={holding} 
-                            onAdjust={() => handleAdjustPosition(holding)}
-                            onExit={() => handleExitPosition(holding)}
-                        />
-                    ))
-                ) : (
-                    <div className="text-center text-muted-foreground py-8">
-                        No holdings match the selected filter.
-                    </div>
-                )}
-            </div>
+            {renderContent()}
 
         </CardContent>
     </Card>
