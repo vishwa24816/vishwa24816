@@ -4,7 +4,10 @@
 import React, { useState } from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import type { PortfolioHolding, IntradayPosition, FoPosition, CryptoFuturePosition } from '@/types';
-import { mockPortfolioHoldings, mockIntradayPositions, mockFoPositions, mockCryptoFutures, mockWeb3Holdings } from '@/lib/mockData/portfolioHoldings';
+import { mockPortfolioHoldings, mockWeb3Holdings } from '@/lib/mockData/portfolioHoldings';
+import { mockIntradayPositions } from '@/lib/mockData/intradayPositions';
+import { mockFoPositions } from '@/lib/mockData/foPositions';
+import { mockCryptoFutures } from '@/lib/mockData/cryptoFutures';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { Briefcase, XCircle, Settings2 } from 'lucide-react';
