@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useMemo } from 'react';
@@ -57,11 +58,16 @@ const PositionRow = ({ position, onAdjust, onExit }: { position: IntradayPositio
     );
 };
 
+interface CryptoIntradayPositionsSectionProps {
+    positions: IntradayPosition[];
+}
 
 export function CryptoIntradayPositionsSection({ positions }: CryptoIntradayPositionsSectionProps) {
   const router = useRouter();
   const { toast } = useToast();
   const [viewMode, setViewMode] = useState<ViewMode>('list');
+  const [expandedRowId, setExpandedRowId] = useState<string | null>(null);
+
 
   const formatCurrency = (value: number) => {
      return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
@@ -86,8 +92,23 @@ export function CryptoIntradayPositionsSection({ positions }: CryptoIntradayPosi
       name: pos.symbol,
       value: pos.avgPrice * pos.quantity,
       fill: pos.pAndL >= 0 ? "hsl(var(--positive))" : "hsl(var(--destructive))",
+      label: pos.pAndL >= 0 ? 'Profit' : 'Loss'
     }));
   }, [positions]);
+  
+  const chartConfig = {
+      value: {
+        label: 'Invested Value',
+      },
+      Profit: {
+        label: 'Profit',
+        color: 'hsl(var(--positive))',
+      },
+      Loss: {
+        label: 'Loss',
+        color: 'hsl(var(--destructive))',
+      },
+  };
 
   const heatmapData: HeatmapItem[] = useMemo(() => {
     return positions.map(pos => ({
@@ -117,7 +138,7 @@ export function CryptoIntradayPositionsSection({ positions }: CryptoIntradayPosi
       case 'bar':
         return (
           <div className="w-full h-[300px] mt-4">
-             <Chart.Container config={{}} className="h-full w-full">
+             <Chart.Container config={chartConfig} className="h-full w-full">
               <Chart.BarChart data={chartData} layout="vertical" margin={{ left: 10, right: 10 }}>
                 <Chart.XAxis type="number" hide />
                 <Chart.YAxis type="category" dataKey="name" hide />
@@ -129,6 +150,7 @@ export function CryptoIntradayPositionsSection({ positions }: CryptoIntradayPosi
                   }}
                   formatter={(value) => `Value: ${formatCurrency(value as number)}`}
                 />
+                <Chart.Legend content={<Chart.LegendContent />} />
                 <Chart.Bar dataKey="value" radius={4} />
               </Chart.BarChart>
             </Chart.Container>

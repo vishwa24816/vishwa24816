@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useMemo } from 'react';
@@ -100,8 +101,23 @@ export function CryptoFuturesSection({ positions, cashBalance }: CryptoFuturesSe
       name: pos.symbol,
       value: pos.margin,
       fill: pos.unrealizedPnL >= 0 ? "hsl(var(--positive))" : "hsl(var(--destructive))",
+      label: pos.unrealizedPnL >= 0 ? 'Profit' : 'Loss'
     }));
   }, [positions]);
+  
+  const chartConfig = {
+      value: {
+        label: 'Margin',
+      },
+      Profit: {
+        label: 'Profit',
+        color: 'hsl(var(--positive))',
+      },
+      Loss: {
+        label: 'Loss',
+        color: 'hsl(var(--destructive))',
+      },
+  };
 
   const heatmapData: HeatmapItem[] = useMemo(() => {
     return positions.map(pos => ({
@@ -131,7 +147,7 @@ export function CryptoFuturesSection({ positions, cashBalance }: CryptoFuturesSe
       case 'bar':
         return (
           <div className="w-full h-[300px] mt-4">
-             <Chart.Container config={{}} className="h-full w-full">
+             <Chart.Container config={chartConfig} className="h-full w-full">
               <Chart.BarChart data={chartData} layout="vertical" margin={{ left: 10, right: 10 }}>
                 <Chart.XAxis type="number" hide />
                 <Chart.YAxis type="category" dataKey="name" hide />
@@ -143,6 +159,7 @@ export function CryptoFuturesSection({ positions, cashBalance }: CryptoFuturesSe
                   }}
                   formatter={(value) => `Margin: ${formatCurrency(value as number)}`}
                 />
+                <Chart.Legend content={<Chart.LegendContent />} />
                 <Chart.Bar dataKey="value" radius={4} />
               </Chart.BarChart>
             </Chart.Container>

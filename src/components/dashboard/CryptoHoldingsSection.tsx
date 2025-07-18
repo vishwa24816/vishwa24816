@@ -160,8 +160,23 @@ export function CryptoHoldingsSection({
       name: pos.symbol || pos.name,
       value: pos.currentValue,
       fill: pos.profitAndLoss >= 0 ? "hsl(var(--positive))" : "hsl(var(--destructive))",
+      label: pos.profitAndLoss >= 0 ? 'Profit' : 'Loss'
     }));
   }, [holdings]);
+
+  const chartConfig = {
+      value: {
+        label: 'Current Value',
+      },
+      Profit: {
+        label: 'Profit',
+        color: 'hsl(var(--positive))',
+      },
+      Loss: {
+        label: 'Loss',
+        color: 'hsl(var(--destructive))',
+      },
+  };
 
   const heatmapData: HeatmapItem[] = useMemo(() => {
     return holdings.map(pos => ({
@@ -193,7 +208,7 @@ export function CryptoHoldingsSection({
       case 'bar':
         return (
           <div className="w-full h-[300px] mt-4">
-             <Chart.Container config={{}} className="h-full w-full">
+             <Chart.Container config={chartConfig} className="h-full w-full">
               <Chart.BarChart data={chartData} layout="vertical" margin={{ left: 10, right: 10 }}>
                 <Chart.XAxis type="number" hide />
                 <Chart.YAxis type="category" dataKey="name" hide />
@@ -205,6 +220,7 @@ export function CryptoHoldingsSection({
                   }}
                   formatter={(value) => formatCurrency(value as number)}
                 />
+                <Chart.Legend content={<Chart.LegendContent />} />
                 <Chart.Bar dataKey="value" radius={4} />
               </Chart.BarChart>
             </Chart.Container>
@@ -300,7 +316,7 @@ export function CryptoHoldingsSection({
         onOpenChange={setIsFundTransferDialogOpen}
         transferDirection={transferDirection}
         mainPortfolioCashBalance={mainPortfolioCashBalance}
-        cryptoCashBalance={cryptoCashBalance}
+        cryptoCashBalance={cashBalance}
         onTransferConfirm={handleTransferConfirm}
         currencyMode={'USD'}
       />
