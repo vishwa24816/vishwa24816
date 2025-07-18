@@ -159,7 +159,7 @@ export function CryptoIntradayPositionsSection({ positions }: CryptoIntradayPosi
                       </TableRow>
                       {expandedRowId === pos.id && (
                          <TableRow className="bg-muted/50 hover:bg-muted/60">
-                          <TableCell colSpan={3}>
+                          <TableCell colSpan={3} className="p-0">
                               <div className="p-4 flex gap-2">
                                   <Button 
                                     size="sm" 
