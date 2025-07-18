@@ -123,9 +123,7 @@ export function CryptoMutualFundOrderPageContent({ asset, assetSpecificNews }: C
           <Tabs defaultValue="about" className="w-full">
             <TabsList className="w-full bg-muted/30 flex overflow-x-auto whitespace-nowrap no-scrollbar rounded-none p-0 h-auto border-b mb-1">
                 <TabsTrigger value="about" className="flex-shrink-0 px-4 py-3 text-sm rounded-t-md rounded-b-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=inactive]:border-b-2 data-[state=inactive]:border-transparent data-[state=active]:shadow-none hover:text-primary">About Fund</TabsTrigger>
-                <TabsTrigger value="management" className="flex-shrink-0 px-4 py-3 text-sm rounded-t-md rounded-b-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=inactive]:border-b-2 data-[state=inactive]:border-transparent data-[state=active]:shadow-none hover:text-primary">Fund Management</TabsTrigger>
                 <TabsTrigger value="calculator" className="flex-shrink-0 px-4 py-3 text-sm rounded-t-md rounded-b-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=inactive]:border-b-2 data-[state=inactive]:border-transparent data-[state=active]:shadow-none hover:text-primary">Calculator</TabsTrigger>
-                <TabsTrigger value="holdings" className="flex-shrink-0 px-4 py-3 text-sm rounded-t-md rounded-b-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=inactive]:border-b-2 data-[state=inactive]:border-transparent data-[state=active]:shadow-none hover:text-primary">Holdings</TabsTrigger>
                 <TabsTrigger value="rankings" className="flex-shrink-0 px-4 py-3 text-sm rounded-t-md rounded-b-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=inactive]:border-b-2 data-[state=inactive]:border-transparent data-[state=active]:shadow-none hover:text-primary">Rankings</TabsTrigger>
             </TabsList>
             <TabsContent value="about" className="mt-4 space-y-4">
@@ -140,8 +138,6 @@ export function CryptoMutualFundOrderPageContent({ asset, assetSpecificNews }: C
                 ) : (
                     <div className="text-center text-muted-foreground py-4">No fund description available.</div>
                 )}
-            </TabsContent>
-            <TabsContent value="management" className="mt-4 space-y-4">
                 {asset.fundManagement ? (
                     <Card>
                         <CardHeader>
@@ -169,36 +165,34 @@ export function CryptoMutualFundOrderPageContent({ asset, assetSpecificNews }: C
                 ) : (
                      <div className="text-center text-muted-foreground py-4">Fund management details not available.</div>
                 )}
+                {asset.topHoldings && asset.topHoldings.length > 0 ? (
+                    <div className="space-y-3">
+                    <h3 className="text-lg font-semibold flex items-center">
+                        <WalletCards className="h-5 w-5 mr-2 text-primary"/>
+                        Top Holdings ({asset.holdingsCount || asset.topHoldings.length})
+                    </h3>
+                    <Card>
+                        <CardContent className="p-0">
+                        <ul className="divide-y">
+                            {asset.topHoldings.map((holding, index) => (
+                            <li key={index} className="flex justify-between items-center text-sm p-3">
+                                <span className="font-medium text-foreground">{holding.name}</span>
+                                <span className="text-muted-foreground">{holding.percentage.toFixed(2)}%</span>
+                            </li>
+                            ))}
+                        </ul>
+                        </CardContent>
+                    </Card>
+                    </div>
+                ) : (
+                    <div className="text-center text-muted-foreground py-4">Top holdings information is not available for this fund.</div>
+                )}
             </TabsContent>
             <TabsContent value="calculator" className="mt-4">
               {asset.annualisedReturn ? (
                   <ReturnCalculator defaultReturnRate={asset.annualisedReturn} currency="USD" />
               ) : (
                   <div className="text-center text-muted-foreground py-4">Return rate not available for this fund.</div>
-              )}
-            </TabsContent>
-            <TabsContent value="holdings" className="mt-4">
-              {asset.topHoldings && asset.topHoldings.length > 0 ? (
-                <div className="space-y-3">
-                  <h3 className="text-lg font-semibold flex items-center">
-                    <WalletCards className="h-5 w-5 mr-2 text-primary"/>
-                    Top Holdings ({asset.holdingsCount || asset.topHoldings.length})
-                  </h3>
-                  <Card>
-                    <CardContent className="p-0">
-                      <ul className="divide-y">
-                        {asset.topHoldings.map((holding, index) => (
-                          <li key={index} className="flex justify-between items-center text-sm p-3">
-                            <span className="font-medium text-foreground">{holding.name}</span>
-                            <span className="text-muted-foreground">{holding.percentage.toFixed(2)}%</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </CardContent>
-                  </Card>
-                </div>
-              ) : (
-                <div className="text-center text-muted-foreground py-4">Top holdings information is not available for this fund.</div>
               )}
             </TabsContent>
             <TabsContent value="rankings" className="mt-4 space-y-6">
