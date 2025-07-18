@@ -32,7 +32,7 @@ const HoldingRow = ({ holding, onAdjust, onExit }: { holding: PortfolioHolding, 
     const isDayProfit = holding.dayChangeAbsolute >= 0;
 
     return (
-        <Card className="mb-2 shadow-sm transition-all duration-300">
+        <div className="border-b transition-all duration-300">
             <div 
                 className="flex items-center justify-between p-3 cursor-pointer hover:bg-muted/50"
                 onClick={() => setIsExpanded(!isExpanded)}
@@ -51,7 +51,7 @@ const HoldingRow = ({ holding, onAdjust, onExit }: { holding: PortfolioHolding, 
             </div>
 
             {isExpanded && (
-                <div className="border-t px-3 py-3 space-y-3 animate-accordion-down">
+                <div className="bg-muted/30 px-3 py-3 space-y-3 animate-accordion-down">
                     <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-xs">
                         <div>
                             <p className="text-muted-foreground">Quantity</p>
@@ -86,7 +86,7 @@ const HoldingRow = ({ holding, onAdjust, onExit }: { holding: PortfolioHolding, 
                     </div>
                 </div>
             )}
-        </Card>
+        </div>
     );
 };
 
