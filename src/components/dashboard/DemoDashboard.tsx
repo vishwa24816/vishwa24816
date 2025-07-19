@@ -19,7 +19,7 @@ import { StrategyBuilder } from '@/components/dashboard/StrategyBuilder';
 import { MarketOverview } from './MarketOverview';
 
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import type { PortfolioHolding, NewsArticle, IntradayPosition, FoPosition, CryptoFuturePosition, Stock, SelectedOptionLeg } from '@/types';
 import { 
   mockPortfolioHoldings, 
@@ -163,11 +163,12 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
     const { primaryNavItems, secondaryNavTriggerCategories } = useMemo(() => {
     if (activeMode === 'Portfolio') {
         return {
-            primaryNavItems: ["Fiat", "Crypto", "Web3"],
+            primaryNavItems: ["Fiat", "Crypto", "Web3", "Pledged Holdings"],
             secondaryNavTriggerCategories: {
                 Fiat: ["Holdings", "Positions", "Portfolio Watchlist"],
                 Crypto: ["Holdings", "Positions", "Portfolio Watchlist"],
-                Web3: ["Holdings", "Portfolio Watchlist"]
+                Web3: ["Holdings", "Portfolio Watchlist"],
+                "Pledged Holdings": ["Fiat", "Crypto", "Web3"],
             }
         }
     }
@@ -204,10 +205,10 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
       "Spot", "Futures", "Options", "Mutual Fund"
     ];
     const cryptoSecondaryNav: Record<string, string[]> = {
-      "Spot": ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
-      "Futures": ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
+      "Spot": ["Top watchlist"],
+      "Futures": ["Top watchlist"],
       "Options": ["Custom", "Readymade"],
-      "Mutual Fund": ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
+      "Mutual Fund": ["Top watchlist"],
     };
     return { primaryNavItems: cryptoPrimaryNav, secondaryNavTriggerCategories: cryptoSecondaryNav };
   }, [activeMode]);
@@ -223,12 +224,22 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
   const [strategyLegs, setStrategyLegs] = useState<SelectedOptionLeg[]>([]);
 
 
-  React.useEffect(() => {
+  useEffect(() => {
     const firstPrimary = primaryNavItems[0] || "";
     setActivePrimaryItem(firstPrimary);
     const newSecondaryItems = secondaryNavTriggerCategories[firstPrimary] || [];
     setActiveSecondaryItem(newSecondaryItems[0] || '');
   }, [activeMode, primaryNavItems, secondaryNavTriggerCategories]);
+  
+  useEffect(() => {
+    if (activeMode === 'Fiat') {
+        const theme = activePrimaryItem.toLowerCase().replace(/\s+/g, '-');
+        document.documentElement.setAttribute('data-theme', theme);
+    } else {
+        document.documentElement.setAttribute('data-theme', activeMode.toLowerCase());
+    }
+  }, [activeMode, activePrimaryItem]);
+
 
   const handlePrimaryNavClick = (item: string) => {
     setActivePrimaryItem(item);
@@ -334,6 +345,13 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
         case 'Web3':
              if (isHoldingsView) return <><CryptoHoldingsSection title="Web3 Wallet & Holdings" holdings={[]} cashBalance={cryptoCashBalance} setCashBalance={setCryptoCashBalance} mainPortfolioCashBalance={mainPortfolioCashBalance} setMainPortfolioCashBalance={setMainPortfolioCashBalance} isRealMode={false} /><NewsSection articles={newsForView} /></>;
              if (isWatchlistView) return <div className="space-y-8"><WatchlistSection title="My Web3 Watchlist" localStorageKeyOverride={'simWeb3Watchlist'}/><NewsSection articles={newsForView} /></div>;
+            return null;
+        case 'Pledged Holdings':
+            const pledgedFiatHoldings = fiatHoldings.slice(0, 2); // Mock: first 2 fiat holdings are pledged
+            const pledgedCryptoHoldings = cryptoHoldings.slice(0, 1); // Mock: first crypto holding is pledged
+            if (activeSecondaryItem === 'Fiat') return <FiatHoldingsSection mainPortfolioCashBalance={0} setMainPortfolioCashBalance={() => {}} />;
+            if (activeSecondaryItem === 'Crypto') return <CryptoHoldingsSection title="Pledged Crypto Holdings" holdings={pledgedCryptoHoldings} cashBalance={0} setCashBalance={() => {}} mainPortfolioCashBalance={0} setMainPortfolioCashBalance={() => {}} isRealMode={false} />;
+            if (activeSecondaryItem === 'Web3') return <div className="text-center py-10 text-muted-foreground"><p>No Pledged Web3 Holdings.</p></div>;
             return null;
         default: return null;
     }
