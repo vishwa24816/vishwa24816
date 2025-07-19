@@ -48,12 +48,7 @@ export default function DashboardRouterPage() {
           isRealMode={isRealMode}
         />
         {isRealMode ? <RealDashboard activeMode={activeMode} /> : <DemoDashboard activeMode={activeMode} />}
-        <footer className="py-6 text-center text-sm text-muted-foreground border-t">
-          © {new Date().getFullYear()} SIM - Stock Information &amp; Management. All rights reserved.
-        </footer>
       </div>
     </ProtectedRoute>
   );
 }
-
-    
