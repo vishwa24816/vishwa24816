@@ -359,21 +359,36 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
         return <div className="space-y-8"><WatchlistSection title={categoryWatchlistTitle} displayItems={itemsForWatchlist} isPredefinedList={true}/><NewsSection articles={newsForView} /></div>
     } else if (activeMode === 'Web3') {
         let web3Items: Stock[] = [];
+        let watchlistTitle = activePrimaryItem;
         switch (activePrimaryItem) {
             case 'AI':
                 web3Items = mockWeb3AI;
+                watchlistTitle = "Top AI Tokens";
                 break;
             case 'DeFi':
                 web3Items = mockWeb3DeFi;
+                watchlistTitle = "Top DeFi Tokens";
                 break;
             case 'Trending':
                 web3Items = mockWeb3Trending;
+                watchlistTitle = "Trending Web3 Tokens";
                 break;
             case 'Memes':
                 web3Items = mockWeb3Memes;
+                watchlistTitle = "Top Meme Tokens";
                 break;
         }
-        return <div className="space-y-8"><MarketOverview title={activePrimaryItem} items={web3Items} /><NewsSection articles={newsForView} /></div>
+        newsForView = getRelevantNewsForWatchlistItems(web3Items, mockNewsArticles);
+        return (
+            <div className="space-y-8">
+                <WatchlistSection 
+                    title={watchlistTitle} 
+                    displayItems={web3Items} 
+                    isPredefinedList={true} 
+                />
+                <NewsSection articles={newsForView} />
+            </div>
+        );
     }
     
     return <div className="flex flex-col items-center justify-center text-center py-12 text-muted-foreground"><PackageOpen className="h-16 w-16 mb-4" /><h2 className="text-2xl font-semibold mb-2 text-foreground">Welcome!</h2><p className="max-w-md">Select a category above to view your assets and portfolio.</p></div>;
