@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useEffect, FormEvent, useRef } from 'react';
@@ -7,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { mockStocks, mockIndexFuturesForWatchlist, mockStockFuturesForWatchlist, mockCryptoAssets, mockMutualFunds, mockBonds, mockOptionsForWatchlist, mockCryptoFuturesForWatchlist } from '@/lib/mockData';
+import { mockUsStocks } from '@/lib/mockData/usStocks';
 import type { Stock } from '@/types';
 import { Eye, PlusCircle, Trash2, TrendingUp, TrendingDown, ChevronsRight, ChevronsLeft } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
@@ -19,6 +19,7 @@ const ACTION_AREA_WIDTH = 80;
 // Combine all searchable assets
 const allSearchableAssets: Stock[] = [
     ...mockStocks,
+    ...mockUsStocks,
     ...mockIndexFuturesForWatchlist,
     ...mockStockFuturesForWatchlist,
     ...mockOptionsForWatchlist,
@@ -100,8 +101,11 @@ const StockListItem: React.FC<StockListItemProps> = ({ stock, isPredefinedList, 
     onRemoveStock(stock.id);
   };
 
-  let itemLink = `/order/stock/${stock.symbol}`; 
-  if (stock.exchange === 'MF') {
+  let itemLink = `/order/stock/${stock.symbol}`;
+  const isUsStock = stock.exchange === 'NASDAQ' || stock.exchange === 'NYSE';
+  if (isUsStock) {
+    itemLink = `/order/us-stock/${stock.symbol}`;
+  } else if (stock.exchange === 'MF') {
     itemLink = `/order/mutual-fund/${stock.symbol}`;
   } else if (stock.exchange === 'Crypto') {
     itemLink = `/order/crypto/${stock.symbol}`;
