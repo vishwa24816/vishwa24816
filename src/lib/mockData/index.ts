@@ -1,4 +1,3 @@
-
 // This file now acts as an index for the mockData directory.
 // It imports and re-exports all mock data arrays.
 
@@ -25,4 +24,11 @@ export * from './priceAlerts';
 export * from './cryptoMutualFunds';
 export * from './cryptoETFs';
 export * from './cryptoIntradayPositions';
+export * from './web3AI';
+export * from './web3DeFi';
+export * from './web3Gainers';
+export * from './web3Memes';
+export * from './web3Trending';
+export * from './web3Holdings';
 export * from './marketSectorData';
+export * from './cryptoIndices';

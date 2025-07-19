@@ -13,7 +13,7 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { MarketOverview } from '@/components/dashboard/MarketOverview';
-import { mockMarketIndices, mockCryptoAssets } from '@/lib/mockData';
+import { mockMarketIndices, mockCryptoIndices } from '@/lib/mockData';
 import { SideMenu } from './SideMenu';
 
 interface AppHeaderProps {
@@ -78,16 +78,11 @@ export function AppHeader({ activeMode, onModeChange, isRealMode }: AppHeaderPro
   const searchAriaLabel = `Search ${activeMode}`;
   
   const { marketOverviewTitle, marketOverviewItems } = useMemo(() => {
-    let isCryptoView = false;
-    if (isRealMode) {
-        isCryptoView = true;
-    } else {
-        isCryptoView = activeMode === 'Crypto' || activeMode === 'Portfolio';
-    }
+    const isCryptoView = activeMode === 'Crypto' || activeMode === 'Web3' || isRealMode;
     
     return {
-      marketOverviewTitle: isCryptoView ? "Top Cryptocurrencies" : "Market Overview",
-      marketOverviewItems: isCryptoView ? mockCryptoAssets.slice(0, 5) : mockMarketIndices,
+      marketOverviewTitle: isCryptoView ? "Crypto Indices" : "Market Overview",
+      marketOverviewItems: isCryptoView ? mockCryptoIndices : mockMarketIndices,
     };
   }, [activeMode, isRealMode]);
 
