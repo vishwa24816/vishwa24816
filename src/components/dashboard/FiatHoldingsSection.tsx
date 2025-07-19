@@ -8,13 +8,15 @@ import { Separator } from "@/components/ui/separator";
 import { mockPortfolioHoldings } from '@/lib/mockData';
 import type { PortfolioHolding } from '@/types';
 import { cn } from '@/lib/utils';
-import { Briefcase, BarChart2, LayoutGrid, List } from 'lucide-react'; 
+import { Briefcase, BarChart2, LayoutGrid, List, Coins, Landmark } from 'lucide-react'; 
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PortfolioHeatmap, type HeatmapItem } from './PortfolioHeatmap';
 import { Chart } from "@/components/ui/chart";
 import { PledgeDialog } from './PledgeDialog';
 import { HoldingCard } from './HoldingCard';
+import { FundTransferDialog } from '../shared/FundTransferDialog';
+import { mockUsStocks } from '@/lib/mockData/usStocks';
 
 
 type HoldingFilterType = 'All' | 'Indian Stocks' | 'US Stocks' | 'Mutual Fund' | 'Bond';
@@ -23,14 +25,18 @@ type ViewMode = 'list' | 'bar' | 'heatmap';
 interface FiatHoldingsSectionProps {
   mainPortfolioCashBalance: number;
   setMainPortfolioCashBalance: React.Dispatch<React.SetStateAction<number>>;
+  cryptoCashBalance: number;
+  setCryptoCashBalance: React.Dispatch<React.SetStateAction<number>>;
 }
 
-export function FiatHoldingsSection({ mainPortfolioCashBalance, setMainPortfolioCashBalance }: FiatHoldingsSectionProps) {
+export function FiatHoldingsSection({ mainPortfolioCashBalance, setMainPortfolioCashBalance, cryptoCashBalance, setCryptoCashBalance }: FiatHoldingsSectionProps) {
   const [activeFilter, setActiveFilter] = useState<HoldingFilterType>('All');
   const [viewMode, setViewMode] = useState<ViewMode>('list');
   const { toast } = useToast();
   const [pledgeDialogOpen, setPledgeDialogOpen] = useState(false);
   const [selectedHoldingForPledge, setSelectedHoldingForPledge] = useState<PortfolioHolding | null>(null);
+  const [isFundTransferDialogOpen, setIsFundTransferDialogOpen] = useState(false);
+  const [transferDirection, setTransferDirection] = useState<'toCrypto' | 'fromCrypto'>('toCrypto');
 
   const allHoldings = useMemo(() => {
     return mockPortfolioHoldings.filter(h => h.type === 'Stock' || h.type === 'ETF' || h.type === 'Mutual Fund' || h.type === 'Bond');
@@ -56,6 +62,23 @@ export function FiatHoldingsSection({ mainPortfolioCashBalance, setMainPortfolio
           description: `Pledged ${quantity} units of ${holding.symbol}. Margin will be updated shortly.`,
       });
       setPledgeDialogOpen(false);
+  };
+
+  const handleOpenFundTransferDialog = (direction: 'toCrypto' | 'fromCrypto') => {
+    setTransferDirection(direction);
+    setIsFundTransferDialogOpen(true);
+  };
+  
+  const handleTransferConfirm = (amount: number, direction: 'toCrypto' | 'fromCrypto') => {
+    if (direction === 'toCrypto') {
+      setMainPortfolioCashBalance(prev => prev - amount);
+      setCryptoCashBalance(prev => prev + amount);
+      toast({ title: "Transfer Successful", description: `${formatCurrency(amount, 'USD')} transferred to Crypto Wallet.` });
+    } else { // fromCrypto
+      setMainPortfolioCashBalance(prev => prev + amount);
+      setCryptoCashBalance(prev => prev - amount);
+      toast({ title: "Transfer Successful", description: `${formatCurrency(amount, 'USD')} transferred to Main Portfolio.` });
+    }
   };
 
   const filterOptions: { label: string; value: HoldingFilterType }[] = [
@@ -213,6 +236,14 @@ export function FiatHoldingsSection({ mainPortfolioCashBalance, setMainPortfolio
                       <p className="text-muted-foreground">Cash Balance</p>
                       <p className="font-medium text-foreground">{formatCurrency(mainPortfolioCashBalance)}</p>
                     </div>
+                     <div className="pt-2 flex gap-2">
+                        <Button variant="outline" size="sm" className="flex-1 h-11" onClick={() => handleOpenFundTransferDialog('toCrypto')}>
+                          <Coins className="mr-2 h-4 w-4" /> Add Funds
+                        </Button>
+                        <Button variant="outline" size="sm" className="flex-1 h-11" onClick={() => handleOpenFundTransferDialog('fromCrypto')}>
+                          <Landmark className="mr-2 h-4 w-4" /> Withdraw Funds
+                        </Button>
+                      </div>
                   </div>
               </div>
               
@@ -251,6 +282,15 @@ export function FiatHoldingsSection({ mainPortfolioCashBalance, setMainPortfolio
             currency={selectedHoldingForPledge.exchange === 'NASDAQ' || selectedHoldingForPledge.exchange === 'NYSE' ? 'USD' : 'INR'}
         />
       )}
+      <FundTransferDialog
+        isOpen={isFundTransferDialogOpen}
+        onOpenChange={setIsFundTransferDialogOpen}
+        transferDirection={transferDirection}
+        mainPortfolioCashBalance={mainPortfolioCashBalance}
+        cryptoCashBalance={cryptoCashBalance}
+        onTransferConfirm={handleTransferConfirm}
+        currencyMode={'USD'}
+      />
     </>
   );
 }
