@@ -38,6 +38,7 @@ export default function CryptoOrderPage() {
   
   useEffect(() => {
     if (symbol) {
+      // mockCryptoAssets now includes all web3 tokens as well
       const foundAsset = mockCryptoAssets.find(s => 
         s.symbol.toUpperCase() === symbol.toUpperCase()
       );

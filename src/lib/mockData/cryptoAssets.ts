@@ -1,7 +1,11 @@
 
 import type { Stock } from '@/types';
+import { mockWeb3AI } from './web3AI';
+import { mockWeb3DeFi } from './web3DeFi';
+import { mockWeb3Trending } from './web3Trending';
+import { mockWeb3Memes } from './web3Memes';
 
-export const mockCryptoAssets: Stock[] = [
+const baseCryptoAssets: Stock[] = [
   { 
     id: 'btc', symbol: 'BTC', name: 'Bitcoin', price: 65000.00, change: 1200.50, changePercent: 1.88, exchange: 'Crypto', 
     todayLow: 64500.00, todayHigh: 66000.00, fiftyTwoWeekLow: 25000.00, fiftyTwoWeekHigh: 73000.00,
@@ -62,4 +66,12 @@ export const mockCryptoAssets: Stock[] = [
     openPrice: 0.117, prevClosePrice: 0.117, volume: 90000000, marketCap: '$10B',
     aboutCompany: 'TRON is a decentralized, open-source blockchain-based operating system with smart contract functionality, proof-of-stake principles as its consensus algorithm and a cryptocurrency native to the system, known as Tronix (TRX).'
   },
+];
+
+export const mockCryptoAssets: Stock[] = [
+  ...baseCryptoAssets,
+  ...mockWeb3AI,
+  ...mockWeb3DeFi,
+  ...mockWeb3Trending,
+  ...mockWeb3Memes
 ];
