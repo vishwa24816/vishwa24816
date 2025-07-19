@@ -13,7 +13,8 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { MarketOverview } from '@/components/dashboard/MarketOverview';
-import { mockMarketIndices, mockCryptoIndices } from '@/lib/mockData';
+import { mockMarketIndices } from '@/lib/mockData';
+import { mockCryptoIndices } from '@/lib/mockData/cryptoIndices';
 import { SideMenu } from './SideMenu';
 
 interface AppHeaderProps {
