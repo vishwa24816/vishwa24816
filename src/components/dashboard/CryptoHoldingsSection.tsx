@@ -4,7 +4,8 @@
 import React, { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
+import { Separator } from "@/components/ui/separator"; 
+import { mockPortfolioHoldings } from '@/lib/mockData';
 import type { PortfolioHolding } from '@/types';
 import { cn } from '@/lib/utils';
 import { Bitcoin, XCircle, Coins, Landmark, Settings2, ChevronDown, BarChart2, LayoutGrid, List } from 'lucide-react';
@@ -14,6 +15,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PortfolioHeatmap, type HeatmapItem } from './PortfolioHeatmap';
 import { Chart } from "@/components/ui/chart";
 import { PledgeDialog } from './PledgeDialog';
+import { HoldingCard } from './HoldingCard';
 
 type ViewMode = 'list' | 'bar' | 'heatmap';
 
@@ -26,78 +28,6 @@ interface CryptoHoldingsSectionProps {
   setMainPortfolioCashBalance: React.Dispatch<React.SetStateAction<number>>;
   isRealMode?: boolean;
 }
-
-const HoldingRow = ({ holding, onAdjust, onExit, onPledge }: { holding: PortfolioHolding, onAdjust: () => void, onExit: () => void, onPledge: () => void }) => {
-    const [isExpanded, setIsExpanded] = useState(false);
-
-    const formatCurrency = (value: number) => {
-        return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
-    };
-
-    const isProfit = holding.profitAndLoss >= 0;
-    const isDayProfit = holding.dayChangeAbsolute >= 0;
-
-    return (
-        <div className="border-b transition-all duration-300">
-            <div 
-                className="flex items-center justify-between p-3 cursor-pointer hover:bg-muted/50"
-                onClick={() => setIsExpanded(!isExpanded)}
-            >
-                <div className="flex-1">
-                    <p className="font-semibold text-sm text-foreground">{holding.name}</p>
-                    <p className="text-xs text-muted-foreground">{holding.symbol}</p>
-                </div>
-                <div className="text-right ml-2 shrink-0">
-                    <p className={cn("text-sm font-medium", isProfit ? 'text-green-600' : 'text-red-600')}>
-                        {formatCurrency(holding.profitAndLoss)}
-                    </p>
-                    <p className="text-xs text-muted-foreground">({holding.profitAndLossPercent.toFixed(2)}%)</p>
-                </div>
-                <ChevronDown className={cn("h-4 w-4 ml-3 text-muted-foreground transition-transform", isExpanded && "rotate-180")} />
-            </div>
-
-            {isExpanded && (
-                <div className="bg-muted/30 px-3 py-3 space-y-3 animate-accordion-down">
-                    <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-xs">
-                        <div>
-                            <p className="text-muted-foreground">Quantity</p>
-                            <p className="font-medium text-foreground">{holding.quantity.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 8 })}</p>
-                        </div>
-                        <div className="text-right">
-                             <p className="text-muted-foreground">Avg. Cost</p>
-                            <p className="font-medium text-foreground">{formatCurrency(holding.avgCostPrice)}</p>
-                        </div>
-                         <div>
-                            <p className="text-muted-foreground">LTP</p>
-                            <p className="font-medium text-foreground">{formatCurrency(holding.ltp)}</p>
-                        </div>
-                        <div className="text-right">
-                             <p className="text-muted-foreground">Current Value</p>
-                            <p className="font-medium text-foreground">{formatCurrency(holding.currentValue)}</p>
-                        </div>
-                         <div>
-                            <p className="text-muted-foreground">Day's P&L</p>
-                            <p className={cn("font-medium", isDayProfit ? 'text-green-600' : 'text-red-600')}>
-                                {formatCurrency(holding.dayChangeAbsolute)} ({holding.dayChangePercent.toFixed(2)}%)
-                            </p>
-                        </div>
-                    </div>
-                    <div className="pt-2 flex gap-2">
-                        <Button size="sm" variant="outline" className="flex-1 justify-center" onClick={onAdjust}>
-                            <Settings2 className="mr-2 h-4 w-4" /> Adjust
-                        </Button>
-                        <Button size="sm" variant="outline" className="flex-1 justify-center" onClick={onPledge}>
-                            <Landmark className="mr-2 h-4 w-4" /> Pledge
-                        </Button>
-                        <Button size="sm" variant="destructive" className="flex-1 justify-center" onClick={onExit}>
-                            <XCircle className="mr-2 h-4 w-4" /> Exit
-                        </Button>
-                    </div>
-                </div>
-            )}
-        </div>
-    );
-};
 
 export function CryptoHoldingsSection({
   holdings,
@@ -118,18 +48,6 @@ export function CryptoHoldingsSection({
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
-  };
-  
-  const handleAdjustPosition = (holding: PortfolioHolding) => {
-      router.push(`/order/crypto/${encodeURIComponent(holding.symbol || holding.name)}`);
-  };
-
-  const handleExitPosition = (holding: PortfolioHolding) => {
-    toast({
-      title: `Exiting Position (Mock): ${holding.symbol}`,
-      description: `A market order would be placed to close this position.`,
-      variant: "destructive"
-    });
   };
 
   const handlePledgeClick = (holding: PortfolioHolding) => {
@@ -216,15 +134,17 @@ export function CryptoHoldingsSection({
     }
     switch(viewMode) {
       case 'list':
-        return holdings.map((holding) => (
-          <HoldingRow 
-              key={holding.id} 
-              holding={holding} 
-              onAdjust={() => handleAdjustPosition(holding)}
-              onExit={() => handleExitPosition(holding)}
-              onPledge={() => handlePledgeClick(holding)}
-          />
-        ));
+        return (
+          <div className="mt-4">
+            {holdings.map((holding) => (
+              <HoldingCard 
+                  key={holding.id} 
+                  holding={holding} 
+                  onPledgeClick={handlePledgeClick}
+              />
+            ))}
+          </div>
+        );
       case 'bar':
         return (
           <div className="w-full h-[300px] mt-4">

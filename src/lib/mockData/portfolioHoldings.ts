@@ -1,91 +1,40 @@
-
 import type { PortfolioHolding } from '@/types';
+import { mockStocks } from './stocks';
+import { mockCryptoAssets } from './cryptoAssets';
+import { mockMutualFunds } from './mutualFunds';
+import { mockBonds } from './bonds';
+import { mockUsStocks } from './usStocks';
+
+const generateHoldingFromStock = (stock: any, type: PortfolioHolding['type']): PortfolioHolding => {
+  const quantity = Math.floor(Math.random() * 50) + 5;
+  const avgCostPrice = stock.price * (1 - (Math.random() * 0.2 - 0.1)); // Avg price within -10% to +10% of LTP
+  const ltp = stock.price;
+  const currentValue = ltp * quantity;
+  const profitAndLoss = (ltp - avgCostPrice) * quantity;
+  const profitAndLossPercent = avgCostPrice > 0 ? (profitAndLoss / (avgCostPrice * quantity)) * 100 : 0;
+  
+  return {
+    ...stock,
+    type: type,
+    quantity,
+    avgCostPrice,
+    ltp,
+    currentValue,
+    profitAndLoss,
+    profitAndLossPercent,
+    dayChangeAbsolute: stock.change * quantity,
+    dayChangePercent: stock.changePercent,
+  };
+};
 
 export const mockPortfolioHoldings: PortfolioHolding[] = [
-  {
-    id: 'holding1',
-    name: 'Reliance Industries Ltd.',
-    symbol: 'RELIANCE',
-    type: 'Stock',
-    quantity: 10,
-    avgCostPrice: 2400.00,
-    ltp: 2450.50,
-    currentValue: 24505.00,
-    profitAndLoss: 505.00,
-    profitAndLossPercent: 2.10,
-    dayChangeAbsolute: 127.50, 
-    dayChangePercent: 0.52,
-  },
-  {
-    id: 'holding2',
-    name: 'Tata Digital India Fund Direct-Growth',
-    type: 'Mutual Fund',
-    quantity: 500,
-    avgCostPrice: 30.00,
-    ltp: 33.50,
-    currentValue: 16750.00,
-    profitAndLoss: 1750.00,
-    profitAndLossPercent: 11.67,
-    dayChangeAbsolute: 75.00, 
-    dayChangePercent: 0.45,
-  },
-  {
-    id: 'holding4',
-    name: '7.26% GS 2033',
-    symbol: 'GOI2033',
-    type: 'Bond',
-    quantity: 20,
-    avgCostPrice: 990.00,
-    ltp: 1010.50,
-    currentValue: 20210.00,
-    profitAndLoss: 410.00,
-    profitAndLossPercent: 2.07,
-    dayChangeAbsolute: 30.00, 
-    dayChangePercent: 0.15,
-  },
-  {
-    id: 'holding5',
-    name: 'NIFTYBEES',
-    symbol: 'NIFTYBEES',
-    type: 'ETF',
-    quantity: 100,
-    avgCostPrice: 200.00,
-    ltp: 215.30,
-    currentValue: 21530.00,
-    profitAndLoss: 1530.00,
-    profitAndLossPercent: 7.65,
-    dayChangeAbsolute: 110.00, 
-    dayChangePercent: 0.51,
-  },
-   {
-    id: 'holding6',
-    name: 'Infosys Ltd.',
-    symbol: 'INFY',
-    type: 'Stock',
-    quantity: 20,
-    avgCostPrice: 1300.00,
-    ltp: 1350.00,
-    currentValue: 27000.00,
-    profitAndLoss: 1000.00,
-    profitAndLossPercent: 3.85,
-    dayChangeAbsolute: 450.00, 
-    dayChangePercent: 1.69,
-  },
-  {
-    id: 'holding_eth',
-    name: 'Ethereum',
-    symbol: 'ETH',
-    type: 'Crypto',
-    quantity: 0.1,
-    avgCostPrice: 1686.75, // $
-    ltp: 3400.00, // $
-    currentValue: 340.00, // $
-    profitAndLoss: 171.33, // $
-    profitAndLossPercent: 10.16,
-    dayChangeAbsolute: -19.76, // $
-    dayChangePercent: -1.45,
-  },
+  ...mockStocks.slice(0, 5).map(stock => generateHoldingFromStock(stock, 'Stock')),
+  ...mockUsStocks.slice(0, 3).map(stock => generateHoldingFromStock(stock, 'Stock')),
+  ...mockCryptoAssets.slice(0, 4).map(crypto => generateHoldingFromStock(crypto, 'Crypto')),
+  ...mockMutualFunds.slice(0, 2).map(mf => generateHoldingFromStock(mf, 'Mutual Fund')),
+  ...mockBonds.slice(0, 1).map(bond => generateHoldingFromStock(bond, 'Bond')),
 ];
+
 
 export const mockRealPortfolioHoldings: PortfolioHolding[] = [
   {

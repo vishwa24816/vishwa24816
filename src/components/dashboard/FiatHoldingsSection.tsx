@@ -6,7 +6,6 @@ import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator"; 
 import { mockPortfolioHoldings } from '@/lib/mockData';
-import { mockUsStocks } from '@/lib/mockData/usStocks';
 import type { PortfolioHolding } from '@/types';
 import { cn } from '@/lib/utils';
 import { Briefcase, BarChart2, LayoutGrid, List } from 'lucide-react'; 
@@ -33,27 +32,8 @@ export function FiatHoldingsSection({ mainPortfolioCashBalance, setMainPortfolio
   const [pledgeDialogOpen, setPledgeDialogOpen] = useState(false);
   const [selectedHoldingForPledge, setSelectedHoldingForPledge] = useState<PortfolioHolding | null>(null);
 
-  // This is the core fix: Create a unified `PortfolioHolding[]` array from different sources.
   const allHoldings = useMemo(() => {
-    // Process Indian stocks from mockPortfolioHoldings
-    const indianHoldings = mockPortfolioHoldings.filter(h => h.type !== 'Crypto');
-
-    // Process US stocks from mockUsStocks and convert them to PortfolioHolding format
-    const usHoldings: PortfolioHolding[] = mockUsStocks.map(stock => ({
-        ...stock, // Spread existing stock properties
-        type: 'Stock', // Set type explicitly
-        // Mock portfolio-specific data for US stocks
-        quantity: Math.floor(Math.random() * 50) + 5,
-        avgCostPrice: stock.price * (1 - (Math.random() * 0.1 - 0.05)), // Avg price within -5% to +5% of LTP
-        get ltp() { return this.price; },
-        get currentValue() { return this.ltp * this.quantity; },
-        get profitAndLoss() { return (this.ltp - this.avgCostPrice) * this.quantity; },
-        get profitAndLossPercent() { return this.avgCostPrice > 0 ? (this.profitAndLoss / (this.avgCostPrice * this.quantity)) * 100 : 0; },
-        get dayChangeAbsolute() { return this.change * this.quantity; },
-        get dayChangePercent() { return stock.changePercent; },
-    }));
-
-    return [...indianHoldings, ...usHoldings];
+    return mockPortfolioHoldings.filter(h => h.type === 'Stock' || h.type === 'ETF' || h.type === 'Mutual Fund' || h.type === 'Bond');
   }, []);
 
   const formatCurrency = (value: number, currency: 'INR' | 'USD' = 'INR') => {
@@ -95,7 +75,6 @@ export function FiatHoldingsSection({ mainPortfolioCashBalance, setMainPortfolio
     return false;
   });
 
-  // Calculations now use the consistently structured `filteredHoldings` array
   const totalCurrentValue = filteredHoldings.reduce((acc, holding) => acc + (holding.currentValue || 0), 0);
   const totalInvestmentValue = filteredHoldings.reduce((acc, holding) => acc + ((holding.avgCostPrice * holding.quantity) || 0), 0);
   const overallPandL = totalCurrentValue - totalInvestmentValue;
@@ -168,7 +147,7 @@ export function FiatHoldingsSection({ mainPortfolioCashBalance, setMainPortfolio
                     backgroundColor: 'hsl(var(--background))',
                     borderColor: 'hsl(var(--border))'
                   }}
-                  formatter={(value) => formatCurrency(value as number, 'INR')} // Assuming base currency for chart is INR
+                  formatter={(value) => formatCurrency(value as number, 'INR')}
                 />
                 <Chart.Legend content={<Chart.LegendContent />} />
                 <Chart.Bar dataKey="value" radius={4} />
