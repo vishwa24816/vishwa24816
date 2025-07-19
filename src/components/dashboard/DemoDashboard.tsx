@@ -41,8 +41,8 @@ import {
   mockWeb3DeFi,
   mockWeb3Trending,
   mockWeb3Memes,
-  mockWeb3NFTs,
 } from '@/lib/mockData';
+import { mockWeb3NFTs } from '@/lib/mockData/web3NFTs';
 
 // Helper functions
 function getRelevantNewsForHoldings(holdings: PortfolioHolding[], allNews: NewsArticle[]): NewsArticle[] {
