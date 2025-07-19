@@ -17,8 +17,8 @@ import { mockMarketIndices, mockCryptoAssets } from '@/lib/mockData';
 import { SideMenu } from './SideMenu';
 
 interface AppHeaderProps {
-  activeMode?: 'Portfolio' | 'Fiat' | 'Crypto';
-  onModeChange?: (mode: 'Portfolio' | 'Fiat' | 'Crypto') => void;
+  activeMode?: 'Portfolio' | 'Fiat' | 'Crypto' | 'Web3';
+  onModeChange?: (mode: 'Portfolio' | 'Fiat' | 'Crypto' | 'Web3') => void;
   isRealMode?: boolean;
 }
 
@@ -54,7 +54,7 @@ export function AppHeader({ activeMode, onModeChange, isRealMode }: AppHeaderPro
     }
   };
 
-  const handleModeChange = (mode: 'Portfolio' | 'Fiat' | 'Crypto') => {
+  const handleModeChange = (mode: 'Portfolio' | 'Fiat' | 'Crypto' | 'Web3') => {
     if (onModeChange && mode !== activeMode) {
         onModeChange(mode);
         // if(!isPortfolioDisabled || mode !== 'Portfolio') {
@@ -70,6 +70,7 @@ export function AppHeader({ activeMode, onModeChange, isRealMode }: AppHeaderPro
     if (activeMode === 'Portfolio') return "Search in all portfolios...";
     if (activeMode === 'Fiat') return "Search stocks, futures...";
     if (activeMode === 'Crypto') return "Search crypto spot, futures...";
+    if (activeMode === 'Web3') return "Search Web3 assets...";
     return "Search...";
   };
 
@@ -91,6 +92,11 @@ export function AppHeader({ activeMode, onModeChange, isRealMode }: AppHeaderPro
   }, [activeMode, isRealMode]);
 
   const hideFiatButton = isRealMode && (pathname === '/' || pathname === '/orders' || pathname === '/screener' || pathname === '/community');
+  
+  const availableModes: ('Portfolio' | 'Fiat' | 'Crypto' | 'Web3')[] = isRealMode 
+    ? ['Portfolio', 'Crypto', 'Web3'] 
+    : ['Portfolio', 'Fiat', 'Crypto', 'Web3'];
+
 
   if (!isMounted) {
     // Skeleton loader
@@ -138,46 +144,23 @@ export function AppHeader({ activeMode, onModeChange, isRealMode }: AppHeaderPro
         {onModeChange && (
             <div className="flex items-center justify-center pb-2">
                 <div className="flex items-center rounded-md bg-primary-foreground/10 p-1 space-x-1 w-full">
-                    <Button 
-                        onClick={() => handleModeChange('Portfolio')}
-                        variant="ghost"
-                        className={cn(
-                            "h-7 px-3 text-xs rounded-md border-none flex-1",
-                            activeMode === 'Portfolio' 
-                                ? 'bg-primary-foreground/20 text-white shadow-sm' 
-                                : 'bg-transparent text-primary-foreground/70 hover:bg-primary-foreground/15',
-                            isPortfolioDisabled && "opacity-50 cursor-not-allowed"
-                        )}
-                        disabled={isPortfolioDisabled}
-                    >
-                        Portfolio
-                    </Button>
-                    {!hideFiatButton && (
-                        <Button 
-                            onClick={() => handleModeChange('Fiat')}
+                    {availableModes.map(mode => (
+                        <Button
+                            key={mode}
+                            onClick={() => handleModeChange(mode)}
                             variant="ghost"
                             className={cn(
                                 "h-7 px-3 text-xs rounded-md border-none flex-1",
-                                activeMode === 'Fiat' 
+                                activeMode === mode
                                     ? 'bg-primary-foreground/20 text-white shadow-sm' 
-                                    : 'bg-transparent text-primary-foreground/70 hover:bg-primary-foreground/15'
+                                    : 'bg-transparent text-primary-foreground/70 hover:bg-primary-foreground/15',
+                                mode === 'Portfolio' && isPortfolioDisabled && "opacity-50 cursor-not-allowed"
                             )}
+                            disabled={mode === 'Portfolio' && isPortfolioDisabled}
                         >
-                            Fiat
+                            {mode}
                         </Button>
-                    )}
-                    <Button 
-                        onClick={() => handleModeChange('Crypto')}
-                        variant="ghost"
-                        className={cn(
-                            "h-7 px-3 text-xs rounded-md border-none flex-1",
-                            activeMode === 'Crypto' 
-                                ? 'bg-primary-foreground/20 text-white shadow-sm' 
-                                : 'bg-transparent text-primary-foreground/70 hover:bg-primary-foreground/15'
-                        )}
-                    >
-                        Crypto
-                    </Button>
+                    ))}
                 </div>
             </div>
         )}
@@ -205,5 +188,3 @@ export function AppHeader({ activeMode, onModeChange, isRealMode }: AppHeaderPro
     </header>
   );
 }
-
-    

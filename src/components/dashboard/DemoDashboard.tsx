@@ -16,6 +16,7 @@ import { FiatOptionChain } from '@/components/dashboard/FiatOptionChain';
 import { CryptoOptionChain } from '@/components/dashboard/CryptoOptionChain';
 import { ReadymadeStrategiesSection } from '@/components/dashboard/ReadymadeStrategiesSection';
 import { StrategyBuilder } from '@/components/dashboard/StrategyBuilder';
+import { MarketOverview } from './MarketOverview';
 
 
 import React, { useState, useMemo } from 'react';
@@ -36,6 +37,10 @@ import {
   mockCryptoFuturesForWatchlist,
   mockCryptoMutualFunds,
   mockCryptoETFs,
+  mockWeb3AI,
+  mockWeb3DeFi,
+  mockWeb3Trending,
+  mockWeb3Memes,
 } from '@/lib/mockData';
 
 // Helper functions
@@ -149,17 +154,18 @@ function getRelevantNewsForWatchlistItems(items: Stock[] | undefined, allNews: N
 }
 
 interface DemoDashboardProps {
-  activeMode: 'Portfolio' | 'Fiat' | 'Crypto';
+  activeMode: 'Portfolio' | 'Fiat' | 'Crypto' | 'Web3';
 }
 
 export function DemoDashboard({ activeMode }: DemoDashboardProps) {
     const { primaryNavItems, secondaryNavTriggerCategories } = useMemo(() => {
     if (activeMode === 'Portfolio') {
         return {
-            primaryNavItems: ["Fiat", "Crypto"],
+            primaryNavItems: ["Fiat", "Crypto", "Web3"],
             secondaryNavTriggerCategories: {
                 Fiat: ["Holdings", "Positions", "Portfolio Watchlist"],
                 Crypto: ["Holdings", "Positions", "Portfolio Watchlist"],
+                Web3: ["Holdings", "Portfolio Watchlist"]
             }
         }
     }
@@ -173,6 +179,17 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
                 "Mutual Fund": ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
                 Bonds: ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
                 IPO: [],
+            }
+        };
+    }
+     if (activeMode === 'Web3') {
+        return {
+            primaryNavItems: ["AI", "DeFi", "Trending", "Memes"],
+            secondaryNavTriggerCategories: {
+                AI: [],
+                DeFi: [],
+                Trending: [],
+                Memes: [],
             }
         };
     }
@@ -286,6 +303,8 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
     } else {
       newsForView = mockNewsArticles;
     }
+  } else if (activeMode === 'Web3') {
+      newsForView = mockNewsArticles;
   }
   
   const renderPortfolioContent = () => {
@@ -303,6 +322,10 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
             if (isHoldingsView) return <><CryptoHoldingsSection title="Crypto Wallet & Holdings" holdings={cryptoHoldings} cashBalance={cryptoCashBalance} setCashBalance={setCryptoCashBalance} mainPortfolioCashBalance={mainPortfolioCashBalance} setMainPortfolioCashBalance={setMainPortfolioCashBalance} isRealMode={false} /><NewsSection articles={newsForView} /></>;
             if (isPositionsView) return <div className="space-y-8"><CryptoIntradayPositionsSection positions={mockCryptoIntradayPositions} /><CryptoFuturesSection positions={mockCryptoFutures} cashBalance={cryptoCashBalance} /><NewsSection articles={newsForView} /></div>;
             if (isWatchlistView) return <div className="space-y-8"><WatchlistSection title="My Crypto Watchlist" defaultInitialItems={itemsForWatchlist} localStorageKeyOverride={'simCryptoWatchlist'}/><NewsSection articles={newsForView} /></div>;
+            return null;
+        case 'Web3':
+             if (isHoldingsView) return <><CryptoHoldingsSection title="Web3 Wallet & Holdings" holdings={[]} cashBalance={cryptoCashBalance} setCashBalance={setCryptoCashBalance} mainPortfolioCashBalance={mainPortfolioCashBalance} setMainPortfolioCashBalance={setMainPortfolioCashBalance} isRealMode={false} /><NewsSection articles={newsForView} /></>;
+             if (isWatchlistView) return <div className="space-y-8"><WatchlistSection title="My Web3 Watchlist" localStorageKeyOverride={'simWeb3Watchlist'}/><NewsSection articles={newsForView} /></div>;
             return null;
         default: return null;
     }
@@ -334,6 +357,23 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
             : null
         }
         return <div className="space-y-8"><WatchlistSection title={categoryWatchlistTitle} displayItems={itemsForWatchlist} isPredefinedList={true}/><NewsSection articles={newsForView} /></div>
+    } else if (activeMode === 'Web3') {
+        let web3Items: Stock[] = [];
+        switch (activePrimaryItem) {
+            case 'AI':
+                web3Items = mockWeb3AI;
+                break;
+            case 'DeFi':
+                web3Items = mockWeb3DeFi;
+                break;
+            case 'Trending':
+                web3Items = mockWeb3Trending;
+                break;
+            case 'Memes':
+                web3Items = mockWeb3Memes;
+                break;
+        }
+        return <div className="space-y-8"><MarketOverview title={activePrimaryItem} items={web3Items} /><NewsSection articles={newsForView} /></div>
     }
     
     return <div className="flex flex-col items-center justify-center text-center py-12 text-muted-foreground"><PackageOpen className="h-16 w-16 mb-4" /><h2 className="text-2xl font-semibold mb-2 text-foreground">Welcome!</h2><p className="max-w-md">Select a category above to view your assets and portfolio.</p></div>;

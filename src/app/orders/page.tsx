@@ -37,7 +37,7 @@ export default function OrdersPage() {
   const { user } = useAuth();
   const isRealMode = user?.id === 'REAL456';
   
-  const [activeMode, setActiveMode] = useState<'Fiat' | 'Crypto'>(isRealMode ? 'Crypto' : 'Fiat');
+  const [activeMode, setActiveMode] = useState<'Fiat' | 'Crypto' | 'Web3'>(isRealMode ? 'Crypto' : 'Fiat');
 
   useEffect(() => {
     if (isRealMode && activeMode === 'Fiat') {

@@ -62,19 +62,19 @@ const SipItem: React.FC<SipItemProps> = ({ sip }) => {
 
 interface SipsDisplayProps {
   isRealMode?: boolean;
-  activeMode: 'Fiat' | 'Crypto';
+  activeMode: 'Fiat' | 'Crypto' | 'Web3';
 }
 
 export function SipsDisplay({ isRealMode = false, activeMode }: SipsDisplayProps) {
   const sips = React.useMemo(() => {
     const fiatAssetTypes = ['Stock', 'Mutual Fund', 'ETF', 'Gold Bond'];
-    const cryptoAssetTypes = ['Crypto'];
+    const cryptoAssetTypes = ['Crypto', 'Web3']; // Web3 assets can also have SIPs
 
     let filteredSips: SipOrder[] = [];
     
     if (activeMode === 'Fiat') {
         filteredSips = mockSips.filter(sip => fiatAssetTypes.includes(sip.assetType));
-    } else if (activeMode === 'Crypto') {
+    } else if (activeMode === 'Crypto' || activeMode === 'Web3') {
         filteredSips = mockSips.filter(sip => cryptoAssetTypes.includes(sip.assetType));
     }
 

@@ -13,10 +13,10 @@ export default function DashboardRouterPage() {
   const { user, loading } = useAuth();
   const isRealMode = user?.id === 'REAL456';
 
-  const [activeMode, setActiveMode] = useState<'Portfolio' | 'Fiat' | 'Crypto'>(isRealMode ? 'Portfolio' : 'Portfolio');
+  const [activeMode, setActiveMode] = useState<'Portfolio' | 'Fiat' | 'Crypto' | 'Web3'>(isRealMode ? 'Crypto' : 'Portfolio');
   
   useEffect(() => {
-    if (isRealMode && activeMode === 'Fiat') {
+    if (isRealMode && (activeMode === 'Fiat' || activeMode === 'Portfolio')) {
       setActiveMode('Crypto');
     }
   }, [isRealMode, activeMode]);

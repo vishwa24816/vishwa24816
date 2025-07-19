@@ -50,16 +50,17 @@ function getRelevantNewsForWatchlistItems(items: Stock[] | undefined, allNews: N
 }
 
 interface RealDashboardProps {
-  activeMode: 'Portfolio' | 'Fiat' | 'Crypto';
+  activeMode: 'Portfolio' | 'Fiat' | 'Crypto' | 'Web3';
 }
 
 export function RealDashboard({ activeMode }: RealDashboardProps) {
   const { primaryNavItems, secondaryNavTriggerCategories } = useMemo(() => {
     if (activeMode === 'Portfolio') {
        return {
-            primaryNavItems: ["Crypto"],
+            primaryNavItems: ["Crypto", "Web3"],
             secondaryNavTriggerCategories: {
                 Crypto: ["Holdings", "Positions", "Portfolio Watchlist"],
+                Web3: ["Holdings", "Portfolio Watchlist"],
             }
         }
     }
