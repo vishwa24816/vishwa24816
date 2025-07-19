@@ -6,7 +6,8 @@ import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator"; 
 import { mockPortfolioHoldings } from '@/lib/mockData';
-import type { PortfolioHolding } from '@/types';
+import { mockUsStocks } from '@/lib/mockData/usStocks';
+import type { PortfolioHolding, IntradayPosition, FoPosition } from '@/types';
 import { cn } from '@/lib/utils';
 import { Briefcase, BarChart2, LayoutGrid, List, Coins, Landmark } from 'lucide-react'; 
 import { useToast } from "@/hooks/use-toast";
@@ -16,20 +17,28 @@ import { Chart } from "@/components/ui/chart";
 import { PledgeDialog } from './PledgeDialog';
 import { HoldingCard } from './HoldingCard';
 import { FundTransferDialog } from '../shared/FundTransferDialog';
-import { mockUsStocks } from '@/lib/mockData/usStocks';
 
 
 type HoldingFilterType = 'All' | 'Indian Stocks' | 'US Stocks' | 'Mutual Fund' | 'Bond';
 type ViewMode = 'list' | 'bar' | 'heatmap';
 
 interface FiatHoldingsSectionProps {
+  intradayPositions: IntradayPosition[];
+  foPositions: FoPosition[];
   mainPortfolioCashBalance: number;
   setMainPortfolioCashBalance: React.Dispatch<React.SetStateAction<number>>;
   cryptoCashBalance: number;
   setCryptoCashBalance: React.Dispatch<React.SetStateAction<number>>;
 }
 
-export function FiatHoldingsSection({ mainPortfolioCashBalance, setMainPortfolioCashBalance, cryptoCashBalance, setCryptoCashBalance }: FiatHoldingsSectionProps) {
+export function FiatHoldingsSection({ 
+    intradayPositions,
+    foPositions,
+    mainPortfolioCashBalance, 
+    setMainPortfolioCashBalance, 
+    cryptoCashBalance, 
+    setCryptoCashBalance 
+}: FiatHoldingsSectionProps) {
   const [activeFilter, setActiveFilter] = useState<HoldingFilterType>('All');
   const [viewMode, setViewMode] = useState<ViewMode>('list');
   const { toast } = useToast();
@@ -98,10 +107,38 @@ export function FiatHoldingsSection({ mainPortfolioCashBalance, setMainPortfolio
     return false;
   });
 
-  const totalCurrentValue = filteredHoldings.reduce((acc, holding) => acc + (holding.currentValue || 0), 0);
-  const totalInvestmentValue = filteredHoldings.reduce((acc, holding) => acc + ((holding.avgCostPrice * holding.quantity) || 0), 0);
-  const overallPandL = totalCurrentValue - totalInvestmentValue;
-  const totalDayChangeAbsolute = filteredHoldings.reduce((acc, holding) => acc + (holding.dayChangeAbsolute || 0), 0);
+  const { totalCurrentValue, totalInvestmentValue, overallPandL, totalDayChangeAbsolute } = useMemo(() => {
+    let holdingsCurrentValue = filteredHoldings.reduce((acc, holding) => acc + (holding.currentValue || 0), 0);
+    let holdingsInvestmentValue = filteredHoldings.reduce((acc, holding) => acc + ((holding.avgCostPrice * holding.quantity) || 0), 0);
+    let holdingsDayChange = filteredHoldings.reduce((acc, holding) => acc + (holding.dayChangeAbsolute || 0), 0);
+
+    // Only include positions if the filter is 'All' or matches the position type (e.g., 'Indian Stocks')
+    let intradayInvestment = 0;
+    let intradayCurrentValue = 0;
+    let intradayDayChange = 0;
+
+    let foInvestment = 0;
+    let foCurrentValue = 0;
+    let foDayChange = 0;
+
+    if (activeFilter === 'All' || activeFilter === 'Indian Stocks') {
+        intradayInvestment = intradayPositions.reduce((acc, pos) => acc + pos.avgPrice * pos.quantity, 0);
+        intradayCurrentValue = intradayPositions.reduce((acc, pos) => acc + pos.ltp * pos.quantity, 0);
+        intradayDayChange = intradayPositions.reduce((acc, pos) => acc + pos.pAndL, 0);
+        
+        foInvestment = foPositions.reduce((acc, pos) => acc + pos.avgPrice * pos.lots * pos.quantityPerLot, 0);
+        foCurrentValue = foPositions.reduce((acc, pos) => acc + pos.ltp * pos.lots * pos.quantityPerLot, 0);
+        foDayChange = foPositions.reduce((acc, pos) => acc + pos.mtmPnl, 0);
+    }
+    
+    const totalCurrentValue = holdingsCurrentValue + intradayCurrentValue + foCurrentValue;
+    const totalInvestmentValue = holdingsInvestmentValue + intradayInvestment + foInvestment;
+    const overallPandL = totalCurrentValue - totalInvestmentValue;
+    const totalDayChangeAbsolute = holdingsDayChange + intradayDayChange + foDayChange;
+    
+    return { totalCurrentValue, totalInvestmentValue, overallPandL, totalDayChangeAbsolute };
+
+  }, [filteredHoldings, intradayPositions, foPositions, activeFilter]);
   
   const chartData = useMemo(() => {
     return filteredHoldings.map(pos => ({

@@ -346,7 +346,7 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
 
     switch (activePrimaryItem) {
         case 'Fiat':
-            if (isHoldingsView) return <><FiatHoldingsSection mainPortfolioCashBalance={mainPortfolioCashBalance} setMainPortfolioCashBalance={setMainPortfolioCashBalance} cryptoCashBalance={cryptoCashBalance} setCryptoCashBalance={setCryptoCashBalance} /><NewsSection articles={newsForView} /></>;
+            if (isHoldingsView) return <><FiatHoldingsSection intradayPositions={mockIntradayPositions} foPositions={mockFoPositions} mainPortfolioCashBalance={mainPortfolioCashBalance} setMainPortfolioCashBalance={setMainPortfolioCashBalance} cryptoCashBalance={cryptoCashBalance} setCryptoCashBalance={setCryptoCashBalance} /><NewsSection articles={newsForView} /></>;
             if (isPositionsView) return <div className="space-y-8"><IntradayPositionsSection /><FoPositionsSection /><FoBasketSection /><NewsSection articles={newsForView} /></div>;
             if (isWatchlistView) return <div className="space-y-8"><WatchlistSection title="My Fiat Watchlist" defaultInitialItems={itemsForWatchlist} localStorageKeyOverride="simFiatWatchlist"/><NewsSection articles={newsForView} /></div>;
             return null;
@@ -362,7 +362,7 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
         case 'Pledged Holdings':
             const pledgedFiatHoldings = fiatHoldings.slice(0, 2); // Mock: first 2 fiat holdings are pledged
             const pledgedCryptoHoldings = cryptoHoldings.slice(0, 1); // Mock: first crypto holding is pledged
-            if (activeSecondaryItem === 'Fiat') return <FiatHoldingsSection mainPortfolioCashBalance={0} setMainPortfolioCashBalance={() => {}} cryptoCashBalance={0} setCryptoCashBalance={() => {}} />;
+            if (activeSecondaryItem === 'Fiat') return <FiatHoldingsSection intradayPositions={[]} foPositions={[]} mainPortfolioCashBalance={0} setMainPortfolioCashBalance={() => {}} cryptoCashBalance={0} setCryptoCashBalance={() => {}} />;
             if (activeSecondaryItem === 'Crypto') return <CryptoHoldingsSection title="Pledged Crypto Holdings" holdings={pledgedCryptoHoldings} cashBalance={0} setCashBalance={() => {}} mainPortfolioCashBalance={0} setMainPortfolioCashBalance={() => {}} isRealMode={false} />;
             if (activeSecondaryItem === 'Web3') return <div className="text-center py-10 text-muted-foreground"><p>No Pledged Web3 Holdings.</p></div>;
             return null;
