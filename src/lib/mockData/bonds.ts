@@ -7,4 +7,6 @@ export const mockBonds: Stock[] = [
   { id: 'bond3', symbol: 'NHAI2027', name: 'NHAI InvIT 7.9% 2027', price: 1050.20, change: 1.20, changePercent: 0.11, exchange: 'CORP BOND' },
   { id: 'bond4', symbol: 'RECLTD2025', name: 'REC Ltd 8.15% 2025', price: 1025.00, change: 0.50, changePercent: 0.05, exchange: 'CORP BOND' },
   { id: 'bond5', symbol: 'SGBNOV29', name: 'SGBNOV29-GB', price: 6150.00, change: 25.00, changePercent: 0.41, exchange: 'SGB' },
+  { id: 'bond6', symbol: 'PFC2026', name: 'PFC Ltd 8.45% 2026', price: 1080.00, change: 0.75, changePercent: 0.07, exchange: 'CORP BOND' },
+  { id: 'bond7', symbol: 'GOI2043', name: '7.41% GS 2043', price: 103.20, change: -0.10, changePercent: -0.10, exchange: 'BOND' },
 ];
