@@ -151,7 +151,7 @@ export function RealDashboard({ activeMode }: RealDashboardProps) {
       if(activeMode === 'Crypto') {
           if (activePrimaryItem === "Options") {
             return activeSecondaryItem === "Custom" ? ( <div className="space-y-8"><CryptoOptionChain onAddLeg={(leg) => setStrategyLegs(prev => [...prev, leg])} />{strategyLegs.length > 0 && <StrategyBuilder legs={strategyLegs} setLegs={setStrategyLegs} />}<NewsSection articles={newsForView} /></div>) 
-            : activeSecondaryItem === "Readymade" ? ( <div className="space-y-8"><ReadymadeStrategiesSection onStrategySelect={(legs) => setStrategyLegs(legs)} /><NewsSection articles={newsForView} /></div> ) 
+            : activeSecondaryItem === "Readymade" ? ( <div className="space-y-8"><ReadymadeStrategiesSection onStrategySelect={(legs) => setStrategyLegs(legs)} />{strategyLegs.length > 0 && <StrategyBuilder legs={strategyLegs} setLegs={setStrategyLegs} />}<NewsSection articles={newsForView} /></div> ) 
             : null
         }
           return <div className="space-y-8"><WatchlistSection title={categoryWatchlistTitle} displayItems={itemsForWatchlist} isPredefinedList={true}/><NewsSection articles={newsForView} /></div>
