@@ -28,13 +28,15 @@ export const HoldingCard: React.FC<HoldingCardProps> = ({ holding, onPledgeClick
         }).format(value);
     };
 
-    const isProfit = holding.profitAndLoss >= 0;
-    const isDayProfit = holding.dayChangeAbsolute >= 0;
-    const currency: 'INR' | 'USD' = holding.type === 'Crypto' ? 'USD' : 'INR';
+    const isProfit = (holding.profitAndLoss ?? holding.change) >= 0;
+    const isDayProfit = (holding.dayChangeAbsolute ?? holding.change) >= 0;
+    const currency: 'INR' | 'USD' = holding.type === 'Crypto' || holding.exchange === 'NASDAQ' || holding.exchange === 'NYSE' ? 'USD' : 'INR';
 
     const handleAdjustPosition = () => {
       let path = `/order/stock/${holding.symbol}`;
-      if (holding.type === 'Crypto') {
+      if (holding.exchange === 'NASDAQ' || holding.exchange === 'NYSE') {
+        path = `/order/us-stock/${holding.symbol}`;
+      } else if (holding.type === 'Crypto') {
         path = `/order/crypto/${holding.symbol}`;
       } else if (holding.type === 'Mutual Fund') {
         path = `/order/mutual-fund/${holding.symbol}`;
@@ -64,9 +66,9 @@ export const HoldingCard: React.FC<HoldingCardProps> = ({ holding, onPledgeClick
                 </div>
                 <div className="text-right ml-2 shrink-0">
                     <p className={cn("text-sm font-medium", isProfit ? 'text-green-600' : 'text-red-600')}>
-                        {formatCurrency(holding.profitAndLoss, currency)}
+                        {formatCurrency(holding.profitAndLoss ?? holding.change, currency)}
                     </p>
-                    <p className="text-xs text-muted-foreground">({holding.profitAndLossPercent.toFixed(2)}%)</p>
+                    <p className="text-xs text-muted-foreground">({(holding.profitAndLossPercent ?? holding.changePercent)?.toFixed(2)}%)</p>
                 </div>
                 <ChevronDown className={cn("h-4 w-4 ml-3 text-muted-foreground transition-transform", isExpanded && "rotate-180")} />
             </div>
@@ -93,7 +95,7 @@ export const HoldingCard: React.FC<HoldingCardProps> = ({ holding, onPledgeClick
                          <div>
                             <p className="text-muted-foreground">Day's P&L</p>
                             <p className={cn("font-medium", isDayProfit ? 'text-green-600' : 'text-red-600')}>
-                                {formatCurrency(holding.dayChangeAbsolute, currency)} ({holding.dayChangePercent.toFixed(2)}%)
+                                {formatCurrency(holding.dayChangeAbsolute, currency)} ({(holding.dayChangePercent ?? holding.changePercent)?.toFixed(2)}%)
                             </p>
                         </div>
                     </div>
