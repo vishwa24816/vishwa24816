@@ -4,7 +4,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { ProtectedRoute } from '@/components/shared/ProtectedRoute';
-import { mockStocks, mockNewsArticles, mockUsStocks } from '@/lib/mockData';
+import { mockStocks, mockNewsArticles } from '@/lib/mockData';
+import { mockUsStocks } from '@/lib/mockData/usStocks';
 import type { Stock, NewsArticle } from '@/types';
 import { useToast } from "@/hooks/use-toast";
 import { StockOrderPageContent } from '@/components/order-pages/StockOrderPageContent';
