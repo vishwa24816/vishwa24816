@@ -8,7 +8,7 @@ import { CryptoHoldingsSection } from '@/components/dashboard/CryptoHoldingsSect
 import { FiatHoldingsSection } from '@/components/dashboard/FiatHoldingsSection';
 import { CryptoIntradayPositionsSection } from '@/components/dashboard/CryptoIntradayPositionsSection';
 import { CryptoFuturesSection } from '@/components/dashboard/CryptoFuturesSection';
-import { PackageOpen, Briefcase } from 'lucide-react';
+import { PackageOpen } from 'lucide-react';
 import { IntradayPositionsSection } from '@/components/dashboard/IntradayPositionsSection';
 import { FoPositionsSection } from '@/components/dashboard/FoPositionsSection';
 import { FoBasketSection } from '@/components/dashboard/FoBasketSection';
@@ -135,14 +135,14 @@ function getRelevantNewsForWatchlistItems(items: Stock[] | undefined, allNews: N
       keywords.push(item.symbol.toLowerCase());
     }
     
-    if ('exchange' in item && (item.exchange === 'Crypto' || item.exchange === 'MF' || item.exchange === 'BOND' || item.exchange === 'NFO' || item.exchange === 'Crypto Futures' || item.exchange === 'NFT')) {
-        const nameParts = item.name.split(/[\s-]+/); 
-        keywords.push(...nameParts.map(part => part.toLowerCase()));
-        if ('symbol' in item && item.symbol) { 
-            const symbolParts = item.symbol.match(/[A-Z]+|[0-9.]+/g) || [];
-            keywords.push(...symbolParts.map(part => part.toLowerCase()));
-        }
+    // Improved keyword extraction for complex financial instruments
+    const nameParts = item.name.split(/[\s-]+/); 
+    keywords.push(...nameParts.map(part => part.toLowerCase()));
+    if ('symbol' in item && item.symbol) { 
+        const symbolParts = item.symbol.match(/[A-Z]+|[0-9.]+/g) || [];
+        keywords.push(...symbolParts.map(part => part.toLowerCase()));
     }
+
     return keywords;
   }).filter(Boolean).reduce((acc, keyword) => {
     acc.add(keyword);
@@ -235,9 +235,18 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
     setActiveSecondaryItem(newSecondaryItems[0] || '');
   }, [activeMode, primaryNavItems, secondaryNavTriggerCategories]);
   
-  useEffect(() => {
+   useEffect(() => {
     if (activeMode === 'Fiat') {
-        const theme = activePrimaryItem.toLowerCase().replace(/\s+/g, '-');
+        const themeMapping: { [key: string]: string } = {
+            'Indian Stocks': 'orange',
+            'US Stocks': 'brown',
+            'Futures': 'caramel',
+            'Options': 'yellow',
+            'Mutual Fund': 'pink',
+            'Bonds': 'maroon',
+            'IPO': 'red'
+        };
+        const theme = themeMapping[activePrimaryItem] || 'fiat'; // fallback to a generic fiat theme
         document.documentElement.setAttribute('data-theme', theme);
     } else {
         document.documentElement.setAttribute('data-theme', activeMode.toLowerCase());
@@ -303,7 +312,7 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
     } else if (isTopWatchlistView || isCategoryNumberedWatchlistView) {
         categoryWatchlistTitle = `${activePrimaryItem} - ${activeSecondaryItem}`;
         if (isTopWatchlistView) {
-            if (isIndianStockView) itemsForWatchlist = mockStocks.map(s => ({...s, exchange: s.exchange || (Math.random() > 0.5 ? "NSE" : "BSE")}));
+            if (isIndianStockView) itemsForWatchlist = mockStocks;
             else if (isUsStockView) itemsForWatchlist = mockUsStocks;
             else if (activePrimaryItem === "Mutual Fund") itemsForWatchlist = mockMutualFunds;
             else if (activePrimaryItem === "Bonds") itemsForWatchlist = mockBonds;

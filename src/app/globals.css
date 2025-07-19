@@ -42,6 +42,7 @@
     --chart-5: 340 75% 55%;
   }
 
+  /* Fiat Main Theme (Fallback) */
   [data-theme="fiat"] {
     --primary: 24 94% 52%; /* Orange */
     --primary-foreground: 24 94% 95%;
@@ -50,12 +51,75 @@
     --ring: 24 94% 52%;
   }
 
+  /* Indian Stocks Theme */
+  [data-theme="orange"] {
+    --primary: 24 94% 52%; /* Orange */
+    --primary-foreground: 24 94% 95%;
+    --accent: 30 95% 55%; /* Lighter Orange */
+    --accent-foreground: 30 95% 95%;
+    --ring: 24 94% 52%;
+  }
+  
+  /* US Stocks Theme */
+  [data-theme="brown"] {
+    --primary: 30 50% 30%; /* Brown */
+    --primary-foreground: 30 50% 95%;
+    --accent: 30 40% 40%; /* Darker Brown */
+    --accent-foreground: 30 40% 95%;
+    --ring: 30 50% 30%;
+  }
+  
+  /* Futures Theme */
+  [data-theme="caramel"] {
+    --primary: 30 65% 45%; /* Caramel */
+    --primary-foreground: 30 65% 95%;
+    --accent: 35 60% 55%; /* Lighter Caramel */
+    --accent-foreground: 35 60% 95%;
+    --ring: 30 65% 45%;
+  }
+
+  /* Options Theme */
+  [data-theme="yellow"] {
+    --primary: 48 95% 55%; /* Yellow */
+    --primary-foreground: 48 95% 15%;
+    --accent: 55 90% 65%; /* Lighter Yellow */
+    --accent-foreground: 55 90% 15%;
+    --ring: 48 95% 55%;
+  }
+
+  /* Mutual Funds Theme */
+  [data-theme="pink"] {
+    --primary: 330 85% 60%; /* Pink */
+    --primary-foreground: 330 85% 98%;
+    --accent: 335 80% 70%; /* Lighter Pink */
+    --accent-foreground: 335 80% 98%;
+    --ring: 330 85% 60%;
+  }
+
+  /* Bonds Theme */
+  [data-theme="maroon"] {
+    --primary: 0 50% 40%; /* Maroon */
+    --primary-foreground: 0 50% 95%;
+    --accent: 0 40% 50%; /* Lighter Maroon */
+    --accent-foreground: 0 40% 95%;
+    --ring: 0 50% 40%;
+  }
+
+  /* IPO Theme */
+  [data-theme="red"] {
+    --primary: 0 72% 51%; /* Red */
+    --primary-foreground: 0 72% 98%;
+    --accent: 0 65% 60%; /* Lighter Red */
+    --accent-foreground: 0 65% 98%;
+    --ring: 0 72% 51%;
+  }
+
   [data-theme="crypto"] {
     --primary: 142 76% 36%; /* Green */
     --primary-foreground: 142 76% 96%;
     --accent: 140 70% 60%; /* Light Green */
     --accent-foreground: 140 70% 98%;
-    --ring: 142 76% 36%;
+    --ring: 142 76% 46%;
   }
   
   [data-theme="web3"] {
@@ -102,12 +166,61 @@
     --chart-5: 340 75% 55%;
   }
 
-  .dark[data-theme="fiat"] {
+  .dark[data-theme="fiat"],
+  .dark[data-theme="orange"] {
     --primary: 24 84% 55%; /* Orange */
     --primary-foreground: 24 84% 96%;
     --accent: 48 85% 58%; /* Yellow */
     --accent-foreground: 48 85% 97%;
     --ring: 24 84% 55%;
+  }
+
+  .dark[data-theme="brown"] {
+    --primary: 30 40% 50%; /* Brown */
+    --primary-foreground: 30 40% 95%;
+    --accent: 30 30% 60%; /* Lighter Brown */
+    --accent-foreground: 30 30% 95%;
+    --ring: 30 40% 50%;
+  }
+  
+  .dark[data-theme="caramel"] {
+    --primary: 30 55% 65%; /* Caramel */
+    --primary-foreground: 30 55% 95%;
+    --accent: 35 50% 75%; /* Lighter Caramel */
+    --accent-foreground: 35 50% 95%;
+    --ring: 30 55% 65%;
+  }
+
+  .dark[data-theme="yellow"] {
+    --primary: 48 85% 60%; /* Yellow */
+    --primary-foreground: 48 85% 10%;
+    --accent: 55 80% 70%; /* Lighter Yellow */
+    --accent-foreground: 55 80% 10%;
+    --ring: 48 85% 60%;
+  }
+
+  .dark[data-theme="pink"] {
+    --primary: 330 75% 70%; /* Pink */
+    --primary-foreground: 330 75% 98%;
+    --accent: 335 70% 80%; /* Lighter Pink */
+    --accent-foreground: 335 70% 98%;
+    --ring: 330 75% 70%;
+  }
+  
+  .dark[data-theme="maroon"] {
+    --primary: 0 40% 60%; /* Maroon */
+    --primary-foreground: 0 40% 95%;
+    --accent: 0 30% 70%; /* Lighter Maroon */
+    --accent-foreground: 0 30% 95%;
+    --ring: 0 40% 60%;
+  }
+  
+  .dark[data-theme="red"] {
+    --primary: 0 62% 61%; /* Red */
+    --primary-foreground: 0 62% 98%;
+    --accent: 0 55% 70%; /* Lighter Red */
+    --accent-foreground: 0 55% 98%;
+    --ring: 0 62% 61%;
   }
 
   .dark[data-theme="crypto"] {

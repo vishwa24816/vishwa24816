@@ -6,14 +6,17 @@ import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator"; 
 import { mockPortfolioHoldings } from '@/lib/mockData';
+import { mockUsStocks } from '@/lib/mockData/usStocks';
 import type { PortfolioHolding } from '@/types';
 import { cn } from '@/lib/utils';
-import { Briefcase, Info, XCircle, Settings2, BarChart2, LayoutGrid, List, ChevronDown, Landmark } from 'lucide-react'; 
+import { Briefcase, BarChart2, LayoutGrid, List } from 'lucide-react'; 
 import { useToast } from "@/hooks/use-toast";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PortfolioHeatmap, type HeatmapItem } from './PortfolioHeatmap';
 import { Chart } from "@/components/ui/chart";
 import { PledgeDialog } from './PledgeDialog';
+import { HoldingCard } from './HoldingCard';
+
 
 type HoldingFilterType = 'All' | 'Indian Stocks' | 'US Stocks' | 'Mutual Fund' | 'Bond';
 type ViewMode = 'list' | 'bar' | 'heatmap';
@@ -23,109 +26,16 @@ interface FiatHoldingsSectionProps {
   setMainPortfolioCashBalance: React.Dispatch<React.SetStateAction<number>>;
 }
 
-
-const HoldingRow = ({ holding, onAdjust, onExit, onPledge }: { holding: PortfolioHolding, onAdjust: () => void, onExit: () => void, onPledge: () => void }) => {
-    const [isExpanded, setIsExpanded] = useState(false);
-
-    const formatCurrency = (value: number) => {
-        return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
-    };
-
-    const isProfit = holding.profitAndLoss >= 0;
-    const isDayProfit = holding.dayChangeAbsolute >= 0;
-
-    return (
-        <div className="border-b transition-all duration-300">
-            <div 
-                className="flex items-center justify-between p-3 cursor-pointer hover:bg-muted/50"
-                onClick={() => setIsExpanded(!isExpanded)}
-            >
-                <div className="flex-1">
-                    <p className="font-semibold text-sm text-foreground">{holding.name}</p>
-                    <p className="text-xs text-muted-foreground">{holding.symbol}</p>
-                </div>
-                <div className="text-right ml-2 shrink-0">
-                    <p className={cn("text-sm font-medium", isProfit ? 'text-green-600' : 'text-red-600')}>
-                        {formatCurrency(holding.profitAndLoss)}
-                    </p>
-                    <p className="text-xs text-muted-foreground">({holding.profitAndLossPercent.toFixed(2)}%)</p>
-                </div>
-                <ChevronDown className={cn("h-4 w-4 ml-3 text-muted-foreground transition-transform", isExpanded && "rotate-180")} />
-            </div>
-
-            {isExpanded && (
-                <div className="bg-muted/30 px-3 py-3 space-y-3 animate-accordion-down">
-                    <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-xs">
-                        <div>
-                            <p className="text-muted-foreground">Quantity</p>
-                            <p className="font-medium text-foreground">{holding.quantity.toLocaleString()}</p>
-                        </div>
-                        <div className="text-right">
-                             <p className="text-muted-foreground">Avg. Cost</p>
-                            <p className="font-medium text-foreground">{formatCurrency(holding.avgCostPrice)}</p>
-                        </div>
-                         <div>
-                            <p className="text-muted-foreground">LTP</p>
-                            <p className="font-medium text-foreground">{formatCurrency(holding.ltp)}</p>
-                        </div>
-                        <div className="text-right">
-                             <p className="text-muted-foreground">Current Value</p>
-                            <p className="font-medium text-foreground">{formatCurrency(holding.currentValue)}</p>
-                        </div>
-                         <div>
-                            <p className="text-muted-foreground">Day's P&L</p>
-                            <p className={cn("font-medium", isDayProfit ? 'text-green-600' : 'text-red-600')}>
-                                {formatCurrency(holding.dayChangeAbsolute)} ({holding.dayChangePercent.toFixed(2)}%)
-                            </p>
-                        </div>
-                    </div>
-                    <div className="pt-2 flex gap-2">
-                        <Button size="sm" variant="outline" className="flex-1 justify-center" onClick={onAdjust}>
-                            <Settings2 className="mr-2 h-4 w-4" /> Adjust
-                        </Button>
-                         <Button size="sm" variant="outline" className="flex-1 justify-center" onClick={onPledge}>
-                            <Landmark className="mr-2 h-4 w-4" /> Pledge
-                        </Button>
-                        <Button size="sm" variant="destructive" className="flex-1 justify-center" onClick={onExit}>
-                            <XCircle className="mr-2 h-4 w-4" /> Exit
-                        </Button>
-                    </div>
-                </div>
-            )}
-        </div>
-    );
-};
-
-
 export function FiatHoldingsSection({ mainPortfolioCashBalance, setMainPortfolioCashBalance }: FiatHoldingsSectionProps) {
-  const holdings = mockPortfolioHoldings.filter(h => h.type !== 'Crypto');
+  const allHoldings = [...mockPortfolioHoldings.filter(h => h.type !== 'Crypto'), ...mockUsStocks.map(s => ({...s, type: 'Stock'} as PortfolioHolding))];
   const [activeFilter, setActiveFilter] = useState<HoldingFilterType>('All');
   const [viewMode, setViewMode] = useState<ViewMode>('list');
-  const router = useRouter();
   const { toast } = useToast();
   const [pledgeDialogOpen, setPledgeDialogOpen] = useState(false);
   const [selectedHoldingForPledge, setSelectedHoldingForPledge] = useState<PortfolioHolding | null>(null);
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
-  };
-  
-  const handleAdjustPosition = (holding: PortfolioHolding) => {
-      let path = `/order/stock/${encodeURIComponent(holding.symbol || holding.name)}`;
-      if (holding.type === 'Mutual Fund') {
-          path = `/order/mutual-fund/${encodeURIComponent(holding.symbol || holding.name)}`;
-      } else if (holding.type === 'Bond') {
-          path = `/order/bond/${encodeURIComponent(holding.symbol || holding.name)}`;
-      }
-      router.push(path);
-  };
-
-  const handleExitPosition = (holding: PortfolioHolding) => {
-    toast({
-      title: `Exiting Position (Mock): ${holding.symbol}`,
-      description: `A market order would be placed to close this position.`,
-      variant: "destructive"
-    });
   };
 
   const handlePledgeClick = (holding: PortfolioHolding) => {
@@ -149,7 +59,7 @@ export function FiatHoldingsSection({ mainPortfolioCashBalance, setMainPortfolio
     { label: "Bonds", value: "Bond" },
   ];
 
-  const filteredHoldings = holdings.filter(holding => {
+  const filteredHoldings = allHoldings.filter(holding => {
     if (activeFilter === 'All') return true;
     if (activeFilter === 'Indian Stocks') return (holding.type === 'Stock' || holding.type === 'ETF') && (holding.exchange === 'NSE' || holding.exchange === 'BSE');
     if (activeFilter === 'US Stocks') return (holding.type === 'Stock' || holding.type === 'ETF') && (holding.exchange === 'NASDAQ' || holding.exchange === 'NYSE');
@@ -158,18 +68,18 @@ export function FiatHoldingsSection({ mainPortfolioCashBalance, setMainPortfolio
     return false;
   });
 
-  const totalCurrentValue = filteredHoldings.reduce((acc, holding) => acc + holding.currentValue, 0);
+  const totalCurrentValue = filteredHoldings.reduce((acc, holding) => acc + (holding.currentValue || (holding.price * holding.quantity)), 0);
   const totalInvestmentValue = filteredHoldings.reduce((acc, holding) => acc + (holding.quantity * holding.avgCostPrice), 0);
   const overallPandL = totalCurrentValue - totalInvestmentValue;
   
-  const totalDayChangeAbsolute = filteredHoldings.reduce((acc, holding) => acc + holding.dayChangeAbsolute, 0);
+  const totalDayChangeAbsolute = filteredHoldings.reduce((acc, holding) => acc + (holding.dayChangeAbsolute || (holding.change * holding.quantity)), 0);
 
   const chartData = useMemo(() => {
     return filteredHoldings.map(pos => ({
       name: pos.symbol || pos.name,
-      value: pos.currentValue,
-      fill: pos.profitAndLoss >= 0 ? "hsl(var(--positive))" : "hsl(var(--destructive))",
-      label: pos.profitAndLoss >= 0 ? 'Profit' : 'Loss'
+      value: (pos.currentValue || (pos.price * pos.quantity)),
+      fill: (pos.profitAndLoss || 0) >= 0 ? "hsl(var(--positive))" : "hsl(var(--destructive))",
+      label: (pos.profitAndLoss || 0) >= 0 ? 'Profit' : 'Loss'
     }));
   }, [filteredHoldings]);
   
@@ -190,9 +100,9 @@ export function FiatHoldingsSection({ mainPortfolioCashBalance, setMainPortfolio
   const heatmapData: HeatmapItem[] = useMemo(() => {
     return filteredHoldings.map(pos => ({
       name: pos.symbol || pos.name,
-      value: pos.currentValue,
-      pnl: pos.profitAndLoss,
-      pnlPercent: pos.profitAndLossPercent,
+      value: pos.currentValue || (pos.price * pos.quantity),
+      pnl: pos.profitAndLoss || 0,
+      pnlPercent: pos.profitAndLossPercent || 0,
     }));
   }, [filteredHoldings]);
 
@@ -210,12 +120,10 @@ export function FiatHoldingsSection({ mainPortfolioCashBalance, setMainPortfolio
         return (
           <div className="mt-4">
             {filteredHoldings.map((holding) => (
-              <HoldingRow 
+              <HoldingCard 
                   key={holding.id} 
                   holding={holding} 
-                  onAdjust={() => handleAdjustPosition(holding)}
-                  onExit={() => handleExitPosition(holding)}
-                  onPledge={() => handlePledgeClick(holding)}
+                  onPledgeClick={handlePledgeClick}
               />
             ))}
           </div>
