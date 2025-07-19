@@ -12,7 +12,8 @@ import { useToast } from "@/hooks/use-toast";
 import { FundTransferDialog } from '@/components/shared/FundTransferDialog';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PortfolioHeatmap, type HeatmapItem } from './PortfolioHeatmap';
-import { Chart } from "@/components/ui/chart"
+import { Chart } from "@/components/ui/chart";
+import { PledgeDialog } from './PledgeDialog';
 
 type ViewMode = 'list' | 'bar' | 'heatmap';
 
@@ -26,7 +27,7 @@ interface CryptoHoldingsSectionProps {
   isRealMode?: boolean;
 }
 
-const HoldingRow = ({ holding, onAdjust, onExit }: { holding: PortfolioHolding, onAdjust: () => void, onExit: () => void }) => {
+const HoldingRow = ({ holding, onAdjust, onExit, onPledge }: { holding: PortfolioHolding, onAdjust: () => void, onExit: () => void, onPledge: () => void }) => {
     const [isExpanded, setIsExpanded] = useState(false);
 
     const formatCurrency = (value: number) => {
@@ -83,10 +84,13 @@ const HoldingRow = ({ holding, onAdjust, onExit }: { holding: PortfolioHolding, 
                     </div>
                     <div className="pt-2 flex gap-2">
                         <Button size="sm" variant="outline" className="flex-1 justify-center" onClick={onAdjust}>
-                            <Settings2 className="mr-2 h-4 w-4" /> Adjust Position
+                            <Settings2 className="mr-2 h-4 w-4" /> Adjust
+                        </Button>
+                        <Button size="sm" variant="outline" className="flex-1 justify-center" onClick={onPledge}>
+                            <Landmark className="mr-2 h-4 w-4" /> Pledge
                         </Button>
                         <Button size="sm" variant="destructive" className="flex-1 justify-center" onClick={onExit}>
-                            <XCircle className="mr-2 h-4 w-4" /> Exit Position
+                            <XCircle className="mr-2 h-4 w-4" /> Exit
                         </Button>
                     </div>
                 </div>
@@ -109,6 +113,8 @@ export function CryptoHoldingsSection({
   const [isFundTransferDialogOpen, setIsFundTransferDialogOpen] = useState(false);
   const [transferDirection, setTransferDirection] = useState<'toCrypto' | 'fromCrypto'>('toCrypto');
   const [viewMode, setViewMode] = useState<ViewMode>('list');
+  const [pledgeDialogOpen, setPledgeDialogOpen] = useState(false);
+  const [selectedHoldingForPledge, setSelectedHoldingForPledge] = useState<PortfolioHolding | null>(null);
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
@@ -124,6 +130,19 @@ export function CryptoHoldingsSection({
       description: `A market order would be placed to close this position.`,
       variant: "destructive"
     });
+  };
+
+  const handlePledgeClick = (holding: PortfolioHolding) => {
+    setSelectedHoldingForPledge(holding);
+    setPledgeDialogOpen(true);
+  };
+
+  const handleConfirmPledge = (holding: PortfolioHolding, quantity: number) => {
+      toast({
+          title: "Pledge Submitted (Mock)",
+          description: `Pledged ${quantity} units of ${holding.symbol}. Margin will be updated shortly.`,
+      });
+      setPledgeDialogOpen(false);
   };
 
   const totalCurrentValue = holdings.reduce((acc, holding) => acc + holding.currentValue, 0);
@@ -203,6 +222,7 @@ export function CryptoHoldingsSection({
               holding={holding} 
               onAdjust={() => handleAdjustPosition(holding)}
               onExit={() => handleExitPosition(holding)}
+              onPledge={() => handlePledgeClick(holding)}
           />
         ));
       case 'bar':
@@ -320,6 +340,15 @@ export function CryptoHoldingsSection({
         onTransferConfirm={handleTransferConfirm}
         currencyMode={'USD'}
       />
+      {selectedHoldingForPledge && (
+        <PledgeDialog
+            isOpen={pledgeDialogOpen}
+            onOpenChange={setPledgeDialogOpen}
+            holding={selectedHoldingForPledge}
+            onConfirmPledge={handleConfirmPledge}
+            currency={isRealMode || selectedHoldingForPledge.type === 'Crypto' ? 'USD' : 'INR'}
+        />
+      )}
     </>
   );
 }

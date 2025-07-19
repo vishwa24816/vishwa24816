@@ -8,11 +8,12 @@ import { Separator } from "@/components/ui/separator";
 import { mockPortfolioHoldings } from '@/lib/mockData';
 import type { PortfolioHolding } from '@/types';
 import { cn } from '@/lib/utils';
-import { Briefcase, Info, XCircle, Settings2, BarChart2, LayoutGrid, List, ChevronDown } from 'lucide-react'; 
+import { Briefcase, Info, XCircle, Settings2, BarChart2, LayoutGrid, List, ChevronDown, Landmark } from 'lucide-react'; 
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { PortfolioHeatmap, type HeatmapItem } from './PortfolioHeatmap';
 import { Chart } from "@/components/ui/chart";
+import { PledgeDialog } from './PledgeDialog';
 
 type HoldingFilterType = 'All' | 'Stock' | 'Mutual Fund' | 'Bond';
 type ViewMode = 'list' | 'bar' | 'heatmap';
@@ -23,7 +24,7 @@ interface FiatHoldingsSectionProps {
 }
 
 
-const HoldingRow = ({ holding, onAdjust, onExit }: { holding: PortfolioHolding, onAdjust: () => void, onExit: () => void }) => {
+const HoldingRow = ({ holding, onAdjust, onExit, onPledge }: { holding: PortfolioHolding, onAdjust: () => void, onExit: () => void, onPledge: () => void }) => {
     const [isExpanded, setIsExpanded] = useState(false);
 
     const formatCurrency = (value: number) => {
@@ -80,10 +81,13 @@ const HoldingRow = ({ holding, onAdjust, onExit }: { holding: PortfolioHolding, 
                     </div>
                     <div className="pt-2 flex gap-2">
                         <Button size="sm" variant="outline" className="flex-1 justify-center" onClick={onAdjust}>
-                            <Settings2 className="mr-2 h-4 w-4" /> Adjust Position
+                            <Settings2 className="mr-2 h-4 w-4" /> Adjust
+                        </Button>
+                         <Button size="sm" variant="outline" className="flex-1 justify-center" onClick={onPledge}>
+                            <Landmark className="mr-2 h-4 w-4" /> Pledge
                         </Button>
                         <Button size="sm" variant="destructive" className="flex-1 justify-center" onClick={onExit}>
-                            <XCircle className="mr-2 h-4 w-4" /> Exit Position
+                            <XCircle className="mr-2 h-4 w-4" /> Exit
                         </Button>
                     </div>
                 </div>
@@ -99,6 +103,8 @@ export function FiatHoldingsSection({ mainPortfolioCashBalance, setMainPortfolio
   const [viewMode, setViewMode] = useState<ViewMode>('list');
   const router = useRouter();
   const { toast } = useToast();
+  const [pledgeDialogOpen, setPledgeDialogOpen] = useState(false);
+  const [selectedHoldingForPledge, setSelectedHoldingForPledge] = useState<PortfolioHolding | null>(null);
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
@@ -120,6 +126,19 @@ export function FiatHoldingsSection({ mainPortfolioCashBalance, setMainPortfolio
       description: `A market order would be placed to close this position.`,
       variant: "destructive"
     });
+  };
+
+  const handlePledgeClick = (holding: PortfolioHolding) => {
+    setSelectedHoldingForPledge(holding);
+    setPledgeDialogOpen(true);
+  };
+  
+  const handleConfirmPledge = (holding: PortfolioHolding, quantity: number) => {
+      toast({
+          title: "Pledge Submitted (Mock)",
+          description: `Pledged ${quantity} units of ${holding.symbol}. Margin will be updated shortly.`,
+      });
+      setPledgeDialogOpen(false);
   };
 
   const filterOptions: { label: string; value: HoldingFilterType }[] = [
@@ -194,6 +213,7 @@ export function FiatHoldingsSection({ mainPortfolioCashBalance, setMainPortfolio
                   holding={holding} 
                   onAdjust={() => handleAdjustPosition(holding)}
                   onExit={() => handleExitPosition(holding)}
+                  onPledge={() => handlePledgeClick(holding)}
               />
             ))}
           </div>
@@ -231,79 +251,89 @@ export function FiatHoldingsSection({ mainPortfolioCashBalance, setMainPortfolio
   };
 
   return (
-    <Card className="shadow-md">
-        <CardHeader>
-            <div className="flex justify-between items-center">
-                <CardTitle className="text-xl font-semibold font-headline text-primary flex items-center">
-                    <Briefcase className="h-6 w-6 mr-2" /> Fiat Holdings
-                </CardTitle>
-                <div className="flex items-center gap-1 rounded-md bg-muted p-1">
-                    <Button variant={viewMode === 'list' ? 'secondary' : 'ghost'} size="icon" className="h-7 w-7" onClick={() => setViewMode('list')}><List /></Button>
-                    <Button variant={viewMode === 'bar' ? 'secondary' : 'ghost'} size="icon" className="h-7 w-7" onClick={() => setViewMode('bar')}><BarChart2 /></Button>
-                    <Button variant={viewMode === 'heatmap' ? 'secondary' : 'ghost'} size="icon" className="h-7 w-7" onClick={() => setViewMode('heatmap')}><LayoutGrid /></Button>
-                </div>
-            </div>
-        </CardHeader>
-        <CardContent className="pt-0">
-            <div className="space-y-3 pt-2 mb-4">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <p className={cn("text-xl font-semibold", overallPandL >= 0 ? 'text-green-500' : 'text-red-500')}>
-                      {formatCurrency(overallPandL)}
-                    </p>
-                    <p className="text-xs text-muted-foreground">Overall P&L</p>
+    <>
+      <Card className="shadow-md">
+          <CardHeader>
+              <div className="flex justify-between items-center">
+                  <CardTitle className="text-xl font-semibold font-headline text-primary flex items-center">
+                      <Briefcase className="h-6 w-6 mr-2" /> Fiat Holdings
+                  </CardTitle>
+                  <div className="flex items-center gap-1 rounded-md bg-muted p-1">
+                      <Button variant={viewMode === 'list' ? 'secondary' : 'ghost'} size="icon" className="h-7 w-7" onClick={() => setViewMode('list')}><List /></Button>
+                      <Button variant={viewMode === 'bar' ? 'secondary' : 'ghost'} size="icon" className="h-7 w-7" onClick={() => setViewMode('bar')}><BarChart2 /></Button>
+                      <Button variant={viewMode === 'heatmap' ? 'secondary' : 'ghost'} size="icon" className="h-7 w-7" onClick={() => setViewMode('heatmap')}><LayoutGrid /></Button>
                   </div>
-                  <div className="text-right">
-                    <p className={cn("text-xl font-semibold", totalDayChangeAbsolute >= 0 ? 'text-green-500' : 'text-red-500')}>
-                      {formatCurrency(totalDayChangeAbsolute)}
-                    </p>
-                    <p className="text-xs text-muted-foreground">Day's P&L</p>
+              </div>
+          </CardHeader>
+          <CardContent className="pt-0">
+              <div className="space-y-3 pt-2 mb-4">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <p className={cn("text-xl font-semibold", overallPandL >= 0 ? 'text-green-500' : 'text-red-500')}>
+                        {formatCurrency(overallPandL)}
+                      </p>
+                      <p className="text-xs text-muted-foreground">Overall P&L</p>
+                    </div>
+                    <div className="text-right">
+                      <p className={cn("text-xl font-semibold", totalDayChangeAbsolute >= 0 ? 'text-green-500' : 'text-red-500')}>
+                        {formatCurrency(totalDayChangeAbsolute)}
+                      </p>
+                      <p className="text-xs text-muted-foreground">Day's P&L</p>
+                    </div>
                   </div>
-                </div>
 
-                <Separator />
+                  <Separator />
 
-                <div className="space-y-1.5">
-                  <div className="flex justify-between items-center text-sm">
-                    <p className="text-muted-foreground">Total Investment</p>
-                    <p className="font-medium text-foreground">{formatCurrency(totalInvestmentValue)}</p>
+                  <div className="space-y-1.5">
+                    <div className="flex justify-between items-center text-sm">
+                      <p className="text-muted-foreground">Total Investment</p>
+                      <p className="font-medium text-foreground">{formatCurrency(totalInvestmentValue)}</p>
+                    </div>
+                    <div className="flex justify-between items-center text-sm">
+                      <p className="text-muted-foreground">Current Value</p>
+                      <p className="font-medium text-foreground">{formatCurrency(totalCurrentValue)}</p>
+                    </div>
+                    <div className="flex justify-between items-center text-sm">
+                      <p className="text-muted-foreground">Cash Balance</p>
+                      <p className="font-medium text-foreground">{formatCurrency(mainPortfolioCashBalance)}</p>
+                    </div>
                   </div>
-                  <div className="flex justify-between items-center text-sm">
-                    <p className="text-muted-foreground">Current Value</p>
-                    <p className="font-medium text-foreground">{formatCurrency(totalCurrentValue)}</p>
+              </div>
+              
+              <div className="border-b border-border">
+                  <div className="flex space-x-1 overflow-x-auto whitespace-nowrap pb-0 no-scrollbar">
+                  {filterOptions.map((option) => (
+                      <Button
+                      key={option.value}
+                      variant="ghost"
+                      size="sm"
+                      className={cn(
+                          "px-3 py-1.5 h-auto text-xs font-medium rounded-t-md rounded-b-none focus-visible:ring-0 focus-visible:ring-offset-0",
+                          "border-b-2 hover:bg-transparent",
+                          activeFilter === option.value
+                          ? "text-primary border-primary font-semibold"
+                          : "text-muted-foreground border-transparent hover:text-primary hover:border-primary/30"
+                      )}
+                      onClick={() => setActiveFilter(option.value)}
+                      >
+                      {option.label}
+                      </Button>
+                  ))}
                   </div>
-                  <div className="flex justify-between items-center text-sm">
-                    <p className="text-muted-foreground">Cash Balance</p>
-                    <p className="font-medium text-foreground">{formatCurrency(mainPortfolioCashBalance)}</p>
-                  </div>
-                </div>
-            </div>
-            
-            <div className="border-b border-border">
-                <div className="flex space-x-1 overflow-x-auto whitespace-nowrap pb-0 no-scrollbar">
-                {filterOptions.map((option) => (
-                    <Button
-                    key={option.value}
-                    variant="ghost"
-                    size="sm"
-                    className={cn(
-                        "px-3 py-1.5 h-auto text-xs font-medium rounded-t-md rounded-b-none focus-visible:ring-0 focus-visible:ring-offset-0",
-                        "border-b-2 hover:bg-transparent",
-                        activeFilter === option.value
-                        ? "text-primary border-primary font-semibold"
-                        : "text-muted-foreground border-transparent hover:text-primary hover:border-primary/30"
-                    )}
-                    onClick={() => setActiveFilter(option.value)}
-                    >
-                    {option.label}
-                    </Button>
-                ))}
-                </div>
-            </div>
+              </div>
 
-            {renderContent()}
+              {renderContent()}
 
-        </CardContent>
-    </Card>
+          </CardContent>
+      </Card>
+      {selectedHoldingForPledge && (
+        <PledgeDialog
+            isOpen={pledgeDialogOpen}
+            onOpenChange={setPledgeDialogOpen}
+            holding={selectedHoldingForPledge}
+            onConfirmPledge={handleConfirmPledge}
+        />
+      )}
+    </>
   );
 }
