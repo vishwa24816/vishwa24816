@@ -23,10 +23,10 @@ const PositionRow = ({ position, onAdjust, onExit }: { position: CryptoFuturePos
     const [isExpanded, setIsExpanded] = useState(false);
     
     const formatCurrency = (value: number) => {
-        return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
+        return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
     };
     const formatPrice = (value: number) => {
-        return value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        return value.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     };
 
     const isPnlPositive = position.unrealizedPnL >= 0;
@@ -77,7 +77,7 @@ export function CryptoFuturesSection({ positions, cashBalance }: CryptoFuturesSe
   const [viewMode, setViewMode] = useState<ViewMode>('list');
 
   const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
+    return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
   };
 
   const handleAdjustPosition = (pos: CryptoFuturePosition) => {

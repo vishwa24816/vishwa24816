@@ -1,13 +1,15 @@
 
 import type { SipOrder } from '@/types';
 
+const USD_TO_INR = 80;
+
 export const mockSips: SipOrder[] = [
   {
     id: 'sip1',
     instrumentName: 'Parag Parikh Flexi Cap Fund Direct-Growth',
     symbol: 'PARAGPARIKH',
     assetType: 'Mutual Fund',
-    amount: 50, // $50
+    amount: 5000,
     frequency: 'Monthly',
     nextDueDate: '2024-08-05',
     status: 'Active',
@@ -32,7 +34,7 @@ export const mockSips: SipOrder[] = [
     instrumentName: 'Reliance Industries Ltd.',
     symbol: 'RELIANCE',
     assetType: 'Stock',
-    amount: 25, // $25
+    amount: 2000,
     frequency: 'Monthly',
     nextDueDate: '2024-08-15',
     status: 'Paused',
@@ -43,7 +45,7 @@ export const mockSips: SipOrder[] = [
     id: 'sip4',
     instrumentName: 'Sovereign Gold Bond Tranche X',
     assetType: 'Gold Bond',
-    amount: 70, // $70
+    amount: 5000,
     frequency: 'Monthly', 
     nextDueDate: '2024-09-01',
     status: 'Completed',
@@ -56,7 +58,7 @@ export const mockSips: SipOrder[] = [
     instrumentName: 'Bitcoin (BTC)',
     symbol: 'BTC',
     assetType: 'Crypto',
-    amount: 20, // $20
+    amount: 2000,
     frequency: 'Daily',
     nextDueDate: '2024-07-26',
     status: 'Active',
@@ -68,7 +70,7 @@ export const mockSips: SipOrder[] = [
     instrumentName: 'Axis Long Term Equity Fund Direct-Growth',
     symbol: 'AXISLTE',
     assetType: 'Mutual Fund',
-    amount: 120,
+    amount: 10000,
     frequency: 'Annually', // Annual SIP
     nextDueDate: '2025-01-10',
     status: 'Active',

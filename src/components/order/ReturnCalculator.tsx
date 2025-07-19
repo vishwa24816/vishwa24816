@@ -28,7 +28,7 @@ export function ReturnCalculator({ defaultReturnRate, currency = 'INR' }: Return
   const [lumpsumAmount, setLumpsumAmount] = useState('10000');
   
   // SIP state
-  const [sipAmount, setSipAmount] = useState('100');
+  const [sipAmount, setSipAmount] = useState('1000'); // Updated default for INR
 
   // Common state
   const [timePeriod, setTimePeriod] = useState(10);
@@ -36,14 +36,14 @@ export function ReturnCalculator({ defaultReturnRate, currency = 'INR' }: Return
   const [result, setResult] = useState<CalculationResult | null>(null);
 
   const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat(currency === 'USD' ? 'en-US' : 'en-IN', {
+    return new Intl.NumberFormat('en-IN', {
       style: 'currency',
-      currency: currency,
+      currency: 'INR',
       maximumFractionDigits: 0,
     }).format(value);
   };
   
-  const currencySymbol = currency === 'USD' ? '$' : '₹';
+  const currencySymbol = '₹';
 
   const handleCalculate = () => {
     const rate = defaultReturnRate / 100;

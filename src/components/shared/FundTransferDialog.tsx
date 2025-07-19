@@ -25,7 +25,7 @@ interface FundTransferDialogProps {
   mainPortfolioCashBalance: number;
   cryptoCashBalance: number;
   onTransferConfirm: (amount: number, direction: 'toCrypto' | 'fromCrypto') => void;
-  currencyMode: 'USD';
+  currencyMode: 'INR';
 }
 
 export function FundTransferDialog({
@@ -53,7 +53,7 @@ export function FundTransferDialog({
   const sourceBalance = transferDirection === 'toCrypto' ? mainPortfolioCashBalance : cryptoCashBalance;
 
   const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
+    return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
   };
 
   const handleTransfer = () => {
@@ -107,14 +107,14 @@ export function FundTransferDialog({
 
           <div className="space-y-2">
             <Label htmlFor="transfer-amount" className="text-right">
-              Amount to Transfer ($)
+              Amount to Transfer (₹)
             </Label>
             <Input
               id="transfer-amount"
               type="number"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
-              placeholder={"e.g., 100"}
+              placeholder={"e.g., 5000"}
               className={cn(error && "border-destructive focus-visible:ring-destructive")}
             />
             {error && <p className="text-xs text-destructive pt-1">{error}</p>}

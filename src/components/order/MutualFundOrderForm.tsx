@@ -21,7 +21,7 @@ export function MutualFundOrderForm({ asset, assetType }: MutualFundOrderFormPro
     const [activeTab, setActiveTab] = useState("one-time");
 
     const isCrypto = asset.exchange?.toLowerCase().includes('crypto');
-    const currencySymbol = isCrypto ? '$' : '₹';
+    const currencySymbol = isCrypto ? '₹' : '₹'; // Always INR now
 
     const handleOneTimeBuy = () => {
         if (!oneTimeAmount || parseFloat(oneTimeAmount) <= 0) {

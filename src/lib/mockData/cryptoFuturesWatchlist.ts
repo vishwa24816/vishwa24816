@@ -1,6 +1,8 @@
 
 import type { Stock } from '@/types'; // Using Stock type for watchlist compatibility
 
+const USD_TO_INR = 80;
+
 export const mockCryptoFuturesForWatchlist: Stock[] = [
   { 
     id: 'btcinrperp', symbol: 'BTCINR.P', name: 'Bitcoin Perpetual (INR)', 

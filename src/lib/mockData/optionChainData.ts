@@ -26,7 +26,7 @@ const generateOptionData = (baseLTP: number, isCall: boolean, strike: number, un
   ltpMultiplier = Math.max(0.01, Math.min(2.5, ltpMultiplier));
 
 
-  const ltp = parseFloat(Math.max(0.01, baseLTP * randomFactor() * ltpMultiplier).toFixed(isCrypto ? 4 : 2));
+  const ltp = parseFloat(Math.max(0.01, baseLTP * randomFactor() * ltpMultiplier).toFixed(isCrypto ? 2 : 2));
   
   return {
     oi: Math.floor(Math.random() * (isCrypto ? 1000 : 500000)) + (isCrypto ? 50 : 10000),
@@ -34,10 +34,10 @@ const generateOptionData = (baseLTP: number, isCall: boolean, strike: number, un
     volume: Math.floor(Math.random() * (isCrypto ? 500 : 20000)) + (isCrypto ? 10 : 500),
     iv: Math.random() * (isCrypto ? 60 : 30) + (isCrypto ? 40 : 10), // IV between 10-40 for stocks, 40-100 for crypto
     ltp: ltp,
-    netChng: parseFloat(((Math.random() - 0.5) * (ltp * 0.2)).toFixed(isCrypto ? 4 : 2)), // Max 20% change
+    netChng: parseFloat(((Math.random() - 0.5) * (ltp * 0.2)).toFixed(isCrypto ? 2 : 2)), // Max 20% change
     bidQty: Math.floor(Math.random() * (isCrypto ? 20 : 500)),
-    bidPrice: parseFloat(Math.max(0.01, ltp * (1 - Math.random() * 0.02 - 0.005)).toFixed(isCrypto ? 4 : 2)),
-    askPrice: parseFloat(Math.max(ltp, ltp * (1 + Math.random() * 0.02 + 0.005)).toFixed(isCrypto ? 4 : 2)),
+    bidPrice: parseFloat(Math.max(0.01, ltp * (1 - Math.random() * 0.02 - 0.005)).toFixed(isCrypto ? 2 : 2)),
+    askPrice: parseFloat(Math.max(ltp, ltp * (1 + Math.random() * 0.02 + 0.005)).toFixed(isCrypto ? 2 : 2)),
     askQty: Math.floor(Math.random() * (isCrypto ? 20 : 500)),
     delta: parseFloat((Math.random() * (isCall ? 1 : -1)).toFixed(2)),
     gamma: parseFloat(Math.random().toFixed(4)),
@@ -94,33 +94,33 @@ export const mockBankNiftyOptionChain: Record<string, OptionChainData> = {
 };
 
 // BTC
-const btcCurrentPrice = btcAsset?.price || 65000;
+const btcCurrentPrice = btcAsset?.price || 65000 * 80;
 export const mockBtcOptionChain: Record<string, OptionChainData> = {
   '2024-07-26': {
     underlyingValue: btcCurrentPrice,
     expiryDate: '26 Jul 2024',
     data: [
-      { strikePrice: 64000, call: generateOptionData(1500, true, 64000, btcCurrentPrice, true), put: generateOptionData(500, false, 64000, btcCurrentPrice, true) },
-      { strikePrice: 64500, call: generateOptionData(1200, true, 64500, btcCurrentPrice, true), put: generateOptionData(700, false, 64500, btcCurrentPrice, true) },
-      { strikePrice: 65000, call: generateOptionData(900, true, 65000, btcCurrentPrice, true), put: generateOptionData(900, false, 65000, btcCurrentPrice, true) }, // ATM
-      { strikePrice: 65500, call: generateOptionData(700, true, 65500, btcCurrentPrice, true), put: generateOptionData(1200, false, 65500, btcCurrentPrice, true) },
-      { strikePrice: 66000, call: generateOptionData(500, true, 66000, btcCurrentPrice, true), put: generateOptionData(1500, false, 66000, btcCurrentPrice, true) },
+      { strikePrice: 64000*80, call: generateOptionData(1500*80, true, 64000*80, btcCurrentPrice, true), put: generateOptionData(500*80, false, 64000*80, btcCurrentPrice, true) },
+      { strikePrice: 64500*80, call: generateOptionData(1200*80, true, 64500*80, btcCurrentPrice, true), put: generateOptionData(700*80, false, 64500*80, btcCurrentPrice, true) },
+      { strikePrice: 65000*80, call: generateOptionData(900*80, true, 65000*80, btcCurrentPrice, true), put: generateOptionData(900*80, false, 65000*80, btcCurrentPrice, true) }, // ATM
+      { strikePrice: 65500*80, call: generateOptionData(700*80, true, 65500*80, btcCurrentPrice, true), put: generateOptionData(1200*80, false, 65500*80, btcCurrentPrice, true) },
+      { strikePrice: 66000*80, call: generateOptionData(500*80, true, 66000*80, btcCurrentPrice, true), put: generateOptionData(1500*80, false, 66000*80, btcCurrentPrice, true) },
     ]
   }
 };
 
 // ETH
-const ethCurrentPrice = ethAsset?.price || 3400;
+const ethCurrentPrice = ethAsset?.price || 3400 * 80;
 export const mockEthOptionChain: Record<string, OptionChainData> = {
   '2024-07-26': {
     underlyingValue: ethCurrentPrice,
     expiryDate: '26 Jul 2024',
     data: [
-      { strikePrice: 3300, call: generateOptionData(150, true, 3300, ethCurrentPrice, true), put: generateOptionData(50, false, 3300, ethCurrentPrice, true) },
-      { strikePrice: 3350, call: generateOptionData(120, true, 3350, ethCurrentPrice, true), put: generateOptionData(70, false, 3350, ethCurrentPrice, true) },
-      { strikePrice: 3400, call: generateOptionData(90, true, 3400, ethCurrentPrice, true), put: generateOptionData(90, false, 3400, ethCurrentPrice, true) }, // ATM
-      { strikePrice: 3450, call: generateOptionData(70, true, 3450, ethCurrentPrice, true), put: generateOptionData(120, false, 3450, ethCurrentPrice, true) },
-      { strikePrice: 3500, call: generateOptionData(50, true, 3500, ethCurrentPrice, true), put: generateOptionData(150, false, 3500, ethCurrentPrice, true) },
+      { strikePrice: 3300*80, call: generateOptionData(150*80, true, 3300*80, ethCurrentPrice, true), put: generateOptionData(50*80, false, 3300*80, ethCurrentPrice, true) },
+      { strikePrice: 3350*80, call: generateOptionData(120*80, true, 3350*80, ethCurrentPrice, true), put: generateOptionData(70*80, false, 3350*80, ethCurrentPrice, true) },
+      { strikePrice: 3400*80, call: generateOptionData(90*80, true, 3400*80, ethCurrentPrice, true), put: generateOptionData(90*80, false, 3400*80, ethCurrentPrice, true) }, // ATM
+      { strikePrice: 3450*80, call: generateOptionData(70*80, true, 3450*80, ethCurrentPrice, true), put: generateOptionData(120*80, false, 3450*80, ethCurrentPrice, true) },
+      { strikePrice: 3500*80, call: generateOptionData(50*80, true, 3500*80, ethCurrentPrice, true), put: generateOptionData(150*80, false, 3500*80, ethCurrentPrice, true) },
     ]
   }
 };

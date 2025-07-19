@@ -1,5 +1,8 @@
+
 import type { Stock } from '@/types';
 
+// NOTE: These values are nominal USD values. They will be displayed with a $ prefix.
+// For portfolio summary, they should be converted to INR.
 export const mockUsStocks: Stock[] = [
   {
     id: 'aapl',

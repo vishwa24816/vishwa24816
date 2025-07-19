@@ -47,7 +47,7 @@ export function CryptoHoldingsSection({
   const [selectedHoldingForPledge, setSelectedHoldingForPledge] = useState<PortfolioHolding | null>(null);
 
   const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
+    return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
   };
 
   const handlePledgeClick = (holding: PortfolioHolding) => {
@@ -258,7 +258,7 @@ export function CryptoHoldingsSection({
         mainPortfolioCashBalance={mainPortfolioCashBalance}
         cryptoCashBalance={cashBalance}
         onTransferConfirm={handleTransferConfirm}
-        currencyMode={'USD'}
+        currencyMode={'INR'}
       />
       {selectedHoldingForPledge && (
         <PledgeDialog
@@ -266,7 +266,7 @@ export function CryptoHoldingsSection({
             onOpenChange={setPledgeDialogOpen}
             holding={selectedHoldingForPledge}
             onConfirmPledge={handleConfirmPledge}
-            currency={isRealMode || selectedHoldingForPledge.type === 'Crypto' ? 'USD' : 'INR'}
+            currency={isRealMode || selectedHoldingForPledge.type === 'Crypto' ? 'INR' : 'INR'}
         />
       )}
     </>

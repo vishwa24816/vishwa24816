@@ -147,11 +147,11 @@ export function StockOrderPageContent({ asset, assetSpecificNews }: StockOrderPa
                 <div className="grid grid-cols-2 gap-4 text-sm pt-2 mb-6">
                   <div>
                     <p className="text-xs text-muted-foreground">Open</p>
-                    <p className="font-semibold text-foreground">{asset.openPrice?.toFixed(2) || 'N/A'}</p>
+                    <p className="font-semibold text-foreground">{currencySymbol}{asset.openPrice?.toFixed(2) || 'N/A'}</p>
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground">Prev. Close</p>
-                    <p className="font-semibold text-foreground">{asset.prevClosePrice?.toFixed(2) || 'N/A'}</p>
+                    <p className="font-semibold text-foreground">{currencySymbol}{asset.prevClosePrice?.toFixed(2) || 'N/A'}</p>
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground">Volume</p>
@@ -207,13 +207,13 @@ export function StockOrderPageContent({ asset, assetSpecificNews }: StockOrderPa
                       <div><span className="text-muted-foreground">Mkt Cap</span><p className="font-semibold text-foreground">{asset.fundamentals.marketCap || 'N/A'}</p></div>
                       <div><span className="text-muted-foreground">ROE</span><p className="font-semibold text-foreground">{asset.fundamentals.roe?.toFixed(2) || 'N/A'}%</p></div>
                       <div><span className="text-muted-foreground">P/E Ratio (TTM)</span><p className="font-semibold text-foreground">{asset.fundamentals.peRatioTTM?.toFixed(2) || 'N/A'}</p></div>
-                      <div><span className="text-muted-foreground">EPS (TTM)</span><p className="font-semibold text-foreground">{asset.fundamentals.epsTTM?.toFixed(2) || 'N/A'}</p></div>
+                      <div><span className="text-muted-foreground">EPS (TTM)</span><p className="font-semibold text-foreground">{currencySymbol}{asset.fundamentals.epsTTM?.toFixed(2) || 'N/A'}</p></div>
                       <div><span className="text-muted-foreground">P/B Ratio</span><p className="font-semibold text-foreground">{asset.fundamentals.pbRatio?.toFixed(2) || 'N/A'}</p></div>
                       <div><span className="text-muted-foreground">Div Yield</span><p className="font-semibold text-foreground">{asset.fundamentals.divYield?.toFixed(2) || 'N/A'}%</p></div>
                       <div><span className="text-muted-foreground">Industry P/E</span><p className="font-semibold text-foreground">{asset.fundamentals.industryPe?.toFixed(2) || 'N/A'}</p></div>
-                      <div><span className="text-muted-foreground">Book Value</span><p className="font-semibold text-foreground">{asset.fundamentals.bookValue?.toFixed(2) || 'N/A'}</p></div>
+                      <div><span className="text-muted-foreground">Book Value</span><p className="font-semibold text-foreground">{currencySymbol}{asset.fundamentals.bookValue?.toFixed(2) || 'N/A'}</p></div>
                       <div><span className="text-muted-foreground">Debt to Equity</span><p className="font-semibold text-foreground">{asset.fundamentals.debtToEquity?.toFixed(2) || 'N/A'}</p></div>
-                      <div><span className="text-muted-foreground">Face Value</span><p className="font-semibold text-foreground">{asset.fundamentals.faceValue?.toFixed(2) || 'N/A'}</p></div>
+                      <div><span className="text-muted-foreground">Face Value</span><p className="font-semibold text-foreground">{currencySymbol}{asset.fundamentals.faceValue?.toFixed(2) || 'N/A'}</p></div>
                     </div>
                   </CollapsibleSection>
                 )}

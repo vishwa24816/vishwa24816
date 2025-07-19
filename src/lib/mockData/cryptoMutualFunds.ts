@@ -1,13 +1,15 @@
 
 import type { Stock } from '@/types';
 
+const USD_TO_INR = 80;
+
 export const mockCryptoMutualFunds: Stock[] = [
   { 
     id: 'cmf1', 
     symbol: 'CRYPINNO', 
     name: 'Crypto Innovators Fund Direct-Growth', 
-    price: 30.72, // NAV
-    change: 0.90, 
+    price: 30.72 * USD_TO_INR, // NAV
+    change: 0.90 * USD_TO_INR, 
     changePercent: 3.02, 
     exchange: 'Crypto MF', 
     sector: 'Thematic', 
@@ -16,8 +18,8 @@ export const mockCryptoMutualFunds: Stock[] = [
     annualisedReturn: 40.57,
     navDate: '20-Jun-2025',
     rating: 'NA',
-    minSipAmount: 10,
-    fundSize: '$630M',
+    minSipAmount: 1000,
+    fundSize: '₹50,400 Cr',
     holdingsCount: 26,
     aboutCompany: 'An open-ended thematic mutual fund scheme investing in a diversified portfolio of companies that are participating in and benefiting from the crypto and blockchain innovation ecosystem.',
     topHoldings: [
@@ -53,8 +55,8 @@ export const mockCryptoMutualFunds: Stock[] = [
     id: 'cmf2', 
     symbol: 'DEFIADV', 
     name: 'DeFi Advantage Fund Direct-Growth', 
-    price: 21.80, 
-    change: -0.18, 
+    price: 21.80 * USD_TO_INR, 
+    change: -0.18 * USD_TO_INR, 
     changePercent: -0.82, 
     exchange: 'Crypto MF', 
     sector: 'DeFi',
@@ -63,8 +65,8 @@ export const mockCryptoMutualFunds: Stock[] = [
     annualisedReturn: 25.10,
     navDate: '20-Jun-2025',
     rating: 'NA',
-    minSipAmount: 10,
-    fundSize: '$250M',
+    minSipAmount: 1000,
+    fundSize: '₹20,000 Cr',
     holdingsCount: 18,
     aboutCompany: 'An open-ended sectoral mutual fund scheme investing in a diversified portfolio of decentralized finance (DeFi) protocols and applications on various blockchains.',
     topHoldings: [
@@ -94,8 +96,8 @@ export const mockCryptoMutualFunds: Stock[] = [
     id: 'cmf3', 
     symbol: 'BLOCKCHAINPL', 
     name: 'Blockchain Plus Fund Direct-Growth', 
-    price: 39.28, 
-    change: 1.32, 
+    price: 39.28 * USD_TO_INR, 
+    change: 1.32 * USD_TO_INR, 
     changePercent: 3.47, 
     exchange: 'Crypto MF', 
     sector: 'Infrastructure',
@@ -104,8 +106,8 @@ export const mockCryptoMutualFunds: Stock[] = [
     annualisedReturn: 35.20,
     navDate: '20-Jun-2025',
     rating: 'NA',
-    minSipAmount: 10,
-    fundSize: '$1B',
+    minSipAmount: 1000,
+    fundSize: '₹80,000 Cr',
     holdingsCount: 35,
     aboutCompany: 'An open-ended thematic mutual fund scheme investing in companies providing blockchain infrastructure, including layer-1s, layer-2s, and interoperability solutions.',
      topHoldings: [
