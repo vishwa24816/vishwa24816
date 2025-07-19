@@ -43,6 +43,7 @@ import {
   mockWeb3Memes,
 } from '@/lib/mockData';
 import { mockWeb3NFTs } from '@/lib/mockData/web3NFTs';
+import { mockUsStocks } from '@/lib/mockData/usStocks';
 
 // Helper functions
 function getRelevantNewsForHoldings(holdings: PortfolioHolding[], allNews: NewsArticle[]): NewsArticle[] {
@@ -171,15 +172,17 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
         }
     }
     if (activeMode === 'Fiat') {
+        const watchlistNav = ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)];
         return {
-            primaryNavItems: ["Stocks", "Futures", "Options", "Mutual Fund", "Bonds", "IPO"],
+            primaryNavItems: ["Indian Stocks", "US Stocks", "Futures", "Options", "Mutual Fund", "Bonds", "IPO"],
             secondaryNavTriggerCategories: {
-                Stocks: ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
-                Futures: ["Index Futures", "Stock Futures"],
-                Options: ["Custom", "Readymade"],
-                "Mutual Fund": ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
-                Bonds: ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)],
-                IPO: [],
+                "Indian Stocks": watchlistNav,
+                "US Stocks": watchlistNav,
+                "Futures": ["Index Futures", "Stock Futures"],
+                "Options": ["Custom", "Readymade"],
+                "Mutual Fund": watchlistNav,
+                "Bonds": watchlistNav,
+                "IPO": [],
             }
         };
     }
@@ -269,8 +272,10 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
           }
       }
   } else if (activeMode === 'Fiat') {
-    const isTopWatchlistView = (["Stocks", "Mutual Fund", "Bonds"].includes(activePrimaryItem)) && activeSecondaryItem.startsWith("Top watchlist");
-    const isCategoryNumberedWatchlistView = (["Stocks", "Mutual Fund", "Bonds"].includes(activePrimaryItem)) && !!activeSecondaryItem.match(/^Watchlist \d+$/);
+    const isIndianStockView = activePrimaryItem === "Indian Stocks";
+    const isUsStockView = activePrimaryItem === "US Stocks";
+    const isTopWatchlistView = (isIndianStockView || isUsStockView || ["Mutual Fund", "Bonds"].includes(activePrimaryItem)) && activeSecondaryItem.startsWith("Top watchlist");
+    const isCategoryNumberedWatchlistView = (isIndianStockView || isUsStockView || ["Mutual Fund", "Bonds"].includes(activePrimaryItem)) && !!activeSecondaryItem.match(/^Watchlist \d+$/);
 
     if (activePrimaryItem === 'Futures') {
         categoryWatchlistTitle = `${activeSecondaryItem} Watchlist`;
@@ -283,7 +288,8 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
     } else if (isTopWatchlistView || isCategoryNumberedWatchlistView) {
         categoryWatchlistTitle = `${activePrimaryItem} - ${activeSecondaryItem}`;
         if (isTopWatchlistView) {
-            if (activePrimaryItem === "Stocks") itemsForWatchlist = mockStocks.map(s => ({...s, exchange: s.exchange || (Math.random() > 0.5 ? "NSE" : "BSE")}));
+            if (isIndianStockView) itemsForWatchlist = mockStocks.map(s => ({...s, exchange: s.exchange || (Math.random() > 0.5 ? "NSE" : "BSE")}));
+            else if (isUsStockView) itemsForWatchlist = mockUsStocks;
             else if (activePrimaryItem === "Mutual Fund") itemsForWatchlist = mockMutualFunds;
             else if (activePrimaryItem === "Bonds") itemsForWatchlist = mockBonds;
             newsForView = getRelevantNewsForWatchlistItems(itemsForWatchlist, mockNewsArticles);
@@ -346,8 +352,11 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
         if (activePrimaryItem === "Futures") {
             return <div className="space-y-8"><WatchlistSection title={categoryWatchlistTitle} displayItems={itemsForWatchlist} isPredefinedList={true} /><NewsSection articles={newsForView} /></div>
         }
-        const isTopWatchlistView = (["Stocks", "Mutual Fund", "Bonds"].includes(activePrimaryItem)) && activeSecondaryItem.startsWith("Top watchlist");
-        const isCategoryNumberedWatchlistView = (["Stocks", "Mutual Fund", "Bonds"].includes(activePrimaryItem)) && !!activeSecondaryItem.match(/^Watchlist \d+$/);
+        
+        const isIndianStockView = activePrimaryItem === "Indian Stocks";
+        const isUsStockView = activePrimaryItem === "US Stocks";
+        const isTopWatchlistView = (isIndianStockView || isUsStockView || ["Mutual Fund", "Bonds"].includes(activePrimaryItem)) && activeSecondaryItem.startsWith("Top watchlist");
+        const isCategoryNumberedWatchlistView = (isIndianStockView || isUsStockView || ["Mutual Fund", "Bonds"].includes(activePrimaryItem)) && !!activeSecondaryItem.match(/^Watchlist \d+$/);
         
         if(isTopWatchlistView) return <div className="space-y-8"><WatchlistSection title={categoryWatchlistTitle} displayItems={itemsForWatchlist} isPredefinedList={true} /><NewsSection articles={newsForView} /></div>
         if(isCategoryNumberedWatchlistView) return <div className="space-y-8"><WatchlistSection title={categoryWatchlistTitle} isPredefinedList={false} localStorageKeyOverride={`simAppWatchlist_Fiat_${activePrimaryItem.replace(/\s+/g, '_')}_${activeSecondaryItem.replace(/\s+/g, '_')}`} defaultInitialItems={[]}/><NewsSection articles={newsForView} /></div>

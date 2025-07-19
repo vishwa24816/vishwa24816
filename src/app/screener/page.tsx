@@ -436,13 +436,22 @@ export default function ScreenerPage() {
                                             <AccordionContent className="px-4 pb-2 pt-0 text-muted-foreground">
                                                 {item.title === 'Markets' ? (
                                                     <ul className="space-y-1">
-                                                        <li key="Stocks">
+                                                        <li key="indian-stocks">
                                                             <Button
                                                                 variant="ghost"
                                                                 className="w-full justify-start p-2 h-auto font-normal text-muted-foreground hover:text-primary text-sm"
                                                                 onClick={() => router.push('/markets')}
                                                             >
-                                                                Stocks
+                                                                Indian Stocks
+                                                            </Button>
+                                                        </li>
+                                                        <li key="us-stocks">
+                                                            <Button
+                                                                variant="ghost"
+                                                                className="w-full justify-start p-2 h-auto font-normal text-muted-foreground hover:text-primary text-sm"
+                                                                onClick={() => toast({ title: `US Stocks Market Page`, description: 'This feature is coming soon!' })}
+                                                            >
+                                                                US Stocks
                                                             </Button>
                                                         </li>
                                                         {Array.isArray(item.content) && item.content.map((subItem) => (

@@ -3,6 +3,7 @@
 
 export * from './marketIndices';
 export * from './stocks';
+export * from './usStocks';
 export * from './cryptoAssets';
 export * from './newsArticles';
 export * from './portfolioHoldings';
