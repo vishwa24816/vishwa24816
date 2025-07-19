@@ -32,3 +32,4 @@ export * from './web3Trending';
 export * from './web3Holdings';
 export * from './marketSectorData';
 export * from './cryptoIndices';
+export * from './web3NFTs';

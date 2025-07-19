@@ -41,6 +41,7 @@ import {
   mockWeb3DeFi,
   mockWeb3Trending,
   mockWeb3Memes,
+  mockWeb3NFTs,
 } from '@/lib/mockData';
 
 // Helper functions
@@ -129,7 +130,7 @@ function getRelevantNewsForWatchlistItems(items: Stock[] | undefined, allNews: N
       keywords.push(item.symbol.toLowerCase());
     }
     
-    if ('exchange' in item && (item.exchange === 'Crypto' || item.exchange === 'MF' || item.exchange === 'BOND' || item.exchange === 'NFO' || item.exchange === 'Crypto Futures')) {
+    if ('exchange' in item && (item.exchange === 'Crypto' || item.exchange === 'MF' || item.exchange === 'BOND' || item.exchange === 'NFO' || item.exchange === 'Crypto Futures' || item.exchange === 'NFT')) {
         const nameParts = item.name.split(/[\s-]+/); 
         keywords.push(...nameParts.map(part => part.toLowerCase()));
         if ('symbol' in item && item.symbol) { 
@@ -184,12 +185,13 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
     }
      if (activeMode === 'Web3') {
         return {
-            primaryNavItems: ["AI", "DeFi", "Trending", "Memes"],
+            primaryNavItems: ["Trending", "AI", "DeFi", "Memes", "NFT"],
             secondaryNavTriggerCategories: {
+                Trending: [],
                 AI: [],
                 DeFi: [],
-                Trending: [],
                 Memes: [],
+                NFT: [],
             }
         };
     }
@@ -361,6 +363,10 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
         let web3Items: Stock[] = [];
         let watchlistTitle = activePrimaryItem;
         switch (activePrimaryItem) {
+            case 'Trending':
+                web3Items = mockWeb3Trending;
+                watchlistTitle = "Trending Web3 Tokens";
+                break;
             case 'AI':
                 web3Items = mockWeb3AI;
                 watchlistTitle = "Top AI Tokens";
@@ -369,13 +375,13 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
                 web3Items = mockWeb3DeFi;
                 watchlistTitle = "Top DeFi Tokens";
                 break;
-            case 'Trending':
-                web3Items = mockWeb3Trending;
-                watchlistTitle = "Trending Web3 Tokens";
-                break;
             case 'Memes':
                 web3Items = mockWeb3Memes;
                 watchlistTitle = "Top Meme Tokens";
+                break;
+             case 'NFT':
+                web3Items = mockWeb3NFTs;
+                watchlistTitle = "Top NFT Collections";
                 break;
         }
         newsForView = getRelevantNewsForWatchlistItems(web3Items, mockNewsArticles);
