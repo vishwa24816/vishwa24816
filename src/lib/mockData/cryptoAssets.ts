@@ -66,6 +66,56 @@ const baseCryptoAssets: Stock[] = [
     openPrice: 0.117, prevClosePrice: 0.117, volume: 90000000, marketCap: '$10B',
     aboutCompany: 'TRON is a decentralized, open-source blockchain-based operating system with smart contract functionality, proof-of-stake principles as its consensus algorithm and a cryptocurrency native to the system, known as Tronix (TRX).'
   },
+  {
+    id: 'shib', symbol: 'SHIB', name: 'Shiba Inu', price: 0.000028, change: 0.000001, changePercent: 3.70, exchange: 'Crypto',
+    todayLow: 0.000027, todayHigh: 0.000029, fiftyTwoWeekLow: 0.000006, fiftyTwoWeekHigh: 0.000045,
+    openPrice: 0.000027, prevClosePrice: 0.000027, volume: 500000000000, marketCap: '$16.5B'
+  },
+  {
+    id: 'avax', symbol: 'AVAX', name: 'Avalanche', price: 38.50, change: -1.20, changePercent: -3.03, exchange: 'Crypto',
+    todayLow: 38.00, todayHigh: 40.00, fiftyTwoWeekLow: 9.00, fiftyTwoWeekHigh: 65.00,
+    openPrice: 39.70, prevClosePrice: 39.70, volume: 800000, marketCap: '$14.2B'
+  },
+  {
+    id: 'dot', symbol: 'DOT', name: 'Polkadot', price: 7.20, change: 0.15, changePercent: 2.13, exchange: 'Crypto',
+    todayLow: 7.00, todayHigh: 7.30, fiftyTwoWeekLow: 3.60, fiftyTwoWeekHigh: 11.80,
+    openPrice: 7.05, prevClosePrice: 7.05, volume: 4000000, marketCap: '$9.2B'
+  },
+  {
+    id: 'link', symbol: 'LINK', name: 'Chainlink', price: 18.20, change: 0.82, changePercent: 4.71, exchange: 'Crypto',
+    todayLow: 17.50, todayHigh: 18.50, fiftyTwoWeekLow: 5.00, fiftyTwoWeekHigh: 22.00,
+    openPrice: 17.38, prevClosePrice: 17.38, volume: 3000000, marketCap: '$10.5B'
+  },
+  {
+    id: 'matic', symbol: 'MATIC', name: 'Polygon', price: 0.72, change: 0.02, changePercent: 2.86, exchange: 'Crypto',
+    todayLow: 0.70, todayHigh: 0.73, fiftyTwoWeekLow: 0.50, fiftyTwoWeekHigh: 1.50,
+    openPrice: 0.70, prevClosePrice: 0.70, volume: 60000000, marketCap: '$6.8B'
+  },
+  {
+    id: 'icp', symbol: 'ICP', name: 'Internet Computer', price: 12.80, change: -0.30, changePercent: -2.29, exchange: 'Crypto',
+    todayLow: 12.50, todayHigh: 13.20, fiftyTwoWeekLow: 2.80, fiftyTwoWeekHigh: 20.00,
+    openPrice: 13.10, prevClosePrice: 13.10, volume: 2000000, marketCap: '$5.9B'
+  },
+  {
+    id: 'uni', symbol: 'UNI', name: 'Uniswap', price: 11.50, change: 0.80, changePercent: 7.48, exchange: 'Crypto',
+    todayLow: 10.50, todayHigh: 11.60, fiftyTwoWeekLow: 3.80, fiftyTwoWeekHigh: 15.00,
+    openPrice: 10.70, prevClosePrice: 10.70, volume: 5000000, marketCap: '$8.6B'
+  },
+  {
+    id: 'ltc', symbol: 'LTC', name: 'Litecoin', price: 85.20, change: 1.50, changePercent: 1.79, exchange: 'Crypto',
+    todayLow: 83.50, todayHigh: 86.00, fiftyTwoWeekLow: 55.00, fiftyTwoWeekHigh: 115.00,
+    openPrice: 83.70, prevClosePrice: 83.70, volume: 1000000, marketCap: '$6.3B'
+  },
+  {
+    id: 'bch', symbol: 'BCH', name: 'Bitcoin Cash', price: 480.50, change: 10.20, changePercent: 2.17, exchange: 'Crypto',
+    todayLow: 470.00, todayHigh: 485.00, fiftyTwoWeekLow: 180.00, fiftyTwoWeekHigh: 520.00,
+    openPrice: 470.30, prevClosePrice: 470.30, volume: 500000, marketCap: '$9.4B'
+  },
+  {
+    id: 'near', symbol: 'NEAR', name: 'NEAR Protocol', price: 7.80, change: -0.10, changePercent: -1.27, exchange: 'Crypto',
+    todayLow: 7.60, todayHigh: 8.00, fiftyTwoWeekLow: 1.00, fiftyTwoWeekHigh: 9.00,
+    openPrice: 7.90, prevClosePrice: 7.90, volume: 3000000, marketCap: '$8.2B'
+  }
 ];
 
 export const mockCryptoAssets: Stock[] = [

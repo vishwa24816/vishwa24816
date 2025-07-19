@@ -56,9 +56,13 @@ function getRelevantNewsForHoldings(holdings: PortfolioHolding[], allNews: NewsA
     if (h.symbol) {
       keywords.push(h.symbol.toLowerCase());
     }
-    if (h.type === 'Mutual Fund' || h.type === 'Bond') {
-        const nameParts = h.name.split(' ');
+    if (h.type === 'Mutual Fund' || h.type === 'Bond' || h.type === 'Crypto') {
+        const nameParts = h.name.split(/[\s-]+/);
         keywords.push(...nameParts.map(part => part.toLowerCase()));
+        if (h.symbol) { 
+            const symbolParts = h.symbol.match(/[A-Z]+|[0-9.]+/g) || [];
+            keywords.push(...symbolParts.map(part => part.toLowerCase()));
+        }
     }
     return keywords;
   }).filter(Boolean).reduce((acc, keyword) => { 

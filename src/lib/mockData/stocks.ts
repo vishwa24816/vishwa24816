@@ -189,4 +189,46 @@ export const mockStocks: Stock[] = [
     fundamentals: { marketCap: '2,18,000Cr', peRatioTTM: 15.8, pbRatio: 2.9, industryPe: 25.0, debtToEquity: 1.2, roe: 18.2, epsTTM: 41.50, divYield: 0.0, bookValue: 226.12, faceValue: 2 },
     financials: { revenue: generateFinancialData(80000), profit: generateFinancialData(5000), netWorth: generateFinancialData(75000) }
   },
+  {
+    id: 'ongc', symbol: 'ONGC', name: 'Oil & Natural Gas Corporation', price: 270.10, change: 4.00, changePercent: 1.5, exchange: 'NSE', sector: 'Oil & Gas',
+    todayLow: 265.00, todayHigh: 272.00, fiftyTwoWeekLow: 150.00, fiftyTwoWeekHigh: 280.00,
+    openPrice: 266.00, prevClosePrice: 266.10, volume: 12000000,
+    fundamentals: { marketCap: '3,40,000Cr', peRatioTTM: 7.5, pbRatio: 1.1, industryPe: 20.1, debtToEquity: 0.5, roe: 14.8, epsTTM: 36.0, divYield: 4.1, bookValue: 245, faceValue: 5 }
+  },
+  {
+    id: 'ntpc', symbol: 'NTPC', name: 'NTPC Ltd.', price: 360.50, change: -1.20, changePercent: -0.33, exchange: 'NSE', sector: 'Power',
+    todayLow: 358.00, todayHigh: 365.00, fiftyTwoWeekLow: 165.00, fiftyTwoWeekHigh: 370.00,
+    openPrice: 362.00, prevClosePrice: 361.70, volume: 8000000,
+    fundamentals: { marketCap: '3,50,000Cr', peRatioTTM: 17.2, pbRatio: 1.8, industryPe: 15.0, debtToEquity: 1.5, roe: 10.5, epsTTM: 21.0, divYield: 2.0, bookValue: 200, faceValue: 10 }
+  },
+  {
+    id: 'powergrid', symbol: 'POWERGRID', name: 'Power Grid Corporation of India', price: 290.80, change: 2.50, changePercent: 0.87, exchange: 'NSE', sector: 'Power',
+    todayLow: 288.00, todayHigh: 292.00, fiftyTwoWeekLow: 180.00, fiftyTwoWeekHigh: 300.00,
+    openPrice: 288.50, prevClosePrice: 288.30, volume: 7000000,
+    fundamentals: { marketCap: '2,70,000Cr', peRatioTTM: 10.1, pbRatio: 1.9, industryPe: 15.0, debtToEquity: 1.7, roe: 18.5, epsTTM: 28.8, divYield: 3.5, bookValue: 153, faceValue: 10 }
+  },
+  {
+    id: 'coalindia', symbol: 'COALINDIA', name: 'Coal India Ltd.', price: 480.20, change: 5.10, changePercent: 1.07, exchange: 'NSE', sector: 'Mining',
+    todayLow: 475.00, todayHigh: 485.00, fiftyTwoWeekLow: 220.00, fiftyTwoWeekHigh: 500.00,
+    openPrice: 476.00, prevClosePrice: 475.10, volume: 6000000,
+    fundamentals: { marketCap: '2,96,000Cr', peRatioTTM: 8.5, pbRatio: 2.5, industryPe: 10.0, debtToEquity: 0.1, roe: 29.5, epsTTM: 56.5, divYield: 5.2, bookValue: 192, faceValue: 10 }
+  },
+  {
+    id: 'hindalco', symbol: 'HINDALCO', name: 'Hindalco Industries Ltd.', price: 680.90, change: -7.30, changePercent: -1.06, exchange: 'NSE', sector: 'Metals',
+    todayLow: 678.00, todayHigh: 690.00, fiftyTwoWeekLow: 400.00, fiftyTwoWeekHigh: 700.00,
+    openPrice: 688.00, prevClosePrice: 688.20, volume: 4000000,
+    fundamentals: { marketCap: '1,52,000Cr', peRatioTTM: 15.2, pbRatio: 1.5, industryPe: 12.0, debtToEquity: 0.6, roe: 10.2, epsTTM: 44.8, divYield: 1.5, bookValue: 454, faceValue: 1 }
+  },
+  {
+    id: 'jswsteel', symbol: 'JSWSTEEL', name: 'JSW Steel Ltd.', price: 920.40, change: 10.10, changePercent: 1.11, exchange: 'NSE', sector: 'Metals',
+    todayLow: 910.00, todayHigh: 925.00, fiftyTwoWeekLow: 650.00, fiftyTwoWeekHigh: 950.00,
+    openPrice: 911.00, prevClosePrice: 910.30, volume: 3000000,
+    fundamentals: { marketCap: '2,25,000Cr', peRatioTTM: 20.5, pbRatio: 2.8, industryPe: 12.0, debtToEquity: 1.2, roe: 13.5, epsTTM: 44.9, divYield: 0.8, bookValue: 328, faceValue: 1 }
+  },
+  {
+    id: 'tatasteel', symbol: 'TATASTEEL', name: 'Tata Steel Ltd.', price: 175.60, change: -0.50, changePercent: -0.28, exchange: 'NSE', sector: 'Metals',
+    todayLow: 174.00, todayHigh: 178.00, fiftyTwoWeekLow: 100.00, fiftyTwoWeekHigh: 180.00,
+    openPrice: 176.00, prevClosePrice: 176.10, volume: 15000000,
+    fundamentals: { marketCap: '2,19,000Cr', peRatioTTM: -50.1, pbRatio: 1.8, industryPe: 12.0, debtToEquity: 0.5, roe: -3.5, epsTTM: -3.5, divYield: 2.0, bookValue: 97.6, faceValue: 1 }
+  },
 ];

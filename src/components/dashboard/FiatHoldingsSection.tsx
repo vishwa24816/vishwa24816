@@ -15,7 +15,7 @@ import { PortfolioHeatmap, type HeatmapItem } from './PortfolioHeatmap';
 import { Chart } from "@/components/ui/chart";
 import { PledgeDialog } from './PledgeDialog';
 
-type HoldingFilterType = 'All' | 'Stock' | 'Mutual Fund' | 'Bond';
+type HoldingFilterType = 'All' | 'Indian Stocks' | 'US Stocks' | 'Mutual Fund' | 'Bond';
 type ViewMode = 'list' | 'bar' | 'heatmap';
 
 interface FiatHoldingsSectionProps {
@@ -143,14 +143,16 @@ export function FiatHoldingsSection({ mainPortfolioCashBalance, setMainPortfolio
 
   const filterOptions: { label: string; value: HoldingFilterType }[] = [
     { label: "All", value: "All" },
-    { label: "Stocks", value: "Stock" },
+    { label: "Indian Stocks", value: "Indian Stocks" },
+    { label: "US Stocks", value: "US Stocks" },
     { label: "Mutual Funds", value: "Mutual Fund" },
     { label: "Bonds", value: "Bond" },
   ];
 
   const filteredHoldings = holdings.filter(holding => {
     if (activeFilter === 'All') return true;
-    if (activeFilter === 'Stock') return holding.type === 'Stock' || holding.type === 'ETF';
+    if (activeFilter === 'Indian Stocks') return (holding.type === 'Stock' || holding.type === 'ETF') && (holding.exchange === 'NSE' || holding.exchange === 'BSE');
+    if (activeFilter === 'US Stocks') return (holding.type === 'Stock' || holding.type === 'ETF') && (holding.exchange === 'NASDAQ' || holding.exchange === 'NYSE');
     if (activeFilter === 'Mutual Fund') return holding.type === 'Mutual Fund';
     if (activeFilter === 'Bond') return holding.type === 'Bond';
     return false;
