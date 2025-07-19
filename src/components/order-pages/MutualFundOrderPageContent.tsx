@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState } from 'react';
@@ -47,7 +46,7 @@ export function MutualFundOrderPageContent({ asset, assetSpecificNews }: MutualF
         </div>
       </header>
 
-      <main className="flex-grow overflow-y-auto pb-8">
+      <main className="flex-grow overflow-y-auto pb-16">
         <div className="w-full px-4 py-4 space-y-4">
           <div className="flex items-center space-x-3 mb-2">
               <div className="w-12 h-12 bg-muted rounded-lg flex items-center justify-center">
@@ -127,18 +126,20 @@ export function MutualFundOrderPageContent({ asset, assetSpecificNews }: MutualF
                 <TabsTrigger value="rankings" className="flex-shrink-0 px-4 py-3 text-sm rounded-t-md rounded-b-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=inactive]:border-b-2 data-[state=inactive]:border-transparent data-[state=active]:shadow-none hover:text-primary">Rankings</TabsTrigger>
             </TabsList>
             <TabsContent value="about" className="mt-4 space-y-6">
-                {asset.aboutCompany ? (
-                    <div>
-                        <h3 className="text-lg font-semibold mb-2 flex items-center">
-                            <Info className="h-5 w-5 mr-2 text-primary" />
-                            About the Fund
-                        </h3>
-                        <p className="text-sm text-foreground leading-relaxed">{asset.aboutCompany}</p>
-                    </div>
-                ) : (
-                    <div className="text-center text-muted-foreground py-4">No fund description available.</div>
+                 {asset.aboutCompany && (
+                    <Card>
+                         <CardHeader>
+                            <CardTitle className="flex items-center text-lg">
+                                <Info className="h-5 w-5 mr-2 text-primary" />
+                                About the Fund
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <p className="text-sm text-foreground leading-relaxed">{asset.aboutCompany}</p>
+                        </CardContent>
+                    </Card>
                 )}
-                {asset.fundManagement ? (
+                {asset.fundManagement && (
                     <Card>
                         <CardHeader>
                             <CardTitle className="flex items-center text-lg">
@@ -162,16 +163,15 @@ export function MutualFundOrderPageContent({ asset, assetSpecificNews }: MutualF
                             </p>
                         </CardContent>
                     </Card>
-                ) : (
-                     <div className="text-center text-muted-foreground py-4">Fund management details not available.</div>
                 )}
-                {asset.topHoldings && asset.topHoldings.length > 0 ? (
-                    <div className="space-y-3">
-                    <h3 className="text-lg font-semibold flex items-center">
-                        <WalletCards className="h-5 w-5 mr-2 text-primary"/>
-                        Top Holdings ({asset.holdingsCount || asset.topHoldings.length})
-                    </h3>
+                {asset.topHoldings && asset.topHoldings.length > 0 && (
                     <Card>
+                         <CardHeader>
+                            <CardTitle className="flex items-center text-lg">
+                                <WalletCards className="h-5 w-5 mr-2 text-primary"/>
+                                Top Holdings ({asset.holdingsCount || asset.topHoldings.length})
+                            </CardTitle>
+                        </CardHeader>
                         <CardContent className="p-0">
                         <ul className="divide-y">
                             {asset.topHoldings.map((holding, index) => (
@@ -183,9 +183,9 @@ export function MutualFundOrderPageContent({ asset, assetSpecificNews }: MutualF
                         </ul>
                         </CardContent>
                     </Card>
-                    </div>
-                ) : (
-                    <div className="text-center text-muted-foreground py-4">Top holdings information is not available for this fund.</div>
+                )}
+                 {(!asset.aboutCompany && !asset.fundManagement && !asset.topHoldings) && (
+                    <div className="text-center text-muted-foreground py-4">Fund information is not available.</div>
                 )}
             </TabsContent>
             <TabsContent value="calculator" className="mt-4">

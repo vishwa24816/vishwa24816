@@ -46,7 +46,7 @@ export function CryptoOrderPageContent({ asset, assetSpecificNews }: CryptoOrder
           </Button>
         </header>
 
-        <main className="flex-grow overflow-y-auto pb-20">
+        <main className="flex-grow overflow-y-auto pb-32">
           <div className="w-full px-4 py-4 space-y-4">
             <div className="flex justify-between items-start">
               <div>

@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState } from 'react';
@@ -54,7 +53,7 @@ export function StockOrderPageContent({ asset, assetSpecificNews }: StockOrderPa
           </Button>
         </header>
 
-        <main className="flex-grow overflow-y-auto pb-20"> {/* Adjusted padding for fixed footer */}
+        <main className="flex-grow overflow-y-auto pb-32">
           <div className="w-full px-4 py-4 space-y-4">
             <div className="flex justify-between items-start">
               <div>
@@ -286,7 +285,7 @@ export function StockOrderPageContent({ asset, assetSpecificNews }: StockOrderPa
           </div>
         </main>
         
-        <div className="fixed bottom-16 left-0 right-0 bg-background border-t border-border p-3 shadow-md_ z-20"> {/* Sits above AppFooter (h-16) */}
+        <div className="fixed bottom-16 left-0 right-0 bg-background border-t border-border p-3 shadow-md_ z-20">
           <div className="w-full px-4 flex space-x-3">
             <Button 
               onClick={handleSellAction} 
