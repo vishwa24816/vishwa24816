@@ -6,7 +6,6 @@ import { NewsSection } from '@/components/dashboard/NewsSection';
 import { WatchlistSection } from '@/components/dashboard/WatchlistSection';
 import { CryptoHoldingsSection } from '@/components/dashboard/CryptoHoldingsSection';
 import { FiatHoldingsSection } from '@/components/dashboard/FiatHoldingsSection';
-import { CryptoIntradayPositionsSection } from '@/components/dashboard/CryptoIntradayPositionsSection';
 import { CryptoFuturesSection } from '@/components/dashboard/CryptoFuturesSection';
 import { PackageOpen } from 'lucide-react';
 import { IntradayPositionsSection } from '@/components/dashboard/IntradayPositionsSection';
@@ -26,7 +25,6 @@ import {
   mockNewsArticles, 
   mockIntradayPositions,
   mockFoPositions,
-  mockCryptoIntradayPositions,
   mockCryptoFutures, 
   mockCryptoAssets,
   mockStocks,
@@ -289,7 +287,7 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
           }
       } else if (activePrimaryItem === 'Crypto') {
           if (isHoldingsView) newsForView = getRelevantNewsForHoldings(cryptoHoldings, mockNewsArticles);
-          if (isPositionsView) newsForView = getRelevantNewsForPositions(mockCryptoIntradayPositions, mockCryptoFutures, [], mockNewsArticles);
+          if (isPositionsView) newsForView = getRelevantNewsForPositions([], mockCryptoFutures, [], mockNewsArticles);
           if (isWatchlistView) {
               itemsForWatchlist = mockCryptoAssets.slice(0, 5);
               newsForView = getRelevantNewsForWatchlistItems(itemsForWatchlist, mockNewsArticles);
@@ -352,7 +350,7 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
             return null;
         case 'Crypto':
             if (isHoldingsView) return <><CryptoHoldingsSection title="Crypto Wallet & Holdings" holdings={cryptoHoldings} cashBalance={cryptoCashBalance} setCashBalance={setCryptoCashBalance} mainPortfolioCashBalance={mainPortfolioCashBalance} setMainPortfolioCashBalance={setMainPortfolioCashBalance} isRealMode={false} /><NewsSection articles={newsForView} /></>;
-            if (isPositionsView) return <div className="space-y-8"><CryptoIntradayPositionsSection positions={mockCryptoIntradayPositions} /><CryptoFuturesSection positions={mockCryptoFutures} cashBalance={cryptoCashBalance} /><NewsSection articles={newsForView} /></div>;
+            if (isPositionsView) return <div className="space-y-8"><CryptoFuturesSection positions={mockCryptoFutures} cashBalance={cryptoCashBalance} /><NewsSection articles={newsForView} /></div>;
             if (isWatchlistView) return <div className="space-y-8"><WatchlistSection title="My Crypto Watchlist" defaultInitialItems={itemsForWatchlist} localStorageKeyOverride={'simCryptoWatchlist'}/><NewsSection articles={newsForView} /></div>;
             return null;
         case 'Web3':
