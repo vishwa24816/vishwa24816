@@ -3,12 +3,17 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { ProtectedRoute } from '@/components/shared/ProtectedRoute';
-import { mockUsStocks } from '@/lib/mockData/usStocks';
-import { mockNewsArticles } from '@/lib/mockData';
+import { mockStocks, mockNewsArticles, mockUsStocks } from '@/lib/mockData';
 import type { Stock, NewsArticle } from '@/types';
 import { useToast } from "@/hooks/use-toast";
 import { StockOrderPageContent } from '@/components/order-pages/StockOrderPageContent';
 
+
+// Combine all mock asset lists for easier lookup
+const allMockAssets: Stock[] = [
+  ...mockStocks,
+  ...mockUsStocks,
+];
 
 function getRelevantNewsForStock(stock: Stock | null, allNews: NewsArticle[]): NewsArticle[] {
     if (!stock || !allNews.length) {
@@ -29,7 +34,7 @@ function getRelevantNewsForStock(stock: Stock | null, allNews: NewsArticle[]): N
 }
 
 
-export default function UsStockOrderPage() {
+export default function StockOrderPage() {
   const params = useParams();
   const router = useRouter();
   const { toast } = useToast();
@@ -40,9 +45,9 @@ export default function UsStockOrderPage() {
 
   useEffect(() => {
     if (symbol) {
-      const foundAsset = mockUsStocks.find(s => 
-        s.symbol.toUpperCase() === symbol.toUpperCase()
-      );
+      // For a stock page, we explicitly look for assets that are typically stocks
+      const foundAsset = allMockAssets.find(s => s.symbol.toUpperCase() === symbol.toUpperCase());
+
       if (foundAsset) {
         setAsset(foundAsset);
         const relevantNews = getRelevantNewsForStock(foundAsset, mockNewsArticles);
@@ -51,7 +56,7 @@ export default function UsStockOrderPage() {
       } else {
         toast({
           title: "Error",
-          description: `US Stock with symbol ${symbol} not found.`,
+          description: `Stock with symbol ${symbol} not found.`,
           variant: "destructive",
         });
         router.push('/'); 
@@ -71,7 +76,6 @@ export default function UsStockOrderPage() {
     );
   }
 
-  // We can reuse the StockOrderPageContent, but may need to adapt it for USD in a real app
   return (
     <ProtectedRoute>
       <StockOrderPageContent asset={asset} assetSpecificNews={assetSpecificNews} />

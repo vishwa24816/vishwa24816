@@ -27,15 +27,42 @@ interface FiatHoldingsSectionProps {
 }
 
 export function FiatHoldingsSection({ mainPortfolioCashBalance, setMainPortfolioCashBalance }: FiatHoldingsSectionProps) {
-  const allHoldings = [...mockPortfolioHoldings.filter(h => h.type !== 'Crypto'), ...mockUsStocks.map(s => ({...s, type: 'Stock'} as PortfolioHolding))];
   const [activeFilter, setActiveFilter] = useState<HoldingFilterType>('All');
   const [viewMode, setViewMode] = useState<ViewMode>('list');
   const { toast } = useToast();
   const [pledgeDialogOpen, setPledgeDialogOpen] = useState(false);
   const [selectedHoldingForPledge, setSelectedHoldingForPledge] = useState<PortfolioHolding | null>(null);
 
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
+  // This is the core fix: Create a unified `PortfolioHolding[]` array from different sources.
+  const allHoldings = useMemo(() => {
+    // Process Indian stocks from mockPortfolioHoldings
+    const indianHoldings = mockPortfolioHoldings.filter(h => h.type !== 'Crypto');
+
+    // Process US stocks from mockUsStocks and convert them to PortfolioHolding format
+    const usHoldings: PortfolioHolding[] = mockUsStocks.map(stock => ({
+        ...stock, // Spread existing stock properties
+        type: 'Stock', // Set type explicitly
+        // Mock portfolio-specific data for US stocks
+        quantity: Math.floor(Math.random() * 50) + 5,
+        avgCostPrice: stock.price * (1 - (Math.random() * 0.1 - 0.05)), // Avg price within -5% to +5% of LTP
+        get ltp() { return this.price; },
+        get currentValue() { return this.ltp * this.quantity; },
+        get profitAndLoss() { return (this.ltp - this.avgCostPrice) * this.quantity; },
+        get profitAndLossPercent() { return this.avgCostPrice > 0 ? (this.profitAndLoss / (this.avgCostPrice * this.quantity)) * 100 : 0; },
+        get dayChangeAbsolute() { return this.change * this.quantity; },
+        get dayChangePercent() { return stock.changePercent; },
+    }));
+
+    return [...indianHoldings, ...usHoldings];
+  }, []);
+
+  const formatCurrency = (value: number, currency: 'INR' | 'USD' = 'INR') => {
+    return new Intl.NumberFormat(currency === 'INR' ? 'en-IN' : 'en-US', { 
+        style: 'currency', 
+        currency: currency, 
+        minimumFractionDigits: 2, 
+        maximumFractionDigits: 2 
+    }).format(value);
   };
 
   const handlePledgeClick = (holding: PortfolioHolding) => {
@@ -68,16 +95,16 @@ export function FiatHoldingsSection({ mainPortfolioCashBalance, setMainPortfolio
     return false;
   });
 
-  const totalCurrentValue = filteredHoldings.reduce((acc, holding) => acc + (holding.currentValue || (holding.price * holding.quantity)), 0);
-  const totalInvestmentValue = filteredHoldings.reduce((acc, holding) => acc + (holding.quantity * holding.avgCostPrice), 0);
+  // Calculations now use the consistently structured `filteredHoldings` array
+  const totalCurrentValue = filteredHoldings.reduce((acc, holding) => acc + (holding.currentValue || 0), 0);
+  const totalInvestmentValue = filteredHoldings.reduce((acc, holding) => acc + ((holding.avgCostPrice * holding.quantity) || 0), 0);
   const overallPandL = totalCurrentValue - totalInvestmentValue;
+  const totalDayChangeAbsolute = filteredHoldings.reduce((acc, holding) => acc + (holding.dayChangeAbsolute || 0), 0);
   
-  const totalDayChangeAbsolute = filteredHoldings.reduce((acc, holding) => acc + (holding.dayChangeAbsolute || (holding.change * holding.quantity)), 0);
-
   const chartData = useMemo(() => {
     return filteredHoldings.map(pos => ({
       name: pos.symbol || pos.name,
-      value: (pos.currentValue || (pos.price * pos.quantity)),
+      value: pos.currentValue,
       fill: (pos.profitAndLoss || 0) >= 0 ? "hsl(var(--positive))" : "hsl(var(--destructive))",
       label: (pos.profitAndLoss || 0) >= 0 ? 'Profit' : 'Loss'
     }));
@@ -100,9 +127,9 @@ export function FiatHoldingsSection({ mainPortfolioCashBalance, setMainPortfolio
   const heatmapData: HeatmapItem[] = useMemo(() => {
     return filteredHoldings.map(pos => ({
       name: pos.symbol || pos.name,
-      value: pos.currentValue || (pos.price * pos.quantity),
-      pnl: pos.profitAndLoss || 0,
-      pnlPercent: pos.profitAndLossPercent || 0,
+      value: pos.currentValue,
+      pnl: pos.profitAndLoss,
+      pnlPercent: pos.profitAndLossPercent,
     }));
   }, [filteredHoldings]);
 
@@ -141,7 +168,7 @@ export function FiatHoldingsSection({ mainPortfolioCashBalance, setMainPortfolio
                     backgroundColor: 'hsl(var(--background))',
                     borderColor: 'hsl(var(--border))'
                   }}
-                  formatter={(value) => formatCurrency(value as number)}
+                  formatter={(value) => formatCurrency(value as number, 'INR')} // Assuming base currency for chart is INR
                 />
                 <Chart.Legend content={<Chart.LegendContent />} />
                 <Chart.Bar dataKey="value" radius={4} />
@@ -242,6 +269,7 @@ export function FiatHoldingsSection({ mainPortfolioCashBalance, setMainPortfolio
             onOpenChange={setPledgeDialogOpen}
             holding={selectedHoldingForPledge}
             onConfirmPledge={handleConfirmPledge}
+            currency={selectedHoldingForPledge.exchange === 'NASDAQ' || selectedHoldingForPledge.exchange === 'NYSE' ? 'USD' : 'INR'}
         />
       )}
     </>

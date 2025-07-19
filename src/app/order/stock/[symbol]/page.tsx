@@ -4,7 +4,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { ProtectedRoute } from '@/components/shared/ProtectedRoute';
-import { mockStocks, mockCryptoAssets, mockMutualFunds, mockBonds, mockIndexFuturesForWatchlist, mockStockFuturesForWatchlist, mockOptionsForWatchlist, mockNewsArticles } from '@/lib/mockData';
+import { mockStocks, mockNewsArticles, mockUsStocks } from '@/lib/mockData';
 import type { Stock, NewsArticle } from '@/types';
 import { useToast } from "@/hooks/use-toast";
 import { StockOrderPageContent } from '@/components/order-pages/StockOrderPageContent';
@@ -13,12 +13,7 @@ import { StockOrderPageContent } from '@/components/order-pages/StockOrderPageCo
 // Combine all mock asset lists for easier lookup
 const allMockAssets: Stock[] = [
   ...mockStocks,
-  ...mockCryptoAssets,
-  ...mockMutualFunds,
-  ...mockBonds,
-  ...mockIndexFuturesForWatchlist,
-  ...mockStockFuturesForWatchlist,
-  ...mockOptionsForWatchlist
+  ...mockUsStocks,
 ];
 
 function getRelevantNewsForStock(stock: Stock | null, allNews: NewsArticle[]): NewsArticle[] {
@@ -51,11 +46,9 @@ export default function StockOrderPage() {
 
   useEffect(() => {
     if (symbol) {
-      // For a stock page, we explicitly look for assets that are typically stocks (NSE/BSE) or ETFs
-      const foundAsset = allMockAssets.find(s => 
-        s.symbol.toUpperCase() === symbol.toUpperCase() &&
-        (s.exchange === 'NSE' || s.exchange === 'BSE' || s.type === 'Stock' || s.type === 'ETF')
-      );
+      // For a stock page, we explicitly look for assets that are typically stocks
+      const foundAsset = allMockAssets.find(s => s.symbol.toUpperCase() === symbol.toUpperCase());
+
       if (foundAsset) {
         setAsset(foundAsset);
         const relevantNews = getRelevantNewsForStock(foundAsset, mockNewsArticles);

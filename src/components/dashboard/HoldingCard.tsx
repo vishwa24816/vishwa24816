@@ -19,23 +19,24 @@ export const HoldingCard: React.FC<HoldingCardProps> = ({ holding, onPledgeClick
     const router = useRouter();
     const { toast } = useToast();
 
-    const formatCurrency = (value: number, currency: 'INR' | 'USD' = 'INR') => {
-        return new Intl.NumberFormat(currency === 'INR' ? 'en-IN' : 'en-US', { 
+    const currency: 'INR' | 'USD' = (holding.exchange === 'NASDAQ' || holding.exchange === 'NYSE') ? 'USD' : 'INR';
+
+    const formatCurrency = (value: number, currencyToUse: 'INR' | 'USD' = currency) => {
+        return new Intl.NumberFormat(currencyToUse === 'INR' ? 'en-IN' : 'en-US', { 
             style: 'currency', 
-            currency: currency, 
+            currency: currencyToUse, 
             minimumFractionDigits: 2, 
             maximumFractionDigits: 2 
         }).format(value);
     };
 
-    const isProfit = (holding.profitAndLoss ?? holding.change) >= 0;
-    const isDayProfit = (holding.dayChangeAbsolute ?? holding.change) >= 0;
-    const currency: 'INR' | 'USD' = holding.type === 'Crypto' || holding.exchange === 'NASDAQ' || holding.exchange === 'NYSE' ? 'USD' : 'INR';
+    const isProfit = (holding.profitAndLoss ?? 0) >= 0;
+    const isDayProfit = (holding.dayChangeAbsolute ?? 0) >= 0;
 
     const handleAdjustPosition = () => {
       let path = `/order/stock/${holding.symbol}`;
       if (holding.exchange === 'NASDAQ' || holding.exchange === 'NYSE') {
-        path = `/order/us-stock/${holding.symbol}`;
+        path = `/order/stock/${holding.symbol}`; // All stocks go to the same page now
       } else if (holding.type === 'Crypto') {
         path = `/order/crypto/${holding.symbol}`;
       } else if (holding.type === 'Mutual Fund') {
@@ -66,9 +67,9 @@ export const HoldingCard: React.FC<HoldingCardProps> = ({ holding, onPledgeClick
                 </div>
                 <div className="text-right ml-2 shrink-0">
                     <p className={cn("text-sm font-medium", isProfit ? 'text-green-600' : 'text-red-600')}>
-                        {formatCurrency(holding.profitAndLoss ?? holding.change, currency)}
+                        {formatCurrency(holding.profitAndLoss ?? 0)}
                     </p>
-                    <p className="text-xs text-muted-foreground">({(holding.profitAndLossPercent ?? holding.changePercent)?.toFixed(2)}%)</p>
+                    <p className="text-xs text-muted-foreground">({(holding.profitAndLossPercent ?? 0).toFixed(2)}%)</p>
                 </div>
                 <ChevronDown className={cn("h-4 w-4 ml-3 text-muted-foreground transition-transform", isExpanded && "rotate-180")} />
             </div>
@@ -82,20 +83,20 @@ export const HoldingCard: React.FC<HoldingCardProps> = ({ holding, onPledgeClick
                         </div>
                         <div className="text-right">
                              <p className="text-muted-foreground">Avg. Cost</p>
-                            <p className="font-medium text-foreground">{formatCurrency(holding.avgCostPrice, currency)}</p>
+                            <p className="font-medium text-foreground">{formatCurrency(holding.avgCostPrice)}</p>
                         </div>
                          <div>
                             <p className="text-muted-foreground">LTP</p>
-                            <p className="font-medium text-foreground">{formatCurrency(holding.ltp, currency)}</p>
+                            <p className="font-medium text-foreground">{formatCurrency(holding.ltp)}</p>
                         </div>
                         <div className="text-right">
                              <p className="text-muted-foreground">Current Value</p>
-                            <p className="font-medium text-foreground">{formatCurrency(holding.currentValue, currency)}</p>
+                            <p className="font-medium text-foreground">{formatCurrency(holding.currentValue)}</p>
                         </div>
                          <div>
                             <p className="text-muted-foreground">Day's P&L</p>
                             <p className={cn("font-medium", isDayProfit ? 'text-green-600' : 'text-red-600')}>
-                                {formatCurrency(holding.dayChangeAbsolute, currency)} ({(holding.dayChangePercent ?? holding.changePercent)?.toFixed(2)}%)
+                                {formatCurrency(holding.dayChangeAbsolute ?? 0)} ({(holding.dayChangePercent ?? 0).toFixed(2)}%)
                             </p>
                         </div>
                     </div>

@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState } from 'react';
@@ -26,6 +27,9 @@ export function StockOrderPageContent({ asset, assetSpecificNews }: StockOrderPa
   const [activeTimescale, setActiveTimescale] = useState('1D');
   const [activeFinancialsCategory, setActiveFinancialsCategory] = useState<'revenue' | 'profit' | 'netWorth'>('revenue');
   const [productTypeForOrder, setProductTypeForOrder] = useState('Longterm');
+  
+  const isUsStock = asset.exchange === 'NASDAQ' || asset.exchange === 'NYSE';
+  const currencySymbol = isUsStock ? '$' : '₹';
 
   const handleBuyAction = () => {
     toast({ title: "Buy Action (Mock)", description: `Initiating BUY for ${asset?.symbol} with product type: ${productTypeForOrder}` });
@@ -40,7 +44,7 @@ export function StockOrderPageContent({ asset, assetSpecificNews }: StockOrderPa
   };
 
   const isPositiveChange = asset.change >= 0;
-  const timescaleButtons = ['NSE', '1D', '1W', '1M', '1Y', '5Y', 'ALL'];
+  const timescaleButtons = [isUsStock ? 'NASDAQ' : 'NSE', '1D', '1W', '1M', '1Y', '5Y', 'ALL'];
   
   const currentFinancialsData = asset.financials?.[activeFinancialsCategory] || [];
   const maxFinancialValue = Math.max(...currentFinancialsData.map(d => d.value), 0);
@@ -59,7 +63,7 @@ export function StockOrderPageContent({ asset, assetSpecificNews }: StockOrderPa
               <div>
                 <h1 className="text-xl font-semibold">{asset.name}</h1>
                 <p className={`text-3xl font-bold ${isPositiveChange ? 'text-green-500' : 'text-red-500'}`}>
-                  ₹{asset.price.toFixed(2)}
+                  {currencySymbol}{asset.price.toFixed(2)}
                 </p>
                 <p className={`text-sm ${isPositiveChange ? 'text-green-500' : 'text-red-500'} flex items-center`}>
                   {isPositiveChange ? <TrendingUp className="h-4 w-4 mr-1" /> : <TrendingDown className="h-4 w-4 mr-1" />}
@@ -174,7 +178,7 @@ export function StockOrderPageContent({ asset, assetSpecificNews }: StockOrderPa
                                 {simStock.marketCap && <p className="text-xs text-muted-foreground">Mkt Cap: {simStock.marketCap}</p>}
                               </div>
                               <div className="text-right">
-                                <p className={`font-medium ${isSimPositive ? 'text-green-500' : 'text-red-500'}`}>₹{simStock.price.toFixed(2)}</p>
+                                <p className={`font-medium ${isSimPositive ? 'text-green-500' : 'text-red-500'}`}>{currencySymbol}{simStock.price.toFixed(2)}</p>
                                 <p className={`text-xs ${isSimPositive ? 'text-green-500' : 'text-red-500'}`}>
                                   {isSimPositive ? '+' : ''}{simStock.changePercent.toFixed(2)}%
                                 </p>
