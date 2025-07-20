@@ -8,7 +8,7 @@ import { Separator } from "@/components/ui/separator";
 import { mockPortfolioHoldings } from '@/lib/mockData';
 import type { PortfolioHolding } from '@/types';
 import { cn } from '@/lib/utils';
-import { Bitcoin, XCircle, Coins, Landmark, Settings2, ChevronDown, BarChart2, LayoutGrid, List, PieChart } from 'lucide-react';
+import { Bitcoin, XCircle, Coins, Landmark, Settings2, ChevronDown, BarChart2, LayoutGrid, List, PieChart, ArrowUpRight, ArrowDownLeft, History, Snowflake } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { FundTransferDialog } from '@/components/shared/FundTransferDialog';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -305,14 +305,34 @@ export function CryptoHoldingsSection({
                     <p className="font-medium text-foreground">{formatCurrency(cashBalance)}</p>
                 </div>
                 {!isRealMode && (
-                    <div className="pt-2 flex gap-2">
-                    <Button variant="outline" size="sm" className="flex-1 h-11" onClick={() => handleOpenFundTransferDialog('toCrypto')}>
-                        <Coins className="mr-2 h-4 w-4" /> Add Funds
-                    </Button>
-                    <Button variant="outline" size="sm" className="flex-1 h-11" onClick={() => handleOpenFundTransferDialog('fromCrypto')}>
-                        <Landmark className="mr-2 h-4 w-4" /> Withdraw Funds
-                    </Button>
-                    </div>
+                    <>
+                        <div className="pt-3 grid grid-cols-4 gap-2">
+                            <Button variant="outline" size="sm" className="flex-col h-14" onClick={() => toast({title: "Send (WIP)"})}>
+                                <ArrowUpRight className="h-5 w-5 mb-1" />
+                                <span className="text-xs">Send</span>
+                            </Button>
+                            <Button variant="outline" size="sm" className="flex-col h-14" onClick={() => toast({title: "Receive (WIP)"})}>
+                                <ArrowDownLeft className="h-5 w-5 mb-1" />
+                                <span className="text-xs">Receive</span>
+                            </Button>
+                            <Button variant="outline" size="sm" className="flex-col h-14" onClick={() => toast({title: "History (WIP)"})}>
+                                <History className="h-5 w-5 mb-1" />
+                                <span className="text-xs">History</span>
+                            </Button>
+                            <Button variant="outline" size="sm" className="flex-col h-14" onClick={() => toast({title: "Cold Storage (WIP)"})}>
+                                <Snowflake className="h-5 w-5 mb-1" />
+                                <span className="text-xs">Cold</span>
+                            </Button>
+                        </div>
+                        <div className="pt-2 flex gap-2">
+                            <Button variant="outline" size="sm" className="flex-1 h-11" onClick={() => handleOpenFundTransferDialog('toCrypto')}>
+                                <Coins className="mr-2 h-4 w-4" /> Add Funds
+                            </Button>
+                            <Button variant="outline" size="sm" className="flex-1 h-11" onClick={() => handleOpenFundTransferDialog('fromCrypto')}>
+                                <Landmark className="mr-2 h-4 w-4" /> Withdraw Funds
+                            </Button>
+                        </div>
+                    </>
                 )}
               </div>
             </div>

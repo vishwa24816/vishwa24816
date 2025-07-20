@@ -9,7 +9,7 @@ import { mockPortfolioHoldings } from '@/lib/mockData';
 import { mockUsStocks } from '@/lib/mockData/usStocks';
 import type { PortfolioHolding, IntradayPosition, FoPosition } from '@/types';
 import { cn } from '@/lib/utils';
-import { Briefcase, BarChart2, LayoutGrid, List, Coins, Landmark, PieChart, ArrowUpRight, ArrowDownLeft, History, Snowflake } from 'lucide-react'; 
+import { Briefcase, BarChart2, LayoutGrid, List, Coins, Landmark, PieChart } from 'lucide-react'; 
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PortfolioHeatmap, type HeatmapItem } from './PortfolioHeatmap';
@@ -300,24 +300,6 @@ export function FiatHoldingsSection({
                             <div className="flex justify-between items-center text-sm">
                             <p className="text-muted-foreground">Cash Balance</p>
                             <p className="font-medium text-foreground">{formatCurrency(mainPortfolioCashBalance, 'INR')}</p>
-                            </div>
-                            <div className="pt-3 grid grid-cols-4 gap-2">
-                                <Button variant="outline" size="sm" className="flex-col h-14" onClick={() => toast({title: "Send (WIP)"})}>
-                                    <ArrowUpRight className="h-5 w-5 mb-1" />
-                                    <span className="text-xs">Send</span>
-                                </Button>
-                                <Button variant="outline" size="sm" className="flex-col h-14" onClick={() => toast({title: "Receive (WIP)"})}>
-                                    <ArrowDownLeft className="h-5 w-5 mb-1" />
-                                    <span className="text-xs">Receive</span>
-                                </Button>
-                                <Button variant="outline" size="sm" className="flex-col h-14" onClick={() => toast({title: "History (WIP)"})}>
-                                    <History className="h-5 w-5 mb-1" />
-                                    <span className="text-xs">History</span>
-                                </Button>
-                                <Button variant="outline" size="sm" className="flex-col h-14" onClick={() => toast({title: "Cold Storage (WIP)"})}>
-                                    <Snowflake className="h-5 w-5 mb-1" />
-                                    <span className="text-xs">Cold</span>
-                                </Button>
                             </div>
                             <div className="pt-2 flex gap-2">
                                 <Button variant="outline" size="sm" className="flex-1 h-11" onClick={() => handleOpenFundTransferDialog('toCrypto')}>
