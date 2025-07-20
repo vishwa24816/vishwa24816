@@ -71,35 +71,81 @@ const generatePayoffData = (strategyId: StrategyId) => {
 export const StrategyPayoffChart: React.FC<StrategyPayoffChartProps> = ({ strategyId }) => {
   const payoffData = React.useMemo(() => generatePayoffData(strategyId), [strategyId]);
   
+  const pnlDataKey = "pnl";
+
   return (
-    <ChartContainer config={{}} className="h-full w-full pointer-events-none">
+    <ChartContainer
+      config={{
+        [pnlDataKey]: {
+          label: "P&L",
+        },
+      }}
+      className="h-full w-full pointer-events-none"
+    >
       <Chart.ResponsiveContainer>
-        <Chart.AreaChart data={payoffData} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
+        <Chart.AreaChart
+          data={payoffData}
+          margin={{ top: 5, right: 5, left: 5, bottom: 5 }}
+        >
           <Chart.defs>
-            <linearGradient id="splitColor" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="var(--color-positive)" stopOpacity={0.8} />
-              <stop offset="95%" stopColor="var(--color-positive)" stopOpacity={0.1} />
+            <linearGradient id="fillProfit" x1="0" y1="0" x2="0" y2="1">
+              <stop
+                offset="5%"
+                stopColor="hsl(var(--positive))"
+                stopOpacity={0.8}
+              />
+              <stop
+                offset="95%"
+                stopColor="hsl(var(--positive))"
+                stopOpacity={0.1}
+              />
             </linearGradient>
-             <linearGradient id="splitColorNegative" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="var(--color-negative)" stopOpacity={0.1} />
-              <stop offset="95%" stopColor="var(--color-negative)" stopOpacity={0.8} />
+            <linearGradient id="fillLoss" x1="0" y1="0" x2="0" y2="1">
+              <stop
+                offset="5%"
+                stopColor="hsl(var(--destructive))"
+                stopOpacity={0.1}
+              />
+              <stop
+                offset="95%"
+                stopColor="hsl(var(--destructive))"
+                stopOpacity={0.8}
+              />
             </linearGradient>
           </Chart.defs>
           <Chart.XAxis dataKey="price" hide />
-          <Chart.YAxis hide />
+          <Chart.YAxis hide domain={['dataMin', 'dataMax']} />
           <Chart.ReferenceLine y={0} stroke="hsl(var(--muted-foreground))" strokeDasharray="3 3" />
+          
+          {/* Area for Profit */}
           <Chart.Area
-            dataKey="pnl"
+            dataKey={pnlDataKey}
+            type="monotone"
+            fill="url(#fillProfit)"
+            stroke="transparent"
+            stackId="a"
+            // @ts-ignore
+            points={payoffData.filter((d) => d.pnl >= 0)}
+          />
+
+          {/* Area for Loss */}
+           <Chart.Area
+            dataKey={pnlDataKey}
+            type="monotone"
+            fill="url(#fillLoss)"
+            stroke="transparent"
+            stackId="b"
+            // @ts-ignore
+            points={payoffData.filter((d) => d.pnl < 0)}
+          />
+
+           {/* The overall line */}
+           <Chart.Line
+            dataKey={pnlDataKey}
             type="monotone"
             strokeWidth={2}
             stroke="hsl(var(--primary))"
-            fill="transparent"
-          />
-           <Chart.Area
-            dataKey="pnl"
-            type="monotone"
-            fillOpacity={0.5}
-            fill={(d) => (d.pnl >= 0 ? 'url(#splitColor)' : 'url(#splitColorNegative)')}
+            dot={false}
           />
         </Chart.AreaChart>
       </Chart.ResponsiveContainer>
