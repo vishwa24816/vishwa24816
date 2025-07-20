@@ -363,9 +363,9 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
             const pledgedCryptoHoldings = cryptoHoldings.slice(0, 1); // Mock: first crypto holding is pledged
             const pledgedWeb3Holdings = mockWeb3Holdings.slice(0, 1); // Mock: first web3 holding is pledged
 
-            if (activeSecondaryItem === 'Fiat') return <FiatHoldingsSection holdings={pledgedFiatHoldings} title="Pledged Fiat Holdings" intradayPositions={[]} foPositions={[]} mainPortfolioCashBalance={0} setMainPortfolioCashBalance={() => {}} cryptoCashBalance={0} setCryptoCashBalance={() => {}} />;
-            if (activeSecondaryItem === 'Crypto') return <CryptoHoldingsSection title="Pledged Crypto Holdings" holdings={pledgedCryptoHoldings} cashBalance={0} setCashBalance={() => {}} mainPortfolioCashBalance={0} setMainPortfolioCashBalance={() => {}} isRealMode={false} />;
-            if (activeSecondaryItem === 'Web3') return <CryptoHoldingsSection title="Pledged Web3 Holdings" holdings={pledgedWeb3Holdings} cashBalance={0} setCashBalance={() => {}} mainPortfolioCashBalance={0} setMainPortfolioCashBalance={() => {}} isRealMode={false} />;
+            if (activeSecondaryItem === 'Fiat') return <FiatHoldingsSection title="Pledged Fiat Holdings" holdings={pledgedFiatHoldings} intradayPositions={[]} foPositions={[]} mainPortfolioCashBalance={0} setMainPortfolioCashBalance={() => {}} cryptoCashBalance={0} setCryptoCashBalance={() => {}} isPledged={true} />;
+            if (activeSecondaryItem === 'Crypto') return <CryptoHoldingsSection title="Pledged Crypto Holdings" holdings={pledgedCryptoHoldings} cashBalance={0} setCashBalance={() => {}} mainPortfolioCashBalance={0} setMainPortfolioCashBalance={() => {}} isRealMode={false} isPledged={true} />;
+            if (activeSecondaryItem === 'Web3') return <CryptoHoldingsSection title="Pledged Web3 Holdings" holdings={pledgedWeb3Holdings} cashBalance={0} setCashBalance={() => {}} mainPortfolioCashBalance={0} setMainPortfolioCashBalance={() => {}} isRealMode={false} isPledged={true}/>;
             return null;
         default: return null;
     }

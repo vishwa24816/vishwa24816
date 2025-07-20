@@ -27,6 +27,7 @@ interface CryptoHoldingsSectionProps {
   mainPortfolioCashBalance: number;
   setMainPortfolioCashBalance: React.Dispatch<React.SetStateAction<number>>;
   isRealMode?: boolean;
+  isPledged?: boolean;
 }
 
 export function CryptoHoldingsSection({
@@ -36,7 +37,8 @@ export function CryptoHoldingsSection({
   setCashBalance,
   mainPortfolioCashBalance,
   setMainPortfolioCashBalance,
-  isRealMode = false
+  isRealMode = false,
+  isPledged = false
 }: CryptoHoldingsSectionProps) {
   const { toast } = useToast();
   const router = useRouter();
@@ -45,20 +47,23 @@ export function CryptoHoldingsSection({
   const [viewMode, setViewMode] = useState<ViewMode>('list');
   const [pledgeDialogOpen, setPledgeDialogOpen] = useState(false);
   const [selectedHoldingForPledge, setSelectedHoldingForPledge] = useState<PortfolioHolding | null>(null);
+  const [pledgeDialogMode, setPledgeDialogMode] = useState<'pledge' | 'payback'>('pledge');
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
   };
 
-  const handlePledgeClick = (holding: PortfolioHolding) => {
+  const handlePledgeClick = (holding: PortfolioHolding, mode: 'pledge' | 'payback') => {
     setSelectedHoldingForPledge(holding);
+    setPledgeDialogMode(mode);
     setPledgeDialogOpen(true);
   };
 
-  const handleConfirmPledge = (holding: PortfolioHolding, quantity: number) => {
+  const handleConfirmPledge = (holding: PortfolioHolding, quantity: number, mode: 'pledge' | 'payback') => {
+      const actionText = mode === 'pledge' ? 'Pledged' : 'Payback initiated for';
       toast({
-          title: "Pledge Submitted (Mock)",
-          description: `Pledged ${quantity} units of ${holding.symbol}. Margin will be updated shortly.`,
+          title: "Action Submitted (Mock)",
+          description: `${actionText} ${quantity} units of ${holding.symbol}.`,
       });
       setPledgeDialogOpen(false);
   };
@@ -141,6 +146,7 @@ export function CryptoHoldingsSection({
                   key={holding.id} 
                   holding={holding} 
                   onPledgeClick={handlePledgeClick}
+                  isPledged={isPledged}
               />
             ))}
           </div>
@@ -217,7 +223,7 @@ export function CryptoHoldingsSection({
                   <p className="text-muted-foreground">Cash Balance</p>
                   <p className="font-medium text-foreground">{formatCurrency(cashBalance)}</p>
                 </div>
-                {!isRealMode && (
+                {!isRealMode && !isPledged && (
                   <div className="pt-2 flex gap-2">
                     <Button variant="outline" size="sm" className="flex-1 h-11" onClick={() => handleOpenFundTransferDialog('toCrypto')}>
                       <Coins className="mr-2 h-4 w-4" /> Add Funds
@@ -267,6 +273,7 @@ export function CryptoHoldingsSection({
             holding={selectedHoldingForPledge}
             onConfirmPledge={handleConfirmPledge}
             currency={isRealMode || selectedHoldingForPledge.type === 'Crypto' ? 'INR' : 'INR'}
+            mode={pledgeDialogMode}
         />
       )}
     </>

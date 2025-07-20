@@ -16,15 +16,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from '@/hooks/use-toast';
-import { Landmark } from 'lucide-react';
+import { Landmark, PlusCircle, MinusCircle } from 'lucide-react';
 import { Slider } from '../ui/slider';
 
 interface PledgeDialogProps {
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
   holding: PortfolioHolding | null;
-  onConfirmPledge: (holding: PortfolioHolding, quantity: number) => void;
+  onConfirmPledge: (holding: PortfolioHolding, quantity: number, mode: 'pledge' | 'payback') => void;
   currency?: 'INR' | 'USD';
+  mode?: 'pledge' | 'payback';
 }
 
 const INTEREST_RATE = 8.5; 
@@ -35,7 +36,8 @@ export function PledgeDialog({
   onOpenChange,
   holding,
   onConfirmPledge,
-  currency = 'INR'
+  currency = 'INR',
+  mode = 'pledge',
 }: PledgeDialogProps) {
   const [pledgeQuantity, setPledgeQuantity] = useState(0);
   const [error, setError] = useState('');
@@ -68,7 +70,7 @@ export function PledgeDialog({
       setError(`Quantity must be between 1 and ${holding.quantity}`);
       return;
     }
-    onConfirmPledge(holding, pledgeQuantity);
+    onConfirmPledge(holding, pledgeQuantity, mode);
   };
   
   const formatCurrency = (value: number) => {
@@ -82,22 +84,29 @@ export function PledgeDialog({
 
   if (!holding) return null;
 
+  const title = mode === 'pledge' ? 'Pledge Holdings' : 'Payback and Unpledge';
+  const description = mode === 'pledge' 
+    ? `Pledge ${holding.name} to get collateral margin.`
+    : `Payback funds to release your pledged ${holding.name}.`;
+  const buttonText = mode === 'pledge' ? 'Confirm Pledge' : 'Confirm Payback';
+  const Icon = mode === 'pledge' ? PlusCircle : MinusCircle;
+
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center">
-            <Landmark className="mr-2 h-5 w-5 text-primary" />
-            Pledge Holdings
+            <Icon className="mr-2 h-5 w-5 text-primary" />
+            {title}
           </DialogTitle>
           <DialogDescription>
-            Pledge <span className="font-semibold">{holding.name}</span> to get collateral margin.
+            {description}
           </DialogDescription>
         </DialogHeader>
         
         <div className="py-4 space-y-6">
           <div className="space-y-2">
-            <Label htmlFor="pledge-quantity">Quantity to Pledge</Label>
+            <Label htmlFor="pledge-quantity">Quantity to {mode}</Label>
             <div className="flex items-center gap-4">
                 <Input
                     id="pledge-quantity"
@@ -130,7 +139,7 @@ export function PledgeDialog({
               <span className="font-medium text-red-600">- {formatCurrency(haircutAmount)}</span>
             </div>
             <div className="flex justify-between font-semibold text-base border-t pt-2 mt-2">
-              <span className="text-foreground">Collateral Margin</span>
+              <span className="text-foreground">Resulting Margin</span>
               <span className="text-primary">{formatCurrency(finalMargin)}</span>
             </div>
           </div>
@@ -144,7 +153,7 @@ export function PledgeDialog({
             <Button type="button" variant="outline">Cancel</Button>
           </DialogClose>
           <Button type="button" onClick={handlePledge}>
-            Confirm Pledge
+            {buttonText}
           </Button>
         </DialogFooter>
       </DialogContent>

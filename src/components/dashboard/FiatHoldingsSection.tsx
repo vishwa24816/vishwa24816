@@ -31,6 +31,7 @@ interface FiatHoldingsSectionProps {
   setMainPortfolioCashBalance: React.Dispatch<React.SetStateAction<number>>;
   cryptoCashBalance: number;
   setCryptoCashBalance: React.Dispatch<React.SetStateAction<number>>;
+  isPledged?: boolean;
 }
 
 export function FiatHoldingsSection({ 
@@ -41,13 +42,15 @@ export function FiatHoldingsSection({
     mainPortfolioCashBalance, 
     setMainPortfolioCashBalance, 
     cryptoCashBalance, 
-    setCryptoCashBalance 
+    setCryptoCashBalance,
+    isPledged = false
 }: FiatHoldingsSectionProps) {
   const [activeFilter, setActiveFilter] = useState<HoldingFilterType>('All');
   const [viewMode, setViewMode] = useState<ViewMode>('list');
   const { toast } = useToast();
   const [pledgeDialogOpen, setPledgeDialogOpen] = useState(false);
   const [selectedHoldingForPledge, setSelectedHoldingForPledge] = useState<PortfolioHolding | null>(null);
+  const [pledgeDialogMode, setPledgeDialogMode] = useState<'pledge' | 'payback'>('pledge');
   const [isFundTransferDialogOpen, setIsFundTransferDialogOpen] = useState(false);
   const [transferDirection, setTransferDirection] = useState<'toCrypto' | 'fromCrypto'>('toCrypto');
 
@@ -65,15 +68,17 @@ export function FiatHoldingsSection({
     }).format(value);
   };
 
-  const handlePledgeClick = (holding: PortfolioHolding) => {
+  const handlePledgeClick = (holding: PortfolioHolding, mode: 'pledge' | 'payback') => {
     setSelectedHoldingForPledge(holding);
+    setPledgeDialogMode(mode);
     setPledgeDialogOpen(true);
   };
   
-  const handleConfirmPledge = (holding: PortfolioHolding, quantity: number) => {
+  const handleConfirmPledge = (holding: PortfolioHolding, quantity: number, mode: 'pledge' | 'payback') => {
+      const actionText = mode === 'pledge' ? 'Pledged' : 'Payback initiated for';
       toast({
-          title: "Pledge Submitted (Mock)",
-          description: `Pledged ${quantity} units of ${holding.symbol}. Margin will be updated shortly.`,
+          title: `Action Submitted (Mock)`,
+          description: `${actionText} ${quantity} units of ${holding.symbol}.`,
       });
       setPledgeDialogOpen(false);
   };
@@ -87,11 +92,11 @@ export function FiatHoldingsSection({
     if (direction === 'toCrypto') {
       setMainPortfolioCashBalance(prev => prev - amount);
       setCryptoCashBalance(prev => prev + amount);
-      toast({ title: "Transfer Successful", description: `${formatCurrency(amount, 'USD')} transferred to Crypto Wallet.` });
+      toast({ title: "Transfer Successful", description: `${formatCurrency(amount, 'INR')} transferred to Crypto Wallet.` });
     } else { // fromCrypto
       setMainPortfolioCashBalance(prev => prev + amount);
       setCryptoCashBalance(prev => prev - amount);
-      toast({ title: "Transfer Successful", description: `${formatCurrency(amount, 'USD')} transferred to Main Portfolio.` });
+      toast({ title: "Transfer Successful", description: `${formatCurrency(amount, 'INR')} transferred to Main Portfolio.` });
     }
   };
 
@@ -195,6 +200,7 @@ export function FiatHoldingsSection({
                   key={holding.id} 
                   holding={holding} 
                   onPledgeClick={handlePledgeClick}
+                  isPledged={isPledged}
               />
             ))}
           </div>
@@ -251,13 +257,13 @@ export function FiatHoldingsSection({
                   <div className="flex justify-between items-start">
                     <div>
                       <p className={cn("text-xl font-semibold", overallPandL >= 0 ? 'text-green-500' : 'text-red-500')}>
-                        {formatCurrency(overallPandL)}
+                        {formatCurrency(overallPandL, 'INR')}
                       </p>
                       <p className="text-xs text-muted-foreground">Overall P&L</p>
                     </div>
                     <div className="text-right">
                       <p className={cn("text-xl font-semibold", totalDayChangeAbsolute >= 0 ? 'text-green-500' : 'text-red-500')}>
-                        {formatCurrency(totalDayChangeAbsolute)}
+                        {formatCurrency(totalDayChangeAbsolute, 'INR')}
                       </p>
                       <p className="text-xs text-muted-foreground">Day's P&L</p>
                     </div>
@@ -268,15 +274,15 @@ export function FiatHoldingsSection({
                   <div className="space-y-1.5">
                     <div className="flex justify-between items-center text-sm">
                       <p className="text-muted-foreground">Total Investment</p>
-                      <p className="font-medium text-foreground">{formatCurrency(totalInvestmentValue)}</p>
+                      <p className="font-medium text-foreground">{formatCurrency(totalInvestmentValue, 'INR')}</p>
                     </div>
                     <div className="flex justify-between items-center text-sm">
                       <p className="text-muted-foreground">Current Value</p>
-                      <p className="font-medium text-foreground">{formatCurrency(totalCurrentValue)}</p>
+                      <p className="font-medium text-foreground">{formatCurrency(totalCurrentValue, 'INR')}</p>
                     </div>
                     <div className="flex justify-between items-center text-sm">
                       <p className="text-muted-foreground">Cash Balance</p>
-                      <p className="font-medium text-foreground">{formatCurrency(mainPortfolioCashBalance)}</p>
+                      <p className="font-medium text-foreground">{formatCurrency(mainPortfolioCashBalance, 'INR')}</p>
                     </div>
                      <div className="pt-2 flex gap-2">
                         <Button variant="outline" size="sm" className="flex-1 h-11" onClick={() => handleOpenFundTransferDialog('toCrypto')}>
@@ -289,27 +295,29 @@ export function FiatHoldingsSection({
                   </div>
               </div>
               
-              <div className="border-b border-border">
-                  <div className="flex space-x-1 overflow-x-auto whitespace-nowrap pb-0 no-scrollbar">
-                  {filterOptions.map((option) => (
-                      <Button
-                      key={option.value}
-                      variant="ghost"
-                      size="sm"
-                      className={cn(
-                          "px-3 py-1.5 h-auto text-xs font-medium rounded-t-md rounded-b-none focus-visible:ring-0 focus-visible:ring-offset-0",
-                          "border-b-2 hover:bg-transparent",
-                          activeFilter === option.value
-                          ? "text-primary border-primary font-semibold"
-                          : "text-muted-foreground border-transparent hover:text-primary hover:border-primary/30"
-                      )}
-                      onClick={() => setActiveFilter(option.value)}
-                      >
-                      {option.label}
-                      </Button>
-                  ))}
-                  </div>
-              </div>
+              {!isPledged && (
+                <div className="border-b border-border">
+                    <div className="flex space-x-1 overflow-x-auto whitespace-nowrap pb-0 no-scrollbar">
+                    {filterOptions.map((option) => (
+                        <Button
+                        key={option.value}
+                        variant="ghost"
+                        size="sm"
+                        className={cn(
+                            "px-3 py-1.5 h-auto text-xs font-medium rounded-t-md rounded-b-none focus-visible:ring-0 focus-visible:ring-offset-0",
+                            "border-b-2 hover:bg-transparent",
+                            activeFilter === option.value
+                            ? "text-primary border-primary font-semibold"
+                            : "text-muted-foreground border-transparent hover:text-primary hover:border-primary/30"
+                        )}
+                        onClick={() => setActiveFilter(option.value)}
+                        >
+                        {option.label}
+                        </Button>
+                    ))}
+                    </div>
+                </div>
+              )}
 
               {renderContent()}
 
@@ -322,6 +330,7 @@ export function FiatHoldingsSection({
             holding={selectedHoldingForPledge}
             onConfirmPledge={handleConfirmPledge}
             currency={selectedHoldingForPledge.exchange === 'NASDAQ' || selectedHoldingForPledge.exchange === 'NYSE' ? 'USD' : 'INR'}
+            mode={pledgeDialogMode}
         />
       )}
       <FundTransferDialog
@@ -331,7 +340,7 @@ export function FiatHoldingsSection({
         mainPortfolioCashBalance={mainPortfolioCashBalance}
         cryptoCashBalance={cryptoCashBalance}
         onTransferConfirm={handleTransferConfirm}
-        currencyMode={'USD'}
+        currencyMode={'INR'}
       />
     </>
   );
