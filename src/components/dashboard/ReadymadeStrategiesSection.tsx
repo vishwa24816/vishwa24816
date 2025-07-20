@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useMemo } from 'react';
@@ -210,13 +209,15 @@ export function ReadymadeStrategiesSection({ onStrategySelect }: { onStrategySel
           {filteredStrategies.map(strategy => (
              <Card 
               key={strategy.id} 
-              className="flex flex-col p-2 text-center cursor-pointer hover:shadow-md hover:border-primary transition-all"
+              className="flex flex-col text-center cursor-pointer hover:shadow-md hover:border-primary transition-all"
               onClick={() => handleStrategyClick(strategy)}
             >
-              <div className="w-full h-20 flex-grow bg-muted/50 rounded-md mb-2 p-1">
-                 <StrategyPayoffChart strategyId={strategy.id} />
-              </div>
-              <p className="text-xs font-medium mt-auto">{strategy.name}</p>
+              <CardContent className="p-2 flex-grow flex flex-col">
+                <div className="w-full h-20 bg-muted/50 rounded-md mb-2 p-1">
+                   <StrategyPayoffChart strategyId={strategy.id} />
+                </div>
+                <p className="text-xs font-medium mt-auto">{strategy.name}</p>
+              </CardContent>
             </Card>
           ))}
         </div>
@@ -224,5 +225,3 @@ export function ReadymadeStrategiesSection({ onStrategySelect }: { onStrategySel
     </div>
   );
 }
-
-    

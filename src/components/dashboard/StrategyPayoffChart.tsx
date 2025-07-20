@@ -1,4 +1,3 @@
-
 "use client";
 
 import React from "react";
@@ -81,74 +80,28 @@ export const StrategyPayoffChart: React.FC<StrategyPayoffChartProps> = ({ strate
       config={{
         [pnlDataKey]: {
           label: "P&L",
+          color: "hsl(var(--primary))",
         },
       }}
       className="h-full w-full pointer-events-none"
     >
       <Chart.ResponsiveContainer>
-        <Chart.AreaChart
+        <Chart.LineChart
           data={payoffData}
           margin={{ top: 5, right: 5, left: 5, bottom: 5 }}
         >
-          <Chart.defs>
-            <linearGradient id="fillProfit" x1="0" y1="0" x2="0" y2="1">
-              <stop
-                offset="5%"
-                stopColor="hsl(var(--positive))"
-                stopOpacity={0.8}
-              />
-              <stop
-                offset="95%"
-                stopColor="hsl(var(--positive))"
-                stopOpacity={0.1}
-              />
-            </linearGradient>
-            <linearGradient id="fillLoss" x1="0" y1="0" x2="0" y2="1">
-              <stop
-                offset="5%"
-                stopColor="hsl(var(--destructive))"
-                stopOpacity={0.1}
-              />
-              <stop
-                offset="95%"
-                stopColor="hsl(var(--destructive))"
-                stopOpacity={0.8}
-              />
-            </linearGradient>
-          </Chart.defs>
+          <Chart.CartesianGrid vertical={false} strokeDasharray="3 3" stroke="hsl(var(--muted-foreground) / 0.5)"/>
           <Chart.XAxis dataKey="price" hide />
-          <Chart.YAxis hide domain={['dataMin', 'dataMax']} />
+          <Chart.YAxis hide domain={['dataMin - 1', 'dataMax + 1']} />
           <Chart.ReferenceLine y={0} stroke="hsl(var(--muted-foreground))" strokeDasharray="3 3" />
-          
-           <Chart.Area
-              dataKey={pnlDataKey}
-              type="monotone"
-              fill="url(#fillProfit)"
-              stroke="transparent"
-              stackId="a"
-              // @ts-ignore - Recharts type issue with this prop
-              points={payoffData.filter((d) => d.pnl >= 0)}
-            />
-            <Chart.Area
-              dataKey={pnlDataKey}
-              type="monotone"
-              fill="url(#fillLoss)"
-              stroke="transparent"
-              stackId="b"
-              // @ts-ignore - Recharts type issue with this prop
-              points={payoffData.filter((d) => d.pnl < 0)}
-            />
-           <Chart.Line
+          <Chart.Line
             dataKey={pnlDataKey}
             type="monotone"
             strokeWidth={2}
-            stroke="hsl(var(--primary))"
             dot={false}
           />
-        </Chart.AreaChart>
+        </Chart.LineChart>
       </Chart.ResponsiveContainer>
     </ChartContainer>
   );
 };
-
-    
