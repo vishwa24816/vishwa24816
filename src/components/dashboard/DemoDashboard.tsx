@@ -19,7 +19,6 @@ import { MarketOverview } from './MarketOverview';
 import { CryptoBasketSection } from './CryptoBasketSection';
 import { MarketMovers } from './MarketMovers';
 
-
 import React, { useState, useMemo, useEffect } from 'react';
 import type { PortfolioHolding, NewsArticle, IntradayPosition, FoPosition, CryptoFuturePosition, Stock, SelectedOptionLeg } from '@/types';
 import { mockPortfolioHoldings } from '@/lib/mockData/portfolioHoldings';
@@ -280,6 +279,10 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
     const newSecondaryItems = secondaryNavTriggerCategories[item] || [];
     setActiveSecondaryItem(newSecondaryItems[0] || "");
   };
+
+  const handleSecondaryNavClick = (item: string) => {
+    setActiveSecondaryItem(item);
+  };
   
   const fiatHoldings = useMemo(() => mockPortfolioHoldings.filter(h => h.type !== 'Crypto'), []);
   const cryptoHoldings = useMemo(() => mockPortfolioHoldings.filter(h => h.type === 'Crypto'), []);
@@ -442,6 +445,7 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
                     case "Bike Insurance": insuranceItems = mockBikeInsurance; insuranceTitle="Bike Insurance"; break;
                     case "Other Insurance": insuranceItems = mockOtherInsurance; insuranceTitle="Other Insurance Products"; break;
                 }
+                newsForView = getRelevantNewsForWatchlistItems(insuranceItems, mockNewsArticles);
                 return <div className="space-y-8"><WatchlistSection title={insuranceTitle} displayItems={insuranceItems} isPredefinedList={true} /><NewsSection articles={newsForView} /></div>
             case "NPS":
                  return <div className="flex flex-col items-center justify-center text-center py-12 text-muted-foreground"><PackageOpen className="h-16 w-16 mb-4" /><h2 className="text-2xl font-semibold mb-2 text-foreground">National Pension System</h2><p className="max-w-md">Coming soon: Manage your NPS account.</p></div>
@@ -458,7 +462,7 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
         activePrimaryItem={activePrimaryItem}
         activeSecondaryItem={activeSecondaryItem}
         onPrimaryNavClick={handlePrimaryNavClick}
-        onSecondaryNavClick={handlePrimaryNavClick}
+        onSecondaryNavClick={handleSecondaryNavClick}
         secondaryNavTriggerCategories={secondaryNavTriggerCategories}
       />
       
@@ -467,3 +471,5 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
     </main>
   );
 }
+
+    
