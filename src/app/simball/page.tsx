@@ -16,6 +16,8 @@ const FireCard = ({
   time,
   gradientFrom,
   gradientTo,
+  brokerage,
+  isPlayed,
 }: {
   tradeType: 'BUY' | 'SELL';
   stockSymbol: string;
@@ -23,6 +25,8 @@ const FireCard = ({
   time: string;
   gradientFrom: string;
   gradientTo: string;
+  brokerage: number;
+  isPlayed: boolean;
 }) => (
   <div
     className={cn(
@@ -38,15 +42,15 @@ const FireCard = ({
       <p className="text-2xl font-bold mt-1">{stockSymbol}</p>
       <p className="text-lg opacity-90">{quantity} Shares</p>
     </div>
-    <div className="relative z-10 flex items-center text-sm opacity-90">
-      <Clock className="w-4 h-4 mr-1.5" />
-      <span>{time}</span>
+    <div className="relative z-10">
+        <div className="text-sm opacity-90 mb-2">
+            <span>{isPlayed ? 'Brokerage earned back' : 'Brokerage to be earned back'}: <span className="font-bold">₹{brokerage.toFixed(2)}</span></span>
+        </div>
+        <div className="flex items-center text-sm opacity-90">
+            <Clock className="w-4 h-4 mr-1.5" />
+            <span>{time}</span>
+        </div>
     </div>
-    {/* Decorative Elements */}
-    <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-white/10 rounded-full opacity-50" />
-    <div className="absolute top-10 left-5 w-2 h-2 bg-white/30 rounded-full" />
-    <div className="absolute top-20 right-10 w-1 h-1 bg-white/30 rounded-full" />
-    <div className="absolute bottom-1/2 left-1/4 text-2xl opacity-20 transform rotate-12">+</div>
   </div>
 );
 
@@ -95,6 +99,8 @@ export default function SimballPage() {
                         time="3 days ago"
                         gradientFrom="from-green-500"
                         gradientTo="to-emerald-600"
+                        brokerage={20.00}
+                        isPlayed={false}
                     />
                      <FireCard 
                         tradeType="SELL"
@@ -103,6 +109,8 @@ export default function SimballPage() {
                         time="2 days ago"
                         gradientFrom="from-red-500"
                         gradientTo="to-rose-600"
+                        brokerage={40.00}
+                        isPlayed={false}
                     />
                     <FireCard 
                         tradeType="BUY"
@@ -111,6 +119,8 @@ export default function SimballPage() {
                         time="1 day ago"
                         gradientFrom="from-blue-500"
                         gradientTo="to-cyan-600"
+                        brokerage={30.00}
+                        isPlayed={false}
                     />
                 </div>
             </div>
@@ -125,6 +135,8 @@ export default function SimballPage() {
                         time="8 hours ago"
                         gradientFrom="from-gray-500"
                         gradientTo="to-gray-600"
+                        brokerage={50.00}
+                        isPlayed={true}
                     />
                     <FireCard 
                         tradeType="SELL"
@@ -133,6 +145,8 @@ export default function SimballPage() {
                         time="2 hours ago"
                         gradientFrom="from-gray-500"
                         gradientTo="to-gray-600"
+                        brokerage={80.00}
+                        isPlayed={true}
                     />
                 </div>
             </div>
