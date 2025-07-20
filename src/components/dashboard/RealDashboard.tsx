@@ -23,8 +23,8 @@ import {
   mockRealPortfolioHoldings,
   mockRealCryptoIntradayPositions,
   mockRealCryptoFutures,
-  mockCryptoIndices,
 } from '@/lib/mockData';
+import { mockCryptoIndices } from '@/lib/mockData/cryptoIndices';
 
 // Helper functions (could be moved to a utils file)
 function getRelevantNewsForHoldings(holdings: PortfolioHolding[], allNews: NewsArticle[]): NewsArticle[] {

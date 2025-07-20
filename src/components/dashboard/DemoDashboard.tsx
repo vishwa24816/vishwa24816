@@ -42,8 +42,8 @@ import {
   mockWeb3Memes,
   mockWeb3Holdings,
   mockMarketIndices,
-  mockCryptoIndices,
 } from '@/lib/mockData';
+import { mockCryptoIndices } from '@/lib/mockData/cryptoIndices';
 import { mockUsStocks } from '@/lib/mockData/usStocks';
 import { mockWeb3NFTs } from '@/lib/mockData/web3NFTs';
 
@@ -312,8 +312,8 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
   } else if (activeMode === 'Fiat') {
     const isIndianStockView = activePrimaryItem === "Indian Stocks";
     const isUsStockView = activePrimaryItem === "US Stocks";
-    const isTopWatchlistView = (isIndianStockView || isUsStockView || ["Mutual Fund", "Bonds"].includes(activePrimaryItem)) && activeSecondaryItem.startsWith("Top watchlist");
-    const isCategoryNumberedWatchlistView = (isIndianStockView || isUsStockView || ["Mutual Fund", "Bonds"].includes(activePrimaryItem)) && !!activeSecondaryItem.match(/^Watchlist \d+$/);
+    const isTopWatchlistView = (isIndianStockView || isUsStockView) && activeSecondaryItem.startsWith("Top watchlist");
+    const isCategoryNumberedWatchlistView = (isIndianStockView || isUsStockView) && !!activeSecondaryItem.match(/^Watchlist \d+$/);
 
     if (activePrimaryItem === 'Futures') {
         categoryWatchlistTitle = `${activeSecondaryItem} Watchlist`;

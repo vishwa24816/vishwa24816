@@ -32,4 +32,3 @@ export * from './web3Memes';
 export * from './web3Trending';
 export * from './web3Holdings';
 export * from './marketSectorData';
-export * from './cryptoIndices';
