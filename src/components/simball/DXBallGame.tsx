@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useRef, useEffect, useState } from 'react';
@@ -15,12 +14,11 @@ export const DXBallGame: React.FC<DXBallGameProps> = ({ brickCount, onGameEnd })
   const [gameState, setGameState] = useState<'playing' | 'gameOver' | 'win'>('playing');
 
   // Use refs for all game state that changes inside the animation loop
-  // This prevents stale state issues within the requestAnimationFrame callback
   const gameInstance = useRef({
     paddleX: 0,
     ballX: 0,
     ballY: 0,
-    ballDX: 4, // Sligthly reduced initial speed
+    ballDX: 4,
     ballDY: -4,
     rightPressed: false,
     leftPressed: false,
@@ -48,6 +46,9 @@ export const DXBallGame: React.FC<DXBallGameProps> = ({ brickCount, onGameEnd })
     game.paddleX = (canvas.width - paddleWidth) / 2;
     game.ballX = canvas.width / 2;
     game.ballY = canvas.height - 30;
+    game.score = 0; // Reset score on new game
+    game.ballDX = 4; // Reset ball speed
+    game.ballDY = -4;
 
     // Bricks
     const brickRowCount = Math.ceil(brickCount / 10);
@@ -85,11 +86,11 @@ export const DXBallGame: React.FC<DXBallGameProps> = ({ brickCount, onGameEnd })
         game.paddleX = relativeX - paddleWidth / 2;
       }
     }
-     const touchMoveHandler = (e: TouchEvent) => {
-      const relativeX = e.touches[0].clientX - canvas.getBoundingClientRect().left;
-      if (relativeX > 0 && relativeX < canvas.width) {
-        game.paddleX = relativeX - paddleWidth / 2;
-      }
+    const touchMoveHandler = (e: TouchEvent) => {
+        const relativeX = e.touches[0].clientX - canvas.getBoundingClientRect().left;
+        if (relativeX > 0 && relativeX < canvas.width) {
+            game.paddleX = relativeX - paddleWidth / 2;
+        }
     };
     
     document.addEventListener("keydown", keyDownHandler);
@@ -140,7 +141,6 @@ export const DXBallGame: React.FC<DXBallGameProps> = ({ brickCount, onGameEnd })
               b.status = 0;
               game.score++;
               
-              // Increase ball speed by 15%
               game.ballDX *= 1.15;
               game.ballDY *= 1.15;
               
@@ -155,7 +155,6 @@ export const DXBallGame: React.FC<DXBallGameProps> = ({ brickCount, onGameEnd })
 
     // --- Game Loop ---
     const draw = () => {
-      // Check for game state change inside the loop to stop it
       if (gameInstance.current.animationFrameId === -1) return;
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -184,23 +183,20 @@ export const DXBallGame: React.FC<DXBallGameProps> = ({ brickCount, onGameEnd })
       game.animationFrameId = requestAnimationFrame(draw);
     };
 
-    draw();
+    game.animationFrameId = requestAnimationFrame(draw);
 
     // --- Cleanup ---
     return () => {
       cancelAnimationFrame(game.animationFrameId);
-      gameInstance.current.animationFrameId = -1; // Mark as stopped
+      gameInstance.current.animationFrameId = -1;
       document.removeEventListener("keydown", keyDownHandler);
       document.removeEventListener("keyup", keyUpHandler);
       document.removeEventListener("mousemove", mouseMoveHandler);
-      if (canvasRef.current) {
-        canvasRef.current.removeEventListener("touchmove", touchMoveHandler);
-      }
+      canvas.removeEventListener("touchmove", touchMoveHandler);
     };
-  }, []); // Only run once on mount
+  }, [brickCount]);
 
   useEffect(() => {
-    // This effect handles stopping the animation when gameState changes
     if (gameState !== 'playing' && gameInstance.current.animationFrameId !== 0) {
       cancelAnimationFrame(gameInstance.current.animationFrameId);
       gameInstance.current.animationFrameId = 0;
