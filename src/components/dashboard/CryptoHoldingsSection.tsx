@@ -9,7 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import { mockPortfolioHoldings } from '@/lib/mockData';
 import type { PortfolioHolding } from '@/types';
 import { cn } from '@/lib/utils';
-import { Bitcoin, XCircle, Coins, Landmark, Settings2, ChevronDown, BarChart2, LayoutGrid, List, PieChart, ArrowUpRight, ArrowDownLeft, History, Snowflake, QrCode, Copy } from 'lucide-react';
+import { Bitcoin, XCircle, Coins, Landmark, Settings2, ChevronDown, BarChart2, LayoutGrid, List, PieChart, ArrowUpRight, ArrowDownLeft, History, Snowflake, QrCode, Copy, ArrowUpCircle, ArrowDownCircle } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { FundTransferDialog } from '@/components/shared/FundTransferDialog';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -33,6 +33,14 @@ interface CryptoHoldingsSectionProps {
   isPledged?: boolean;
 }
 
+const mockTransactions = [
+  { id: 't1', type: 'receive', asset: 'Bitcoin', symbol: 'BTC', amountCrypto: 0.05, amountINR: 260000, date: '2024-07-22', status: 'Completed' },
+  { id: 't2', type: 'send', asset: 'Ethereum', symbol: 'ETH', amountCrypto: 0.5, amountINR: 142500, date: '2024-07-21', status: 'Completed' },
+  { id: 't3', type: 'receive', asset: 'Solana', symbol: 'SOL', amountCrypto: 10, amountINR: 136000, date: '2024-07-20', status: 'Completed' },
+  { id: 't4', type: 'send', asset: 'Bitcoin', symbol: 'BTC', amountCrypto: 0.01, amountINR: 52000, date: '2024-07-19', status: 'Pending' },
+];
+
+
 export function CryptoHoldingsSection({
   holdings,
   title,
@@ -54,6 +62,7 @@ export function CryptoHoldingsSection({
 
   const [isSending, setIsSending] = useState(false);
   const [isReceiving, setIsReceiving] = useState(false);
+  const [isHistoryVisible, setIsHistoryVisible] = useState(false);
   const [recipientAddress, setRecipientAddress] = useState('');
   const [sendAmount, setSendAmount] = useState('');
   const [walletAddress, setWalletAddress] = useState('');
@@ -102,24 +111,32 @@ export function CryptoHoldingsSection({
       toast({ title: "Transfer Successful", description: `${formatCurrency(amount)} transferred to Main Portfolio.` });
     }
   };
+  
+  const closeAllPopups = () => {
+    setIsSending(false);
+    setIsReceiving(false);
+    setIsHistoryVisible(false);
+  };
 
   const handleSendClick = () => {
-    setIsReceiving(false);
+    closeAllPopups();
     setIsSending(true);
     setRecipientAddress('');
     setSendAmount('');
   };
 
   const handleReceiveClick = () => {
-    setIsSending(false);
+    closeAllPopups();
     setIsReceiving(true);
     // Generate a new mock address each time
     const newAddress = '0x' + [...Array(40)].map(() => Math.floor(Math.random() * 16).toString(16)).join('');
     setWalletAddress(newAddress);
   };
 
-  const handleCancelSend = () => setIsSending(false);
-  const handleCancelReceive = () => setIsReceiving(false);
+  const handleHistoryClick = () => {
+    closeAllPopups();
+    setIsHistoryVisible(true);
+  };
 
   const handleConfirmSend = () => {
     if (!recipientAddress || !sendAmount) {
@@ -359,7 +376,7 @@ export function CryptoHoldingsSection({
                                 <ArrowDownLeft className="h-5 w-5 mb-1" />
                                 <span className="text-xs">Receive</span>
                             </Button>
-                            <Button variant="outline" size="sm" className="flex-col h-14" onClick={() => toast({title: "History (WIP)"})}>
+                            <Button variant="outline" size="sm" className="flex-col h-14" onClick={handleHistoryClick}>
                                 <History className="h-5 w-5 mb-1" />
                                 <span className="text-xs">History</span>
                             </Button>
@@ -394,7 +411,7 @@ export function CryptoHoldingsSection({
                                     </div>
                                 </div>
                                 <div className="flex justify-end gap-2">
-                                    <Button variant="ghost" onClick={handleCancelSend}>Cancel</Button>
+                                    <Button variant="ghost" onClick={closeAllPopups}>Cancel</Button>
                                     <Button onClick={handleConfirmSend}>Confirm Send</Button>
                                 </div>
                             </div>
@@ -422,9 +439,34 @@ export function CryptoHoldingsSection({
                                     </div>
                                 </div>
                                 <div className="flex justify-end">
-                                    <Button variant="ghost" onClick={handleCancelReceive}>Done</Button>
+                                    <Button variant="ghost" onClick={closeAllPopups}>Done</Button>
                                 </div>
                             </div>
+                        )}
+                        {isHistoryVisible && (
+                          <div className="p-4 border-t mt-4 space-y-2 animate-accordion-down">
+                            <div className="flex justify-between items-center mb-2">
+                              <h4 className="text-md font-semibold text-foreground">Transaction History</h4>
+                              <Button variant="ghost" size="icon" className="h-7 w-7" onClick={closeAllPopups}><XCircle className="h-5 w-5" /></Button>
+                            </div>
+                            <div className="space-y-3">
+                              {mockTransactions.map(tx => (
+                                <div key={tx.id} className="flex items-center gap-3">
+                                  {tx.type === 'receive' ? <ArrowDownCircle className="h-6 w-6 text-green-500 shrink-0"/> : <ArrowUpCircle className="h-6 w-6 text-red-500 shrink-0"/>}
+                                  <div className="flex-grow">
+                                    <p className="font-medium text-sm capitalize">{tx.type} {tx.asset}</p>
+                                    <p className="text-xs text-muted-foreground">{tx.date} - <span className={cn("capitalize", tx.status === 'Completed' ? 'text-green-600' : 'text-yellow-500')}>{tx.status}</span></p>
+                                  </div>
+                                  <div className="text-right">
+                                    <p className={cn("font-semibold text-sm", tx.type === 'receive' ? 'text-green-600' : 'text-red-500')}>
+                                      {tx.type === 'receive' ? '+' : '-'} {tx.amountCrypto} {tx.symbol}
+                                    </p>
+                                    <p className="text-xs text-muted-foreground">≈ {formatCurrency(tx.amountINR)}</p>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
                         )}
                     </>
                 )}
