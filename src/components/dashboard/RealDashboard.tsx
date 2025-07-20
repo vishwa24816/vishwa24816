@@ -11,7 +11,7 @@ import { CryptoOptionChain } from '@/components/dashboard/CryptoOptionChain';
 import { StrategyBuilder } from '@/components/dashboard/StrategyBuilder';
 import { ReadymadeStrategiesSection } from '@/components/dashboard/ReadymadeStrategiesSection';
 import { MarketOverview } from './MarketOverview';
-import { FuturesMarketMovers } from './FuturesMarketMovers';
+import { MarketMovers } from './MarketMovers';
 
 import React, { useState, useMemo } from 'react';
 import type { PortfolioHolding, NewsArticle, IntradayPosition, FoPosition, CryptoFuturePosition, Stock, SelectedOptionLeg } from '@/types';
@@ -24,6 +24,7 @@ import {
   mockRealPortfolioHoldings,
   mockRealCryptoIntradayPositions,
   mockRealCryptoFutures,
+  mockCryptoOptionsForWatchlist,
 } from '@/lib/mockData';
 import { mockCryptoIndices } from '@/lib/mockData/cryptoIndices';
 
@@ -153,7 +154,7 @@ export function RealDashboard({ activeMode }: RealDashboardProps) {
   const renderMarketContent = () => {
       if(activeMode === 'Crypto') {
           if (activePrimaryItem === "Options") {
-            if (activeSecondaryItem === 'Dashboard') return <div className="space-y-8"><MarketOverview title="Crypto Options Overview" items={mockCryptoIndices} /><FuturesMarketMovers /><NewsSection articles={newsForView} /></div>;
+            if (activeSecondaryItem === 'Dashboard') return <div className="space-y-8"><MarketOverview title="Crypto Options Overview" items={mockCryptoIndices} /><MarketMovers futuresData={mockCryptoFuturesForWatchlist} optionsData={mockCryptoOptionsForWatchlist} /><NewsSection articles={newsForView} /></div>;
             if (activeSecondaryItem === "Custom") return ( <div className="space-y-8"><CryptoOptionChain onAddLeg={(leg) => setStrategyLegs(prev => [...prev, leg])} />{strategyLegs.length > 0 && <StrategyBuilder legs={strategyLegs} setLegs={setStrategyLegs} />}<NewsSection articles={newsForView} /></div>);
             if (activeSecondaryItem === "Readymade") return ( <div className="space-y-8"><ReadymadeStrategiesSection onStrategySelect={(legs) => setStrategyLegs(legs)} />{strategyLegs.length > 0 && <StrategyBuilder legs={strategyLegs} setLegs={setStrategyLegs} />}<NewsSection articles={newsForView} /></div> );
             return null

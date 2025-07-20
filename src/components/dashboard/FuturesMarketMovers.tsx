@@ -6,8 +6,6 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { ArrowUpDown } from 'lucide-react';
-import { mockCryptoFuturesForWatchlist } from '@/lib/mockData';
-import { mockCryptoOptionsForWatchlist } from '@/lib/mockData/cryptoOptionsWatchlist';
 import type { Stock } from '@/types';
 import { cn } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
@@ -32,14 +30,19 @@ const formatFinancialValue = (value: number) => {
     return `₹${value}`;
 };
 
-export function FuturesMarketMovers() {
+interface MarketMoversProps {
+    futuresData: Stock[];
+    optionsData: Stock[];
+}
+
+export function MarketMovers({ futuresData: initialFuturesData, optionsData: initialOptionsData }: MarketMoversProps) {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<MainTab>('Futures');
   const [activeFuturesFilter, setActiveFuturesFilter] = useState<FuturesFilter>('Top Volume');
   const [activeOptionsFilter, setActiveOptionsFilter] = useState<OptionsFilter>('Top Volume');
 
   const futuresData = useMemo(() => {
-    const data = [...mockCryptoFuturesForWatchlist];
+    const data = [...initialFuturesData];
     switch (activeFuturesFilter) {
       case 'Top Gainers':
         return data.sort((a, b) => b.changePercent - a.changePercent);
@@ -52,10 +55,10 @@ export function FuturesMarketMovers() {
       default:
         return data;
     }
-  }, [activeFuturesFilter]);
+  }, [activeFuturesFilter, initialFuturesData]);
 
   const optionsData = useMemo(() => {
-      const data = [...mockCryptoOptionsForWatchlist];
+      const data = [...initialOptionsData];
       switch (activeOptionsFilter) {
         case 'Top OI':
           return data.sort((a, b) => (b.openInterest || 0) - (a.openInterest || 0));
@@ -63,11 +66,11 @@ export function FuturesMarketMovers() {
         default:
           return data.sort((a, b) => (b.volume || 0) - (a.volume || 0));
       }
-  }, [activeOptionsFilter]);
+  }, [activeOptionsFilter, initialOptionsData]);
 
   const handleRowClick = (item: Stock) => {
     if (activeTab === 'Futures') {
-        router.push(`/order/crypto-future/${item.symbol}`);
+        router.push(`/order/future/${item.symbol}`);
     } else {
         router.push(`/order/option/${item.symbol}`);
     }

@@ -16,6 +16,7 @@ export const mockIndexFuturesForWatchlist: Stock[] = [
     availableExpiries: ['25 Jan 2025', '29 Feb 2025', '28 Mar 2025'],
     todayLow: 21805.10, todayHigh: 21880.90, fiftyTwoWeekLow: 18000.00, fiftyTwoWeekHigh: 22000.00,
     openPrice: 21825.30, prevClosePrice: 21825.30, volume: 150000,
+    openInterest: 25000000000,
   },
   { 
     id: 'futBANKNIFTY', symbol: 'BANKNIFTYJANFUT', name: 'BANKNIFTY Jan Future', 
@@ -24,6 +25,7 @@ export const mockIndexFuturesForWatchlist: Stock[] = [
     availableExpiries: ['25 Jan 2025', '29 Feb 2025', '28 Mar 2025'],
     todayLow: 47450.50, todayHigh: 47600.00, fiftyTwoWeekLow: 40000.00, fiftyTwoWeekHigh: 48000.00,
     openPrice: 47550.85, prevClosePrice: 47550.85, volume: 200000,
+    openInterest: 18000000000,
   },
   { 
     id: 'futFINNIFTY', symbol: 'FINNIFTYJANFUT', name: 'FINNIFTY Jan Future', 
@@ -32,6 +34,7 @@ export const mockIndexFuturesForWatchlist: Stock[] = [
     availableExpiries: ['25 Jan 2025', '29 Feb 2025', '28 Mar 2025'],
     todayLow: 21180.20, todayHigh: 21250.00, fiftyTwoWeekLow: 18000.00, fiftyTwoWeekHigh: 21500.00,
     openPrice: 21185.00, prevClosePrice: 21185.00, volume: 100000,
+    openInterest: 9000000000,
   },
 ];
 
