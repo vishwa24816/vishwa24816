@@ -180,7 +180,7 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
                 Wealth: ["Holdings", "Portfolio Watchlist"],
                 Crypto: ["Holdings", "Positions", "Portfolio Watchlist"],
                 Web3: ["Holdings", "Portfolio Watchlist"],
-                "Pledged Holdings": ["Fiat", "Crypto", "Web3"],
+                "Pledged Holdings": ["Fiat", "Wealth", "Crypto", "Web3"],
             }
         }
     }
@@ -386,11 +386,13 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
              if (isWatchlistView) return <div className="space-y-8"><WatchlistSection title="My Web3 Watchlist" localStorageKeyOverride={'simWeb3Watchlist'}/><NewsSection articles={newsForView} /></div>;
             return null;
         case 'Pledged Holdings':
-            const pledgedFiatHoldings = fiatHoldings.slice(0, 2); // Mock: first 2 fiat holdings are pledged
-            const pledgedCryptoHoldings = cryptoHoldings.slice(0, 1); // Mock: first crypto holding is pledged
-            const pledgedWeb3Holdings = mockWeb3Holdings.slice(0, 1); // Mock: first web3 holding is pledged
+            const pledgedFiatHoldings = fiatHoldings.slice(0, 2); 
+            const pledgedWealthHoldings = wealthHoldings.slice(0, 2);
+            const pledgedCryptoHoldings = cryptoHoldings.slice(0, 1);
+            const pledgedWeb3Holdings = mockWeb3Holdings.slice(0, 1);
 
             if (activeSecondaryItem === 'Fiat') return <FiatHoldingsSection title="Pledged Fiat Holdings" holdings={pledgedFiatHoldings} intradayPositions={[]} foPositions={[]} mainPortfolioCashBalance={0} setMainPortfolioCashBalance={() => {}} cryptoCashBalance={0} setCryptoCashBalance={() => {}} isPledged={true} />;
+            if (activeSecondaryItem === 'Wealth') return <WealthHoldingsSection holdings={pledgedWealthHoldings} isPledged={true} />;
             if (activeSecondaryItem === 'Crypto') return <CryptoHoldingsSection title="Pledged Crypto Holdings" holdings={pledgedCryptoHoldings} cashBalance={0} setCashBalance={() => {}} mainPortfolioCashBalance={0} setMainPortfolioCashBalance={() => {}} isRealMode={false} isPledged={true} />;
             if (activeSecondaryItem === 'Web3') return <CryptoHoldingsSection title="Pledged Web3 Holdings" holdings={pledgedWeb3Holdings} cashBalance={0} setCashBalance={() => {}} mainPortfolioCashBalance={0} setMainPortfolioCashBalance={() => {}} isRealMode={false} isPledged={true}/>;
             return null;
@@ -439,9 +441,6 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
         newsForView = getRelevantNewsForWatchlistItems(web3Items, mockNewsArticles);
         return <div className="space-y-8"><WatchlistSection title={watchlistTitle} displayItems={web3Items} isPredefinedList={true} /><NewsSection articles={newsForView} /></div>;
     } else if (activeMode === 'Wealth') {
-        const governmentBonds = mockBonds.filter(b => b.exchange === 'BOND' || b.exchange === 'SGB');
-        const corporateBonds = mockBonds.filter(b => b.exchange === 'CORP BOND');
-
         if (activePrimaryItem === "Mutual Funds") {
             const isTopWatchlist = activeSecondaryItem.startsWith("Top watchlist");
             const isNumberedWatchlist = !!activeSecondaryItem.match(/^Watchlist \d+$/);
@@ -451,6 +450,8 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
         if (activePrimaryItem === "Bonds") {
             const isTopWatchlist = activeSecondaryItem.startsWith("Top watchlist");
             const isNumberedWatchlist = !!activeSecondaryItem.match(/^Watchlist \d+$/);
+            const governmentBonds = mockBonds.filter(b => b.exchange === 'BOND' || b.exchange === 'SGB');
+            const corporateBonds = mockBonds.filter(b => b.exchange === 'CORP BOND');
             if (isTopWatchlist) return <div className="space-y-8"><WatchlistSection title="Government Bonds" displayItems={governmentBonds} isPredefinedList={true} /><WatchlistSection title="Corporate Bonds" displayItems={corporateBonds} isPredefinedList={true} /><NewsSection articles={newsForView} /></div>;
             if (isNumberedWatchlist) return <div className="space-y-8"><WatchlistSection title={`Bonds - ${activeSecondaryItem}`} isPredefinedList={false} localStorageKeyOverride={`simAppWatchlist_Wealth_Bonds_${activeSecondaryItem.replace(/\s+/g, '_')}`} defaultInitialItems={[]}/><NewsSection articles={newsForView} /></div>;
         }

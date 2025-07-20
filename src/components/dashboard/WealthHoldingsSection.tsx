@@ -19,9 +19,10 @@ type ViewMode = 'list' | 'bar' | 'heatmap' | 'pie';
 
 interface WealthHoldingsSectionProps {
   holdings: PortfolioHolding[];
+  isPledged?: boolean;
 }
 
-export function WealthHoldingsSection({ holdings }: WealthHoldingsSectionProps) {
+export function WealthHoldingsSection({ holdings, isPledged = false }: WealthHoldingsSectionProps) {
   const [viewMode, setViewMode] = useState<ViewMode>('list');
   const [pledgeDialogOpen, setPledgeDialogOpen] = useState(false);
   const [selectedHoldingForPledge, setSelectedHoldingForPledge] = useState<PortfolioHolding | null>(null);
@@ -110,6 +111,7 @@ export function WealthHoldingsSection({ holdings }: WealthHoldingsSectionProps) 
                   key={holding.id} 
                   holding={holding} 
                   onPledgeClick={handlePledgeClick}
+                  isPledged={isPledged}
               />
             ))}
           </div>
@@ -167,7 +169,7 @@ export function WealthHoldingsSection({ holdings }: WealthHoldingsSectionProps) 
           <CardHeader>
               <div className="flex justify-between items-center">
                   <CardTitle className="text-xl font-semibold font-headline text-primary flex items-center">
-                      <Landmark className="h-6 w-6 mr-2" /> Wealth Holdings
+                      <Landmark className="h-6 w-6 mr-2" /> {isPledged ? 'Pledged Wealth' : 'Wealth Holdings'}
                   </CardTitle>
                   <div className="flex items-center gap-1 rounded-md bg-muted p-1">
                       <Button variant={viewMode === 'list' ? 'secondary' : 'ghost'} size="icon" className="h-7 w-7" onClick={() => setViewMode('list')}><List /></Button>
@@ -198,7 +200,7 @@ export function WealthHoldingsSection({ holdings }: WealthHoldingsSectionProps) 
 
                   <div className="space-y-1.5">
                     <div className="flex justify-between items-center text-sm">
-                      <p className="text-muted-foreground">Total Investment</p>
+                      <p className="text-muted-foreground">{isPledged ? 'Total Pledged Value' : 'Total Investment'}</p>
                       <p className="font-medium text-foreground">{formatCurrency(totalInvestmentValue)}</p>
                     </div>
                     <div className="flex justify-between items-center text-sm">
@@ -225,4 +227,3 @@ export function WealthHoldingsSection({ holdings }: WealthHoldingsSectionProps) 
     </>
   );
 }
-
