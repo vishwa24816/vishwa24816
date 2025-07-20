@@ -15,14 +15,16 @@ import { cn } from '@/lib/utils';
 import { MarketOverview } from '@/components/dashboard/MarketOverview';
 import { mockMarketIndices, mockCryptoAssets } from '@/lib/mockData';
 import { SideMenu } from './SideMenu';
+import type { WalletMode } from '../dashboard/CryptoHoldingsSection';
 
 interface AppHeaderProps {
   activeMode?: 'Portfolio' | 'Fiat' | 'Crypto' | 'Web3' | 'Wealth';
   onModeChange?: (mode: 'Portfolio' | 'Fiat' | 'Crypto' | 'Web3' | 'Wealth') => void;
   isRealMode?: boolean;
+  walletMode?: WalletMode;
 }
 
-export function AppHeader({ activeMode, onModeChange, isRealMode }: AppHeaderProps) {
+export function AppHeader({ activeMode, onModeChange, isRealMode, walletMode }: AppHeaderProps) {
   const { user } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
@@ -46,6 +48,7 @@ export function AppHeader({ activeMode, onModeChange, isRealMode }: AppHeaderPro
 
 
   const isPortfolioDisabled = pathname === '/orders' || pathname === '/screener' || pathname === '/community';
+  const isCryptoDisabled = walletMode === 'cold';
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -132,23 +135,28 @@ export function AppHeader({ activeMode, onModeChange, isRealMode }: AppHeaderPro
         {onModeChange && (
             <div className="flex items-center justify-center pb-2">
                 <div className="flex items-center rounded-md bg-primary-foreground/10 p-1 space-x-1 w-full">
-                    {availableModes.map(mode => (
-                        <Button
-                            key={mode}
-                            onClick={() => handleModeChange(mode)}
-                            variant="ghost"
-                            className={cn(
-                                "h-7 px-3 text-xs rounded-md border-none flex-1",
-                                activeMode === mode
-                                    ? 'bg-primary-foreground/20 text-white shadow-sm' 
-                                    : 'bg-transparent text-primary-foreground/70 hover:bg-primary-foreground/15',
-                                mode === 'Portfolio' && isPortfolioDisabled && "opacity-50 cursor-not-allowed"
-                            )}
-                            disabled={mode === 'Portfolio' && isPortfolioDisabled}
-                        >
-                            {mode}
-                        </Button>
-                    ))}
+                    {availableModes.map(mode => {
+                        const isDisabled = (mode === 'Portfolio' && isPortfolioDisabled) ||
+                                           ((mode === 'Crypto' || mode === 'Web3') && isCryptoDisabled);
+
+                        return (
+                            <Button
+                                key={mode}
+                                onClick={() => handleModeChange(mode)}
+                                variant="ghost"
+                                className={cn(
+                                    "h-7 px-3 text-xs rounded-md border-none flex-1",
+                                    activeMode === mode
+                                        ? 'bg-primary-foreground/20 text-white shadow-sm' 
+                                        : 'bg-transparent text-primary-foreground/70 hover:bg-primary-foreground/15',
+                                    isDisabled && "opacity-50 cursor-not-allowed"
+                                )}
+                                disabled={isDisabled}
+                            >
+                                {mode}
+                            </Button>
+                        )
+                    })}
                 </div>
             </div>
         )}

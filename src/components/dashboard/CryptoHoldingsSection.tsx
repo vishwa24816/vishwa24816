@@ -27,8 +27,7 @@ import {
 } from "@/components/ui/select";
 
 
-type ViewMode = 'list' | 'bar' | 'heatmap' | 'pie';
-type WalletMode = 'hot' | 'cold';
+export type WalletMode = 'hot' | 'cold';
 
 interface CryptoHoldingsSectionProps {
   holdings: PortfolioHolding[];
@@ -39,6 +38,8 @@ interface CryptoHoldingsSectionProps {
   setMainPortfolioCashBalance: React.Dispatch<React.SetStateAction<number>>;
   isRealMode?: boolean;
   isPledged?: boolean;
+  walletMode: WalletMode;
+  setWalletMode: React.Dispatch<React.SetStateAction<WalletMode>>;
 }
 
 const mockTransactions = [
@@ -57,7 +58,9 @@ export function CryptoHoldingsSection({
   mainPortfolioCashBalance,
   setMainPortfolioCashBalance,
   isRealMode = false,
-  isPledged = false
+  isPledged = false,
+  walletMode,
+  setWalletMode,
 }: CryptoHoldingsSectionProps) {
   const { toast } = useToast();
   const router = useRouter();
@@ -67,7 +70,6 @@ export function CryptoHoldingsSection({
   const [pledgeDialogOpen, setPledgeDialogOpen] = useState(false);
   const [selectedHoldingForPledge, setSelectedHoldingForPledge] = useState<PortfolioHolding | null>(null);
   const [pledgeDialogMode, setPledgeDialogMode] = useState<'pledge' | 'payback'>('pledge');
-  const [walletMode, setWalletMode] = useState<WalletMode>('cold');
 
   const [isSending, setIsSending] = useState(false);
   const [isReceiving, setIsReceiving] = useState(false);

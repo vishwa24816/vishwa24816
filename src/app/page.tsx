@@ -8,12 +8,14 @@ import { RealDashboard } from '@/components/dashboard/RealDashboard';
 import { AppHeader } from '@/components/shared/AppHeader';
 import { Skeleton } from '@/components/ui/skeleton';
 import React, { useState, useEffect } from 'react';
+import type { WalletMode } from '@/components/dashboard/CryptoHoldingsSection';
 
 export default function DashboardRouterPage() {
   const { user, loading } = useAuth();
   const isRealMode = user?.id === 'REAL456';
 
   const [activeMode, setActiveMode] = useState<'Portfolio' | 'Fiat' | 'Wealth' | 'Crypto' | 'Web3'>(isRealMode ? 'Crypto' : 'Portfolio');
+  const [walletMode, setWalletMode] = useState<WalletMode>('cold');
   
   useEffect(() => {
     if (isRealMode && (activeMode === 'Fiat' || activeMode === 'Portfolio')) {
@@ -46,8 +48,13 @@ export default function DashboardRouterPage() {
           activeMode={activeMode}
           onModeChange={setActiveMode}
           isRealMode={isRealMode}
+          walletMode={walletMode}
         />
-        {isRealMode ? <RealDashboard activeMode={activeMode} /> : <DemoDashboard activeMode={activeMode} />}
+        {isRealMode ? (
+          <RealDashboard activeMode={activeMode} onModeChange={setActiveMode} />
+        ) : (
+          <DemoDashboard activeMode={activeMode} onModeChange={setActiveMode} walletMode={walletMode} setWalletMode={setWalletMode} />
+        )}
       </div>
     </ProtectedRoute>
   );

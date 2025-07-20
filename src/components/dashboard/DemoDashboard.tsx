@@ -51,6 +51,7 @@ import { mockCryptoOptionsForWatchlist } from '@/lib/mockData/cryptoOptionsWatch
 import { mockCryptoIndices } from '@/lib/mockData/cryptoIndices';
 import { mockUsStocks } from '@/lib/mockData/usStocks';
 import { mockWeb3NFTs } from '@/lib/mockData/web3NFTs';
+import type { WalletMode } from '@/components/dashboard/CryptoHoldingsSection';
 
 // Helper functions
 function getRelevantNewsForHoldings(holdings: PortfolioHolding[], allNews: NewsArticle[]): NewsArticle[] {
@@ -168,9 +169,12 @@ function getRelevantNewsForWatchlistItems(items: Stock[] | undefined, allNews: N
 
 interface DemoDashboardProps {
   activeMode: 'Portfolio' | 'Fiat' | 'Wealth' | 'Crypto' | 'Web3';
+  onModeChange: (mode: 'Portfolio' | 'Fiat' | 'Wealth' | 'Crypto' | 'Web3') => void;
+  walletMode: WalletMode;
+  setWalletMode: React.Dispatch<React.SetStateAction<WalletMode>>;
 }
 
-export function DemoDashboard({ activeMode }: DemoDashboardProps) {
+export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletMode }: DemoDashboardProps) {
     const { primaryNavItems, secondaryNavTriggerCategories } = useMemo(() => {
     if (activeMode === 'Portfolio') {
         return {
@@ -377,12 +381,12 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
             if (isWatchlistView) return <div className="space-y-8"><WatchlistSection title="My Wealth Watchlist" defaultInitialItems={itemsForWatchlist} localStorageKeyOverride="simWealthWatchlist"/><NewsSection articles={newsForView} /></div>;
             return null;
         case 'Crypto':
-            if (isHoldingsView) return <><CryptoHoldingsSection title="Crypto Wallet & Holdings" holdings={cryptoHoldings} cashBalance={cryptoCashBalance} setCashBalance={setCryptoCashBalance} mainPortfolioCashBalance={mainPortfolioCashBalance} setMainPortfolioCashBalance={setMainPortfolioCashBalance} isRealMode={false} /><NewsSection articles={newsForView} /></>;
+            if (isHoldingsView) return <><CryptoHoldingsSection title="Crypto Wallet & Holdings" holdings={cryptoHoldings} cashBalance={cryptoCashBalance} setCashBalance={setCryptoCashBalance} mainPortfolioCashBalance={mainPortfolioCashBalance} setMainPortfolioCashBalance={setMainPortfolioCashBalance} isRealMode={false} walletMode={walletMode} setWalletMode={setWalletMode} /><NewsSection articles={newsForView} /></>;
             if (isPositionsView) return <div className="space-y-8"><CryptoFuturesSection positions={mockCryptoFutures} cashBalance={cryptoCashBalance} /><CryptoBasketSection /><NewsSection articles={newsForView} /></div>;
             if (isWatchlistView) return <div className="space-y-8"><WatchlistSection title="My Crypto Watchlist" defaultInitialItems={itemsForWatchlist} localStorageKeyOverride={'simCryptoWatchlist'}/><NewsSection articles={newsForView} /></div>;
             return null;
         case 'Web3':
-             if (isHoldingsView) return <><CryptoHoldingsSection title="Web3 Wallet & Holdings" holdings={mockWeb3Holdings} cashBalance={cryptoCashBalance} setCashBalance={setCryptoCashBalance} mainPortfolioCashBalance={mainPortfolioCashBalance} setMainPortfolioCashBalance={setMainPortfolioCashBalance} isRealMode={false} /><NewsSection articles={newsForView} /></>;
+             if (isHoldingsView) return <><CryptoHoldingsSection title="Web3 Wallet & Holdings" holdings={mockWeb3Holdings} cashBalance={cryptoCashBalance} setCashBalance={setCryptoCashBalance} mainPortfolioCashBalance={mainPortfolioCashBalance} setMainPortfolioCashBalance={setMainPortfolioCashBalance} isRealMode={false} walletMode={walletMode} setWalletMode={setWalletMode} /><NewsSection articles={newsForView} /></>;
              if (isWatchlistView) return <div className="space-y-8"><WatchlistSection title="My Web3 Watchlist" localStorageKeyOverride={'simWeb3Watchlist'}/><NewsSection articles={newsForView} /></div>;
             return null;
         case 'Pledged Holdings':
@@ -393,8 +397,8 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
 
             if (activeSecondaryItem === 'Fiat') return <FiatHoldingsSection title="Pledged Fiat Holdings" holdings={pledgedFiatHoldings} intradayPositions={[]} foPositions={[]} mainPortfolioCashBalance={0} setMainPortfolioCashBalance={() => {}} cryptoCashBalance={0} setCryptoCashBalance={() => {}} isPledged={true} />;
             if (activeSecondaryItem === 'Wealth') return <WealthHoldingsSection holdings={pledgedWealthHoldings} isPledged={true} />;
-            if (activeSecondaryItem === 'Crypto') return <CryptoHoldingsSection title="Pledged Crypto Holdings" holdings={pledgedCryptoHoldings} cashBalance={0} setCashBalance={() => {}} mainPortfolioCashBalance={0} setMainPortfolioCashBalance={() => {}} isRealMode={false} isPledged={true} />;
-            if (activeSecondaryItem === 'Web3') return <CryptoHoldingsSection title="Pledged Web3 Holdings" holdings={pledgedWeb3Holdings} cashBalance={0} setCashBalance={() => {}} mainPortfolioCashBalance={0} setMainPortfolioCashBalance={() => {}} isRealMode={false} isPledged={true}/>;
+            if (activeSecondaryItem === 'Crypto') return <CryptoHoldingsSection title="Pledged Crypto Holdings" holdings={pledgedCryptoHoldings} cashBalance={0} setCashBalance={() => {}} mainPortfolioCashBalance={0} setMainPortfolioCashBalance={() => {}} isRealMode={false} isPledged={true} walletMode={walletMode} setWalletMode={setWalletMode} />;
+            if (activeSecondaryItem === 'Web3') return <CryptoHoldingsSection title="Pledged Web3 Holdings" holdings={pledgedWeb3Holdings} cashBalance={0} setCashBalance={() => {}} mainPortfolioCashBalance={0} setMainPortfolioCashBalance={() => {}} isRealMode={false} isPledged={true} walletMode={walletMode} setWalletMode={setWalletMode}/>;
             return null;
         default: return null;
     }
