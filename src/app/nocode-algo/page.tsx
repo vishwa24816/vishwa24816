@@ -58,7 +58,6 @@ const initialNodes: Node[] = [
 const nodeTypes = [
     { type: 'trigger', label: 'Start Trigger', icon: Zap },
     { type: 'condition', label: 'If/Else Condition', icon: GitBranch },
-    { type: 'wire', label: 'Wire', icon: Share2 },
     { type: 'buy', label: 'Execute Buy', icon: CheckCircle, className: "bg-green-500 text-white" },
     { type: 'sell', label: 'Execute Sell', icon: XCircle, className: "bg-red-500 text-white" },
     { type: 'output', label: 'End Flow', icon: ArrowRight },
