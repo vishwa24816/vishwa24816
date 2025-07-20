@@ -18,7 +18,7 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { cn } from '@/lib/utils';
 import { useToast } from "@/hooks/use-toast";
 import { mockUnderlyings } from '@/lib/mockData';
@@ -208,12 +208,12 @@ export function ReadymadeStrategiesSection({ onStrategySelect }: { onStrategySel
         
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 flex-grow">
           {filteredStrategies.map(strategy => (
-            <Card 
+             <Card 
               key={strategy.id} 
               className="flex flex-col p-2 text-center cursor-pointer hover:shadow-md hover:border-primary transition-all"
               onClick={() => handleStrategyClick(strategy)}
             >
-              <div className="w-full h-20 bg-muted/50 rounded-md mb-2 flex items-center justify-center p-1">
+              <div className="w-full h-20 flex-grow bg-muted/50 rounded-md mb-2 p-1">
                  <StrategyPayoffChart strategyId={strategy.id} />
               </div>
               <p className="text-xs font-medium mt-auto">{strategy.name}</p>
@@ -224,3 +224,5 @@ export function ReadymadeStrategiesSection({ onStrategySelect }: { onStrategySel
     </div>
   );
 }
+
+    

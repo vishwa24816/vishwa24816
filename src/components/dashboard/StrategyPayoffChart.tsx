@@ -62,6 +62,9 @@ const generatePayoffData = (strategyId: StrategyId) => {
       case 'iron-butterfly':
         pnl = premium_short - (Math.abs(price-strike1));
         break;
+      default:
+        // Default to a simple line if strategyId is unknown
+        pnl = (price - 105) * 0.1;
     }
     data.push({ price, pnl });
   }
@@ -117,29 +120,24 @@ export const StrategyPayoffChart: React.FC<StrategyPayoffChartProps> = ({ strate
           <Chart.YAxis hide domain={['dataMin', 'dataMax']} />
           <Chart.ReferenceLine y={0} stroke="hsl(var(--muted-foreground))" strokeDasharray="3 3" />
           
-          {/* Area for Profit */}
-          <Chart.Area
-            dataKey={pnlDataKey}
-            type="monotone"
-            fill="url(#fillProfit)"
-            stroke="transparent"
-            stackId="a"
-            // @ts-ignore
-            points={payoffData.filter((d) => d.pnl >= 0)}
-          />
-
-          {/* Area for Loss */}
            <Chart.Area
-            dataKey={pnlDataKey}
-            type="monotone"
-            fill="url(#fillLoss)"
-            stroke="transparent"
-            stackId="b"
-            // @ts-ignore
-            points={payoffData.filter((d) => d.pnl < 0)}
-          />
-
-           {/* The overall line */}
+              dataKey={pnlDataKey}
+              type="monotone"
+              fill="url(#fillProfit)"
+              stroke="transparent"
+              stackId="a"
+              // @ts-ignore - Recharts type issue with this prop
+              points={payoffData.filter((d) => d.pnl >= 0)}
+            />
+            <Chart.Area
+              dataKey={pnlDataKey}
+              type="monotone"
+              fill="url(#fillLoss)"
+              stroke="transparent"
+              stackId="b"
+              // @ts-ignore - Recharts type issue with this prop
+              points={payoffData.filter((d) => d.pnl < 0)}
+            />
            <Chart.Line
             dataKey={pnlDataKey}
             type="monotone"
@@ -152,3 +150,5 @@ export const StrategyPayoffChart: React.FC<StrategyPayoffChartProps> = ({ strate
     </ChartContainer>
   );
 };
+
+    
