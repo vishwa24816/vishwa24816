@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useRef, useEffect, useState } from 'react';
@@ -19,8 +20,8 @@ export const DXBallGame: React.FC<DXBallGameProps> = ({ brickCount, onGameEnd })
     paddleX: 0,
     ballX: 0,
     ballY: 0,
-    ballDX: 6,
-    ballDY: -6,
+    ballDX: 4, // Sligthly reduced initial speed
+    ballDY: -4,
     rightPressed: false,
     leftPressed: false,
     bricks: [] as { x: number; y: number; status: number }[][],
@@ -138,6 +139,11 @@ export const DXBallGame: React.FC<DXBallGameProps> = ({ brickCount, onGameEnd })
               game.ballDY = -game.ballDY;
               b.status = 0;
               game.score++;
+              
+              // Increase ball speed by 15%
+              game.ballDX *= 1.15;
+              game.ballDY *= 1.15;
+              
               if (game.score === game.brickTotal) {
                 setGameState('win');
               }
@@ -149,10 +155,9 @@ export const DXBallGame: React.FC<DXBallGameProps> = ({ brickCount, onGameEnd })
 
     // --- Game Loop ---
     const draw = () => {
-      if (gameState !== 'playing') {
-        cancelAnimationFrame(game.animationFrameId);
-        return;
-      }
+      // Check for game state change inside the loop to stop it
+      if (gameInstance.current.animationFrameId === -1) return;
+
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       drawBricks();
       drawBall();
@@ -184,12 +189,24 @@ export const DXBallGame: React.FC<DXBallGameProps> = ({ brickCount, onGameEnd })
     // --- Cleanup ---
     return () => {
       cancelAnimationFrame(game.animationFrameId);
+      gameInstance.current.animationFrameId = -1; // Mark as stopped
       document.removeEventListener("keydown", keyDownHandler);
       document.removeEventListener("keyup", keyUpHandler);
       document.removeEventListener("mousemove", mouseMoveHandler);
-      canvas.removeEventListener("touchmove", touchMoveHandler);
+      if (canvasRef.current) {
+        canvasRef.current.removeEventListener("touchmove", touchMoveHandler);
+      }
     };
-  }, [brickCount, gameState]); // Re-run effect if brickCount or gameState changes
+  }, []); // Only run once on mount
+
+  useEffect(() => {
+    // This effect handles stopping the animation when gameState changes
+    if (gameState !== 'playing' && gameInstance.current.animationFrameId !== 0) {
+      cancelAnimationFrame(gameInstance.current.animationFrameId);
+      gameInstance.current.animationFrameId = 0;
+    }
+  }, [gameState]);
+
 
   const getMessage = () => {
     if (gameState === 'gameOver') return 'Game Over!';
