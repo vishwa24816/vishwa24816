@@ -3,7 +3,6 @@
 
 import React, { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { ArrowUpDown } from 'lucide-react';
@@ -57,8 +56,7 @@ export function FuturesMarketMovers() {
   };
 
   return (
-    <Card className="mt-6">
-      <CardContent className="p-0">
+    <div className="mt-6">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="w-full justify-start rounded-none bg-transparent border-b p-0 px-4">
             <TabsTrigger value="Futures" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">Futures</TabsTrigger>
@@ -112,7 +110,6 @@ export function FuturesMarketMovers() {
             </div>
           </TabsContent>
         </Tabs>
-      </CardContent>
-    </Card>
+    </div>
   );
 }
