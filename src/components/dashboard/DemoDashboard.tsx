@@ -185,7 +185,7 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
                 "US Stocks": watchlistNav,
                 "Futures": ["Index Futures", "Stock Futures"],
                 "Options": ["Custom", "Readymade"],
-                "Mutual Fund": watchlistNav,
+                "Mutual Fund": [], // No secondary nav for categorized view
                 "Bonds": watchlistNav,
                 "IPO": [],
             }
@@ -270,6 +270,14 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
   
   const fiatHoldings = useMemo(() => mockPortfolioHoldings.filter(h => h.type !== 'Crypto'), []);
   const cryptoHoldings = useMemo(() => mockPortfolioHoldings.filter(h => h.type === 'Crypto'), []);
+  const largeCapFunds = useMemo(() => mockMutualFunds.filter(mf => mf.sector === 'Large Cap'), []);
+  const midCapFunds = useMemo(() => mockMutualFunds.filter(mf => mf.sector === 'Mid Cap'), []);
+  const smallCapFunds = useMemo(() => mockMutualFunds.filter(mf => mf.sector === 'Small Cap'), []);
+  const sectoralFunds = useMemo(() => mockMutualFunds.filter(mf => mf.sector === 'Sectoral'), []);
+  const thematicFunds = useMemo(() => mockMutualFunds.filter(mf => mf.sector === 'Thematic'), []);
+  const debtFunds = useMemo(() => mockMutualFunds.filter(mf => mf.sector === 'Debt'), []);
+  const otherFunds = useMemo(() => mockMutualFunds.filter(mf => !['Large Cap', 'Mid Cap', 'Small Cap', 'Sectoral', 'Thematic', 'Debt'].includes(mf.sector || '')), []);
+
 
   let newsForView: NewsArticle[] = mockNewsArticles; 
   let itemsForWatchlist: Stock[] | undefined = undefined;
@@ -314,7 +322,6 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
         if (isTopWatchlistView) {
             if (isIndianStockView) itemsForWatchlist = mockStocks;
             else if (isUsStockView) itemsForWatchlist = mockUsStocks;
-            else if (activePrimaryItem === "Mutual Fund") itemsForWatchlist = mockMutualFunds;
             else if (activePrimaryItem === "Bonds") itemsForWatchlist = mockBonds;
             newsForView = getRelevantNewsForWatchlistItems(itemsForWatchlist, mockNewsArticles);
         } else {
@@ -385,11 +392,25 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
         if (activePrimaryItem === "Futures") {
             return <div className="space-y-8"><WatchlistSection title={categoryWatchlistTitle} displayItems={itemsForWatchlist} isPredefinedList={true} /><NewsSection articles={newsForView} /></div>
         }
+        if (activePrimaryItem === "Mutual Fund") {
+            return (
+                <div className="space-y-8">
+                    <WatchlistSection title="Large Cap Funds" displayItems={largeCapFunds} isPredefinedList={true} />
+                    <WatchlistSection title="Mid Cap Funds" displayItems={midCapFunds} isPredefinedList={true} />
+                    <WatchlistSection title="Small Cap Funds" displayItems={smallCapFunds} isPredefinedList={true} />
+                    <WatchlistSection title="Sectoral Funds" displayItems={sectoralFunds} isPredefinedList={true} />
+                    <WatchlistSection title="Thematic Funds (ELSS)" displayItems={thematicFunds} isPredefinedList={true} />
+                    <WatchlistSection title="Debt Funds" displayItems={debtFunds} isPredefinedList={true} />
+                    <WatchlistSection title="Other Funds (Flexi, Index)" displayItems={otherFunds} isPredefinedList={true} />
+                    <NewsSection articles={getRelevantNewsForWatchlistItems(mockMutualFunds, mockNewsArticles)} />
+                </div>
+            );
+        }
         
         const isIndianStockView = activePrimaryItem === "Indian Stocks";
         const isUsStockView = activePrimaryItem === "US Stocks";
-        const isTopWatchlistView = (isIndianStockView || isUsStockView || ["Mutual Fund", "Bonds"].includes(activePrimaryItem)) && activeSecondaryItem.startsWith("Top watchlist");
-        const isCategoryNumberedWatchlistView = (isIndianStockView || isUsStockView || ["Mutual Fund", "Bonds"].includes(activePrimaryItem)) && !!activeSecondaryItem.match(/^Watchlist \d+$/);
+        const isTopWatchlistView = (isIndianStockView || isUsStockView || ["Bonds"].includes(activePrimaryItem)) && activeSecondaryItem.startsWith("Top watchlist");
+        const isCategoryNumberedWatchlistView = (isIndianStockView || isUsStockView || ["Bonds"].includes(activePrimaryItem)) && !!activeSecondaryItem.match(/^Watchlist \d+$/);
         
         if(isTopWatchlistView) return <div className="space-y-8"><WatchlistSection title={categoryWatchlistTitle} displayItems={itemsForWatchlist} isPredefinedList={true} /><NewsSection articles={newsForView} /></div>
         if(isCategoryNumberedWatchlistView) return <div className="space-y-8"><WatchlistSection title={categoryWatchlistTitle} isPredefinedList={false} localStorageKeyOverride={`simAppWatchlist_Fiat_${activePrimaryItem.replace(/\s+/g, '_')}_${activeSecondaryItem.replace(/\s+/g, '_')}`} defaultInitialItems={[]}/><NewsSection articles={newsForView} /></div>
