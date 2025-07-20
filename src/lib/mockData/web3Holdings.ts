@@ -1,2 +1,47 @@
-// This file is intentionally left blank. Mock Web3 holdings are now defined in portfolioHoldings.ts
-export const mockWeb3Holdings = [];
+
+import type { PortfolioHolding } from '@/types';
+
+export const mockWeb3Holdings: PortfolioHolding[] = [
+    {
+        id: 'web3_holding_link',
+        name: 'Chainlink',
+        symbol: 'LINK',
+        type: 'Crypto',
+        quantity: 100,
+        avgCostPrice: 15.50 * 80,
+        ltp: 18.20 * 80,
+        currentValue: 1820.00 * 80,
+        profitAndLoss: 270.00 * 80,
+        profitAndLossPercent: 17.42,
+        dayChangeAbsolute: 81.90 * 80,
+        dayChangePercent: 4.71,
+    },
+    {
+        id: 'web3_holding_uni',
+        name: 'Uniswap',
+        symbol: 'UNI',
+        type: 'Crypto',
+        quantity: 200,
+        avgCostPrice: 7.80 * 80,
+        ltp: 11.50 * 80,
+        currentValue: 2300.00 * 80,
+        profitAndLoss: 740.00 * 80,
+        profitAndLossPercent: 47.44,
+        dayChangeAbsolute: 161.00 * 80,
+        dayChangePercent: 7.52,
+    },
+     {
+        id: 'web3_holding_fet',
+        name: 'Fetch.ai',
+        symbol: 'FET',
+        type: 'Crypto',
+        quantity: 500,
+        avgCostPrice: 1.80 * 80,
+        ltp: 2.15 * 80,
+        currentValue: 1075 * 80,
+        profitAndLoss: 175 * 80,
+        profitAndLossPercent: 19.44,
+        dayChangeAbsolute: 90 * 80,
+        dayChangePercent: 9.13,
+    },
+];

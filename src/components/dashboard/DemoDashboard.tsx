@@ -39,6 +39,7 @@ import {
   mockWeb3DeFi,
   mockWeb3Trending,
   mockWeb3Memes,
+  mockWeb3Holdings,
 } from '@/lib/mockData';
 import { mockUsStocks } from '@/lib/mockData/usStocks';
 import { mockWeb3NFTs } from '@/lib/mockData/web3NFTs';
@@ -354,7 +355,7 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
             if (isWatchlistView) return <div className="space-y-8"><WatchlistSection title="My Crypto Watchlist" defaultInitialItems={itemsForWatchlist} localStorageKeyOverride={'simCryptoWatchlist'}/><NewsSection articles={newsForView} /></div>;
             return null;
         case 'Web3':
-             if (isHoldingsView) return <><CryptoHoldingsSection title="Web3 Wallet & Holdings" holdings={mockPortfolioHoldings.filter(h => h.type === 'Crypto')} cashBalance={cryptoCashBalance} setCashBalance={setCryptoCashBalance} mainPortfolioCashBalance={mainPortfolioCashBalance} setMainPortfolioCashBalance={setMainPortfolioCashBalance} isRealMode={false} /><NewsSection articles={newsForView} /></>;
+             if (isHoldingsView) return <><CryptoHoldingsSection title="Web3 Wallet & Holdings" holdings={mockWeb3Holdings} cashBalance={cryptoCashBalance} setCashBalance={setCryptoCashBalance} mainPortfolioCashBalance={mainPortfolioCashBalance} setMainPortfolioCashBalance={setMainPortfolioCashBalance} isRealMode={false} /><NewsSection articles={newsForView} /></>;
              if (isWatchlistView) return <div className="space-y-8"><WatchlistSection title="My Web3 Watchlist" localStorageKeyOverride={'simWeb3Watchlist'}/><NewsSection articles={newsForView} /></div>;
             return null;
         case 'Pledged Holdings':
