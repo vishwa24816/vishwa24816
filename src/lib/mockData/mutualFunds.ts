@@ -21,6 +21,11 @@ export const mockMutualFunds: Stock[] = [
     fundSize: '₹31,521 Cr',
     aboutCompany: 'A large-cap equity fund that aims to generate long-term capital appreciation by investing in a diversified portfolio of predominantly large-cap stocks.'
   },
+  { id: 'mf_lc_1', symbol: 'MIRAEALC', name: 'Mirae Asset Large Cap Fund Direct-Growth', price: 90.10, change: 0.50, changePercent: 0.56, exchange: 'MF', sector: 'Large Cap', riskLevel: 'High' },
+  { id: 'mf_lc_2', symbol: 'CANRALC', name: 'Canara Robeco Bluechip Equity Fund Direct-Growth', price: 45.50, change: 0.20, changePercent: 0.44, exchange: 'MF', sector: 'Large Cap', riskLevel: 'High' },
+  { id: 'mf_lc_3', symbol: 'EDELWEISSLG', name: 'Edelweiss Large Cap Fund Direct-Growth', price: 65.20, change: -0.10, changePercent: -0.15, exchange: 'MF', sector: 'Large Cap', riskLevel: 'High' },
+  { id: 'mf_lc_4', symbol: 'ICICIBLUE', name: 'ICICI Prudential Bluechip Fund Direct-Growth', price: 80.75, change: 0.45, changePercent: 0.56, exchange: 'MF', sector: 'Large Cap', riskLevel: 'High' },
+  
   // Mid Cap
   {
     id: 'mf6',
@@ -58,6 +63,10 @@ export const mockMutualFunds: Stock[] = [
     fundSize: '₹45,600 Cr',
     aboutCompany: 'One of the largest mid-cap funds, it invests in a diversified portfolio of mid-sized companies with high growth potential.'
   },
+  { id: 'mf_mc_1', symbol: 'PGIMMID', name: 'PGIM India Midcap Opportunities Fund Direct-Growth', price: 50.80, change: 0.90, changePercent: 1.80, exchange: 'MF', sector: 'Mid Cap', riskLevel: 'Very High' },
+  { id: 'mf_mc_2', symbol: 'SBIMAGMID', name: 'SBI Magnum Midcap Fund Direct-Growth', price: 180.20, change: 2.10, changePercent: 1.18, exchange: 'MF', sector: 'Mid Cap', riskLevel: 'Very High' },
+  { id: 'mf_mc_3', symbol: 'MOTILALMID', name: 'Motilal Oswal Midcap Fund Direct-Growth', price: 70.40, change: 1.20, changePercent: 1.73, exchange: 'MF', sector: 'Mid Cap', riskLevel: 'Very High' },
+
   // Small Cap
   { 
     id: 'mf5', 
@@ -94,6 +103,10 @@ export const mockMutualFunds: Stock[] = [
     fundSize: '₹37,800 Cr',
     aboutCompany: 'A small-cap fund focusing on identifying and investing in small-cap companies with the potential to become future market leaders.'
   },
+  { id: 'mf_sc_1', symbol: 'AXISSMALL', name: 'Axis Small Cap Fund Direct-Growth', price: 75.60, change: 1.50, changePercent: 2.02, exchange: 'MF', sector: 'Small Cap', riskLevel: 'Very High' },
+  { id: 'mf_sc_2', symbol: 'QUANTSMALL', name: 'Quant Small Cap Fund Direct-Growth', price: 230.10, change: 4.50, changePercent: 1.99, exchange: 'MF', sector: 'Small Cap', riskLevel: 'Very High' },
+  { id: 'mf_sc_3', symbol: 'HDFCSMALL', name: 'HDFC Small Cap Fund Direct-Growth', price: 105.80, change: 1.90, changePercent: 1.83, exchange: 'MF', sector: 'Small Cap', riskLevel: 'Very High' },
+
   // Sectoral
   {
     id: 'mf7',
@@ -113,6 +126,11 @@ export const mockMutualFunds: Stock[] = [
     fundSize: '₹8,500 Cr',
     aboutCompany: 'A sectoral fund investing in technology and tech-enabled companies in India, aiming to capitalize on the digital transformation trend.'
   },
+  { id: 'mf_sec_1', symbol: 'TATASTEEL', name: 'Tata Steel Sectoral Fund Direct-Growth', price: 25.30, change: 0.50, changePercent: 2.02, exchange: 'MF', sector: 'Sectoral', riskLevel: 'Very High' },
+  { id: 'mf_sec_2', symbol: 'ADITYABSLPHARMA', name: 'Aditya Birla SL Pharma & Healthcare Fund Direct-Growth', price: 40.10, change: -0.20, changePercent: -0.50, exchange: 'MF', sector: 'Sectoral', riskLevel: 'Very High' },
+  { id: 'mf_sec_3', symbol: 'UTIBANKING', name: 'UTI Banking and Financial Services Fund Direct-Growth', price: 55.60, change: 0.70, changePercent: 1.27, exchange: 'MF', sector: 'Sectoral', riskLevel: 'Very High' },
+  { id: 'mf_sec_4', symbol: 'ICICICONSUMER', name: 'ICICI Prudential FMCG Fund Direct-Growth', price: 48.90, change: 0.30, changePercent: 0.62, exchange: 'MF', sector: 'Sectoral', riskLevel: 'Very High' },
+
   // Thematic
   { 
     id: 'mf3', 
@@ -131,6 +149,11 @@ export const mockMutualFunds: Stock[] = [
     minSipAmount: 500,
     fundSize: '₹14,334 Cr'
   },
+  { id: 'mf_thm_1', symbol: 'QUANTSAVER', name: 'Quant Tax Plan Direct-Growth', price: 350.70, change: 5.20, changePercent: 1.50, exchange: 'MF', sector: 'Thematic', riskLevel: 'Very High' },
+  { id: 'mf_thm_2', symbol: 'IDFCINFRA', name: 'IDFC Infrastructure Fund Direct-Growth', price: 30.20, change: -0.10, changePercent: -0.33, exchange: 'MF', sector: 'Thematic', riskLevel: 'Very High' },
+  { id: 'mf_thm_3', symbol: 'TATAETHICAL', name: 'Tata Ethical Fund Direct-Growth', price: 320.50, change: 2.80, changePercent: 0.88, exchange: 'MF', sector: 'Thematic', riskLevel: 'High' },
+  { id: 'mf_thm_4', symbol: 'ICICIESG', name: 'ICICI Prudential ESG Fund Direct-Growth', price: 22.80, change: 0.15, changePercent: 0.66, exchange: 'MF', sector: 'Thematic', riskLevel: 'High' },
+
   // Debt
   {
     id: 'mf10',
@@ -149,7 +172,12 @@ export const mockMutualFunds: Stock[] = [
     minSipAmount: 1000,
     fundSize: '₹5,200 Cr'
   },
-  // Other (Flexi Cap, Index etc.)
+  { id: 'mf_dbt_1', symbol: 'KOTAKBOND', name: 'Kotak Bond Direct-Growth', price: 45.30, change: 0.05, changePercent: 0.11, exchange: 'MF', sector: 'Debt', riskLevel: 'Moderate' },
+  { id: 'mf_dbt_2', symbol: 'HDFCCREDIT', name: 'HDFC Credit Risk Debt Fund Direct-Growth', price: 12.80, change: 0.01, changePercent: 0.08, exchange: 'MF', sector: 'Debt', riskLevel: 'Moderately High' },
+  { id: 'mf_dbt_3', symbol: 'ICICILIQUID', name: 'ICICI Prudential Liquid Fund Direct-Growth', price: 300.00, change: 0.01, changePercent: 0.00, exchange: 'MF', sector: 'Debt', riskLevel: 'Low' },
+  { id: 'mf_dbt_4', symbol: 'NIPPONLIQ', name: 'Nippon India Liquid Fund Direct-Growth', price: 4500.00, change: 0.05, changePercent: 0.00, exchange: 'MF', sector: 'Debt', riskLevel: 'Low' },
+  
+  // Flexi Cap
   { 
     id: 'mf1', 
     symbol: 'PARAGPARIKH', 
@@ -196,6 +224,12 @@ export const mockMutualFunds: Stock[] = [
       fundHouse: 'PPFAS Mutual Fund'
     }
   },
+  { id: 'mf_flx_1', symbol: 'PGIMFLEXI', name: 'PGIM India Flexi Cap Fund Direct-Growth', price: 60.20, change: 0.80, changePercent: 1.35, exchange: 'MF', sector: 'Flexi Cap', riskLevel: 'Very High' },
+  { id: 'mf_flx_2', symbol: 'CANRAFLEXI', name: 'Canara Robeco Flexi Cap Fund Direct-Growth', price: 280.50, change: 3.10, changePercent: 1.12, exchange: 'MF', sector: 'Flexi Cap', riskLevel: 'Very High' },
+  { id: 'mf_flx_3', symbol: 'UTIFLEXI', name: 'UTI Flexi Cap Fund Direct-Growth', price: 260.90, change: 2.50, changePercent: 0.97, exchange: 'MF', sector: 'Flexi Cap', riskLevel: 'Very High' },
+  { id: 'mf_flx_4', symbol: 'HDFCFLEXI', name: 'HDFC Flexi Cap Fund Direct-Growth', price: 1050.00, change: 12.00, changePercent: 1.15, exchange: 'MF', sector: 'Flexi Cap', riskLevel: 'Very High' },
+
+  // Index Fund
   { 
     id: 'mf4', 
     symbol: 'UTINIFTY50', 
@@ -213,4 +247,9 @@ export const mockMutualFunds: Stock[] = [
     minSipAmount: 500,
     fundSize: '₹10,567 Cr'
   },
+  { id: 'mf_idx_1', symbol: 'HDFCSENSEX', name: 'HDFC Index Fund-S&P BSE Sensex Direct Plan-Growth', price: 613.50, change: 2.50, changePercent: 0.41, exchange: 'MF', sector: 'Index Fund', riskLevel: 'High' },
+  { id: 'mf_idx_2', symbol: 'ICICINIFTY', name: 'ICICI Prudential Nifty 50 Index Fund Direct-Growth', price: 182.50, change: 0.75, changePercent: 0.41, exchange: 'MF', sector: 'Index Fund', riskLevel: 'High' },
+  { id: 'mf_idx_3', symbol: 'MOTILALN100', name: 'Motilal Oswal Nasdaq 100 ETF', price: 145.20, change: 1.80, changePercent: 1.25, exchange: 'MF', sector: 'Index Fund', riskLevel: 'Very High' },
+  { id: 'mf_idx_4', symbol: 'NAVIUSIDX', name: 'Navi US Total Stock Market Fund of Fund Direct-Growth', price: 12.50, change: 0.10, changePercent: 0.81, exchange: 'MF', sector: 'Index Fund', riskLevel: 'Very High' },
+
 ];

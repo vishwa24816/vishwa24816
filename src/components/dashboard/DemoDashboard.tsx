@@ -270,13 +270,15 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
   
   const fiatHoldings = useMemo(() => mockPortfolioHoldings.filter(h => h.type !== 'Crypto'), []);
   const cryptoHoldings = useMemo(() => mockPortfolioHoldings.filter(h => h.type === 'Crypto'), []);
+  const indexFunds = useMemo(() => mockMutualFunds.filter(mf => mf.sector === 'Index Fund'), []);
+  const flexiCapFunds = useMemo(() => mockMutualFunds.filter(mf => mf.sector === 'Flexi Cap'), []);
   const largeCapFunds = useMemo(() => mockMutualFunds.filter(mf => mf.sector === 'Large Cap'), []);
   const midCapFunds = useMemo(() => mockMutualFunds.filter(mf => mf.sector === 'Mid Cap'), []);
   const smallCapFunds = useMemo(() => mockMutualFunds.filter(mf => mf.sector === 'Small Cap'), []);
   const sectoralFunds = useMemo(() => mockMutualFunds.filter(mf => mf.sector === 'Sectoral'), []);
   const thematicFunds = useMemo(() => mockMutualFunds.filter(mf => mf.sector === 'Thematic'), []);
   const debtFunds = useMemo(() => mockMutualFunds.filter(mf => mf.sector === 'Debt'), []);
-  const otherFunds = useMemo(() => mockMutualFunds.filter(mf => !['Large Cap', 'Mid Cap', 'Small Cap', 'Sectoral', 'Thematic', 'Debt'].includes(mf.sector || '')), []);
+  const otherFunds = useMemo(() => mockMutualFunds.filter(mf => !['Index Fund', 'Flexi Cap', 'Large Cap', 'Mid Cap', 'Small Cap', 'Sectoral', 'Thematic', 'Debt'].includes(mf.sector || '')), []);
 
 
   let newsForView: NewsArticle[] = mockNewsArticles; 
@@ -395,13 +397,15 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
         if (activePrimaryItem === "Mutual Fund") {
             return (
                 <div className="space-y-8">
+                    <WatchlistSection title="Index Funds" displayItems={indexFunds} isPredefinedList={true} />
+                    <WatchlistSection title="Flexi Cap Funds" displayItems={flexiCapFunds} isPredefinedList={true} />
                     <WatchlistSection title="Large Cap Funds" displayItems={largeCapFunds} isPredefinedList={true} />
                     <WatchlistSection title="Mid Cap Funds" displayItems={midCapFunds} isPredefinedList={true} />
                     <WatchlistSection title="Small Cap Funds" displayItems={smallCapFunds} isPredefinedList={true} />
                     <WatchlistSection title="Sectoral Funds" displayItems={sectoralFunds} isPredefinedList={true} />
                     <WatchlistSection title="Thematic Funds (ELSS)" displayItems={thematicFunds} isPredefinedList={true} />
                     <WatchlistSection title="Debt Funds" displayItems={debtFunds} isPredefinedList={true} />
-                    <WatchlistSection title="Other Funds (Flexi, Index)" displayItems={otherFunds} isPredefinedList={true} />
+                    <WatchlistSection title="Other Funds" displayItems={otherFunds} isPredefinedList={true} />
                     <NewsSection articles={getRelevantNewsForWatchlistItems(mockMutualFunds, mockNewsArticles)} />
                 </div>
             );
