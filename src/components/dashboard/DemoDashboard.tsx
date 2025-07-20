@@ -196,12 +196,11 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
     }
     if (activeMode === 'Wealth') {
         return {
-            primaryNavItems: ["Mutual Funds", "Bonds", "Insurance", "NPS"],
+            primaryNavItems: ["Mutual Funds", "Bonds", "Insurance"],
             secondaryNavTriggerCategories: {
                 "Mutual Funds": [],
                 "Bonds": [],
                 "Insurance": ["Life Insurance", "Health Insurance", "Car Insurance", "Bike Insurance", "Other Insurance"],
-                "NPS": [],
             }
         };
     }
@@ -264,7 +263,6 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
             'Mutual Funds': 'pink',
             'Bonds': 'maroon',
             'Insurance': 'red',
-            'NPS': 'caramel',
         };
         const theme = themeMapping[activePrimaryItem] || 'pink';
         document.documentElement.setAttribute('data-theme', theme);
@@ -447,8 +445,6 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
                 }
                 newsForView = getRelevantNewsForWatchlistItems(insuranceItems, mockNewsArticles);
                 return <div className="space-y-8"><WatchlistSection title={insuranceTitle} displayItems={insuranceItems} isPredefinedList={true} /><NewsSection articles={newsForView} /></div>
-            case "NPS":
-                 return <div className="flex flex-col items-center justify-center text-center py-12 text-muted-foreground"><PackageOpen className="h-16 w-16 mb-4" /><h2 className="text-2xl font-semibold mb-2 text-foreground">National Pension System</h2><p className="max-w-md">Coming soon: Manage your NPS account.</p></div>
         }
     }
     
@@ -471,5 +467,3 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
     </main>
   );
 }
-
-    
