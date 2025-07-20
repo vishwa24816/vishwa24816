@@ -41,6 +41,8 @@ import {
   mockWeb3Trending,
   mockWeb3Memes,
   mockWeb3Holdings,
+  mockMarketIndices,
+  mockCryptoIndices,
 } from '@/lib/mockData';
 import { mockUsStocks } from '@/lib/mockData/usStocks';
 import { mockWeb3NFTs } from '@/lib/mockData/web3NFTs';
@@ -184,7 +186,7 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
                 "Indian Stocks": watchlistNav,
                 "US Stocks": watchlistNav,
                 "Futures": ["Index Futures", "Stock Futures"],
-                "Options": ["Custom", "Readymade"],
+                "Options": ["Dashboard", "Custom", "Readymade"],
                 "Mutual Fund": [], // No secondary nav for categorized view
                 "Bonds": [],
                 "IPO": [],
@@ -211,7 +213,7 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
     const cryptoSecondaryNav: Record<string, string[]> = {
       "Spot": ["Top watchlist"],
       "Futures": ["Top watchlist"],
-      "Options": ["Custom", "Readymade"],
+      "Options": ["Dashboard", "Custom", "Readymade"],
       "Mutual Fund": ["Top watchlist"],
     };
     return { primaryNavItems: cryptoPrimaryNav, secondaryNavTriggerCategories: cryptoSecondaryNav };
@@ -326,7 +328,6 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
         if (isTopWatchlistView) {
             if (isIndianStockView) itemsForWatchlist = mockStocks;
             else if (isUsStockView) itemsForWatchlist = mockUsStocks;
-            else if (activePrimaryItem === "Bonds") itemsForWatchlist = mockBonds;
             newsForView = getRelevantNewsForWatchlistItems(itemsForWatchlist, mockNewsArticles);
         } else {
             itemsForWatchlist = [];
@@ -385,10 +386,11 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
 
   const renderMarketContent = () => {
     if (activeMode === 'Fiat') {
-        if (activePrimaryItem === "Options") { 
-            return activeSecondaryItem === "Custom" ? ( <div className="space-y-8"><FiatOptionChain onAddLeg={(leg) => setStrategyLegs(prev => [...prev, leg])} />{strategyLegs.length > 0 && <StrategyBuilder legs={strategyLegs} setLegs={setStrategyLegs} />}<NewsSection articles={newsForView} /></div>) 
-            : activeSecondaryItem === "Readymade" ? ( <div className="space-y-8"><ReadymadeStrategiesSection onStrategySelect={(legs) => setStrategyLegs(legs)} />{strategyLegs.length > 0 && <StrategyBuilder legs={strategyLegs} setLegs={setStrategyLegs} />}<NewsSection articles={newsForView} /></div> ) 
-            : null
+        if (activePrimaryItem === "Options") {
+            if (activeSecondaryItem === 'Dashboard') return <div className="space-y-8"><MarketOverview title="Options Market Overview" items={mockMarketIndices} /><NewsSection articles={newsForView} /></div>;
+            if (activeSecondaryItem === "Custom") return ( <div className="space-y-8"><FiatOptionChain onAddLeg={(leg) => setStrategyLegs(prev => [...prev, leg])} />{strategyLegs.length > 0 && <StrategyBuilder legs={strategyLegs} setLegs={setStrategyLegs} />}<NewsSection articles={newsForView} /></div>);
+            if (activeSecondaryItem === "Readymade") return ( <div className="space-y-8"><ReadymadeStrategiesSection onStrategySelect={(legs) => setStrategyLegs(legs)} />{strategyLegs.length > 0 && <StrategyBuilder legs={strategyLegs} setLegs={setStrategyLegs} />}<NewsSection articles={newsForView} /></div> );
+            return null
         }
         if (activePrimaryItem === "IPO") {
             return <div className="flex flex-col items-center justify-center text-center py-12 text-muted-foreground"><PackageOpen className="h-16 w-16 mb-4" /><h2 className="text-2xl font-semibold mb-2 text-foreground">IPO Section</h2><p className="max-w-md">Information about upcoming and recent Initial Public Offerings will be displayed here.</p></div>
@@ -432,9 +434,10 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
     
     } else if (activeMode === 'Crypto') {
         if (activePrimaryItem === "Options") {
-            return activeSecondaryItem === "Custom" ? ( <div className="space-y-8"><CryptoOptionChain onAddLeg={(leg) => setStrategyLegs(prev => [...prev, leg])} />{strategyLegs.length > 0 && <StrategyBuilder legs={strategyLegs} setLegs={setStrategyLegs} />}<NewsSection articles={newsForView} /></div>) 
-            : activeSecondaryItem === "Readymade" ? ( <div className="space-y-8"><ReadymadeStrategiesSection onStrategySelect={(legs) => setStrategyLegs(legs)} />{strategyLegs.length > 0 && <StrategyBuilder legs={strategyLegs} setLegs={setStrategyLegs} />}<NewsSection articles={newsForView} /></div> ) 
-            : null
+            if (activeSecondaryItem === 'Dashboard') return <div className="space-y-8"><MarketOverview title="Crypto Options Overview" items={mockCryptoIndices} /><NewsSection articles={newsForView} /></div>;
+            if (activeSecondaryItem === "Custom") return ( <div className="space-y-8"><CryptoOptionChain onAddLeg={(leg) => setStrategyLegs(prev => [...prev, leg])} />{strategyLegs.length > 0 && <StrategyBuilder legs={strategyLegs} setLegs={setStrategyLegs} />}<NewsSection articles={newsForView} /></div>);
+            if (activeSecondaryItem === "Readymade") return ( <div className="space-y-8"><ReadymadeStrategiesSection onStrategySelect={(legs) => setStrategyLegs(legs)} />{strategyLegs.length > 0 && <StrategyBuilder legs={strategyLegs} setLegs={setStrategyLegs} />}<NewsSection articles={newsForView} /></div> );
+            return null
         }
         return <div className="space-y-8"><WatchlistSection title={categoryWatchlistTitle} displayItems={itemsForWatchlist} isPredefinedList={true}/><NewsSection articles={newsForView} /></div>
     } else if (activeMode === 'Web3') {

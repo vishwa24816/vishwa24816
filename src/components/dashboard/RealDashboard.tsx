@@ -10,6 +10,7 @@ import { CryptoBasketSection } from '@/components/dashboard/CryptoBasketSection'
 import { CryptoOptionChain } from '@/components/dashboard/CryptoOptionChain';
 import { StrategyBuilder } from '@/components/dashboard/StrategyBuilder';
 import { ReadymadeStrategiesSection } from '@/components/dashboard/ReadymadeStrategiesSection';
+import { MarketOverview } from './MarketOverview';
 
 import React, { useState, useMemo } from 'react';
 import type { PortfolioHolding, NewsArticle, IntradayPosition, FoPosition, CryptoFuturePosition, Stock, SelectedOptionLeg } from '@/types';
@@ -22,6 +23,7 @@ import {
   mockRealPortfolioHoldings,
   mockRealCryptoIntradayPositions,
   mockRealCryptoFutures,
+  mockCryptoIndices,
 } from '@/lib/mockData';
 
 // Helper functions (could be moved to a utils file)
@@ -72,7 +74,7 @@ export function RealDashboard({ activeMode }: RealDashboardProps) {
     const cryptoSecondaryNav: Record<string, string[]> = {
       "Spot": ["Top watchlist"],
       "Futures": ["Top watchlist"],
-      "Options": ["Custom", "Readymade"],
+      "Options": ["Dashboard", "Custom", "Readymade"],
       "Mutual Fund": ["Top watchlist"],
     };
     return { primaryNavItems: cryptoPrimaryNav, secondaryNavTriggerCategories: cryptoSecondaryNav };
@@ -150,9 +152,10 @@ export function RealDashboard({ activeMode }: RealDashboardProps) {
   const renderMarketContent = () => {
       if(activeMode === 'Crypto') {
           if (activePrimaryItem === "Options") {
-            return activeSecondaryItem === "Custom" ? ( <div className="space-y-8"><CryptoOptionChain onAddLeg={(leg) => setStrategyLegs(prev => [...prev, leg])} />{strategyLegs.length > 0 && <StrategyBuilder legs={strategyLegs} setLegs={setStrategyLegs} />}<NewsSection articles={newsForView} /></div>) 
-            : activeSecondaryItem === "Readymade" ? ( <div className="space-y-8"><ReadymadeStrategiesSection onStrategySelect={(legs) => setStrategyLegs(legs)} />{strategyLegs.length > 0 && <StrategyBuilder legs={strategyLegs} setLegs={setStrategyLegs} />}<NewsSection articles={newsForView} /></div> ) 
-            : null
+            if (activeSecondaryItem === 'Dashboard') return <div className="space-y-8"><MarketOverview title="Crypto Options Overview" items={mockCryptoIndices} /><NewsSection articles={newsForView} /></div>;
+            if (activeSecondaryItem === "Custom") return ( <div className="space-y-8"><CryptoOptionChain onAddLeg={(leg) => setStrategyLegs(prev => [...prev, leg])} />{strategyLegs.length > 0 && <StrategyBuilder legs={strategyLegs} setLegs={setStrategyLegs} />}<NewsSection articles={newsForView} /></div>);
+            if (activeSecondaryItem === "Readymade") return ( <div className="space-y-8"><ReadymadeStrategiesSection onStrategySelect={(legs) => setStrategyLegs(legs)} />{strategyLegs.length > 0 && <StrategyBuilder legs={strategyLegs} setLegs={setStrategyLegs} />}<NewsSection articles={newsForView} /></div> );
+            return null
         }
           return <div className="space-y-8"><WatchlistSection title={categoryWatchlistTitle} displayItems={itemsForWatchlist} isPredefinedList={true}/><NewsSection articles={newsForView} /></div>
       }
