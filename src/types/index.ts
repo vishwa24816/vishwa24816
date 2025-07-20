@@ -1,4 +1,5 @@
 
+
 export interface Stock {
   id: string;
   symbol: string;
@@ -253,6 +254,21 @@ export interface SelectedOptionLeg {
   vega: number;
 }
 
+export type StrategyType = 'bullish' | 'bearish' | 'non-directional';
+export type StrategyId = 
+  | 'long-call' | 'short-put' | 'bull-call-spread' | 'bull-put-spread' | 'call-ratio-backspread'
+  | 'long-put' | 'short-call' | 'bear-call-spread' | 'bear-put-spread' | 'put-ratio-backspread'
+  | 'long-straddle' | 'short-straddle' | 'long-strangle' | 'short-strangle' | 'iron-condor' | 'iron-butterfly';
+
+
+export interface Strategy {
+  id: StrategyId;
+  name: string;
+  type: StrategyType;
+  strikesNeeded: number;
+}
+
+
 export interface CommunityPost {
   id: string;
   user: {
@@ -308,10 +324,10 @@ export interface SipOrder {
   id: string;
   instrumentName: string;
   symbol?: string;
-  assetType: 'Stock' | 'Mutual Fund' | 'ETF' | 'Gold Bond' | 'Crypto';
+  assetType: 'Stock' | 'Mutual Fund' | 'ETF' | 'Gold Bond' | 'Crypto' | 'Web3';
   amount?: number;
   quantity?: number;
-  frequency: 'Daily' | 'Weekly' | 'Bi-Weekly' | 'Monthly' | 'Annually';
+  frequency: 'Daily' | 'Weekly' | 'Bi-Weekly' | 'Monthly' | 'Annually' | 'Quarterly';
   nextDueDate: string;
   status: 'Active' | 'Paused' | 'Cancelled' | 'Completed';
   startDate: string;
