@@ -22,34 +22,31 @@ import { MarketMovers } from './MarketMovers';
 
 import React, { useState, useMemo, useEffect } from 'react';
 import type { PortfolioHolding, NewsArticle, IntradayPosition, FoPosition, CryptoFuturePosition, Stock, SelectedOptionLeg } from '@/types';
-import { 
-  mockPortfolioHoldings, 
-  mockNewsArticles, 
-  mockIntradayPositions,
-  mockFoPositions,
-  mockCryptoFutures, 
-  mockCryptoAssets,
-  mockStocks,
-  mockIndexFuturesForWatchlist,
-  mockStockFuturesForWatchlist,
-  mockMutualFunds,
-  mockBonds,
-  mockCryptoFuturesForWatchlist,
-  mockCryptoMutualFunds,
-  mockCryptoETFs,
-  mockWeb3AI,
-  mockWeb3DeFi,
-  mockWeb3Trending,
-  mockWeb3Memes,
-  mockWeb3Holdings,
-  mockMarketIndices,
-  mockOptionsForWatchlist,
-  mockLifeInsurance,
-  mockHealthInsurance,
-  mockCarInsurance,
-  mockBikeInsurance,
-  mockOtherInsurance,
-} from '@/lib/mockData';
+import { mockPortfolioHoldings } from '@/lib/mockData/portfolioHoldings';
+import { mockNewsArticles } from '@/lib/mockData/newsArticles';
+import { mockIntradayPositions } from '@/lib/mockData/intradayPositions';
+import { mockFoPositions } from '@/lib/mockData/foPositions';
+import { mockCryptoFutures } from '@/lib/mockData/cryptoFutures';
+import { mockCryptoAssets } from '@/lib/mockData/cryptoAssets';
+import { mockStocks } from '@/lib/mockData/stocks';
+import { mockIndexFuturesForWatchlist, mockStockFuturesForWatchlist } from '@/lib/mockData/futuresWatchlistData';
+import { mockMutualFunds } from '@/lib/mockData/mutualFunds';
+import { mockBonds } from '@/lib/mockData/bonds';
+import { mockCryptoFuturesForWatchlist } from '@/lib/mockData/cryptoFuturesWatchlist';
+import { mockCryptoMutualFunds } from '@/lib/mockData/cryptoMutualFunds';
+import { mockCryptoETFs } from '@/lib/mockData/cryptoETFs';
+import { mockWeb3AI } from '@/lib/mockData/web3AI';
+import { mockWeb3DeFi } from '@/lib/mockData/web3DeFi';
+import { mockWeb3Trending } from '@/lib/mockData/web3Trending';
+import { mockWeb3Memes } from '@/lib/mockData/web3Memes';
+import { mockWeb3Holdings } from '@/lib/mockData/web3Holdings';
+import { mockMarketIndices } from '@/lib/mockData/marketIndices';
+import { mockOptionsForWatchlist } from '@/lib/mockData/optionsWatchlistData';
+import { mockLifeInsurance } from '@/lib/mockData/lifeInsurance';
+import { mockHealthInsurance } from '@/lib/mockData/healthInsurance';
+import { mockCarInsurance } from '@/lib/mockData/carInsurance';
+import { mockBikeInsurance } from '@/lib/mockData/bikeInsurance';
+import { mockOtherInsurance } from '@/lib/mockData/otherInsurance';
 import { mockCryptoOptionsForWatchlist } from '@/lib/mockData/cryptoOptionsWatchlist';
 import { mockCryptoIndices } from '@/lib/mockData/cryptoIndices';
 import { mockUsStocks } from '@/lib/mockData/usStocks';
@@ -462,6 +459,7 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
         activeSecondaryItem={activeSecondaryItem}
         onPrimaryNavClick={handlePrimaryNavClick}
         onSecondaryNavClick={handlePrimaryNavClick}
+        secondaryNavTriggerCategories={secondaryNavTriggerCategories}
       />
       
       {activeMode === 'Portfolio' ? renderPortfolioContent() : renderMarketContent()}
