@@ -44,6 +44,11 @@ import {
   mockWeb3Holdings,
   mockMarketIndices,
   mockOptionsForWatchlist,
+  mockLifeInsurance,
+  mockHealthInsurance,
+  mockCarInsurance,
+  mockBikeInsurance,
+  mockOtherInsurance,
 } from '@/lib/mockData';
 import { mockCryptoOptionsForWatchlist } from '@/lib/mockData/cryptoOptionsWatchlist';
 import { mockCryptoIndices } from '@/lib/mockData/cryptoIndices';
@@ -199,7 +204,7 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
             secondaryNavTriggerCategories: {
                 "Mutual Funds": [],
                 "Bonds": [],
-                "Insurance": [],
+                "Insurance": ["Life Insurance", "Health Insurance", "Car Insurance", "Bike Insurance", "Other Insurance"],
                 "NPS": [],
             }
         };
@@ -276,11 +281,7 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
   const handlePrimaryNavClick = (item: string) => {
     setActivePrimaryItem(item);
     const newSecondaryItems = secondaryNavTriggerCategories[item] || [];
-    if (newSecondaryItems.length > 0) {
-      setActiveSecondaryItem(newSecondaryItems[0]);
-    } else {
-      setActiveSecondaryItem(""); 
-    }
+    setActiveSecondaryItem(newSecondaryItems[0] || "");
   };
   
   const fiatHoldings = useMemo(() => mockPortfolioHoldings.filter(h => h.type !== 'Crypto'), []);
@@ -435,7 +436,16 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
             case "Bonds":
                  return <div className="space-y-8"><WatchlistSection title="Government Bonds" displayItems={governmentBonds} isPredefinedList={true} /><WatchlistSection title="Corporate Bonds" displayItems={corporateBonds} isPredefinedList={true} /><NewsSection articles={newsForView} /></div>;
             case "Insurance":
-                 return <div className="flex flex-col items-center justify-center text-center py-12 text-muted-foreground"><PackageOpen className="h-16 w-16 mb-4" /><h2 className="text-2xl font-semibold mb-2 text-foreground">Insurance Marketplace</h2><p className="max-w-md">Coming soon: Compare and buy insurance policies.</p></div>
+                let insuranceItems: Stock[] = [];
+                let insuranceTitle = "Insurance Products";
+                switch(activeSecondaryItem) {
+                    case "Life Insurance": insuranceItems = mockLifeInsurance; insuranceTitle="Life Insurance Policies"; break;
+                    case "Health Insurance": insuranceItems = mockHealthInsurance; insuranceTitle="Health Insurance Plans"; break;
+                    case "Car Insurance": insuranceItems = mockCarInsurance; insuranceTitle="Car Insurance"; break;
+                    case "Bike Insurance": insuranceItems = mockBikeInsurance; insuranceTitle="Bike Insurance"; break;
+                    case "Other Insurance": insuranceItems = mockOtherInsurance; insuranceTitle="Other Insurance Products"; break;
+                }
+                return <div className="space-y-8"><WatchlistSection title={insuranceTitle} displayItems={insuranceItems} isPredefinedList={true} /><NewsSection articles={newsForView} /></div>
             case "NPS":
                  return <div className="flex flex-col items-center justify-center text-center py-12 text-muted-foreground"><PackageOpen className="h-16 w-16 mb-4" /><h2 className="text-2xl font-semibold mb-2 text-foreground">National Pension System</h2><p className="max-w-md">Coming soon: Manage your NPS account.</p></div>
         }
@@ -451,8 +461,7 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
         activePrimaryItem={activePrimaryItem}
         activeSecondaryItem={activeSecondaryItem}
         onPrimaryNavClick={handlePrimaryNavClick}
-        onSecondaryNavClick={setActiveSecondaryItem}
-        secondaryNavTriggerCategories={secondaryNavTriggerCategories}
+        onSecondaryNavClick={handlePrimaryNavClick}
       />
       
       {activeMode === 'Portfolio' ? renderPortfolioContent() : renderMarketContent()}
