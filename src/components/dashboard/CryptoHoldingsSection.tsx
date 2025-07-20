@@ -226,26 +226,30 @@ export function CryptoHoldingsSection({
               <Separator />
               <div className="space-y-1.5">
                 <div className="flex justify-between items-center text-sm">
-                  <p className="text-muted-foreground">Total Investment</p>
+                  <p className="text-muted-foreground">{isPledged ? 'Total Pledged Value' : 'Total Investment'}</p>
                   <p className="font-medium text-foreground">{formatCurrency(totalInvestmentValue)}</p>
                 </div>
                 <div className="flex justify-between items-center text-sm">
                   <p className="text-muted-foreground">Current Value</p>
                   <p className="font-medium text-foreground">{formatCurrency(totalCurrentValue)}</p>
                 </div>
-                <div className="flex justify-between items-center text-sm">
-                  <p className="text-muted-foreground">Cash Balance</p>
-                  <p className="font-medium text-foreground">{formatCurrency(cashBalance)}</p>
-                </div>
-                {!isRealMode && !isPledged && (
-                  <div className="pt-2 flex gap-2">
-                    <Button variant="outline" size="sm" className="flex-1 h-11" onClick={() => handleOpenFundTransferDialog('toCrypto')}>
-                      <Coins className="mr-2 h-4 w-4" /> Add Funds
-                    </Button>
-                    <Button variant="outline" size="sm" className="flex-1 h-11" onClick={() => handleOpenFundTransferDialog('fromCrypto')}>
-                      <Landmark className="mr-2 h-4 w-4" /> Withdraw Funds
-                    </Button>
-                  </div>
+                {!isPledged && (
+                    <>
+                        <div className="flex justify-between items-center text-sm">
+                          <p className="text-muted-foreground">Cash Balance</p>
+                          <p className="font-medium text-foreground">{formatCurrency(cashBalance)}</p>
+                        </div>
+                        {!isRealMode && !isPledged && (
+                          <div className="pt-2 flex gap-2">
+                            <Button variant="outline" size="sm" className="flex-1 h-11" onClick={() => handleOpenFundTransferDialog('toCrypto')}>
+                              <Coins className="mr-2 h-4 w-4" /> Add Funds
+                            </Button>
+                            <Button variant="outline" size="sm" className="flex-1 h-11" onClick={() => handleOpenFundTransferDialog('fromCrypto')}>
+                              <Landmark className="mr-2 h-4 w-4" /> Withdraw Funds
+                            </Button>
+                          </div>
+                        )}
+                    </>
                 )}
               </div>
             </div>
