@@ -18,6 +18,7 @@ import { StrategyBuilder } from '@/components/dashboard/StrategyBuilder';
 import { MarketOverview } from './MarketOverview';
 import { CryptoBasketSection } from './CryptoBasketSection';
 import { MarketMovers } from './MarketMovers';
+import { WealthHoldingsSection } from './WealthHoldingsSection';
 
 import React, { useState, useMemo, useEffect } from 'react';
 import type { PortfolioHolding, NewsArticle, IntradayPosition, FoPosition, CryptoFuturePosition, Stock, SelectedOptionLeg } from '@/types';
@@ -173,9 +174,10 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
     const { primaryNavItems, secondaryNavTriggerCategories } = useMemo(() => {
     if (activeMode === 'Portfolio') {
         return {
-            primaryNavItems: ["Fiat", "Crypto", "Web3", "Pledged Holdings"],
+            primaryNavItems: ["Fiat", "Wealth", "Crypto", "Web3", "Pledged Holdings"],
             secondaryNavTriggerCategories: {
                 Fiat: ["Holdings", "Positions", "Portfolio Watchlist"],
+                Wealth: ["Holdings", "Portfolio Watchlist"],
                 Crypto: ["Holdings", "Positions", "Portfolio Watchlist"],
                 Web3: ["Holdings", "Portfolio Watchlist"],
                 "Pledged Holdings": ["Fiat", "Crypto", "Web3"],
@@ -195,11 +197,12 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
         };
     }
     if (activeMode === 'Wealth') {
+        const watchlistNav = ["Top watchlist", ...Array.from({ length: 5 }, (_, i) => `Watchlist ${i + 1}`)];
         return {
             primaryNavItems: ["Mutual Funds", "Bonds", "Insurance"],
             secondaryNavTriggerCategories: {
-                "Mutual Funds": [],
-                "Bonds": [],
+                "Mutual Funds": watchlistNav,
+                "Bonds": watchlistNav,
                 "Insurance": ["Life Insurance", "Health Insurance", "Car Insurance", "Bike Insurance", "Other Insurance"],
             }
         };
@@ -282,7 +285,8 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
     setActiveSecondaryItem(item);
   };
   
-  const fiatHoldings = useMemo(() => mockPortfolioHoldings.filter(h => h.type !== 'Crypto'), []);
+  const fiatHoldings = useMemo(() => mockPortfolioHoldings.filter(h => h.type === 'Stock' || h.type === 'ETF'), []);
+  const wealthHoldings = useMemo(() => mockPortfolioHoldings.filter(h => h.type === 'Mutual Fund' || h.type === 'Bond'), []);
   const cryptoHoldings = useMemo(() => mockPortfolioHoldings.filter(h => h.type === 'Crypto'), []);
   
   let newsForView: NewsArticle[] = mockNewsArticles; 
@@ -300,6 +304,12 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
           if (isWatchlistView) {
             itemsForWatchlist = mockStocks.slice(0, 5);
             newsForView = getRelevantNewsForWatchlistItems(itemsForWatchlist, mockNewsArticles);
+          }
+      } else if (activePrimaryItem === 'Wealth') {
+          if (isHoldingsView) newsForView = getRelevantNewsForHoldings(wealthHoldings, mockNewsArticles);
+          if (isWatchlistView) {
+              itemsForWatchlist = [...mockMutualFunds.slice(0,3), ...mockBonds.slice(0,2)];
+              newsForView = getRelevantNewsForWatchlistItems(itemsForWatchlist, mockNewsArticles);
           }
       } else if (activePrimaryItem === 'Crypto') {
           if (isHoldingsView) newsForView = getRelevantNewsForHoldings(cryptoHoldings, mockNewsArticles);
@@ -361,6 +371,10 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
             if (isHoldingsView) return <><FiatHoldingsSection holdings={fiatHoldings} intradayPositions={mockIntradayPositions} foPositions={mockFoPositions} mainPortfolioCashBalance={mainPortfolioCashBalance} setMainPortfolioCashBalance={setMainPortfolioCashBalance} cryptoCashBalance={cryptoCashBalance} setCryptoCashBalance={setCryptoCashBalance} /><NewsSection articles={newsForView} /></>;
             if (isPositionsView) return <div className="space-y-8"><IntradayPositionsSection /><FoPositionsSection /><FoBasketSection /><NewsSection articles={newsForView} /></div>;
             if (isWatchlistView) return <div className="space-y-8"><WatchlistSection title="My Fiat Watchlist" defaultInitialItems={itemsForWatchlist} localStorageKeyOverride="simFiatWatchlist"/><NewsSection articles={newsForView} /></div>;
+            return null;
+        case 'Wealth':
+            if (isHoldingsView) return <><WealthHoldingsSection holdings={wealthHoldings} /><NewsSection articles={newsForView} /></>;
+            if (isWatchlistView) return <div className="space-y-8"><WatchlistSection title="My Wealth Watchlist" defaultInitialItems={itemsForWatchlist} localStorageKeyOverride="simWealthWatchlist"/><NewsSection articles={newsForView} /></div>;
             return null;
         case 'Crypto':
             if (isHoldingsView) return <><CryptoHoldingsSection title="Crypto Wallet & Holdings" holdings={cryptoHoldings} cashBalance={cryptoCashBalance} setCashBalance={setCryptoCashBalance} mainPortfolioCashBalance={mainPortfolioCashBalance} setMainPortfolioCashBalance={setMainPortfolioCashBalance} isRealMode={false} /><NewsSection articles={newsForView} /></>;
@@ -428,23 +442,30 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
         const governmentBonds = mockBonds.filter(b => b.exchange === 'BOND' || b.exchange === 'SGB');
         const corporateBonds = mockBonds.filter(b => b.exchange === 'CORP BOND');
 
-        switch(activePrimaryItem) {
-            case "Mutual Funds":
-                return <div className="space-y-8"><WatchlistSection title="Mutual Funds" displayItems={mockMutualFunds} isPredefinedList={true} /><NewsSection articles={newsForView} /></div>;
-            case "Bonds":
-                 return <div className="space-y-8"><WatchlistSection title="Government Bonds" displayItems={governmentBonds} isPredefinedList={true} /><WatchlistSection title="Corporate Bonds" displayItems={corporateBonds} isPredefinedList={true} /><NewsSection articles={newsForView} /></div>;
-            case "Insurance":
-                let insuranceItems: Stock[] = [];
-                let insuranceTitle = "Insurance Products";
-                switch(activeSecondaryItem) {
-                    case "Life Insurance": insuranceItems = mockLifeInsurance; insuranceTitle="Life Insurance Policies"; break;
-                    case "Health Insurance": insuranceItems = mockHealthInsurance; insuranceTitle="Health Insurance Plans"; break;
-                    case "Car Insurance": insuranceItems = mockCarInsurance; insuranceTitle="Car Insurance"; break;
-                    case "Bike Insurance": insuranceItems = mockBikeInsurance; insuranceTitle="Bike Insurance"; break;
-                    case "Other Insurance": insuranceItems = mockOtherInsurance; insuranceTitle="Other Insurance Products"; break;
-                }
-                newsForView = getRelevantNewsForWatchlistItems(insuranceItems, mockNewsArticles);
-                return <div className="space-y-8"><WatchlistSection title={insuranceTitle} displayItems={insuranceItems} isPredefinedList={true} /><NewsSection articles={newsForView} /></div>
+        if (activePrimaryItem === "Mutual Funds") {
+            const isTopWatchlist = activeSecondaryItem.startsWith("Top watchlist");
+            const isNumberedWatchlist = !!activeSecondaryItem.match(/^Watchlist \d+$/);
+            if (isTopWatchlist) return <div className="space-y-8"><WatchlistSection title="Top Mutual Funds" displayItems={mockMutualFunds} isPredefinedList={true} /><NewsSection articles={newsForView} /></div>;
+            if (isNumberedWatchlist) return <div className="space-y-8"><WatchlistSection title={`Mutual Funds - ${activeSecondaryItem}`} isPredefinedList={false} localStorageKeyOverride={`simAppWatchlist_Wealth_MF_${activeSecondaryItem.replace(/\s+/g, '_')}`} defaultInitialItems={[]}/><NewsSection articles={newsForView} /></div>;
+        }
+        if (activePrimaryItem === "Bonds") {
+            const isTopWatchlist = activeSecondaryItem.startsWith("Top watchlist");
+            const isNumberedWatchlist = !!activeSecondaryItem.match(/^Watchlist \d+$/);
+            if (isTopWatchlist) return <div className="space-y-8"><WatchlistSection title="Government Bonds" displayItems={governmentBonds} isPredefinedList={true} /><WatchlistSection title="Corporate Bonds" displayItems={corporateBonds} isPredefinedList={true} /><NewsSection articles={newsForView} /></div>;
+            if (isNumberedWatchlist) return <div className="space-y-8"><WatchlistSection title={`Bonds - ${activeSecondaryItem}`} isPredefinedList={false} localStorageKeyOverride={`simAppWatchlist_Wealth_Bonds_${activeSecondaryItem.replace(/\s+/g, '_')}`} defaultInitialItems={[]}/><NewsSection articles={newsForView} /></div>;
+        }
+        if (activePrimaryItem === "Insurance") {
+            let insuranceItems: Stock[] = [];
+            let insuranceTitle = "Insurance Products";
+            switch(activeSecondaryItem) {
+                case "Life Insurance": insuranceItems = mockLifeInsurance; insuranceTitle="Life Insurance Policies"; break;
+                case "Health Insurance": insuranceItems = mockHealthInsurance; insuranceTitle="Health Insurance Plans"; break;
+                case "Car Insurance": insuranceItems = mockCarInsurance; insuranceTitle="Car Insurance"; break;
+                case "Bike Insurance": insuranceItems = mockBikeInsurance; insuranceTitle="Bike Insurance"; break;
+                case "Other Insurance": insuranceItems = mockOtherInsurance; insuranceTitle="Other Insurance Products"; break;
+            }
+            newsForView = getRelevantNewsForWatchlistItems(insuranceItems, mockNewsArticles);
+            return <div className="space-y-8"><WatchlistSection title={insuranceTitle} displayItems={insuranceItems} isPredefinedList={true} /><NewsSection articles={newsForView} /></div>
         }
     }
     
