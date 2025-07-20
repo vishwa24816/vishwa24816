@@ -9,7 +9,7 @@ import { mockPortfolioHoldings } from '@/lib/mockData';
 import { mockUsStocks } from '@/lib/mockData/usStocks';
 import type { PortfolioHolding, IntradayPosition, FoPosition } from '@/types';
 import { cn } from '@/lib/utils';
-import { Briefcase, BarChart2, LayoutGrid, List, Coins, Landmark } from 'lucide-react'; 
+import { Briefcase, BarChart2, LayoutGrid, List, Coins, Landmark, PieChart } from 'lucide-react'; 
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PortfolioHeatmap, type HeatmapItem } from './PortfolioHeatmap';
@@ -20,7 +20,7 @@ import { FundTransferDialog } from '../shared/FundTransferDialog';
 
 
 type HoldingFilterType = 'All' | 'Indian Stocks' | 'US Stocks' | 'Mutual Fund' | 'Bond';
-type ViewMode = 'list' | 'bar' | 'heatmap';
+type ViewMode = 'list' | 'bar' | 'heatmap' | 'pie';
 
 interface FiatHoldingsSectionProps {
   holdings?: PortfolioHolding[];
@@ -154,7 +154,7 @@ export function FiatHoldingsSection({
     return filteredHoldings.map(pos => ({
       name: pos.symbol || pos.name,
       value: pos.currentValue,
-      fill: (pos.profitAndLoss || 0) >= 0 ? "hsl(var(--positive))" : "hsl(var(--destructive))",
+      fill: `hsl(var(--chart-${(pos.id.charCodeAt(pos.id.length - 1) % 5) + 1}))`,
       label: (pos.profitAndLoss || 0) >= 0 ? 'Profit' : 'Loss'
     }));
   }, [filteredHoldings]);
@@ -163,14 +163,13 @@ export function FiatHoldingsSection({
       value: {
         label: 'Current Value',
       },
-      Profit: {
-        label: 'Profit',
-        color: 'hsl(var(--positive))',
-      },
-      Loss: {
-        label: 'Loss',
-        color: 'hsl(var(--destructive))',
-      },
+       ...filteredHoldings.reduce((acc, pos) => {
+        acc[pos.symbol || pos.name] = {
+            label: pos.symbol || pos.name,
+            color: `hsl(var(--chart-${(pos.id.charCodeAt(pos.id.length - 1) % 5) + 1}))`
+        };
+        return acc;
+    }, {} as any)
   };
 
   const heatmapData: HeatmapItem[] = useMemo(() => {
@@ -232,6 +231,21 @@ export function FiatHoldingsSection({
             <PortfolioHeatmap items={heatmapData} />
           </div>
         );
+       case 'pie':
+        return (
+          <div className="w-full h-[300px] mt-4 flex items-center justify-center">
+            <Chart.Container config={chartConfig} className="h-full w-full">
+                <Chart.PieChart>
+                    <Chart.Tooltip 
+                      content={<Chart.TooltipContent hideLabel nameKey="name" />}
+                      formatter={(value, name) => `${name}: ${formatCurrency(value as number)}`}
+                    />
+                    <Chart.Pie data={chartData} dataKey="value" nameKey="name" />
+                    <Chart.LegendContent />
+                </Chart.PieChart>
+            </Chart.Container>
+          </div>
+        );
       default:
         return null;
     }
@@ -249,6 +263,7 @@ export function FiatHoldingsSection({
                       <Button variant={viewMode === 'list' ? 'secondary' : 'ghost'} size="icon" className="h-7 w-7" onClick={() => setViewMode('list')}><List /></Button>
                       <Button variant={viewMode === 'bar' ? 'secondary' : 'ghost'} size="icon" className="h-7 w-7" onClick={() => setViewMode('bar')}><BarChart2 /></Button>
                       <Button variant={viewMode === 'heatmap' ? 'secondary' : 'ghost'} size="icon" className="h-7 w-7" onClick={() => setViewMode('heatmap')}><LayoutGrid /></Button>
+                      <Button variant={viewMode === 'pie' ? 'secondary' : 'ghost'} size="icon" className="h-7 w-7" onClick={() => setViewMode('pie')}><PieChart /></Button>
                   </div>
               </div>
           </CardHeader>

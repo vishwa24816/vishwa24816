@@ -8,7 +8,7 @@ import { Separator } from "@/components/ui/separator";
 import { mockPortfolioHoldings } from '@/lib/mockData';
 import type { PortfolioHolding } from '@/types';
 import { cn } from '@/lib/utils';
-import { Bitcoin, XCircle, Coins, Landmark, Settings2, ChevronDown, BarChart2, LayoutGrid, List } from 'lucide-react';
+import { Bitcoin, XCircle, Coins, Landmark, Settings2, ChevronDown, BarChart2, LayoutGrid, List, PieChart } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { FundTransferDialog } from '@/components/shared/FundTransferDialog';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -17,7 +17,7 @@ import { Chart } from "@/components/ui/chart";
 import { PledgeDialog } from './PledgeDialog';
 import { HoldingCard } from './HoldingCard';
 
-type ViewMode = 'list' | 'bar' | 'heatmap';
+type ViewMode = 'list' | 'bar' | 'heatmap' | 'pie';
 
 interface CryptoHoldingsSectionProps {
   holdings: PortfolioHolding[];
@@ -101,7 +101,7 @@ export function CryptoHoldingsSection({
     return holdings.map(pos => ({
       name: pos.symbol || pos.name,
       value: pos.currentValue,
-      fill: pos.profitAndLoss >= 0 ? "hsl(var(--positive))" : "hsl(var(--destructive))",
+      fill: `hsl(var(--chart-${(pos.id.charCodeAt(pos.id.length - 1) % 5) + 1}))`,
       label: pos.profitAndLoss >= 0 ? 'Profit' : 'Loss'
     }));
   }, [holdings]);
@@ -110,14 +110,13 @@ export function CryptoHoldingsSection({
       value: {
         label: 'Current Value',
       },
-      Profit: {
-        label: 'Profit',
-        color: 'hsl(var(--positive))',
-      },
-      Loss: {
-        label: 'Loss',
-        color: 'hsl(var(--destructive))',
-      },
+      ...holdings.reduce((acc, pos) => {
+        acc[pos.symbol || pos.name] = {
+            label: pos.symbol || pos.name,
+            color: `hsl(var(--chart-${(pos.id.charCodeAt(pos.id.length - 1) % 5) + 1}))`
+        };
+        return acc;
+    }, {} as any)
   };
 
   const heatmapData: HeatmapItem[] = useMemo(() => {
@@ -176,6 +175,21 @@ export function CryptoHoldingsSection({
         return (
           <div className="w-full h-[300px] mt-4">
             <PortfolioHeatmap items={heatmapData} />
+          </div>
+        );
+      case 'pie':
+        return (
+          <div className="w-full h-[300px] mt-4 flex items-center justify-center">
+            <Chart.Container config={chartConfig} className="h-full w-full">
+                <Chart.PieChart>
+                    <Chart.Tooltip 
+                      content={<Chart.TooltipContent hideLabel nameKey="name" />}
+                      formatter={(value, name) => `${name}: ${formatCurrency(value as number)}`}
+                    />
+                    <Chart.Pie data={chartData} dataKey="value" nameKey="name" />
+                    <Chart.LegendContent />
+                </Chart.PieChart>
+            </Chart.Container>
           </div>
         );
       default:
@@ -248,6 +262,7 @@ export function CryptoHoldingsSection({
                     <Button variant={viewMode === 'list' ? 'secondary' : 'ghost'} size="icon" className="h-7 w-7" onClick={() => setViewMode('list')}><List /></Button>
                     <Button variant={viewMode === 'bar' ? 'secondary' : 'ghost'} size="icon" className="h-7 w-7" onClick={() => setViewMode('bar')}><BarChart2 /></Button>
                     <Button variant={viewMode === 'heatmap' ? 'secondary' : 'ghost'} size="icon" className="h-7 w-7" onClick={() => setViewMode('heatmap')}><LayoutGrid /></Button>
+                    <Button variant={viewMode === 'pie' ? 'secondary' : 'ghost'} size="icon" className="h-7 w-7" onClick={() => setViewMode('pie')}><PieChart /></Button>
                 </div>
             </div>
           </CardHeader>
