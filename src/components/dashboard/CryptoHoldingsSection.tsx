@@ -6,7 +6,6 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator"; 
-import { mockPortfolioHoldings } from '@/lib/mockData';
 import type { PortfolioHolding } from '@/types';
 import { cn } from '@/lib/utils';
 import { Bitcoin, XCircle, Coins, Landmark, Settings2, ChevronDown, BarChart2, LayoutGrid, List, PieChart, ArrowUpRight, ArrowDownLeft, History, Snowflake, QrCode, Copy, ArrowUpCircle, ArrowDownCircle } from 'lucide-react';
@@ -19,6 +18,14 @@ import { PledgeDialog } from './PledgeDialog';
 import { HoldingCard } from './HoldingCard';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
 
 type ViewMode = 'list' | 'bar' | 'heatmap' | 'pie';
 
@@ -63,13 +70,25 @@ export function CryptoHoldingsSection({
   const [isSending, setIsSending] = useState(false);
   const [isReceiving, setIsReceiving] = useState(false);
   const [isHistoryVisible, setIsHistoryVisible] = useState(false);
+  
+  const [selectedAssetSymbol, setSelectedAssetSymbol] = useState<string>(holdings[0]?.symbol || '');
   const [recipientAddress, setRecipientAddress] = useState('');
   const [sendAmount, setSendAmount] = useState('');
-  const [walletAddress, setWalletAddress] = useState('');
+  
+  const [walletAddresses, setWalletAddresses] = useState<Record<string, string>>({});
+
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
   };
+  
+  const generateNewAddress = (symbol: string) => {
+      const existing = walletAddresses[symbol];
+      if (existing) return existing;
+      const newAddress = '0x' + [...Array(40)].map(() => Math.floor(Math.random() * 16).toString(16)).join('');
+      setWalletAddresses(prev => ({ ...prev, [symbol]: newAddress }));
+      return newAddress;
+  }
 
   const handlePledgeClick = (holding: PortfolioHolding, mode: 'pledge' | 'payback') => {
     setSelectedHoldingForPledge(holding);
@@ -120,6 +139,7 @@ export function CryptoHoldingsSection({
 
   const handleSendClick = () => {
     closeAllPopups();
+    if(holdings.length > 0) setSelectedAssetSymbol(holdings[0].symbol || '');
     setIsSending(true);
     setRecipientAddress('');
     setSendAmount('');
@@ -127,32 +147,42 @@ export function CryptoHoldingsSection({
 
   const handleReceiveClick = () => {
     closeAllPopups();
+    const firstSymbol = holdings[0]?.symbol || '';
+    if(firstSymbol) {
+        setSelectedAssetSymbol(firstSymbol);
+        generateNewAddress(firstSymbol); // Pre-generate address for the default selection
+    }
     setIsReceiving(true);
-    // Generate a new mock address each time
-    const newAddress = '0x' + [...Array(40)].map(() => Math.floor(Math.random() * 16).toString(16)).join('');
-    setWalletAddress(newAddress);
   };
 
   const handleHistoryClick = () => {
     closeAllPopups();
     setIsHistoryVisible(true);
   };
+  
+  const handleReceiveAssetChange = (symbol: string) => {
+    setSelectedAssetSymbol(symbol);
+    generateNewAddress(symbol);
+  };
 
   const handleConfirmSend = () => {
-    if (!recipientAddress || !sendAmount) {
+    if (!recipientAddress || !sendAmount || !selectedAssetSymbol) {
         toast({ title: "Error", description: "Please fill in all fields.", variant: "destructive" });
         return;
     }
     toast({
         title: "Send Initiated (Mock)",
-        description: `Sending ${sendAmount} to ${recipientAddress}.`,
+        description: `Sending ${sendAmount} ${selectedAssetSymbol} to ${recipientAddress}.`,
     });
     setIsSending(false);
   };
 
   const handleCopyAddress = () => {
-    navigator.clipboard.writeText(walletAddress);
-    toast({ title: "Address Copied", description: "Your wallet address has been copied to the clipboard."});
+    const addressToCopy = walletAddresses[selectedAssetSymbol];
+    if (addressToCopy) {
+      navigator.clipboard.writeText(addressToCopy);
+      toast({ title: "Address Copied", description: `Your ${selectedAssetSymbol} wallet address has been copied.`});
+    }
   }
 
   const walletCardTitle = title.includes('Web3') ? 'Web3 Wallet' : 'Crypto Wallet';
@@ -397,6 +427,17 @@ export function CryptoHoldingsSection({
                             <div className="p-4 border-t mt-4 space-y-4 animate-accordion-down">
                                 <h4 className="text-md font-semibold text-foreground">Send Crypto</h4>
                                 <div className="space-y-2">
+                                  <Label htmlFor="send-asset">Asset</Label>
+                                  <Select value={selectedAssetSymbol} onValueChange={setSelectedAssetSymbol}>
+                                      <SelectTrigger id="send-asset">
+                                          <SelectValue placeholder="Select an asset" />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                          {holdings.map(h => <SelectItem key={h.symbol} value={h.symbol!}>{h.name} ({h.symbol})</SelectItem>)}
+                                      </SelectContent>
+                                  </Select>
+                                </div>
+                                <div className="space-y-2">
                                     <Label htmlFor="send-amount">Amount</Label>
                                     <Input id="send-amount" type="number" value={sendAmount} onChange={(e) => setSendAmount(e.target.value)} placeholder="e.g. 0.01" />
                                 </div>
@@ -419,9 +460,20 @@ export function CryptoHoldingsSection({
                          {isReceiving && (
                             <div className="p-4 border-t mt-4 space-y-4 text-center animate-accordion-down">
                                 <h4 className="text-md font-semibold text-foreground">Receive Crypto</h4>
+                                <div className="space-y-2 text-left">
+                                  <Label htmlFor="receive-asset">Select Asset to Receive</Label>
+                                  <Select value={selectedAssetSymbol} onValueChange={handleReceiveAssetChange}>
+                                      <SelectTrigger id="receive-asset">
+                                          <SelectValue placeholder="Select an asset" />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                          {holdings.map(h => <SelectItem key={h.symbol} value={h.symbol!}>{h.name} ({h.symbol})</SelectItem>)}
+                                      </SelectContent>
+                                  </Select>
+                                </div>
                                 <div className="flex justify-center my-4">
                                   <Image
-                                      src="https://placehold.co/200x200.png"
+                                      src={`https://placehold.co/200x200.png?text=${selectedAssetSymbol}`}
                                       alt="Your wallet QR code"
                                       width={160}
                                       height={160}
@@ -429,10 +481,10 @@ export function CryptoHoldingsSection({
                                       className="rounded-lg border p-2"
                                   />
                                 </div>
-                                <div className="space-y-2">
-                                    <Label>Your Wallet Address</Label>
+                                <div className="space-y-2 text-left">
+                                    <Label>Your {selectedAssetSymbol} Address</Label>
                                     <div className="flex items-center gap-2 p-2 bg-muted rounded-md text-xs font-mono break-all">
-                                      <span className="flex-grow">{walletAddress}</span>
+                                      <span className="flex-grow">{walletAddresses[selectedAssetSymbol] || 'Generating...'}</span>
                                       <Button variant="ghost" size="icon" className="h-7 w-7" onClick={handleCopyAddress}>
                                         <Copy className="h-4 w-4" />
                                       </Button>
