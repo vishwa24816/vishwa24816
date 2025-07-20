@@ -366,26 +366,15 @@ export function CryptoHoldingsSection({
             <CardTitle className="text-xl font-semibold font-headline text-primary flex items-center">
               <Bitcoin className="h-6 w-6 mr-2" /> {walletCardTitle}
             </CardTitle>
-             <div className="flex items-center gap-1 rounded-md bg-muted p-1">
-                <Button
-                    variant={walletMode === 'hot' ? 'secondary' : 'ghost'}
-                    size="sm"
-                    className="h-7 px-2 text-xs flex items-center gap-1"
-                    onClick={() => setWalletMode('hot')}
-                >
-                    <Flame className="h-3 w-3" />
-                    Hot
-                </Button>
-                <Button
-                    variant={walletMode === 'cold' ? 'secondary' : 'ghost'}
-                    size="sm"
-                    className="h-7 px-2 text-xs flex items-center gap-1"
-                    onClick={() => setWalletMode('cold')}
-                >
-                    <Snowflake className="h-3 w-3" />
-                    Cold
-                </Button>
-            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-8 px-3 text-xs flex items-center gap-2"
+              onClick={() => setWalletMode(prev => (prev === 'cold' ? 'hot' : 'cold'))}
+            >
+              {walletMode === 'cold' ? <Snowflake className="h-4 w-4 text-blue-500" /> : <Flame className="h-4 w-4 text-red-500" />}
+              <span className="capitalize">{walletMode} Wallet</span>
+            </Button>
           </CardHeader>
           <CardContent>
             <div className="space-y-3 pt-2 mb-4">
