@@ -361,9 +361,11 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
         case 'Pledged Holdings':
             const pledgedFiatHoldings = fiatHoldings.slice(0, 2); // Mock: first 2 fiat holdings are pledged
             const pledgedCryptoHoldings = cryptoHoldings.slice(0, 1); // Mock: first crypto holding is pledged
-            if (activeSecondaryItem === 'Fiat') return <FiatHoldingsSection intradayPositions={[]} foPositions={[]} mainPortfolioCashBalance={0} setMainPortfolioCashBalance={() => {}} cryptoCashBalance={0} setCryptoCashBalance={() => {}} />;
+            const pledgedWeb3Holdings = mockWeb3Holdings.slice(0, 1); // Mock: first web3 holding is pledged
+
+            if (activeSecondaryItem === 'Fiat') return <FiatHoldingsSection holdings={pledgedFiatHoldings} title="Pledged Fiat Holdings" intradayPositions={[]} foPositions={[]} mainPortfolioCashBalance={0} setMainPortfolioCashBalance={() => {}} cryptoCashBalance={0} setCryptoCashBalance={() => {}} />;
             if (activeSecondaryItem === 'Crypto') return <CryptoHoldingsSection title="Pledged Crypto Holdings" holdings={pledgedCryptoHoldings} cashBalance={0} setCashBalance={() => {}} mainPortfolioCashBalance={0} setMainPortfolioCashBalance={() => {}} isRealMode={false} />;
-            if (activeSecondaryItem === 'Web3') return <div className="text-center py-10 text-muted-foreground"><p>No Pledged Web3 Holdings.</p></div>;
+            if (activeSecondaryItem === 'Web3') return <CryptoHoldingsSection title="Pledged Web3 Holdings" holdings={pledgedWeb3Holdings} cashBalance={0} setCashBalance={() => {}} mainPortfolioCashBalance={0} setMainPortfolioCashBalance={() => {}} isRealMode={false} />;
             return null;
         default: return null;
     }

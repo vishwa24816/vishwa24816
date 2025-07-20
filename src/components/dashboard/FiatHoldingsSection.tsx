@@ -23,6 +23,8 @@ type HoldingFilterType = 'All' | 'Indian Stocks' | 'US Stocks' | 'Mutual Fund' |
 type ViewMode = 'list' | 'bar' | 'heatmap';
 
 interface FiatHoldingsSectionProps {
+  holdings?: PortfolioHolding[];
+  title?: string;
   intradayPositions: IntradayPosition[];
   foPositions: FoPosition[];
   mainPortfolioCashBalance: number;
@@ -32,6 +34,8 @@ interface FiatHoldingsSectionProps {
 }
 
 export function FiatHoldingsSection({ 
+    holdings,
+    title = "Fiat Holdings",
     intradayPositions,
     foPositions,
     mainPortfolioCashBalance, 
@@ -48,8 +52,9 @@ export function FiatHoldingsSection({
   const [transferDirection, setTransferDirection] = useState<'toCrypto' | 'fromCrypto'>('toCrypto');
 
   const allHoldings = useMemo(() => {
+    if (holdings) return holdings;
     return mockPortfolioHoldings.filter(h => h.type === 'Stock' || h.type === 'ETF' || h.type === 'Mutual Fund' || h.type === 'Bond');
-  }, []);
+  }, [holdings]);
 
   const formatCurrency = (value: number, currency: 'INR' | 'USD' = 'INR') => {
     return new Intl.NumberFormat(currency === 'INR' ? 'en-IN' : 'en-US', { 
@@ -232,7 +237,7 @@ export function FiatHoldingsSection({
           <CardHeader>
               <div className="flex justify-between items-center">
                   <CardTitle className="text-xl font-semibold font-headline text-primary flex items-center">
-                      <Briefcase className="h-6 w-6 mr-2" /> Fiat Holdings
+                      <Briefcase className="h-6 w-6 mr-2" /> {title}
                   </CardTitle>
                   <div className="flex items-center gap-1 rounded-md bg-muted p-1">
                       <Button variant={viewMode === 'list' ? 'secondary' : 'ghost'} size="icon" className="h-7 w-7" onClick={() => setViewMode('list')}><List /></Button>
