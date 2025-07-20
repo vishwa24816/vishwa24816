@@ -16,6 +16,8 @@ import { PortfolioHeatmap, type HeatmapItem } from './PortfolioHeatmap';
 import { Chart } from "@/components/ui/chart";
 import { PledgeDialog } from './PledgeDialog';
 import { HoldingCard } from './HoldingCard';
+import { Input } from '../ui/input';
+import { Label } from '../ui/label';
 
 type ViewMode = 'list' | 'bar' | 'heatmap' | 'pie';
 
@@ -48,6 +50,10 @@ export function CryptoHoldingsSection({
   const [pledgeDialogOpen, setPledgeDialogOpen] = useState(false);
   const [selectedHoldingForPledge, setSelectedHoldingForPledge] = useState<PortfolioHolding | null>(null);
   const [pledgeDialogMode, setPledgeDialogMode] = useState<'pledge' | 'payback'>('pledge');
+
+  const [isSending, setIsSending] = useState(false);
+  const [recipientAddress, setRecipientAddress] = useState('');
+  const [sendAmount, setSendAmount] = useState('');
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
@@ -92,6 +98,28 @@ export function CryptoHoldingsSection({
       setCashBalance(prev => prev - amount);
       toast({ title: "Transfer Successful", description: `${formatCurrency(amount)} transferred to Main Portfolio.` });
     }
+  };
+
+  const handleSendClick = () => {
+    setIsSending(true);
+    setRecipientAddress('');
+    setSendAmount('');
+  };
+
+  const handleCancelSend = () => {
+    setIsSending(false);
+  };
+
+  const handleConfirmSend = () => {
+    if (!recipientAddress || !sendAmount) {
+        toast({ title: "Error", description: "Please fill in all fields.", variant: "destructive" });
+        return;
+    }
+    toast({
+        title: "Send Initiated (Mock)",
+        description: `Sending ${sendAmount} to ${recipientAddress}.`,
+    });
+    setIsSending(false);
   };
 
   const walletCardTitle = title.includes('Web3') ? 'Web3 Wallet' : 'Crypto Wallet';
@@ -307,7 +335,7 @@ export function CryptoHoldingsSection({
                 {!isRealMode && (
                     <>
                         <div className="pt-3 grid grid-cols-4 gap-2">
-                            <Button variant="outline" size="sm" className="flex-col h-14" onClick={() => toast({title: "Send (WIP)"})}>
+                            <Button variant="outline" size="sm" className="flex-col h-14" onClick={handleSendClick}>
                                 <ArrowUpRight className="h-5 w-5 mb-1" />
                                 <span className="text-xs">Send</span>
                             </Button>
@@ -332,6 +360,23 @@ export function CryptoHoldingsSection({
                                 <Landmark className="mr-2 h-4 w-4" /> Withdraw Funds
                             </Button>
                         </div>
+                        {isSending && (
+                            <div className="p-4 border-t mt-4 space-y-4 animate-accordion-down">
+                                <h4 className="text-md font-semibold text-foreground">Send Crypto</h4>
+                                <div className="space-y-2">
+                                    <Label htmlFor="send-amount">Amount</Label>
+                                    <Input id="send-amount" type="number" value={sendAmount} onChange={(e) => setSendAmount(e.target.value)} placeholder="e.g. 0.01" />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="recipient-address">Recipient Address</Label>
+                                    <Input id="recipient-address" type="text" value={recipientAddress} onChange={(e) => setRecipientAddress(e.target.value)} placeholder="Enter wallet address" />
+                                </div>
+                                <div className="flex justify-end gap-2">
+                                    <Button variant="ghost" onClick={handleCancelSend}>Cancel</Button>
+                                    <Button onClick={handleConfirmSend}>Confirm Send</Button>
+                                </div>
+                            </div>
+                        )}
                     </>
                 )}
               </div>
@@ -381,3 +426,5 @@ export function CryptoHoldingsSection({
     </>
   );
 }
+
+    
