@@ -265,9 +265,11 @@ const SipForm = ({ asset, assetType }: { asset: Stock, assetType: string }) => {
 // #region Common Logic Hooks and Functions
 
 const CommonOrderFields = ({
-    orderProps
+    orderProps,
+    orderMode,
 }: {
-    orderProps: any
+    orderProps: any,
+    orderMode: string,
 }) => {
     const {
         asset, assetType, productType, onProductTypeChange, quantity, setQuantity,
@@ -295,7 +297,7 @@ const CommonOrderFields = ({
                         <RadioGroupItem value="Delivery" id={`delivery-common`} />
                         <Label htmlFor={`delivery-common`} className="font-normal">Delivery</Label>
                     </div>
-                    {assetType === 'stock' && (
+                    {assetType === 'stock' && orderMode === 'Regular' && (
                         <div className="flex items-center space-x-2">
                             <RadioGroupItem value="HODL" id="hodl-common" />
                             <Label htmlFor="hodl-common" className="font-normal">HODL</Label>
@@ -423,7 +425,7 @@ const StockOrderForm = ({ asset, assetType, productType, onProductTypeChange }: 
                 setPrice(currentPrice.toFixed(2));
             }
         }
-    }, [selectedExchange, orderType, asset.price]);
+    }, [selectedExchange, orderType, asset.price, price]);
 
     useEffect(() => {
         const numQty = parseFloat(String(quantity)) || 0;
@@ -486,11 +488,11 @@ const StockOrderForm = ({ asset, assetType, productType, onProductTypeChange }: 
                     <TabsTrigger value="SIP" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">SIP</TabsTrigger>
                 </TabsList>
                 <TabsContent value="Regular" className="p-4 mt-0">
-                    <CommonOrderFields orderProps={commonOrderProps} />
+                    <CommonOrderFields orderProps={commonOrderProps} orderMode="Regular" />
                      <div className="mt-4 pt-4 border-t"><p className="text-sm text-muted-foreground">Margin required: <span className="font-semibold text-foreground">₹{displayedMargin.toLocaleString('en-IN')}</span></p></div>
                 </TabsContent>
                 <TabsContent value="MTF" className="p-4 mt-0 space-y-4">
-                    <CommonOrderFields orderProps={commonOrderProps} />
+                    <CommonOrderFields orderProps={commonOrderProps} orderMode="MTF" />
                     <div className="space-y-2 pt-2">
                          <Label>Leverage</Label>
                          <RadioGroup value={mtfLeverage} onValueChange={setMtfLeverage} className="flex flex-wrap gap-x-4 gap-y-2">
@@ -559,7 +561,7 @@ const CryptoOrderForm = ({ asset, assetType, productType, onProductTypeChange }:
                     <TabsTrigger value="SIP" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">SIP</TabsTrigger>
                 </TabsList>
                 <TabsContent value="Regular" className="p-4 mt-0">
-                     <CommonOrderFields orderProps={commonOrderProps} />
+                     <CommonOrderFields orderProps={commonOrderProps} orderMode="Regular" />
                      <div className="mt-4 pt-4 border-t"><p className="text-sm text-muted-foreground">Margin required: <span className="font-semibold text-foreground">₹{displayedMargin.toLocaleString('en-IN')}</span></p></div>
                 </TabsContent>
                 <TabsContent value="SIP" className="p-0 mt-0"><SipForm asset={asset} assetType="crypto" /></TabsContent>
@@ -627,7 +629,7 @@ const FutureOrderForm = ({ asset, assetType, productType, onProductTypeChange }:
                         </Select>
                     </div>
                 )}
-                 <CommonOrderFields orderProps={commonOrderProps} />
+                 <CommonOrderFields orderProps={commonOrderProps} orderMode="Regular" />
                  <div className="mt-4 pt-4 border-t"><p className="text-sm text-muted-foreground">Margin required: <span className="font-semibold text-foreground">₹{displayedMargin.toLocaleString('en-IN')}</span></p></div>
             </div>
              <div className="p-4 border-t flex flex-col sm:flex-row gap-2">
@@ -687,7 +689,7 @@ const CryptoFutureOrderForm = ({ asset, assetType, productType, onProductTypeCha
                     <TabsTrigger value="SIP" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">SIP</TabsTrigger>
                 </TabsList>
                  <TabsContent value="MTF" className="p-4 mt-0 space-y-4">
-                     <CommonOrderFields orderProps={commonOrderProps} />
+                     <CommonOrderFields orderProps={commonOrderProps} orderMode="MTF" />
                      <div className="space-y-2 pt-2">
                         <Label htmlFor={`leverage-cf`}>Leverage</Label>
                         <Select value={mtfLeverage} onValueChange={setMtfLeverage}>
