@@ -1,3 +1,4 @@
+
 // This file now acts as an index for the mockData directory.
 // It imports and re-exports all mock data arrays.
 
@@ -16,7 +17,6 @@ export * from './futuresWatchlistData'; // Exports mockIndexFuturesForWatchlist 
 export * from './optionsWatchlistData';
 export * from './optionChainData';
 export * from './cryptoFuturesWatchlist';
-export * from './cryptoOptionsWatchlist';
 export * from './foBaskets';
 export * from './communityPosts';
 export * from './gttOrders';
