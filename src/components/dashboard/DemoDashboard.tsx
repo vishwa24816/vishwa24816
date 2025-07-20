@@ -44,9 +44,9 @@ import {
   mockWeb3Holdings,
   mockMarketIndices,
   mockOptionsForWatchlist,
-  mockCryptoOptionsForWatchlist,
 } from '@/lib/mockData';
 import { mockCryptoIndices } from '@/lib/mockData/cryptoIndices';
+import { mockCryptoOptionsForWatchlist } from '@/lib/mockData/cryptoOptionsWatchlist';
 import { mockUsStocks } from '@/lib/mockData/usStocks';
 import { mockWeb3NFTs } from '@/lib/mockData/web3NFTs';
 

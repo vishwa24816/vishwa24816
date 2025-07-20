@@ -19,13 +19,13 @@ import {
   mockNewsArticles, 
   mockCryptoAssets,
   mockCryptoFuturesForWatchlist,
-  mockCryptoOptionsForWatchlist,
   mockCryptoMutualFunds,
   mockCryptoETFs,
   mockRealPortfolioHoldings,
   mockRealCryptoFutures,
 } from '@/lib/mockData';
 import { mockCryptoIndices } from '@/lib/mockData/cryptoIndices';
+import { mockCryptoOptionsForWatchlist } from '@/lib/mockData/cryptoOptionsWatchlist';
 
 // Helper functions (could be moved to a utils file)
 function getRelevantNewsForHoldings(holdings: PortfolioHolding[], allNews: NewsArticle[]): NewsArticle[] {
