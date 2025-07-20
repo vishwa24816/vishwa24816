@@ -449,18 +449,21 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
             const isTopWatchlist = activeSecondaryItem.startsWith("Top watchlist");
             const isNumberedWatchlist = !!activeSecondaryItem.match(/^Watchlist \d+$/);
             if (isTopWatchlist) {
-                 const categories: (Stock['sector'])[] = ['Large Cap', 'Mid Cap', 'Small Cap', 'Flexi Cap', 'ELSS', 'Index Fund', 'Sectoral', 'Thematic', 'Debt', 'Multi Cap'];
+                 const categories: (Stock['sector'])[] = ['Index Fund', 'Large Cap', 'Mid Cap', 'Small Cap', 'Flexi Cap', 'Multi Cap', 'ELSS', 'Sectoral', 'Thematic', 'Debt'];
                  const groupedFunds = categories.map(category => ({
-                    title: `${category} Funds`,
+                    title: `${category}${category !== 'Index Fund' ? ' Funds' : ''}`,
                     items: mockMutualFunds.filter(fund => fund.sector === category)
                 })).filter(group => group.items.length > 0);
+
+                const elssFunds = mockMutualFunds.filter(fund => fund.sector === 'ELSS');
+                const elssNews = getRelevantNewsForWatchlistItems(elssFunds, mockNewsArticles);
 
                 return (
                     <div className="space-y-8">
                         {groupedFunds.map(group => (
                             <WatchlistSection key={group.title} title={group.title} displayItems={group.items} isPredefinedList={true} />
                         ))}
-                        <NewsSection articles={newsForView} />
+                        <NewsSection articles={elssNews} title="Latest on Tax Saver Funds" customDescription="Stay updated with news relevant to ELSS and tax-saving investments." />
                     </div>
                 );
             }
