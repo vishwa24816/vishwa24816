@@ -8,7 +8,7 @@ import { Separator } from "@/components/ui/separator";
 import { mockPortfolioHoldings } from '@/lib/mockData';
 import type { PortfolioHolding } from '@/types';
 import { cn } from '@/lib/utils';
-import { Bitcoin, XCircle, Coins, Landmark, Settings2, ChevronDown, BarChart2, LayoutGrid, List, PieChart, ArrowUpRight, ArrowDownLeft, History, Snowflake } from 'lucide-react';
+import { Bitcoin, XCircle, Coins, Landmark, Settings2, ChevronDown, BarChart2, LayoutGrid, List, PieChart, ArrowUpRight, ArrowDownLeft, History, Snowflake, QrCode } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { FundTransferDialog } from '@/components/shared/FundTransferDialog';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -369,7 +369,13 @@ export function CryptoHoldingsSection({
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="recipient-address">Recipient Address</Label>
-                                    <Input id="recipient-address" type="text" value={recipientAddress} onChange={(e) => setRecipientAddress(e.target.value)} placeholder="Enter wallet address" />
+                                    <div className="flex items-center gap-2">
+                                        <Input id="recipient-address" type="text" value={recipientAddress} onChange={(e) => setRecipientAddress(e.target.value)} placeholder="Enter wallet address" className="flex-grow" />
+                                        <Button variant="outline" size="icon" onClick={() => toast({ title: "QR Scan (WIP)"})}>
+                                            <QrCode className="h-5 w-5" />
+                                            <span className="sr-only">Scan QR Code</span>
+                                        </Button>
+                                    </div>
                                 </div>
                                 <div className="flex justify-end gap-2">
                                     <Button variant="ghost" onClick={handleCancelSend}>Cancel</Button>
@@ -427,4 +433,3 @@ export function CryptoHoldingsSection({
   );
 }
 
-    
