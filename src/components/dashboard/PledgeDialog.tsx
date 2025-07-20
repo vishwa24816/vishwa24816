@@ -49,21 +49,28 @@ export function PledgeDialog({
     }
   }, [isOpen, holding]);
 
-  const { collateralValue, haircutAmount, finalMargin } = useMemo(() => {
-    if (!holding) return { collateralValue: 0, haircutAmount: 0, finalMargin: 0 };
+  const { collateralValue, haircutAmount, resultingMargin, interestLevied, totalPaybackAmount } = useMemo(() => {
+    if (!holding) return { collateralValue: 0, haircutAmount: 0, resultingMargin: 0, interestLevied: 0, totalPaybackAmount: 0 };
     
     const value = pledgeQuantity * holding.ltp;
     const haircut = value * (HAIRCUT_PERCENTAGE / 100);
     const margin = value - haircut;
     
+    // Mock interest for payback calculation (e.g., interest for 30 days)
+    const interest = margin * (INTEREST_RATE / 100 / 365) * 30; 
+    const payback = value + interest;
+
     return {
       collateralValue: value,
       haircutAmount: haircut,
-      finalMargin: margin,
+      resultingMargin: margin,
+      interestLevied: interest,
+      totalPaybackAmount: payback,
     };
   }, [pledgeQuantity, holding]);
 
-  const handlePledge = () => {
+
+  const handleConfirm = () => {
     setError('');
     if (!holding) return;
     if (pledgeQuantity <= 0 || pledgeQuantity > holding.quantity) {
@@ -130,18 +137,37 @@ export function PledgeDialog({
           </div>
 
           <div className="space-y-3 text-sm p-4 border rounded-lg bg-muted/50">
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Collateral Value</span>
-              <span className="font-medium">{formatCurrency(collateralValue)}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Haircut ({HAIRCUT_PERCENTAGE}%)</span>
-              <span className="font-medium text-red-600">- {formatCurrency(haircutAmount)}</span>
-            </div>
-            <div className="flex justify-between font-semibold text-base border-t pt-2 mt-2">
-              <span className="text-foreground">Resulting Margin</span>
-              <span className="text-primary">{formatCurrency(finalMargin)}</span>
-            </div>
+            {mode === 'pledge' ? (
+                <>
+                    <div className="flex justify-between">
+                        <span className="text-muted-foreground">Collateral Value</span>
+                        <span className="font-medium">{formatCurrency(collateralValue)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                        <span className="text-muted-foreground">Haircut ({HAIRCUT_PERCENTAGE}%)</span>
+                        <span className="font-medium text-red-600">- {formatCurrency(haircutAmount)}</span>
+                    </div>
+                    <div className="flex justify-between font-semibold text-base border-t pt-2 mt-2">
+                        <span className="text-foreground">Resulting Margin (You Get)</span>
+                        <span className="text-primary">{formatCurrency(resultingMargin)}</span>
+                    </div>
+                </>
+            ) : ( // Payback mode
+                 <>
+                    <div className="flex justify-between">
+                        <span className="text-muted-foreground">Collateral Value</span>
+                        <span className="font-medium">{formatCurrency(collateralValue)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                        <span className="text-muted-foreground">Est. Interest Levied</span>
+                        <span className="font-medium text-red-600">+ {formatCurrency(interestLevied)}</span>
+                    </div>
+                    <div className="flex justify-between font-semibold text-base border-t pt-2 mt-2">
+                        <span className="text-foreground">Payback Amount (You Pay)</span>
+                        <span className="text-destructive">{formatCurrency(totalPaybackAmount)}</span>
+                    </div>
+                </>
+            )}
           </div>
           <p className="text-xs text-muted-foreground text-center">
             Interest at {INTEREST_RATE}% p.a. will be applicable on the margin used.
@@ -152,7 +178,7 @@ export function PledgeDialog({
           <DialogClose asChild>
             <Button type="button" variant="outline">Cancel</Button>
           </DialogClose>
-          <Button type="button" onClick={handlePledge}>
+          <Button type="button" onClick={handleConfirm}>
             {buttonText}
           </Button>
         </DialogFooter>
@@ -160,3 +186,4 @@ export function PledgeDialog({
     </Dialog>
   );
 }
+
