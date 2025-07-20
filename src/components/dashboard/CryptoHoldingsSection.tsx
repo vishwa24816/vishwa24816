@@ -198,6 +198,73 @@ export function CryptoHoldingsSection({
   };
 
 
+  if(isPledged) {
+    return (
+        <Card className="shadow-md">
+            <CardHeader>
+                <CardTitle className="text-xl font-semibold font-headline text-primary flex items-center">
+                    <Bitcoin className="h-6 w-6 mr-2" /> {title}
+                </CardTitle>
+            </CardHeader>
+            <CardContent>
+                <div className="space-y-3 pt-2 mb-4">
+                    <div className="flex justify-between items-start">
+                        <div>
+                        <p className={cn("text-xl font-semibold", overallPandL >= 0 ? 'text-green-500' : 'text-red-500')}>
+                            {formatCurrency(overallPandL)}
+                        </p>
+                        <p className="text-xs text-muted-foreground">Overall P&L ({overallPandLPercent.toFixed(2)}%)</p>
+                        </div>
+                        <div className="text-right">
+                        <p className={cn("text-xl font-semibold", totalDayChangeAbsolute >= 0 ? 'text-green-500' : 'text-red-500')}>
+                            {formatCurrency(totalDayChangeAbsolute)}
+                        </p>
+                        <p className="text-xs text-muted-foreground">Day's P&L ({totalDayChangePercent.toFixed(2)}%)</p>
+                        </div>
+                    </div>
+                    <Separator />
+                    <div className="space-y-1.5">
+                        <div className="flex justify-between items-center text-sm">
+                        <p className="text-muted-foreground">Total Pledged Value</p>
+                        <p className="font-medium text-foreground">{formatCurrency(totalInvestmentValue)}</p>
+                        </div>
+                        <div className="flex justify-between items-center text-sm">
+                        <p className="text-muted-foreground">Current Value</p>
+                        <p className="font-medium text-foreground">{formatCurrency(totalCurrentValue)}</p>
+                        </div>
+                    </div>
+                </div>
+                 {holdings.length > 0 ? (
+                    <div className="border-t pt-4">
+                        {holdings.map((holding) => (
+                        <HoldingCard 
+                            key={holding.id} 
+                            holding={holding} 
+                            onPledgeClick={handlePledgeClick}
+                            isPledged={isPledged}
+                        />
+                        ))}
+                    </div>
+                ) : (
+                     <div className="text-center py-10 text-muted-foreground">
+                        <p>No Pledged {title.includes('Web3') ? 'Web3' : 'Crypto'} Holdings.</p>
+                    </div>
+                )}
+            </CardContent>
+             {selectedHoldingForPledge && (
+                <PledgeDialog
+                    isOpen={pledgeDialogOpen}
+                    onOpenChange={setPledgeDialogOpen}
+                    holding={selectedHoldingForPledge}
+                    onConfirmPledge={handleConfirmPledge}
+                    currency={isRealMode || selectedHoldingForPledge.type === 'Crypto' ? 'INR' : 'INR'}
+                    mode={pledgeDialogMode}
+                />
+            )}
+        </Card>
+    )
+  }
+
   return (
     <>
       <div className="space-y-4">
@@ -226,30 +293,26 @@ export function CryptoHoldingsSection({
               <Separator />
               <div className="space-y-1.5">
                 <div className="flex justify-between items-center text-sm">
-                  <p className="text-muted-foreground">{isPledged ? 'Total Pledged Value' : 'Total Investment'}</p>
+                  <p className="text-muted-foreground">Total Investment</p>
                   <p className="font-medium text-foreground">{formatCurrency(totalInvestmentValue)}</p>
                 </div>
                 <div className="flex justify-between items-center text-sm">
                   <p className="text-muted-foreground">Current Value</p>
                   <p className="font-medium text-foreground">{formatCurrency(totalCurrentValue)}</p>
                 </div>
-                {!isPledged && (
-                    <>
-                        <div className="flex justify-between items-center text-sm">
-                          <p className="text-muted-foreground">Cash Balance</p>
-                          <p className="font-medium text-foreground">{formatCurrency(cashBalance)}</p>
-                        </div>
-                        {!isRealMode && !isPledged && (
-                          <div className="pt-2 flex gap-2">
-                            <Button variant="outline" size="sm" className="flex-1 h-11" onClick={() => handleOpenFundTransferDialog('toCrypto')}>
-                              <Coins className="mr-2 h-4 w-4" /> Add Funds
-                            </Button>
-                            <Button variant="outline" size="sm" className="flex-1 h-11" onClick={() => handleOpenFundTransferDialog('fromCrypto')}>
-                              <Landmark className="mr-2 h-4 w-4" /> Withdraw Funds
-                            </Button>
-                          </div>
-                        )}
-                    </>
+                <div className="flex justify-between items-center text-sm">
+                    <p className="text-muted-foreground">Cash Balance</p>
+                    <p className="font-medium text-foreground">{formatCurrency(cashBalance)}</p>
+                </div>
+                {!isRealMode && (
+                    <div className="pt-2 flex gap-2">
+                    <Button variant="outline" size="sm" className="flex-1 h-11" onClick={() => handleOpenFundTransferDialog('toCrypto')}>
+                        <Coins className="mr-2 h-4 w-4" /> Add Funds
+                    </Button>
+                    <Button variant="outline" size="sm" className="flex-1 h-11" onClick={() => handleOpenFundTransferDialog('fromCrypto')}>
+                        <Landmark className="mr-2 h-4 w-4" /> Withdraw Funds
+                    </Button>
+                    </div>
                 )}
               </div>
             </div>
