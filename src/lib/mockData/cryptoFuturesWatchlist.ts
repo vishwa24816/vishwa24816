@@ -1,57 +1,55 @@
 
 import type { Stock } from '@/types'; // Using Stock type for watchlist compatibility
 
-const USD_TO_INR = 80;
-
 export const mockCryptoFuturesForWatchlist: Stock[] = [
   { 
     id: 'btcinrperp', symbol: 'BTCINR.P', name: 'Bitcoin Perpetual (INR)', 
-    price: 2401500.00, change: 1500.00, changePercent: 0.06, 
+    price: 5201500.00, change: 1500.00, changePercent: 0.03, 
     exchange: 'Crypto Futures',
-    todayLow: 2380000.00, todayHigh: 2420000.00, fiftyTwoWeekLow: 1300000.00, fiftyTwoWeekHigh: 3500000.00,
-    openPrice: 2400000.00, prevClosePrice: 2400000.00, 
-    volume: 52000, lotSize: 1,
+    todayLow: 5180000.00, todayHigh: 5220000.00, fiftyTwoWeekLow: 2300000.00, fiftyTwoWeekHigh: 6000000.00,
+    openPrice: 5200000.00, prevClosePrice: 5200000.00, 
+    volume: 5200000000, lotSize: 1, openInterest: 1200000000,
     aboutCompany: 'Bitcoin is a decentralized digital currency, without a central bank or single administrator, that can be sent from user to user on the peer-to-peer bitcoin network without the need for intermediaries.'
   },
   { 
     id: 'ethinrperp', symbol: 'ETHINR.P', name: 'Ethereum Perpetual (INR)', 
-    price: 150100.00, change: -100.00, changePercent: -0.07, 
+    price: 285100.00, change: -100.00, changePercent: -0.04, 
     exchange: 'Crypto Futures',
-    todayLow: 149000.00, todayHigh: 151000.00, fiftyTwoWeekLow: 80000.00, fiftyTwoWeekHigh: 250000.00,
-    openPrice: 150200.00, prevClosePrice: 150200.00, 
-    volume: 155000, lotSize: 1,
+    todayLow: 284000.00, todayHigh: 286000.00, fiftyTwoWeekLow: 150000.00, fiftyTwoWeekHigh: 350000.00,
+    openPrice: 285200.00, prevClosePrice: 285200.00, 
+    volume: 1550000000, lotSize: 1, openInterest: 850000000,
     aboutCompany: 'Ethereum is a decentralized, open-source blockchain with smart contract functionality. Ether (ETH) is the native cryptocurrency of the platform. Amongst cryptocurrencies, Ether is second only to Bitcoin in market capitalization.'
   },
   { 
     id: 'bnbinrperp', symbol: 'BNBINR.P', name: 'BNB Perpetual (INR)', 
-    price: 20020.00, change: 20.00, changePercent: 0.10, 
+    price: 46420.00, change: 20.00, changePercent: 0.04, 
     exchange: 'Crypto Futures',
-    todayLow: 19800.00, todayHigh: 20200.00, fiftyTwoWeekLow: 15000.00, fiftyTwoWeekHigh: 30000.00,
-    openPrice: 20000.00, prevClosePrice: 20000.00, 
-    volume: 210000, lotSize: 1,
+    todayLow: 46200.00, todayHigh: 46600.00, fiftyTwoWeekLow: 18000.00, fiftyTwoWeekHigh: 55000.00,
+    openPrice: 46400.00, prevClosePrice: 46400.00, 
+    volume: 210000000, lotSize: 1, openInterest: 150000000,
   },
   { 
     id: 'solinrperp', symbol: 'SOLINR.P', name: 'Solana Perpetual (INR)', 
-    price: 1666.50, change: 1.50, changePercent: 0.09, 
+    price: 13600.50, change: 1.50, changePercent: 0.01, 
     exchange: 'Crypto Futures',
-    todayLow: 1650.00, todayHigh: 1680.00, fiftyTwoWeekLow: 1000.00, fiftyTwoWeekHigh: 10000.00,
-    openPrice: 1665.00, prevClosePrice: 1665.00, 
-    volume: 310000, lotSize: 1,
+    todayLow: 13500.00, todayHigh: 13700.00, fiftyTwoWeekLow: 1500.00, fiftyTwoWeekHigh: 21000.00,
+    openPrice: 13600.00, prevClosePrice: 13599.00, 
+    volume: 310000000, lotSize: 1, openInterest: 180000000,
   },
   { 
     id: 'adainrperp', symbol: 'ADAINR.P', name: 'Cardano Perpetual (INR)', 
-    price: 21.68, change: 0.03, changePercent: 0.14, 
+    price: 36.68, change: 0.03, changePercent: 0.08, 
     exchange: 'Crypto Futures',
-    todayLow: 21.50, todayHigh: 22.00, fiftyTwoWeekLow: 15.00, fiftyTwoWeekHigh: 40.00,
-    openPrice: 21.65, prevClosePrice: 21.65, 
-    volume: 5100000, lotSize: 1,
+    todayLow: 36.50, todayHigh: 37.00, fiftyTwoWeekLow: 18.00, fiftyTwoWeekHigh: 60.00,
+    openPrice: 36.65, prevClosePrice: 36.65, 
+    volume: 510000000, lotSize: 1, openInterest: 250000000,
   },
   { 
     id: 'dogeinrperp', symbol: 'DOGEINR.P', name: 'Dogecoin Perpetual (INR)', 
-    price: 5.16, change: 0.01, changePercent: 0.19, 
+    price: 12.80, change: 0.01, changePercent: 0.08, 
     exchange: 'Crypto Futures',
-    todayLow: 5.10, todayHigh: 5.25, fiftyTwoWeekLow: 4.00, fiftyTwoWeekHigh: 10.00,
-    openPrice: 5.15, prevClosePrice: 5.15, 
-    volume: 11000000, lotSize: 1,
+    todayLow: 12.50, todayHigh: 13.00, fiftyTwoWeekLow: 4.50, fiftyTwoWeekHigh: 18.00,
+    openPrice: 12.79, prevClosePrice: 12.79, 
+    volume: 1100000000, lotSize: 1, openInterest: 600000000,
   },
 ];

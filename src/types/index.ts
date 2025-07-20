@@ -9,6 +9,7 @@ export interface Stock {
   changePercent: number;
   marketCap?: string; // e.g., "29,377Cr"
   volume?: number;
+  openInterest?: number;
   exchange?: string;
   todayLow?: number;
   todayHigh?: number;

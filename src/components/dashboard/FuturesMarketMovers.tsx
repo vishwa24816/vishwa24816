@@ -17,19 +17,19 @@ type FuturesFilter = 'New' | 'Top Gainers' | 'Top Volume' | 'Top OI';
 type OptionsFilter = 'Top Volume' | 'Top OI';
 
 const formatPrice = (value: number) => {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('en-IN', {
         style: 'currency',
-        currency: 'USD',
+        currency: 'INR',
         minimumFractionDigits: 2,
-        maximumFractionDigits: 5,
+        maximumFractionDigits: 2,
     }).format(value);
 };
 
-const formatVolume = (value: number) => {
-    if (value >= 1_000_000_000) return `$${(value / 1_000_000_000).toFixed(2)}B`;
-    if (value >= 1_000_000) return `$${(value / 1_000_000).toFixed(2)}M`;
-    if (value >= 1_000) return `$${(value / 1_000).toFixed(2)}K`;
-    return `$${value}`;
+const formatFinancialValue = (value: number) => {
+    if (value >= 1_00_00_000) return `₹${(value / 1_00_00_000).toFixed(2)}Cr`;
+    if (value >= 1_00_000) return `₹${(value / 1_00_000).toFixed(2)}L`;
+    if (value >= 1_000) return `₹${(value / 1_000).toFixed(2)}K`;
+    return `₹${value}`;
 };
 
 export function FuturesMarketMovers() {
@@ -45,6 +45,8 @@ export function FuturesMarketMovers() {
         return data.sort((a, b) => b.changePercent - a.changePercent);
       case 'Top Volume':
         return data.sort((a, b) => (b.volume || 0) - (a.volume || 0));
+      case 'Top OI':
+        return data.sort((a, b) => (b.openInterest || 0) - (a.openInterest || 0));
       case 'New':
         return data.slice(0, 5); 
       default:
@@ -54,17 +56,32 @@ export function FuturesMarketMovers() {
 
   const optionsData = useMemo(() => {
       const data = [...mockCryptoOptionsForWatchlist];
-      // Add sorting logic for 'Top OI' when data is available
-      return data.sort((a,b) => (b.volume || 0) - (a.volume || 0));
+      switch (activeOptionsFilter) {
+        case 'Top OI':
+          return data.sort((a, b) => (b.openInterest || 0) - (a.openInterest || 0));
+        case 'Top Volume':
+        default:
+          return data.sort((a, b) => (b.volume || 0) - (a.volume || 0));
+      }
   }, [activeOptionsFilter]);
 
   const handleRowClick = (item: Stock) => {
     if (activeTab === 'Futures') {
         router.push(`/order/crypto-future/${item.symbol}`);
     } else {
-        router.push(`/order/option/${item.symbol}`); // Assuming a generic options page
+        router.push(`/order/option/${item.symbol}`);
     }
   };
+
+  const getSubtext = (item: Stock) => {
+    if (activeTab === 'Futures') {
+      return activeFuturesFilter === 'Top OI' ? `OI: ${formatFinancialValue(item.openInterest || 0)}` : `Vol: ${formatFinancialValue(item.volume || 0)}`;
+    }
+    if (activeTab === 'Options') {
+        return activeOptionsFilter === 'Top OI' ? `OI: ${formatFinancialValue(item.openInterest || 0)}` : `Vol: ${formatFinancialValue(item.volume || 0)}`;
+    }
+    return `Vol: ${formatFinancialValue(item.volume || 0)}`;
+  }
 
   const renderList = (items: Stock[]) => (
     <div className="space-y-2">
@@ -76,7 +93,7 @@ export function FuturesMarketMovers() {
           </div>
           <div className="flex-1 text-right">
             <p className="font-semibold text-sm">{formatPrice(item.price)}</p>
-            <p className="text-xs text-muted-foreground">{formatVolume(item.volume || 0)}</p>
+            <p className="text-xs text-muted-foreground">{getSubtext(item)}</p>
           </div>
           <div className="w-24 text-right flex justify-end">
             <div className={cn(
@@ -146,7 +163,6 @@ export function FuturesMarketMovers() {
             </div>
             {renderList(optionsData)}
           </TabsContent>
-
         </Tabs>
     </div>
   );
