@@ -37,8 +37,8 @@ export function MutualFundOrderForm({ asset, assetType }: MutualFundOrderFormPro
     const handleStartSip = () => {
         // This is a placeholder for the logic inside SipForm
         toast({
-            title: "Start SIP (Mock)",
-            description: `Starting SIP for ${asset.name}.`,
+            title: "Systematic Plan Initiated (Mock)",
+            description: `Systematic Plan for ${asset.name} has been set up.`,
         });
     }
 
@@ -47,7 +47,7 @@ export function MutualFundOrderForm({ asset, assetType }: MutualFundOrderFormPro
             <div className="flex w-full space-x-3">
                 <TabsList className="grid grid-cols-2 flex-1 h-auto p-0 bg-transparent">
                     <TabsTrigger value="one-time" className="data-[state=active]:bg-muted data-[state=active]:text-foreground h-12 rounded-lg text-base">One-time</TabsTrigger>
-                    <TabsTrigger value="start-sip" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground h-12 rounded-lg text-base">Start SIP</TabsTrigger>
+                    <TabsTrigger value="start-sp" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground h-12 rounded-lg text-base">Start SP</TabsTrigger>
                 </TabsList>
             </div>
             
@@ -60,7 +60,7 @@ export function MutualFundOrderForm({ asset, assetType }: MutualFundOrderFormPro
                     <Button onClick={handleOneTimeBuy} className="w-full text-base py-3 h-12">Invest Now</Button>
                 </div>
             </TabsContent>
-            <TabsContent value="start-sip" className="mt-4">
+            <TabsContent value="start-sp" className="mt-4">
                 <SipForm asset={asset} assetType={assetType} onSipStart={handleStartSip} />
             </TabsContent>
         </Tabs>

@@ -27,6 +27,7 @@ import { format } from "date-fns";
 import { cn } from '@/lib/utils';
 import { useToast } from "@/hooks/use-toast";
 import { AddToBasketDialog } from './AddToBasketDialog';
+import { SipForm } from './SipForm';
 
 // #region Helper Components
 
@@ -156,109 +157,6 @@ const MarketDepth = ({ asset, selectedExchange, onPriceClick }: { asset: Stock; 
     );
 };
 
-const SipForm = ({ asset, assetType }: { asset: Stock, assetType: string }) => {
-    const { toast } = useToast();
-    const [sipInvestmentType, setSipInvestmentType] = useState<'amount' | 'quantity'>('amount');
-    const [sipAmount, setSipAmount] = useState('');
-    const [sipQuantity, setSipQuantity] = useState('1');
-    const [sipFrequency, setSipFrequency] = useState<'Daily' | 'Weekly' | 'Monthly' | 'Annually'>('Monthly');
-    const [sipStartDate, setSipStartDate] = useState<Date | undefined>(new Date());
-    const [sipInstallments, setSipInstallments] = useState('');
-
-    useEffect(() => {
-        if (assetType === 'mutual-fund' || assetType === 'bond') {
-            setSipInvestmentType('amount');
-        }
-    }, [assetType]);
-
-    const isSipAmountBased = useMemo(() => {
-        if (assetType === 'mutual-fund' || assetType === 'bond') return true;
-        return sipInvestmentType === 'amount';
-    }, [assetType, sipInvestmentType]);
-
-    const handleStartSip = () => {
-        const investmentValue = isSipAmountBased ? `₹${sipAmount}` : `${sipQuantity} Qty`;
-        const startDateFormatted = sipStartDate ? format(sipStartDate, "PPP") : "Not set";
-        const installmentsInfo = sipInstallments ? `${sipInstallments} installments` : "Ongoing";
-        toast({
-            title: "SIP Placed (Mock)",
-            description: `SIP for ${asset.name} of ${investmentValue} ${sipFrequency.toLowerCase()} starting ${startDateFormatted}, ${installmentsInfo}.`,
-        });
-    };
-
-    return (
-        <div className="p-4 space-y-6">
-            <div className="space-y-2">
-                <Label>Investment Type</Label>
-                <RadioGroup
-                    value={isSipAmountBased ? 'amount' : 'quantity'}
-                    onValueChange={(value) => setSipInvestmentType(value as 'amount' | 'quantity')}
-                    className="flex space-x-4"
-                    disabled={assetType === 'mutual-fund' || assetType === 'bond'}
-                >
-                    <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="amount" id="sip-amount-type" />
-                        <Label htmlFor="sip-amount-type" className="font-normal">Amount</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                        <RadioGroupItem
-                            value="quantity"
-                            id="sip-quantity-type"
-                            disabled={assetType === 'mutual-fund' || assetType === 'bond'}
-                        />
-                        <Label
-                            htmlFor="sip-quantity-type"
-                            className={cn("font-normal", (assetType === 'mutual-fund' || assetType === 'bond') && "text-muted-foreground/70")}
-                        >Quantity</Label>
-                    </div>
-                </RadioGroup>
-            </div>
-            {isSipAmountBased ? (
-                <div className="space-y-2">
-                    <Label htmlFor="sip-amount">Investment Amount (₹)</Label>
-                    <Input id="sip-amount" type="number" value={sipAmount} onChange={(e) => setSipAmount(e.target.value)} placeholder="e.g., 100" />
-                </div>
-            ) : (
-                <div className="space-y-2">
-                    <Label htmlFor="sip-quantity">Investment Quantity</Label>
-                    <Input id="sip-quantity" type="number" value={sipQuantity} onChange={(e) => setSipQuantity(e.target.value)} placeholder="e.g., 10" min="1" />
-                </div>
-            )}
-            <div className="space-y-2">
-                <Label>Frequency</Label>
-                <RadioGroup value={sipFrequency} onValueChange={(value) => setSipFrequency(value as 'Daily' | 'Weekly' | 'Monthly' | 'Annually')} className="flex flex-wrap gap-x-4 gap-y-2">
-                    {(['Daily', 'Weekly', 'Monthly', 'Annually'] as const).map(freq => (
-                        <div key={freq} className="flex items-center space-x-2">
-                            <RadioGroupItem value={freq} id={`sip-freq-${freq}`} />
-                            <Label htmlFor={`sip-freq-${freq}`} className="font-normal">{freq}</Label>
-                        </div>
-                    ))}
-                </RadioGroup>
-            </div>
-            <div className="space-y-2">
-                <Label htmlFor="sip-start-date">Start Date</Label>
-                <Popover>
-                    <PopoverTrigger asChild>
-                        <Button id="sip-start-date" variant={"outline"} className={cn("w-full justify-start text-left font-normal", !sipStartDate && "text-muted-foreground")}>
-                            <CalendarIcon className="mr-2 h-4 w-4" />
-                            {sipStartDate ? format(sipStartDate, "PPP") : <span>Pick a date</span>}
-                        </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0">
-                        <Calendar mode="single" selected={sipStartDate} onSelect={setSipStartDate} initialFocus disabled={(date) => date < new Date(new Date().setDate(new Date().getDate() - 1))} />
-                    </PopoverContent>
-                </Popover>
-            </div>
-            <div className="space-y-2">
-                <Label htmlFor="sip-installments">Number of Installments (Optional)</Label>
-                <Input id="sip-installments" type="number" value={sipInstallments} onChange={(e) => setSipInstallments(e.target.value)} placeholder="Leave blank for ongoing" />
-            </div>
-            <Button onClick={handleStartSip} className="w-full sm:w-auto" disabled={isSipAmountBased ? !sipAmount : !sipQuantity}>
-                Start SIP
-            </Button>
-        </div>
-    );
-};
 
 // #endregion Helper Components
 
@@ -485,7 +383,7 @@ const StockOrderForm = ({ asset, assetType, productType, onProductTypeChange }: 
                 <TabsList className="w-full justify-start rounded-none bg-transparent border-b p-0">
                     <TabsTrigger value="Regular" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">Regular</TabsTrigger>
                     <TabsTrigger value="MTF" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">MTF</TabsTrigger>
-                    <TabsTrigger value="SIP" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">SIP</TabsTrigger>
+                    <TabsTrigger value="SP" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">SP</TabsTrigger>
                 </TabsList>
                 <TabsContent value="Regular" className="p-4 mt-0">
                     <CommonOrderFields orderProps={commonOrderProps} orderMode="Regular" />
@@ -506,7 +404,7 @@ const StockOrderForm = ({ asset, assetType, productType, onProductTypeChange }: 
                      </div>
                      <div className="mt-4 pt-4 border-t"><p className="text-sm text-muted-foreground">Margin required: <span className="font-semibold text-foreground">₹{displayedMargin.toLocaleString('en-IN')}</span></p></div>
                 </TabsContent>
-                <TabsContent value="SIP" className="p-0 mt-0"><SipForm asset={asset} assetType="stock" /></TabsContent>
+                <TabsContent value="SP" className="p-0 mt-0"><SipForm asset={asset} assetType="stock" /></TabsContent>
             </Tabs>
             <MarketDepth asset={asset} selectedExchange={selectedExchange} onPriceClick={handleMarketDepthPriceClick} />
             <div className="p-4 border-t flex flex-col sm:flex-row gap-2">
@@ -558,13 +456,13 @@ const CryptoOrderForm = ({ asset, assetType, productType, onProductTypeChange }:
             <Tabs value={orderMode} onValueChange={setOrderMode} className="w-full">
                 <TabsList className="w-full justify-start rounded-none bg-transparent border-b p-0">
                     <TabsTrigger value="Regular" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">Regular</TabsTrigger>
-                    <TabsTrigger value="SIP" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">SIP</TabsTrigger>
+                    <TabsTrigger value="SP" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">SP</TabsTrigger>
                 </TabsList>
                 <TabsContent value="Regular" className="p-4 mt-0">
                      <CommonOrderFields orderProps={commonOrderProps} orderMode="Regular" />
                      <div className="mt-4 pt-4 border-t"><p className="text-sm text-muted-foreground">Margin required: <span className="font-semibold text-foreground">₹{displayedMargin.toLocaleString('en-IN')}</span></p></div>
                 </TabsContent>
-                <TabsContent value="SIP" className="p-0 mt-0"><SipForm asset={asset} assetType="crypto" /></TabsContent>
+                <TabsContent value="SP" className="p-0 mt-0"><SipForm asset={asset} assetType="crypto" /></TabsContent>
             </Tabs>
              <div className="p-4 border-t flex flex-col sm:flex-row gap-2">
                 <Button variant="outline" className="flex-1" onClick={() => setIsAddToBasketDialogOpen(true)}><ShoppingBasket className="mr-2 h-4 w-4" /> Add to Basket</Button>
@@ -686,7 +584,7 @@ const CryptoFutureOrderForm = ({ asset, assetType, productType, onProductTypeCha
             <Tabs value={orderMode} onValueChange={setOrderMode} className="w-full">
                  <TabsList className="w-full justify-start rounded-none bg-transparent border-b p-0">
                     <TabsTrigger value="MTF" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">Trade</TabsTrigger>
-                    <TabsTrigger value="SIP" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">SIP</TabsTrigger>
+                    <TabsTrigger value="SP" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">SP</TabsTrigger>
                 </TabsList>
                  <TabsContent value="MTF" className="p-4 mt-0 space-y-4">
                      <CommonOrderFields orderProps={commonOrderProps} orderMode="MTF" />
@@ -699,7 +597,7 @@ const CryptoFutureOrderForm = ({ asset, assetType, productType, onProductTypeCha
                     </div>
                      <div className="mt-4 pt-4 border-t"><p className="text-sm text-muted-foreground">Margin required: <span className="font-semibold text-foreground">₹{displayedMargin.toLocaleString('en-IN')}</span></p></div>
                  </TabsContent>
-                 <TabsContent value="SIP" className="p-0 mt-0"><SipForm asset={asset} assetType="crypto" /></TabsContent>
+                 <TabsContent value="SP" className="p-0 mt-0"><SipForm asset={asset} assetType="crypto" /></TabsContent>
             </Tabs>
              <div className="p-4 border-t flex flex-col sm:flex-row gap-2">
                 <Button variant="outline" className="flex-1" onClick={() => setIsAddToBasketDialogOpen(true)}><ShoppingBasket className="mr-2 h-4 w-4" /> Add to Basket</Button>
