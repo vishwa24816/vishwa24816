@@ -11,6 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Chart } from "@/components/ui/chart";
 import { PortfolioHeatmap, type HeatmapItem } from './PortfolioHeatmap';
+import { Separator } from '../ui/separator';
 
 interface CryptoFuturesSectionProps {
   positions: CryptoFuturePosition[];
@@ -207,27 +208,30 @@ export function CryptoFuturesSection({ positions, cashBalance }: CryptoFuturesSe
       </CardHeader>
       <CardContent className="p-0">
         <div className="px-6 pb-4 border-b">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+           <div className="grid grid-cols-2 gap-4">
             <div>
               <p className="text-sm text-muted-foreground">MTM P&L</p>
               <p className={cn("text-lg font-semibold", totalMtmPnl >= 0 ? 'text-green-600' : 'text-red-600')}>
                   {formatCurrency(totalMtmPnl)}
               </p>
             </div>
-            <div>
+            <div className="text-right">
               <p className="text-sm text-muted-foreground">Overall P&L</p>
               <p className={cn("text-lg font-semibold", totalUnrealizedPnL >= 0 ? 'text-green-600' : 'text-red-600')}>
                   {formatCurrency(totalUnrealizedPnL)}
               </p>
             </div>
-            <div className='text-right'>
+          </div>
+          <Separator className="my-3" />
+           <div className="grid grid-cols-2 gap-4">
+              <div>
                <p className="text-sm text-muted-foreground">Used Margin</p>
                <p className="text-lg font-semibold">{formatCurrency(totalMargin)}</p>
-            </div>
-            <div className='text-right'>
+              </div>
+              <div className='text-right'>
                <p className="text-sm text-muted-foreground">Available Margin</p>
                <p className="text-lg font-semibold">{formatCurrency(cashBalance)}</p>
-            </div>
+              </div>
           </div>
         </div>
         

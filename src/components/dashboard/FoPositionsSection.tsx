@@ -194,33 +194,35 @@ export function FoPositionsSection() {
   return (
     <Card className="shadow-md">
       <CardHeader>
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-          <CardTitle className="text-xl font-semibold font-headline text-primary flex items-center mb-2 sm:mb-0">
+        <div className="flex justify-between items-center">
+          <CardTitle className="text-xl font-semibold font-headline text-primary flex items-center">
             <Layers className="h-6 w-6 mr-2" /> F&O Positions
           </CardTitle>
-          <div className="flex items-center justify-between sm:justify-end gap-4">
-            <div className="text-left sm:text-right">
+          <div className="flex items-center gap-1 rounded-md bg-muted p-1">
+              <Button variant={viewMode === 'list' ? 'secondary' : 'ghost'} size="icon" className="h-7 w-7" onClick={() => setViewMode('list')}><List /></Button>
+              <Button variant={viewMode === 'bar' ? 'secondary' : 'ghost'} size="icon" className="h-7 w-7" onClick={() => setViewMode('bar')}><BarChart2 /></Button>
+              <Button variant={viewMode === 'heatmap' ? 'secondary' : 'ghost'} size="icon" className="h-7 w-7" onClick={() => setViewMode('heatmap')}><LayoutGrid /></Button>
+              <Button variant={viewMode === 'pie' ? 'secondary' : 'ghost'} size="icon" className="h-7 w-7" onClick={() => setViewMode('pie')}><PieChart /></Button>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent className="p-0">
+        <div className="px-6 py-4 border-b">
+           <div className="grid grid-cols-2 gap-4">
+            <div>
               <p className="text-sm text-muted-foreground">MTM P&L</p>
               <p className={cn("text-lg font-semibold", totalMtmPnl >= 0 ? 'text-green-600' : 'text-red-600')}>
                 {formatCurrency(totalMtmPnl)}
               </p>
             </div>
-            <div className="text-left sm:text-right">
+            <div className="text-right">
               <p className="text-sm text-muted-foreground">Overall P&L</p>
               <p className={cn("text-lg font-semibold", totalPandL >= 0 ? 'text-green-600' : 'text-red-600')}>
                 {formatCurrency(totalPandL)}
               </p>
             </div>
-             <div className="flex items-center gap-1 rounded-md bg-muted p-1">
-                <Button variant={viewMode === 'list' ? 'secondary' : 'ghost'} size="icon" className="h-7 w-7" onClick={() => setViewMode('list')}><List /></Button>
-                <Button variant={viewMode === 'bar' ? 'secondary' : 'ghost'} size="icon" className="h-7 w-7" onClick={() => setViewMode('bar')}><BarChart2 /></Button>
-                <Button variant={viewMode === 'heatmap' ? 'secondary' : 'ghost'} size="icon" className="h-7 w-7" onClick={() => setViewMode('heatmap')}><LayoutGrid /></Button>
-                <Button variant={viewMode === 'pie' ? 'secondary' : 'ghost'} size="icon" className="h-7 w-7" onClick={() => setViewMode('pie')}><PieChart /></Button>
-            </div>
           </div>
         </div>
-      </CardHeader>
-      <CardContent className="p-0">
         {renderContent()}
       </CardContent>
     </Card>
