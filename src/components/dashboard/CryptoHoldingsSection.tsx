@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator"; 
 import type { PortfolioHolding } from '@/types';
 import { cn } from '@/lib/utils';
-import { Bitcoin, XCircle, Coins, Landmark, Settings2, ChevronDown, BarChart2, LayoutGrid, List, PieChart, ArrowUpRight, ArrowDownLeft, History, Snowflake, QrCode, Copy, ArrowUpCircle, ArrowDownCircle } from 'lucide-react';
+import { Bitcoin, XCircle, Coins, Landmark, Settings2, ChevronDown, BarChart2, LayoutGrid, List, PieChart, ArrowUpRight, ArrowDownLeft, History, Snowflake, QrCode, Copy, ArrowUpCircle, ArrowDownCircle, Flame } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { FundTransferDialog } from '@/components/shared/FundTransferDialog';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -28,6 +28,7 @@ import {
 
 
 type ViewMode = 'list' | 'bar' | 'heatmap' | 'pie';
+type WalletMode = 'hot' | 'cold';
 
 interface CryptoHoldingsSectionProps {
   holdings: PortfolioHolding[];
@@ -66,6 +67,7 @@ export function CryptoHoldingsSection({
   const [pledgeDialogOpen, setPledgeDialogOpen] = useState(false);
   const [selectedHoldingForPledge, setSelectedHoldingForPledge] = useState<PortfolioHolding | null>(null);
   const [pledgeDialogMode, setPledgeDialogMode] = useState<'pledge' | 'payback'>('pledge');
+  const [walletMode, setWalletMode] = useState<WalletMode>('cold');
 
   const [isSending, setIsSending] = useState(false);
   const [isReceiving, setIsReceiving] = useState(false);
@@ -360,10 +362,30 @@ export function CryptoHoldingsSection({
     <>
       <div className="space-y-4">
         <Card className="w-full shadow-md">
-          <CardHeader>
+          <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="text-xl font-semibold font-headline text-primary flex items-center">
               <Bitcoin className="h-6 w-6 mr-2" /> {walletCardTitle}
             </CardTitle>
+             <div className="flex items-center gap-1 rounded-md bg-muted p-1">
+                <Button
+                    variant={walletMode === 'hot' ? 'secondary' : 'ghost'}
+                    size="sm"
+                    className="h-7 px-2 text-xs flex items-center gap-1"
+                    onClick={() => setWalletMode('hot')}
+                >
+                    <Flame className="h-3 w-3" />
+                    Hot
+                </Button>
+                <Button
+                    variant={walletMode === 'cold' ? 'secondary' : 'ghost'}
+                    size="sm"
+                    className="h-7 px-2 text-xs flex items-center gap-1"
+                    onClick={() => setWalletMode('cold')}
+                >
+                    <Snowflake className="h-3 w-3" />
+                    Cold
+                </Button>
+            </div>
           </CardHeader>
           <CardContent>
             <div className="space-y-3 pt-2 mb-4">
@@ -397,22 +419,18 @@ export function CryptoHoldingsSection({
                 </div>
                 {!isRealMode && (
                     <>
-                        <div className="pt-3 grid grid-cols-4 gap-2">
-                            <Button variant="outline" size="sm" className="flex-col h-14" onClick={handleSendClick}>
+                        <div className="pt-3 grid grid-cols-3 gap-2">
+                            <Button variant="outline" size="sm" className="flex-col h-14" onClick={handleSendClick} disabled={walletMode === 'cold'}>
                                 <ArrowUpRight className="h-5 w-5 mb-1" />
                                 <span className="text-xs">Send</span>
                             </Button>
-                            <Button variant="outline" size="sm" className="flex-col h-14" onClick={handleReceiveClick}>
+                            <Button variant="outline" size="sm" className="flex-col h-14" onClick={handleReceiveClick} disabled={walletMode === 'cold'}>
                                 <ArrowDownLeft className="h-5 w-5 mb-1" />
                                 <span className="text-xs">Receive</span>
                             </Button>
-                            <Button variant="outline" size="sm" className="flex-col h-14" onClick={handleHistoryClick}>
+                            <Button variant="outline" size="sm" className="flex-col h-14" onClick={handleHistoryClick} disabled={walletMode === 'cold'}>
                                 <History className="h-5 w-5 mb-1" />
                                 <span className="text-xs">History</span>
-                            </Button>
-                            <Button variant="outline" size="sm" className="flex-col h-14" onClick={() => toast({title: "Cold Storage (WIP)"})}>
-                                <Snowflake className="h-5 w-5 mb-1" />
-                                <span className="text-xs">Cold</span>
                             </Button>
                         </div>
                         <div className="pt-2 flex gap-2">
