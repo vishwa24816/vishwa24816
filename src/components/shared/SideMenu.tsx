@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect } from 'react';
@@ -123,7 +124,7 @@ export function SideMenu() {
             <Button
                 variant="ghost"
                 className="justify-start text-base p-3 hover:bg-accent/10"
-                onClick={() => alert('No-Code Algo feature coming soon!')}
+                onClick={() => router.push('/nocode-algo')}
             >
                 <Puzzle className="mr-3 h-5 w-5 text-primary" />
                 No-Code Algo
