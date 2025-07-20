@@ -451,7 +451,8 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
         activePrimaryItem={activePrimaryItem}
         activeSecondaryItem={activeSecondaryItem}
         onPrimaryNavClick={handlePrimaryNavClick}
-        onSecondaryNavClick={handlePrimaryNavClick}
+        onSecondaryNavClick={setActiveSecondaryItem}
+        secondaryNavTriggerCategories={secondaryNavTriggerCategories}
       />
       
       {activeMode === 'Portfolio' ? renderPortfolioContent() : renderMarketContent()}
