@@ -25,7 +25,8 @@ export const CustomNode: React.FC<NodeProps<CustomNodeData>> = ({ data, isConnec
 
   return (
     <Card className="shadow-lg w-52 bg-card border-2 border-primary/20">
-      <CardHeader className="flex flex-row items-center justify-between p-3 space-y-0">
+      {/* The 'nodrag' class on the CardHeader makes the entire node draggable via its header */}
+      <CardHeader className="nodrag flex flex-row items-center justify-between p-3 space-y-0 cursor-move">
         <CardTitle className="text-sm font-medium flex items-center gap-2">
           {Icon && <Icon className="h-4 w-4 text-primary" />}
           {label}
