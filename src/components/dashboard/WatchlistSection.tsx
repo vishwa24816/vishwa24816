@@ -102,10 +102,7 @@ const StockListItem: React.FC<StockListItemProps> = ({ stock, isPredefinedList, 
   };
 
   let itemLink = `/order/stock/${stock.symbol}`;
-  const isUsStock = stock.exchange === 'NASDAQ' || stock.exchange === 'NYSE';
-  if (isUsStock) {
-    itemLink = `/order/us-stock/${stock.symbol}`;
-  } else if (stock.exchange === 'MF') {
+  if (stock.exchange === 'MF') {
     itemLink = `/order/mutual-fund/${stock.symbol}`;
   } else if (stock.exchange === 'Crypto') {
     itemLink = `/order/crypto/${stock.symbol}`;
@@ -183,7 +180,7 @@ const StockListItem: React.FC<StockListItemProps> = ({ stock, isPredefinedList, 
           </div>
           <div className="text-right ml-2 shrink-0">
             <p className={`text-sm font-medium ${isPositive ? 'text-green-600' : 'text-red-600'}`}>
-              {stock.price.toFixed(2)}
+              ₹{stock.price.toFixed(2)}
             </p>
             <p className={`text-xs ${isPositive ? 'text-green-500' : 'text-red-500'} flex items-center justify-end`}>
               {isPositive ? <TrendingUp className="h-3 w-3 mr-0.5" /> : <TrendingDown className="h-3 w-3 mr-0.5" />}
