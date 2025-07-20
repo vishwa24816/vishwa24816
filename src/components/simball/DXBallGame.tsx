@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useRef, useEffect, useState } from 'react';
@@ -14,6 +13,22 @@ export const DXBallGame: React.FC<DXBallGameProps> = ({ brickCount, onGameEnd })
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [gameState, setGameState] = useState<'playing' | 'gameOver' | 'win'>('playing');
 
+  // Use refs for all game state that changes inside the animation loop
+  // This prevents stale state issues within the requestAnimationFrame callback
+  const gameInstance = useRef({
+    paddleX: 0,
+    ballX: 0,
+    ballY: 0,
+    ballDX: 6,
+    ballDY: -6,
+    rightPressed: false,
+    leftPressed: false,
+    bricks: [] as { x: number; y: number; status: number }[][],
+    score: 0,
+    brickTotal: 0,
+    animationFrameId: 0,
+  });
+
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -24,17 +39,14 @@ export const DXBallGame: React.FC<DXBallGameProps> = ({ brickCount, onGameEnd })
     canvas.width = Math.min(window.innerWidth * 0.9, 800);
     canvas.height = Math.min(window.innerHeight * 0.8, 600);
 
-    // Paddle
-    let paddleHeight = 15;
-    let paddleWidth = 120;
-    let paddleX = (canvas.width - paddleWidth) / 2;
+    const paddleHeight = 15;
+    const paddleWidth = 120;
+    const ballRadius = 10;
 
-    // Ball
-    let ballRadius = 10;
-    let x = canvas.width / 2;
-    let y = canvas.height - 30;
-    let dx = 6;
-    let dy = -6;
+    const game = gameInstance.current;
+    game.paddleX = (canvas.width - paddleWidth) / 2;
+    game.ballX = canvas.width / 2;
+    game.ballY = canvas.height - 30;
 
     // Bricks
     const brickRowCount = Math.ceil(brickCount / 10);
@@ -45,54 +57,56 @@ export const DXBallGame: React.FC<DXBallGameProps> = ({ brickCount, onGameEnd })
     const brickOffsetTop = 30;
     const brickOffsetLeft = (canvas.width - (brickColumnCount * (brickWidth + brickPadding))) / 2 + brickPadding / 2;
     
-    let bricks: { x: number; y: number; status: number }[][] = [];
-    let score = 0;
-    let brickTotal = 0;
+    game.bricks = [];
+    game.brickTotal = 0;
     for (let c = 0; c < brickColumnCount; c++) {
-      bricks[c] = [];
+      game.bricks[c] = [];
       for (let r = 0; r < brickRowCount; r++) {
-        if(brickTotal < brickCount) {
-            bricks[c][r] = { x: 0, y: 0, status: 1 };
-            brickTotal++;
+        if(game.brickTotal < brickCount) {
+            game.bricks[c][r] = { x: 0, y: 0, status: 1 };
+            game.brickTotal++;
         }
       }
     }
 
     // --- Controls ---
-    let rightPressed = false;
-    let leftPressed = false;
-
     const keyDownHandler = (e: KeyboardEvent) => {
-      if(e.key == "Right" || e.key == "ArrowRight") rightPressed = true;
-      else if(e.key == "Left" || e.key == "ArrowLeft") leftPressed = true;
+      if(e.key == "Right" || e.key == "ArrowRight") game.rightPressed = true;
+      else if(e.key == "Left" || e.key == "ArrowLeft") game.leftPressed = true;
     }
     const keyUpHandler = (e: KeyboardEvent) => {
-      if(e.key == "Right" || e.key == "ArrowRight") rightPressed = false;
-      else if(e.key == "Left" || e.key == "ArrowLeft") leftPressed = false;
+      if(e.key == "Right" || e.key == "ArrowRight") game.rightPressed = false;
+      else if(e.key == "Left" || e.key == "ArrowLeft") game.leftPressed = false;
     }
     const mouseMoveHandler = (e: MouseEvent) => {
-      const canvasBounds = canvas.getBoundingClientRect();
-      const relativeX = e.clientX - canvasBounds.left;
+      const relativeX = e.clientX - canvas.getBoundingClientRect().left;
       if(relativeX > 0 && relativeX < canvas.width) {
-        paddleX = relativeX - paddleWidth / 2;
+        game.paddleX = relativeX - paddleWidth / 2;
       }
     }
+     const touchMoveHandler = (e: TouchEvent) => {
+      const relativeX = e.touches[0].clientX - canvas.getBoundingClientRect().left;
+      if (relativeX > 0 && relativeX < canvas.width) {
+        game.paddleX = relativeX - paddleWidth / 2;
+      }
+    };
     
-    document.addEventListener("keydown", keyDownHandler, false);
-    document.addEventListener("keyup", keyUpHandler, false);
-    document.addEventListener("mousemove", mouseMoveHandler, false);
+    document.addEventListener("keydown", keyDownHandler);
+    document.addEventListener("keyup", keyUpHandler);
+    document.addEventListener("mousemove", mouseMoveHandler);
+    canvas.addEventListener("touchmove", touchMoveHandler);
 
     // --- Drawing Functions ---
     const drawBall = () => {
       ctx.beginPath();
-      ctx.arc(x, y, ballRadius, 0, Math.PI * 2);
+      ctx.arc(game.ballX, game.ballY, ballRadius, 0, Math.PI * 2);
       ctx.fillStyle = "#0ea5e9";
       ctx.fill();
       ctx.closePath();
     }
     const drawPaddle = () => {
       ctx.beginPath();
-      ctx.rect(paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight);
+      ctx.rect(game.paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight);
       ctx.fillStyle = "#f97316";
       ctx.fill();
       ctx.closePath();
@@ -100,11 +114,11 @@ export const DXBallGame: React.FC<DXBallGameProps> = ({ brickCount, onGameEnd })
     const drawBricks = () => {
       for(let c = 0; c < brickColumnCount; c++) {
         for(let r = 0; r < brickRowCount; r++) {
-          if(bricks[c][r] && bricks[c][r].status == 1) {
+          if(game.bricks[c][r] && game.bricks[c][r].status == 1) {
             const brickX = (c * (brickWidth + brickPadding)) + brickOffsetLeft;
             const brickY = (r * (brickHeight + brickPadding)) + brickOffsetTop;
-            bricks[c][r].x = brickX;
-            bricks[c][r].y = brickY;
+            game.bricks[c][r].x = brickX;
+            game.bricks[c][r].y = brickY;
             ctx.beginPath();
             ctx.rect(brickX, brickY, brickWidth, brickHeight);
             ctx.fillStyle = `hsl(${200 + r * 20}, 80%, 60%)`;
@@ -118,15 +132,14 @@ export const DXBallGame: React.FC<DXBallGameProps> = ({ brickCount, onGameEnd })
     const collisionDetection = () => {
       for (let c = 0; c < brickColumnCount; c++) {
         for (let r = 0; r < brickRowCount; r++) {
-          const b = bricks[c][r];
+          const b = game.bricks[c][r];
           if (b && b.status === 1) {
-            if (x > b.x && x < b.x + brickWidth && y > b.y && y < b.y + brickHeight) {
-              dy = -dy;
+            if (game.ballX > b.x && game.ballX < b.x + brickWidth && game.ballY > b.y && game.ballY < b.y + brickHeight) {
+              game.ballDY = -game.ballDY;
               b.status = 0;
-              score++;
-              if (score === brickTotal) {
+              game.score++;
+              if (game.score === game.brickTotal) {
                 setGameState('win');
-                cancelAnimationFrame(animationFrameId);
               }
             }
           }
@@ -135,49 +148,52 @@ export const DXBallGame: React.FC<DXBallGameProps> = ({ brickCount, onGameEnd })
     }
 
     // --- Game Loop ---
-    let animationFrameId: number;
     const draw = () => {
+      if (gameState !== 'playing') {
+        cancelAnimationFrame(game.animationFrameId);
+        return;
+      }
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       drawBricks();
       drawBall();
       drawPaddle();
       collisionDetection();
 
-      if (x + dx > canvas.width - ballRadius || x + dx < ballRadius) dx = -dx;
-      if (y + dy < ballRadius) dy = -dy;
-      else if (y + dy > canvas.height - ballRadius) {
-        if (x > paddleX && x < paddleX + paddleWidth) {
-          dy = -dy;
+      if (game.ballX + game.ballDX > canvas.width - ballRadius || game.ballX + game.ballDX < ballRadius) game.ballDX = -game.ballDX;
+      if (game.ballY + game.ballDY < ballRadius) game.ballDY = -game.ballDY;
+      else if (game.ballY + game.ballDY > canvas.height - ballRadius) {
+        if (game.ballX > game.paddleX && game.ballX < game.paddleX + paddleWidth) {
+          game.ballDY = -game.ballDY;
         } else {
           setGameState('gameOver');
-          cancelAnimationFrame(animationFrameId);
           return;
         }
       }
 
-      if (rightPressed && paddleX < canvas.width - paddleWidth) paddleX += 10;
-      else if (leftPressed && paddleX > 0) paddleX -= 10;
+      if (game.rightPressed && game.paddleX < canvas.width - paddleWidth) game.paddleX += 10;
+      else if (game.leftPressed && game.paddleX > 0) game.paddleX -= 10;
       
-      x += dx;
-      y += dy;
+      game.ballX += game.ballDX;
+      game.ballY += game.ballDY;
 
-      animationFrameId = requestAnimationFrame(draw);
+      game.animationFrameId = requestAnimationFrame(draw);
     };
 
     draw();
 
     // --- Cleanup ---
     return () => {
-      cancelAnimationFrame(animationFrameId);
+      cancelAnimationFrame(game.animationFrameId);
       document.removeEventListener("keydown", keyDownHandler);
       document.removeEventListener("keyup", keyUpHandler);
       document.removeEventListener("mousemove", mouseMoveHandler);
+      canvas.removeEventListener("touchmove", touchMoveHandler);
     };
-  }, [brickCount]); // Rerun effect if brickCount changes
+  }, [brickCount, gameState]); // Re-run effect if brickCount or gameState changes
 
   const getMessage = () => {
     if (gameState === 'gameOver') return 'Game Over!';
-    if (gameState === 'win') return 'You Win!';
+    if (gameState === 'win') return `You Win! Brokerage Earned: ₹${brickCount.toFixed(2)}`;
     return '';
   }
 
@@ -189,7 +205,7 @@ export const DXBallGame: React.FC<DXBallGameProps> = ({ brickCount, onGameEnd })
         </Button>
         {gameState !== 'playing' && (
             <div className="absolute inset-0 bg-black/70 flex flex-col items-center justify-center text-white space-y-4">
-                <h2 className="text-5xl font-bold">{getMessage()}</h2>
+                <h2 className="text-4xl sm:text-5xl font-bold text-center px-4">{getMessage()}</h2>
                 <Button onClick={onGameEnd}>Close Game</Button>
             </div>
         )}
