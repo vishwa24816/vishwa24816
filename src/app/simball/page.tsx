@@ -86,7 +86,7 @@ export default function SimballPage() {
             </div>
 
             <div>
-                <h3 className="text-xl font-semibold mb-4">All fires (5)</h3>
+                <h3 className="text-xl font-semibold mb-4">Games to be played</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     <FireCard 
                         tradeType="BUY"
@@ -112,21 +112,27 @@ export default function SimballPage() {
                         gradientFrom="from-blue-500"
                         gradientTo="to-cyan-600"
                     />
+                </div>
+            </div>
+            
+            <div>
+                <h3 className="text-xl font-semibold mb-4 mt-8">Games played</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     <FireCard 
                         tradeType="BUY"
                         stockSymbol="BTC"
                         quantity={0.5}
                         time="8 hours ago"
-                        gradientFrom="from-purple-500"
-                        gradientTo="to-indigo-600"
+                        gradientFrom="from-gray-500"
+                        gradientTo="to-gray-600"
                     />
                     <FireCard 
                         tradeType="SELL"
                         stockSymbol="ETH"
                         quantity={5}
                         time="2 hours ago"
-                        gradientFrom="from-yellow-400"
-                        gradientTo="to-amber-500"
+                        gradientFrom="from-gray-500"
+                        gradientTo="to-gray-600"
                     />
                 </div>
             </div>
