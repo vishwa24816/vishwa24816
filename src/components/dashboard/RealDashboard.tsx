@@ -6,7 +6,7 @@ import { NewsSection } from '@/components/dashboard/NewsSection';
 import { WatchlistSection } from '@/components/dashboard/WatchlistSection';
 import { CryptoHoldingsSection } from '@/components/dashboard/CryptoHoldingsSection';
 import { CryptoFuturesSection } from '@/components/dashboard/CryptoFuturesSection';
-import { CryptoBasketSection } from '@/components/dashboard/CryptoBasketSection';
+import { CryptoBasketSection } from './CryptoBasketSection';
 import { CryptoOptionChain } from '@/components/dashboard/CryptoOptionChain';
 import { StrategyBuilder } from '@/components/dashboard/StrategyBuilder';
 import { ReadymadeStrategiesSection } from '@/components/dashboard/ReadymadeStrategiesSection';
@@ -19,12 +19,11 @@ import {
   mockNewsArticles, 
   mockCryptoAssets,
   mockCryptoFuturesForWatchlist,
+  mockCryptoOptionsForWatchlist,
   mockCryptoMutualFunds,
   mockCryptoETFs,
   mockRealPortfolioHoldings,
-  mockRealCryptoIntradayPositions,
   mockRealCryptoFutures,
-  mockCryptoOptionsForWatchlist,
 } from '@/lib/mockData';
 import { mockCryptoIndices } from '@/lib/mockData/cryptoIndices';
 
