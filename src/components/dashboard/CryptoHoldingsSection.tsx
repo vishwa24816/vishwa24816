@@ -1,14 +1,15 @@
 
 "use client";
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator"; 
 import { mockPortfolioHoldings } from '@/lib/mockData';
 import type { PortfolioHolding } from '@/types';
 import { cn } from '@/lib/utils';
-import { Bitcoin, XCircle, Coins, Landmark, Settings2, ChevronDown, BarChart2, LayoutGrid, List, PieChart, ArrowUpRight, ArrowDownLeft, History, Snowflake, QrCode } from 'lucide-react';
+import { Bitcoin, XCircle, Coins, Landmark, Settings2, ChevronDown, BarChart2, LayoutGrid, List, PieChart, ArrowUpRight, ArrowDownLeft, History, Snowflake, QrCode, Copy } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { FundTransferDialog } from '@/components/shared/FundTransferDialog';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -52,8 +53,10 @@ export function CryptoHoldingsSection({
   const [pledgeDialogMode, setPledgeDialogMode] = useState<'pledge' | 'payback'>('pledge');
 
   const [isSending, setIsSending] = useState(false);
+  const [isReceiving, setIsReceiving] = useState(false);
   const [recipientAddress, setRecipientAddress] = useState('');
   const [sendAmount, setSendAmount] = useState('');
+  const [walletAddress, setWalletAddress] = useState('');
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
@@ -101,14 +104,22 @@ export function CryptoHoldingsSection({
   };
 
   const handleSendClick = () => {
+    setIsReceiving(false);
     setIsSending(true);
     setRecipientAddress('');
     setSendAmount('');
   };
 
-  const handleCancelSend = () => {
+  const handleReceiveClick = () => {
     setIsSending(false);
+    setIsReceiving(true);
+    // Generate a new mock address each time
+    const newAddress = '0x' + [...Array(40)].map(() => Math.floor(Math.random() * 16).toString(16)).join('');
+    setWalletAddress(newAddress);
   };
+
+  const handleCancelSend = () => setIsSending(false);
+  const handleCancelReceive = () => setIsReceiving(false);
 
   const handleConfirmSend = () => {
     if (!recipientAddress || !sendAmount) {
@@ -121,6 +132,11 @@ export function CryptoHoldingsSection({
     });
     setIsSending(false);
   };
+
+  const handleCopyAddress = () => {
+    navigator.clipboard.writeText(walletAddress);
+    toast({ title: "Address Copied", description: "Your wallet address has been copied to the clipboard."});
+  }
 
   const walletCardTitle = title.includes('Web3') ? 'Web3 Wallet' : 'Crypto Wallet';
   const holdingsCardTitle = title.includes('Web3') ? 'Web3 Holdings' : 'Crypto Holdings';
@@ -339,7 +355,7 @@ export function CryptoHoldingsSection({
                                 <ArrowUpRight className="h-5 w-5 mb-1" />
                                 <span className="text-xs">Send</span>
                             </Button>
-                            <Button variant="outline" size="sm" className="flex-col h-14" onClick={() => toast({title: "Receive (WIP)"})}>
+                            <Button variant="outline" size="sm" className="flex-col h-14" onClick={handleReceiveClick}>
                                 <ArrowDownLeft className="h-5 w-5 mb-1" />
                                 <span className="text-xs">Receive</span>
                             </Button>
@@ -380,6 +396,33 @@ export function CryptoHoldingsSection({
                                 <div className="flex justify-end gap-2">
                                     <Button variant="ghost" onClick={handleCancelSend}>Cancel</Button>
                                     <Button onClick={handleConfirmSend}>Confirm Send</Button>
+                                </div>
+                            </div>
+                        )}
+                         {isReceiving && (
+                            <div className="p-4 border-t mt-4 space-y-4 text-center animate-accordion-down">
+                                <h4 className="text-md font-semibold text-foreground">Receive Crypto</h4>
+                                <div className="flex justify-center my-4">
+                                  <Image
+                                      src="https://placehold.co/200x200.png"
+                                      alt="Your wallet QR code"
+                                      width={160}
+                                      height={160}
+                                      data-ai-hint="qr code"
+                                      className="rounded-lg border p-2"
+                                  />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label>Your Wallet Address</Label>
+                                    <div className="flex items-center gap-2 p-2 bg-muted rounded-md text-xs font-mono break-all">
+                                      <span className="flex-grow">{walletAddress}</span>
+                                      <Button variant="ghost" size="icon" className="h-7 w-7" onClick={handleCopyAddress}>
+                                        <Copy className="h-4 w-4" />
+                                      </Button>
+                                    </div>
+                                </div>
+                                <div className="flex justify-end">
+                                    <Button variant="ghost" onClick={handleCancelReceive}>Done</Button>
                                 </div>
                             </div>
                         )}
@@ -432,4 +475,3 @@ export function CryptoHoldingsSection({
     </>
   );
 }
-
