@@ -89,9 +89,9 @@ const AdvancedOptionInput = ({
   );
 };
 
-const MarketDepth = ({ asset, selectedExchange, onPriceClick }: { asset: Stock; selectedExchange: 'BSE' | 'NSE'; onPriceClick: (price: number) => void; }) => {
+const MarketDepth = ({ asset, selectedExchange, onPriceClick }: { asset: Stock; selectedExchange: 'BSE' | 'NSE' | 'NASDAQ' | 'NYSE'; onPriceClick: (price: number) => void; }) => {
     const marketDepthData = useMemo(() => {
-        const basePrice = selectedExchange === 'NSE' ? asset.price : asset.price * 0.995;
+        const basePrice = asset.price;
         const buy = Array.from({ length: 5 }, (_, i) => ({
             quantity: Math.floor(Math.random() * 200 + 50),
             price: parseFloat((basePrice - (0.05 * (i + 1) * (Math.random() * 0.1 + 0.95))).toFixed(2)),
@@ -393,7 +393,8 @@ const StockOrderForm = ({ asset, assetType, productType, onProductTypeChange }: 
     const { toast } = useToast();
     const [quantity, setQuantity] = useState<number | string>(1);
     const [price, setPrice] = useState<number | string>(asset.price.toFixed(2));
-    const [selectedExchange, setSelectedExchange] = useState<'BSE' | 'NSE'>('NSE');
+    const isUsStock = asset.exchange === 'NASDAQ' || asset.exchange === 'NYSE';
+    const [selectedExchange, setSelectedExchange] = useState<'BSE' | 'NSE' | 'NASDAQ' | 'NYSE'>(isUsStock ? (asset.exchange || 'NASDAQ') : 'NSE');
     const [orderMode, setOrderMode] = useState('Regular');
     const [orderType, setOrderType] = useState('Limit');
     const [showMoreOptions, setShowMoreOptions] = useState(false);
@@ -413,12 +414,12 @@ const StockOrderForm = ({ asset, assetType, productType, onProductTypeChange }: 
     const [targetProfitUnit, setTargetProfitUnit] = useState<'price' | 'percent'>('price');
 
     useEffect(() => {
-        const currentPrice = selectedExchange === 'BSE' ? asset.price * 0.995 : asset.price;
+        const currentPrice = asset.price;
         if (orderType === 'Market') {
             setPrice(currentPrice.toFixed(2));
         } else {
             const currentPriceNum = parseFloat(String(price));
-            if(isNaN(currentPriceNum) || currentPriceNum === 0 || currentPriceNum === asset.price || currentPriceNum === asset.price * 0.995){
+            if(isNaN(currentPriceNum) || currentPriceNum === 0){
                 setPrice(currentPrice.toFixed(2));
             }
         }
@@ -426,7 +427,7 @@ const StockOrderForm = ({ asset, assetType, productType, onProductTypeChange }: 
 
     useEffect(() => {
         const numQty = parseFloat(String(quantity)) || 0;
-        const priceForCalc = orderType === 'Market' ? (selectedExchange === 'BSE' ? asset.price * 0.995 : asset.price) : (parseFloat(String(price)) || 0);
+        const priceForCalc = orderType === 'Market' ? asset.price : (parseFloat(String(price)) || 0);
         let baseMargin = numQty * priceForCalc;
         if (orderMode === 'MTF') {
             const leverageFactor = parseInt(mtfLeverage.replace('x', ''), 10) || 1;
@@ -453,14 +454,29 @@ const StockOrderForm = ({ asset, assetType, productType, onProductTypeChange }: 
         <div className="bg-card shadow-md rounded-lg mt-4">
             <div className="bg-card text-card-foreground p-3 rounded-t-lg border-b">
                 <RadioGroup value={selectedExchange} onValueChange={(v) => setSelectedExchange(v as any)} className="flex space-x-4">
-                    <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="BSE" id="BSE" />
-                        <Label htmlFor="BSE" className="text-sm">BSE: ₹{asset.price.toFixed(2)}</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="NSE" id="NSE" />
-                        <Label htmlFor="NSE" className="text-sm">NSE: ₹{asset.price.toFixed(2)}</Label>
-                    </div>
+                    {isUsStock ? (
+                        <>
+                            <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="NASDAQ" id="NASDAQ" />
+                                <Label htmlFor="NASDAQ" className="text-sm">NASDAQ: ₹{asset.price.toFixed(2)}</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="NYSE" id="NYSE" />
+                                <Label htmlFor="NYSE" className="text-sm">NYSE: ₹{asset.price.toFixed(2)}</Label>
+                            </div>
+                        </>
+                    ) : (
+                        <>
+                            <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="BSE" id="BSE" />
+                                <Label htmlFor="BSE" className="text-sm">BSE: ₹{asset.price.toFixed(2)}</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="NSE" id="NSE" />
+                                <Label htmlFor="NSE" className="text-sm">NSE: ₹{asset.price.toFixed(2)}</Label>
+                            </div>
+                        </>
+                    )}
                 </RadioGroup>
             </div>
             <Tabs value={orderMode} onValueChange={setOrderMode} className="w-full">
