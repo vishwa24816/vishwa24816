@@ -448,7 +448,22 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
         if (activePrimaryItem === "Mutual Funds") {
             const isTopWatchlist = activeSecondaryItem.startsWith("Top watchlist");
             const isNumberedWatchlist = !!activeSecondaryItem.match(/^Watchlist \d+$/);
-            if (isTopWatchlist) return <div className="space-y-8"><WatchlistSection title="Top Mutual Funds" displayItems={mockMutualFunds} isPredefinedList={true} groupBy="sector" /><NewsSection articles={newsForView} /></div>;
+            if (isTopWatchlist) {
+                 const categories: (Stock['sector'])[] = ['Large Cap', 'Mid Cap', 'Small Cap', 'Flexi Cap', 'ELSS', 'Index Fund', 'Sectoral', 'Thematic', 'Debt', 'Multi Cap'];
+                 const groupedFunds = categories.map(category => ({
+                    title: `${category} Funds`,
+                    items: mockMutualFunds.filter(fund => fund.sector === category)
+                })).filter(group => group.items.length > 0);
+
+                return (
+                    <div className="space-y-8">
+                        {groupedFunds.map(group => (
+                            <WatchlistSection key={group.title} title={group.title} displayItems={group.items} isPredefinedList={true} />
+                        ))}
+                        <NewsSection articles={newsForView} />
+                    </div>
+                );
+            }
             if (isNumberedWatchlist) return <div className="space-y-8"><WatchlistSection title={`Mutual Funds - ${activeSecondaryItem}`} isPredefinedList={false} localStorageKeyOverride={`simAppWatchlist_Wealth_MF_${activeSecondaryItem.replace(/\s+/g, '_')}`} defaultInitialItems={[]}/><NewsSection articles={newsForView} /></div>;
         }
         if (activePrimaryItem === "Bonds") {

@@ -132,24 +132,8 @@ export const mockMutualFunds: Stock[] = [
   { id: 'mf_sec_5', symbol: 'ICICICONSUMER', name: 'ICICI Prudential FMCG Fund Direct-Growth', price: 48.90, change: 0.30, changePercent: 0.62, exchange: 'MF', sector: 'Sectoral', riskLevel: 'Very High' },
 
   // Thematic
-  { 
-    id: 'mf_thm_1', 
-    symbol: 'MIRAEELSS', 
-    name: 'Mirae Asset ELSS Tax Saver Fund Direct-Growth', 
-    price: 35.12, 
-    change: 0.20, 
-    changePercent: 0.57, 
-    exchange: 'MF', 
-    sector: 'Thematic',
-    riskLevel: 'Very High',
-    category: 'ELSS',
-    annualisedReturn: 18.9,
-    navDate: '20-Jun-2025',
-    rating: '5',
-    minSipAmount: 500,
-    fundSize: '₹14,334 Cr'
-  },
-  { id: 'mf_thm_2', symbol: 'QUANTSAVER', name: 'Quant Tax Plan Direct-Growth', price: 350.70, change: 5.20, changePercent: 1.50, exchange: 'MF', sector: 'Thematic', riskLevel: 'Very High' },
+  { id: 'mf_thm_1', symbol: 'TATAINFRA', name: 'Tata Infrastructure Fund Direct-Growth', price: 140.50, change: 1.20, changePercent: 0.86, exchange: 'MF', sector: 'Thematic', riskLevel: 'Very High' },
+  { id: 'mf_thm_2', symbol: 'ICICIMNC', name: 'ICICI Prudential MNC Fund Direct-Growth', price: 450.70, change: 3.50, changePercent: 0.78, exchange: 'MF', sector: 'Thematic', riskLevel: 'Very High' },
   { id: 'mf_thm_3', symbol: 'IDFCINFRA', name: 'IDFC Infrastructure Fund Direct-Growth', price: 30.20, change: -0.10, changePercent: -0.33, exchange: 'MF', sector: 'Thematic', riskLevel: 'Very High' },
   { id: 'mf_thm_4', symbol: 'TATAETHICAL', name: 'Tata Ethical Fund Direct-Growth', price: 320.50, change: 2.80, changePercent: 0.88, exchange: 'MF', sector: 'Thematic', riskLevel: 'High' },
   { id: 'mf_thm_5', symbol: 'ICICIESG', name: 'ICICI Prudential ESG Fund Direct-Growth', price: 22.80, change: 0.15, changePercent: 0.66, exchange: 'MF', sector: 'Thematic', riskLevel: 'High' },
@@ -258,4 +242,27 @@ export const mockMutualFunds: Stock[] = [
   { id: 'mf_multi_3', symbol: 'ICICIMULTI', name: 'ICICI Prudential Multicap Fund Direct-Growth', price: 55.60, change: 0.60, changePercent: 1.09, exchange: 'MF', sector: 'Multi Cap', riskLevel: 'Very High' },
   { id: 'mf_multi_4', symbol: 'HDFCMULTI', name: 'HDFC Multi-Cap Fund Direct-Growth', price: 35.10, change: 0.40, changePercent: 1.15, exchange: 'MF', sector: 'Multi Cap', riskLevel: 'Very High' },
   { id: 'mf_multi_5', symbol: 'KOTAKMULTI', name: 'Kotak Multicap Fund Direct-Growth', price: 42.70, change: 0.55, changePercent: 1.30, exchange: 'MF', sector: 'Multi Cap', riskLevel: 'Very High' },
+
+  // ELSS
+  {
+    id: 'mf_elss_1',
+    symbol: 'MIRAEELSS',
+    name: 'Mirae Asset ELSS Tax Saver Fund Direct-Growth',
+    price: 35.12,
+    change: 0.20,
+    changePercent: 0.57,
+    exchange: 'MF',
+    sector: 'ELSS',
+    riskLevel: 'Very High',
+    category: 'Equity',
+    annualisedReturn: 18.9,
+    navDate: '20-Jun-2025',
+    rating: '5',
+    minSipAmount: 500,
+    fundSize: '₹14,334 Cr'
+  },
+  { id: 'mf_elss_2', symbol: 'QUANTSAVER', name: 'Quant Tax Plan Direct-Growth', price: 350.70, change: 5.20, changePercent: 1.50, exchange: 'MF', sector: 'ELSS', riskLevel: 'Very High' },
+  { id: 'mf_elss_3', symbol: 'IDFCELSS', name: 'IDFC Tax Advantage (ELSS) Fund Direct-Growth', price: 90.45, change: 1.10, changePercent: 1.23, exchange: 'MF', sector: 'ELSS', riskLevel: 'Very High' },
+  { id: 'mf_elss_4', symbol: 'DSPELSS', name: 'DSP Tax Saver Fund Direct-Growth', price: 85.60, change: 0.90, changePercent: 1.06, exchange: 'MF', sector: 'ELSS', riskLevel: 'Very High' },
+  { id: 'mf_elss_5', symbol: 'ICICIELSS', name: 'ICICI Prudential Long Term Equity Fund (Tax Saving) Direct-Growth', price: 720.30, change: 8.50, changePercent: 1.19, exchange: 'MF', sector: 'ELSS', riskLevel: 'Very High' },
 ];
