@@ -68,7 +68,8 @@ export const DXBallGame: React.FC<DXBallGameProps> = ({ brickCount, onGameEnd })
     };
     
     const mouseMoveHandler = (e: MouseEvent) => {
-        const relativeX = e.clientX - canvas.offsetLeft;
+        const rect = canvas.getBoundingClientRect();
+        const relativeX = e.clientX - rect.left;
         if(relativeX > 0 && relativeX < canvas.width) {
             paddleX = relativeX - paddleWidth / 2;
         }
