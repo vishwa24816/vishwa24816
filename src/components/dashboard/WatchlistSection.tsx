@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, FormEvent, useRef } from 'react';
+import React, { useState, useEffect, FormEvent, useRef, useMemo } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -211,6 +211,7 @@ interface WatchlistSectionProps {
   title?: string;
   localStorageKeyOverride?: string;
   defaultInitialItems?: Stock[];
+  groupBy?: keyof Stock;
 }
 
 export function WatchlistSection({
@@ -219,6 +220,7 @@ export function WatchlistSection({
   title,
   localStorageKeyOverride,
   defaultInitialItems,
+  groupBy,
 }: WatchlistSectionProps) {
   const [watchlist, setWatchlist] = useState<Stock[]>([]);
   const [newStockSymbol, setNewStockSymbol] = useState('');
@@ -298,6 +300,21 @@ export function WatchlistSection({
   };
 
   const itemsToRender = isPredefinedList ? (displayItems || []) : watchlist;
+  
+  const groupedItems = useMemo(() => {
+    if (!groupBy || !itemsToRender) {
+      return null;
+    }
+    return itemsToRender.reduce((acc, item) => {
+      const key = (item[groupBy] as string | undefined) || 'Other';
+      if (!acc[key]) {
+        acc[key] = [];
+      }
+      acc[key].push(item);
+      return acc;
+    }, {} as Record<string, Stock[]>);
+  }, [itemsToRender, groupBy]);
+
 
   return (
     <section aria-labelledby={`watchlist-section-title-${title?.replace(/\s+/g, '-') || 'default'}`} className="space-y-4">
@@ -328,6 +345,25 @@ export function WatchlistSection({
           <p className="text-muted-foreground text-center py-4">
             {isPredefinedList ? "No items in this watchlist." : "Your watchlist is empty. Add assets to track them."}
           </p>
+        ) : groupedItems ? (
+          <div className="space-y-4">
+            {Object.entries(groupedItems).map(([groupName, items]) => (
+              <div key={groupName}>
+                <h3 className="font-semibold text-md text-foreground px-3 py-2 border-b">{groupName}</h3>
+                <ul className="space-y-1 mt-1">
+                  {items.map((stock) => (
+                    <StockListItem
+                      key={stock.id}
+                      stock={stock}
+                      isPredefinedList={isPredefinedList}
+                      onRemoveStock={handleRemoveStock}
+                      cardTitleForToast={cardTitle}
+                    />
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
         ) : (
           <ul className="space-y-1">
             {itemsToRender.map((stock) => (

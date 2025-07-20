@@ -444,7 +444,7 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
         if (activePrimaryItem === "Mutual Funds") {
             const isTopWatchlist = activeSecondaryItem.startsWith("Top watchlist");
             const isNumberedWatchlist = !!activeSecondaryItem.match(/^Watchlist \d+$/);
-            if (isTopWatchlist) return <div className="space-y-8"><WatchlistSection title="Top Mutual Funds" displayItems={mockMutualFunds} isPredefinedList={true} /><NewsSection articles={newsForView} /></div>;
+            if (isTopWatchlist) return <div className="space-y-8"><WatchlistSection title="Top Mutual Funds" displayItems={mockMutualFunds} isPredefinedList={true} groupBy="sector" /><NewsSection articles={newsForView} /></div>;
             if (isNumberedWatchlist) return <div className="space-y-8"><WatchlistSection title={`Mutual Funds - ${activeSecondaryItem}`} isPredefinedList={false} localStorageKeyOverride={`simAppWatchlist_Wealth_MF_${activeSecondaryItem.replace(/\s+/g, '_')}`} defaultInitialItems={[]}/><NewsSection articles={newsForView} /></div>;
         }
         if (activePrimaryItem === "Bonds") {
