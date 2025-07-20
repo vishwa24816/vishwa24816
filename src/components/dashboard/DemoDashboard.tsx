@@ -17,6 +17,7 @@ import { ReadymadeStrategiesSection } from '@/components/dashboard/ReadymadeStra
 import { StrategyBuilder } from '@/components/dashboard/StrategyBuilder';
 import { MarketOverview } from './MarketOverview';
 import { CryptoBasketSection } from './CryptoBasketSection';
+import { FuturesMarketMovers } from './FuturesMarketMovers';
 
 
 import React, { useState, useMemo, useEffect } from 'react';
@@ -434,7 +435,7 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
     
     } else if (activeMode === 'Crypto') {
         if (activePrimaryItem === "Options") {
-            if (activeSecondaryItem === 'Dashboard') return <div className="space-y-8"><MarketOverview title="Crypto Options Overview" items={mockCryptoIndices} /><NewsSection articles={newsForView} /></div>;
+            if (activeSecondaryItem === 'Dashboard') return <div className="space-y-8"><MarketOverview title="Crypto Options Overview" items={mockCryptoIndices} /><FuturesMarketMovers /><NewsSection articles={newsForView} /></div>;
             if (activeSecondaryItem === "Custom") return ( <div className="space-y-8"><CryptoOptionChain onAddLeg={(leg) => setStrategyLegs(prev => [...prev, leg])} />{strategyLegs.length > 0 && <StrategyBuilder legs={strategyLegs} setLegs={setStrategyLegs} />}<NewsSection articles={newsForView} /></div>);
             if (activeSecondaryItem === "Readymade") return ( <div className="space-y-8"><ReadymadeStrategiesSection onStrategySelect={(legs) => setStrategyLegs(legs)} />{strategyLegs.length > 0 && <StrategyBuilder legs={strategyLegs} setLegs={setStrategyLegs} />}<NewsSection articles={newsForView} /></div> );
             return null
