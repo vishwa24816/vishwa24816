@@ -14,6 +14,8 @@ import ReactFlow, {
   EdgeChange,
   Connection,
   MiniMap,
+  useReactFlow,
+  ReactFlowProvider,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 
@@ -54,8 +56,9 @@ const initialNodes: Node[] = [
 ];
 
 const nodeTypes = [
-    { type: 'fetch', label: 'Get Stock Data', icon: Search },
+    { type: 'trigger', label: 'Start Trigger', icon: Zap },
     { type: 'condition', label: 'If/Else Condition', icon: GitBranch },
+    { type: 'wire', label: 'Wire', icon: Share2 },
     { type: 'buy', label: 'Execute Buy', icon: CheckCircle, className: "bg-green-500 text-white" },
     { type: 'sell', label: 'Execute Sell', icon: XCircle, className: "bg-red-500 text-white" },
     { type: 'output', label: 'End Flow', icon: ArrowRight },
@@ -65,7 +68,7 @@ const nodeTypes = [
 let id = 2;
 const getId = () => `${id++}`;
 
-const NodePalette = () => {
+const NodePalette = ({ onNodeClick }: { onNodeClick: (type: string) => void }) => {
     const onDragStart = (event: DragEvent, nodeType: string) => {
         event.dataTransfer.setData('application/reactflow', nodeType);
         event.dataTransfer.effectAllowed = 'move';
@@ -78,9 +81,10 @@ const NodePalette = () => {
                 return (
                 <div
                     key={node.type}
+                    onClick={() => onNodeClick(node.type)}
                     onDragStart={(event) => onDragStart(event, node.type)}
                     draggable
-                    className={cn("p-3 border rounded-md cursor-grab flex items-center gap-2 transition-colors hover:shadow-md hover:border-primary", node.className)}
+                    className={cn("p-3 border rounded-md cursor-pointer flex items-center gap-2 transition-colors hover:shadow-md hover:border-primary", node.className)}
                 >
                     <Icon className="h-5 w-5" />
                     <span className="text-sm font-medium">{node.label}</span>
@@ -91,7 +95,7 @@ const NodePalette = () => {
     )
 }
 
-export default function NocodeAlgoPage() {
+const NocodeAlgoEditor = () => {
     const { user } = useAuth();
     const isRealMode = user?.id === 'REAL456';
     const [activeMode, setActiveMode] = useState<'Fiat' | 'Crypto'>(isRealMode ? 'Crypto' : 'Fiat');
@@ -100,6 +104,8 @@ export default function NocodeAlgoPage() {
     const [nodes, setNodes] = useState<Node[]>(initialNodes);
     const [edges, setEdges] = useState<Edge[]>([]);
     
+    const reactFlowInstance = useReactFlow();
+
     const onNodesChange = useCallback((changes: NodeChange[]) => setNodes((nds) => applyNodeChanges(changes, nds)), []);
     const onEdgesChange = useCallback((changes: EdgeChange[]) => setEdges((eds) => applyEdgeChanges(changes, eds)), []);
     
@@ -117,11 +123,10 @@ export default function NocodeAlgoPage() {
         const nodeInfo = nodeTypes.find(n => n.type === type);
         if (!nodeInfo) return;
 
-        // Adjust for canvas position if necessary (simplified here)
-        const position = {
-            x: event.clientX - 250, // Adjust for typical sidebar width
-            y: event.clientY - 100, // Adjust for header height
-        };
+        const position = reactFlowInstance.screenToFlowPosition({
+            x: event.clientX,
+            y: event.clientY,
+        });
 
         const newNode: Node = {
             id: getId(),
@@ -133,8 +138,28 @@ export default function NocodeAlgoPage() {
         setNodes((nds) => nds.concat(newNode));
     };
 
+    const handleNodeClick = (type: string) => {
+      const nodeInfo = nodeTypes.find(n => n.type === type);
+      if (!nodeInfo) return;
+
+      const { x, y } = reactFlowInstance.getViewport();
+      const position = {
+        x: -x + reactFlowInstance.width / 2 - 75, // Center horizontally
+        y: -y + reactFlowInstance.height / 2 - 20, // Center vertically
+      };
+
+      const newNode: Node = {
+        id: getId(),
+        type: 'default',
+        position,
+        data: { label: nodeInfo.label },
+      };
+
+      setNodes((nds) => nds.concat(newNode));
+    };
+
+
   return (
-    <ProtectedRoute>
       <div className="flex flex-col h-screen bg-background text-foreground">
         <AppHeader activeMode={activeMode} onModeChange={setActiveMode} isRealMode={isRealMode} />
         <main className="flex-grow flex flex-row overflow-hidden">
@@ -164,7 +189,7 @@ export default function NocodeAlgoPage() {
                             <SheetHeader>
                                 <SheetTitle className="text-lg">Nodes</SheetTitle>
                             </SheetHeader>
-                            <NodePalette />
+                            <NodePalette onNodeClick={handleNodeClick} />
                         </SheetContent>
                     </Sheet>
                 </div>
@@ -183,6 +208,15 @@ export default function NocodeAlgoPage() {
             </div>
         </main>
       </div>
-    </ProtectedRoute>
   );
+}
+
+export default function NocodeAlgoPage() {
+    return (
+        <ProtectedRoute>
+            <ReactFlowProvider>
+                <NocodeAlgoEditor />
+            </ReactFlowProvider>
+        </ProtectedRoute>
+    );
 }
