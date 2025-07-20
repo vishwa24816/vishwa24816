@@ -40,6 +40,14 @@ const formatNumber = (num?: number, precision = 2) => {
   return fixedNum;
 };
 
+const formatStrikePrice = (num?: number) => {
+    if (num === undefined || num === null || isNaN(num)) return '-';
+    if (num >= 1000000) {
+      return `${(num / 1000).toLocaleString('en-IN')}K`;
+    }
+    return num.toLocaleString('en-IN');
+};
+
 const HeaderCell = ({ title, subtitle }: { title: string; subtitle?: string }) => (
     <div className="flex flex-col items-center">
         <span className="text-xs text-muted-foreground font-medium">{title}</span>
@@ -287,7 +295,7 @@ export function CryptoOptionChain({ onAddLeg }: CryptoOptionChainProps) {
                       )}
                       <TableRow ref={index === atmIndex ? atmRowRef : null} className="border-border cursor-pointer" onClick={() => setExpandedStrike(isExpanded ? null : entry.strikePrice)}>
                         {renderCells(entry.call, optionChainView, 'Call', entry.strikePrice).map((cell, cellIndex) => React.cloneElement(cell as React.ReactElement, { key: `call-${cellIndex}`, className: cn((cell as React.ReactElement).props.className, isCallItm && 'bg-primary/5', 'w-[21.25%]') }))}
-                        <TableCell className="font-semibold text-base text-center p-0 w-[15%]">{formatNumber(entry.strikePrice, 0)}</TableCell>
+                        <TableCell className="font-semibold text-base text-center p-0 w-[15%]">{formatStrikePrice(entry.strikePrice)}</TableCell>
                         {renderCells(entry.put, optionChainView, 'Put', entry.strikePrice).map((cell, cellIndex) => React.cloneElement(cell as React.ReactElement, { key: `put-${cellIndex}`, className: cn((cell as React.ReactElement).props.className, isPutItm && 'bg-primary/5', 'w-[21.25%]') }))}
                       </TableRow>
                       {isExpanded && (
