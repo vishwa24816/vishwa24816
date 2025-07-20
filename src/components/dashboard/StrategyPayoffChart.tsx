@@ -1,3 +1,4 @@
+
 "use client";
 
 import React from "react";
@@ -12,6 +13,7 @@ const generatePayoffData = (strategyId: StrategyId) => {
   const data = [];
   const strike1 = 100;
   const strike2 = 110;
+  const strike3 = 120;
   const premium1 = 5;
   const premium2 = 2;
   const premium_short = 3;
@@ -19,6 +21,7 @@ const generatePayoffData = (strategyId: StrategyId) => {
   for (let price = 80; price <= 130; price += 1) {
     let pnl = 0;
     switch (strategyId) {
+      // Bullish
       case 'long-call':
         pnl = Math.max(0, price - strike1) - premium1;
         break;
@@ -26,11 +29,13 @@ const generatePayoffData = (strategyId: StrategyId) => {
         pnl = premium1 - Math.max(0, strike1 - price);
         break;
       case 'bull-call-spread':
-        pnl = Math.max(0, price - strike1) - Math.max(0, price - strike2) - (premium1 - premium2);
+        pnl = (Math.max(0, price - strike1) - premium1) - (Math.max(0, price - strike2) - premium2);
         break;
       case 'bull-put-spread':
-         pnl = (premium1 - premium2) - (Math.max(0, strike1 - price) - Math.max(0, strike2 - price));
+         pnl = (premium2 - Math.max(0, strike1 - price)) - (premium1 - Math.max(0, strike2 - price));
         break;
+      
+      // Bearish
       case 'long-put':
          pnl = Math.max(0, strike1 - price) - premium1;
         break;
@@ -38,31 +43,52 @@ const generatePayoffData = (strategyId: StrategyId) => {
         pnl = premium1 - Math.max(0, price - strike1);
         break;
       case 'bear-call-spread':
-         pnl = (premium1 - premium2) - (Math.max(0, price - strike1) - Math.max(0, price - strike2));
+         pnl = (premium1 - Math.max(0, price - strike2)) - (premium2 - Math.max(0, price - strike1));
         break;
       case 'bear-put-spread':
-        pnl = Math.max(0, strike2 - price) - Math.max(0, strike1 - price) - (premium1 - premium2);
+        pnl = (Math.max(0, strike2 - price) - premium2) - (Math.max(0, strike1 - price) - premium1);
         break;
+      
+      // Non-Directional
       case 'long-straddle':
         pnl = Math.max(0, price - strike1) + Math.max(0, strike1 - price) - (premium1 + premium2);
         break;
        case 'short-straddle':
-        pnl = (premium1 + premium2) - (Math.max(0, price - strike1) + Math.max(0, strike1 - price));
+        pnl = (premium1 + premium2) - (Math.max(0, price - strike1) - Math.max(0, strike1 - price));
         break;
       case 'long-strangle':
         pnl = Math.max(0, price - strike2) + Math.max(0, strike1 - price) - (premium1 + premium2);
         break;
       case 'short-strangle':
-        pnl = (premium1 + premium2) - (Math.max(0, price - strike2) + Math.max(0, strike1 - price));
+        pnl = (premium1 + premium2) - (Math.max(0, price - strike2) - Math.max(0, strike1 - price));
         break;
       case 'iron-condor':
-        pnl = (Math.max(0, price-95) - Math.max(0, price-100)) - (Math.max(0, 110-price) - Math.max(0, 105-price)) + 2;
+        const shortPut = premium1 - Math.max(0, strike1 - price);
+        const longPut = -(premium2 - Math.max(0, 95 - price));
+        const shortCall = premium1 - Math.max(0, price - strike2);
+        const longCall = -(premium2 - Math.max(0, price - 115));
+        pnl = shortPut + longPut + shortCall + longCall;
         break;
       case 'iron-butterfly':
-        pnl = premium_short - (Math.abs(price-strike1));
+        pnl = (premium_short - Math.max(0, strike1 - price)) + (premium_short - Math.max(0, price - strike1)) - 8;
         break;
+      case 'call-butterfly':
+        const longCall1 = Math.max(0, price - strike1) - premium2;
+        const shortCalls = 2 * (premium1 - Math.max(0, price - strike2));
+        const longCall2 = Math.max(0, price - strike3) - premium2;
+        pnl = longCall1 + shortCalls + longCall2;
+        break;
+      case 'put-butterfly':
+        const longPut1 = Math.max(0, strike1 - price) - premium2;
+        const shortPuts = 2 * (premium1 - Math.max(0, strike2 - price));
+        const longPut2 = Math.max(0, strike3 - price) - premium2;
+        pnl = longPut1 + shortPuts + longPut2;
+        break;
+        
+      // Fallbacks
+      case 'call-ratio-backspread':
+      case 'put-ratio-backspread':
       default:
-        // Default to a simple line if strategyId is unknown
         pnl = (price - 105) * 0.1;
     }
     data.push({ price, pnl });

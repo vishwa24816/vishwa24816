@@ -258,7 +258,8 @@ export type StrategyType = 'bullish' | 'bearish' | 'non-directional';
 export type StrategyId = 
   | 'long-call' | 'short-put' | 'bull-call-spread' | 'bull-put-spread' | 'call-ratio-backspread'
   | 'long-put' | 'short-call' | 'bear-call-spread' | 'bear-put-spread' | 'put-ratio-backspread'
-  | 'long-straddle' | 'short-straddle' | 'long-strangle' | 'short-strangle' | 'iron-condor' | 'iron-butterfly';
+  | 'long-straddle' | 'short-straddle' | 'long-strangle' | 'short-strangle' | 'iron-condor' | 'iron-butterfly'
+  | 'call-butterfly' | 'put-butterfly';
 
 
 export interface Strategy {

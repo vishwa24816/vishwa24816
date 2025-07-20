@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useMemo } from 'react';
@@ -49,6 +50,8 @@ const strategies: Strategy[] = [
   { id: 'short-strangle', name: 'Short Strangle', type: 'non-directional', strikesNeeded: 2 },
   { id: 'iron-condor', name: 'Iron Condor', type: 'non-directional', strikesNeeded: 2 },
   { id: 'iron-butterfly', name: 'Iron Butterfly', type: 'non-directional', strikesNeeded: 1 },
+  { id: 'call-butterfly', name: 'Call Butterfly', type: 'non-directional', strikesNeeded: 2 },
+  { id: 'put-butterfly', name: 'Put Butterfly', type: 'non-directional', strikesNeeded: 2 },
 ];
 
 const InfoBadge = ({ label, value, colorClass }: { label: string, value: string | number, colorClass: string }) => (
