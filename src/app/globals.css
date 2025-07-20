@@ -33,8 +33,6 @@
 
     --ring: 217.2 91.2% 59.8%; /* Blue for focus rings */
 
-    --radius: 0.5rem;
-
     --chart-1: 217 90% 60%;
     --chart-2: 180 80% 50%;
     --chart-3: 30 80% 55%;
@@ -87,26 +85,29 @@
     --ring: 48 95% 55%;
   }
 
-  /* Mutual Funds Theme */
-  [data-theme="pink"] {
+  /* Wealth Themes */
+  [data-theme="wealth"] {
+     --primary: 330 85% 60%; /* Pink as default for wealth */
+    --primary-foreground: 330 85% 98%;
+    --accent: 335 80% 70%; /* Lighter Pink */
+    --accent-foreground: 335 80% 98%;
+    --ring: 330 85% 60%;
+  }
+  [data-theme="mutual_funds"] { /* Keep this for consistency */
     --primary: 330 85% 60%; /* Pink */
     --primary-foreground: 330 85% 98%;
     --accent: 335 80% 70%; /* Lighter Pink */
     --accent-foreground: 335 80% 98%;
     --ring: 330 85% 60%;
   }
-
-  /* Bonds Theme */
-  [data-theme="maroon"] {
+  [data-theme="bonds"] {
     --primary: 0 50% 40%; /* Maroon */
     --primary-foreground: 0 50% 95%;
     --accent: 0 40% 50%; /* Lighter Maroon */
     --accent-foreground: 0 40% 95%;
     --ring: 0 50% 40%;
   }
-
-  /* IPO Theme */
-  [data-theme="red"] {
+  [data-theme="insurance"] {
     --primary: 0 72% 51%; /* Red */
     --primary-foreground: 0 72% 98%;
     --accent: 0 65% 60%; /* Lighter Red */
@@ -114,12 +115,42 @@
     --ring: 0 72% 51%;
   }
 
+  /* Crypto Main Theme (Fallback) */
   [data-theme="crypto"] {
+    --primary: 84 90% 50%; /* Yellowish Neon Green (for Spot) */
+    --primary-foreground: 84 90% 10%;
+    --accent: 80 85% 60%; 
+    --accent-foreground: 80 85% 15%;
+    --ring: 84 90% 50%;
+  }
+  /* Crypto Sub-Themes */
+  [data-theme="spot"] {
+    --primary: 84 90% 50%; /* Yellowish Neon Green */
+    --primary-foreground: 84 90% 10%;
+    --accent: 80 85% 60%; 
+    --accent-foreground: 80 85% 15%;
+    --ring: 84 90% 50%;
+  }
+  [data-theme="crypto_futures"] {
     --primary: 142 76% 36%; /* Green */
     --primary-foreground: 142 76% 96%;
     --accent: 140 70% 60%; /* Light Green */
     --accent-foreground: 140 70% 98%;
     --ring: 142 76% 46%;
+  }
+  [data-theme="crypto_options"] {
+    --primary: 170 80% 40%; /* Bluish Pine Green */
+    --primary-foreground: 170 80% 95%;
+    --accent: 175 70% 50%; 
+    --accent-foreground: 175 70% 98%;
+    --ring: 170 80% 40%;
+  }
+  [data-theme="crypto_mutual_fund"] {
+    --primary: 90 40% 60%; /* Pistachio */
+    --primary-foreground: 90 40% 10%;
+    --accent: 95 35% 70%;
+    --accent-foreground: 95 35% 15%;
+    --ring: 90 40% 60%;
   }
   
   [data-theme="web3"] {
@@ -199,7 +230,8 @@
     --ring: 48 85% 60%;
   }
 
-  .dark[data-theme="pink"] {
+  .dark[data-theme="wealth"],
+  .dark[data-theme="mutual_funds"] {
     --primary: 330 75% 70%; /* Pink */
     --primary-foreground: 330 75% 98%;
     --accent: 335 70% 80%; /* Lighter Pink */
@@ -207,7 +239,7 @@
     --ring: 330 75% 70%;
   }
   
-  .dark[data-theme="maroon"] {
+  .dark[data-theme="bonds"] {
     --primary: 0 40% 60%; /* Maroon */
     --primary-foreground: 0 40% 95%;
     --accent: 0 30% 70%; /* Lighter Maroon */
@@ -215,7 +247,7 @@
     --ring: 0 40% 60%;
   }
   
-  .dark[data-theme="red"] {
+  .dark[data-theme="insurance"] {
     --primary: 0 62% 61%; /* Red */
     --primary-foreground: 0 62% 98%;
     --accent: 0 55% 70%; /* Lighter Red */
@@ -223,12 +255,34 @@
     --ring: 0 62% 61%;
   }
 
-  .dark[data-theme="crypto"] {
+  .dark[data-theme="crypto"],
+  .dark[data-theme="spot"] {
+    --primary: 84 80% 55%;
+    --primary-foreground: 84 80% 15%;
+    --accent: 80 75% 65%;
+    --accent-foreground: 80 75% 18%;
+    --ring: 84 80% 55%;
+  }
+  .dark[data-theme="crypto_futures"] {
     --primary: 142 66% 46%; /* Green */
     --primary-foreground: 142 66% 96%;
     --accent: 140 60% 55%; /* Light Green */
     --accent-foreground: 140 60% 97%;
     --ring: 142 66% 46%;
+  }
+  .dark[data-theme="crypto_options"] {
+    --primary: 170 70% 50%; /* Bluish Pine Green */
+    --primary-foreground: 170 70% 96%;
+    --accent: 175 60% 60%;
+    --accent-foreground: 175 60% 98%;
+    --ring: 170 70% 50%;
+  }
+  .dark[data-theme="crypto_mutual_fund"] {
+    --primary: 90 35% 70%; /* Pistachio */
+    --primary-foreground: 90 35% 15%;
+    --accent: 95 30% 80%;
+    --accent-foreground: 95 30% 18%;
+    --ring: 90 35% 70%;
   }
 
   .dark[data-theme="web3"] {

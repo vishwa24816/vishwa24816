@@ -267,11 +267,20 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
         document.documentElement.setAttribute('data-theme', theme);
     } else if (activeMode === 'Wealth') {
         const themeMapping: { [key: string]: string } = {
-            'Mutual Funds': 'pink',
-            'Bonds': 'maroon',
-            'Insurance': 'red',
+            'Mutual Funds': 'mutual_funds',
+            'Bonds': 'bonds',
+            'Insurance': 'insurance',
         };
-        const theme = themeMapping[activePrimaryItem] || 'pink';
+        const theme = themeMapping[activePrimaryItem] || 'wealth';
+        document.documentElement.setAttribute('data-theme', theme);
+    } else if (activeMode === 'Crypto') {
+        const themeMapping: { [key: string]: string } = {
+            'Spot': 'spot',
+            'Futures': 'crypto_futures',
+            'Options': 'crypto_options',
+            'Mutual Fund': 'crypto_mutual_fund',
+        };
+        const theme = themeMapping[activePrimaryItem] || 'crypto';
         document.documentElement.setAttribute('data-theme', theme);
     } else {
         document.documentElement.setAttribute('data-theme', activeMode.toLowerCase());
@@ -451,7 +460,7 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
             if (isTopWatchlist) {
                  const categories: (Stock['sector'])[] = ['Index Fund', 'Large Cap', 'Mid Cap', 'Small Cap', 'Flexi Cap', 'Multi Cap', 'ELSS', 'Sectoral', 'Thematic', 'Debt'];
                  const groupedFunds = categories.map(category => ({
-                    title: `${category}${category !== 'Index Fund' ? ' Funds' : ''}`,
+                    title: `Top ${category}${category === 'Index Fund' ? 's' : ' Funds'}`,
                     items: mockMutualFunds.filter(fund => fund.sector === category)
                 })).filter(group => group.items.length > 0);
 
