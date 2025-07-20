@@ -8,6 +8,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Clock, TrendingUp, TrendingDown } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
+import { DXBallGame } from '@/components/simball/DXBallGame';
 
 const FireCard = ({
   tradeType,
@@ -18,6 +19,7 @@ const FireCard = ({
   gradientTo,
   brokerage,
   isPlayed,
+  onClick,
 }: {
   tradeType: 'BUY' | 'SELL';
   stockSymbol: string;
@@ -27,12 +29,15 @@ const FireCard = ({
   gradientTo: string;
   brokerage: number;
   isPlayed: boolean;
+  onClick?: () => void;
 }) => (
   <div
     className={cn(
       "rounded-2xl p-6 text-white h-52 flex flex-col justify-between relative overflow-hidden",
-      `bg-gradient-to-br ${gradientFrom} ${gradientTo}`
+      `bg-gradient-to-br ${gradientFrom} ${gradientTo}`,
+      !isPlayed && "cursor-pointer hover:scale-105 transition-transform duration-200"
     )}
+    onClick={onClick}
   >
     <div className="relative z-10">
        <p className={cn("text-sm opacity-90 flex items-center", tradeType === 'BUY' ? 'text-green-300' : 'text-red-300')}>
@@ -58,8 +63,17 @@ const FireCard = ({
 export default function SimballPage() {
     const { user } = useAuth();
     const isRealMode = user?.id === 'REAL456';
-  
     const [activeMode, setActiveMode] = useState<'Portfolio' | 'Fiat' | 'Crypto' | 'Web3'>(isRealMode ? 'Crypto' : 'Portfolio');
+    const [activeGameBrokerage, setActiveGameBrokerage] = useState<number | null>(null);
+
+    const handlePlayGame = (brokerage: number) => {
+        setActiveGameBrokerage(brokerage);
+    };
+
+    const handleCloseGame = () => {
+        setActiveGameBrokerage(null);
+    };
+
 
   return (
     <ProtectedRoute>
@@ -101,6 +115,7 @@ export default function SimballPage() {
                         gradientTo="to-emerald-600"
                         brokerage={20.00}
                         isPlayed={false}
+                        onClick={() => handlePlayGame(20)}
                     />
                      <FireCard 
                         tradeType="SELL"
@@ -111,6 +126,7 @@ export default function SimballPage() {
                         gradientTo="to-rose-600"
                         brokerage={40.00}
                         isPlayed={false}
+                        onClick={() => handlePlayGame(40)}
                     />
                     <FireCard 
                         tradeType="BUY"
@@ -121,6 +137,7 @@ export default function SimballPage() {
                         gradientTo="to-cyan-600"
                         brokerage={30.00}
                         isPlayed={false}
+                        onClick={() => handlePlayGame(30)}
                     />
                 </div>
             </div>
@@ -151,7 +168,13 @@ export default function SimballPage() {
                 </div>
             </div>
         </main>
+        {activeGameBrokerage !== null && (
+            <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center animate-fade-in">
+                <DXBallGame brickCount={activeGameBrokerage} onGameEnd={handleCloseGame} />
+            </div>
+        )}
       </div>
     </ProtectedRoute>
   );
 }
+
