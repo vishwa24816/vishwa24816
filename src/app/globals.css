@@ -153,6 +153,7 @@
     --ring: 90 40% 60%;
   }
   
+  /* Web3 Main/Trending Theme (Fallback) */
   [data-theme="web3"] {
     --primary: 262 82% 57%; /* Violet */
     --primary-foreground: 262 82% 97%;
@@ -160,6 +161,37 @@
     --accent-foreground: 280 65% 98%;
     --ring: 262 82% 57%;
   }
+
+  /* Web3 Sub-Themes */
+  [data-theme="ai"] {
+    --primary: 280 65% 60%; /* Dark Purple */
+    --primary-foreground: 280 65% 98%;
+    --accent: 290 60% 70%; 
+    --accent-foreground: 290 60% 98%;
+    --ring: 280 65% 60%;
+  }
+  [data-theme="defi"] {
+    --primary: 220 80% 55%; /* Dark Blue */
+    --primary-foreground: 220 80% 97%;
+    --accent: 215 75% 65%;
+    --accent-foreground: 215 75% 97%;
+    --ring: 220 80% 55%;
+  }
+  [data-theme="memes"] {
+    --primary: 300 85% 60%; /* Magenta/Violet */
+    --primary-foreground: 300 85% 98%;
+    --accent: 310 80% 70%;
+    --accent-foreground: 310 80% 98%;
+    --ring: 300 85% 60%;
+  }
+  [data-theme="nft"] {
+    --primary: 200 25% 40%; /* Bluish Brown */
+    --primary-foreground: 200 25% 95%;
+    --accent: 205 20% 50%;
+    --accent-foreground: 205 20% 95%;
+    --ring: 200 25% 40%;
+  }
+
 
   .dark {
     --background: 224 71.4% 4.1%; /* Dark Blue-Gray */
@@ -291,6 +323,35 @@
     --accent: 280 55% 65%; /* Purple */
     --accent-foreground: 280 55% 97%;
     --ring: 262 72% 67%;
+  }
+
+  .dark[data-theme="ai"] {
+    --primary: 280 55% 65%; /* Dark Purple */
+    --primary-foreground: 280 55% 97%;
+    --accent: 290 50% 75%;
+    --accent-foreground: 290 50% 97%;
+    --ring: 280 55% 65%;
+  }
+  .dark[data-theme="defi"] {
+    --primary: 220 70% 65%; /* Dark Blue */
+    --primary-foreground: 220 70% 97%;
+    --accent: 215 65% 75%;
+    --accent-foreground: 215 65% 97%;
+    --ring: 220 70% 65%;
+  }
+  .dark[data-theme="memes"] {
+    --primary: 300 75% 70%; /* Magenta/Violet */
+    --primary-foreground: 300 75% 98%;
+    --accent: 310 70% 80%;
+    --accent-foreground: 310 70% 98%;
+    --ring: 300 75% 70%;
+  }
+  .dark[data-theme="nft"] {
+    --primary: 200 20% 50%; /* Bluish Brown */
+    --primary-foreground: 200 20% 95%;
+    --accent: 205 15% 60%;
+    --accent-foreground: 205 15% 95%;
+    --ring: 200 20% 50%;
   }
 }
 

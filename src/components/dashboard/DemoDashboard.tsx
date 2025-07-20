@@ -256,6 +256,7 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
   }, [activeMode, primaryNavItems, secondaryNavTriggerCategories]);
   
    useEffect(() => {
+    let theme = 'portfolio'; // Default theme
     if (activeMode === 'Fiat') {
         const themeMapping: { [key: string]: string } = {
             'Indian Stocks': 'orange',
@@ -263,16 +264,14 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
             'Futures': 'caramel',
             'Options': 'yellow',
         };
-        const theme = themeMapping[activePrimaryItem] || 'fiat';
-        document.documentElement.setAttribute('data-theme', theme);
+        theme = themeMapping[activePrimaryItem] || 'fiat';
     } else if (activeMode === 'Wealth') {
         const themeMapping: { [key: string]: string } = {
             'Mutual Funds': 'mutual_funds',
             'Bonds': 'bonds',
             'Insurance': 'insurance',
         };
-        const theme = themeMapping[activePrimaryItem] || 'wealth';
-        document.documentElement.setAttribute('data-theme', theme);
+        theme = themeMapping[activePrimaryItem] || 'wealth';
     } else if (activeMode === 'Crypto') {
         const themeMapping: { [key: string]: string } = {
             'Spot': 'spot',
@@ -280,11 +279,20 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
             'Options': 'crypto_options',
             'Mutual Fund': 'crypto_mutual_fund',
         };
-        const theme = themeMapping[activePrimaryItem] || 'crypto';
-        document.documentElement.setAttribute('data-theme', theme);
+        theme = themeMapping[activePrimaryItem] || 'crypto';
+    } else if (activeMode === 'Web3') {
+        const themeMapping: { [key: string]: string } = {
+            'Trending': 'web3', // default Web3 is violet
+            'AI': 'ai',
+            'DeFi': 'defi',
+            'Memes': 'memes',
+            'NFT': 'nft',
+        };
+        theme = themeMapping[activePrimaryItem.split(' ')[0]] || 'web3';
     } else {
-        document.documentElement.setAttribute('data-theme', activeMode.toLowerCase());
+      theme = activeMode.toLowerCase();
     }
+    document.documentElement.setAttribute('data-theme', theme);
   }, [activeMode, activePrimaryItem]);
 
 
@@ -458,9 +466,9 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
             const isTopWatchlist = activeSecondaryItem.startsWith("Top watchlist");
             const isNumberedWatchlist = !!activeSecondaryItem.match(/^Watchlist \d+$/);
             if (isTopWatchlist) {
-                 const categories: (Stock['sector'])[] = ['Index Fund', 'Large Cap', 'Mid Cap', 'Small Cap', 'Flexi Cap', 'Multi Cap', 'ELSS', 'Sectoral', 'Thematic', 'Debt'];
+                 const categories = ['Index Fund', 'Large Cap', 'Mid Cap', 'Small Cap', 'Flexi Cap', 'Multi Cap', 'ELSS', 'Sectoral', 'Thematic', 'Debt'];
                  const groupedFunds = categories.map(category => ({
-                    title: `Top ${category}${category === 'Index Fund' ? 's' : ' Funds'}`,
+                    title: `Top ${category} Funds`,
                     items: mockMutualFunds.filter(fund => fund.sector === category)
                 })).filter(group => group.items.length > 0);
 
