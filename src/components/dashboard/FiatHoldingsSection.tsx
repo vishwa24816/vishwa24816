@@ -210,8 +210,8 @@ export function FiatHoldingsSection({
           <div className="w-full h-[300px] mt-4">
              <Chart.Container config={chartConfig} className="h-full w-full">
               <Chart.BarChart data={chartData} layout="vertical" margin={{ left: 10, right: 10 }}>
-                <Chart.XAxis type="number" hide />
-                <Chart.YAxis type="category" dataKey="name" hide />
+                <Chart.XAxis type="number" dataKey="value" stroke="hsl(var(--muted-foreground))" fontSize={12} tickFormatter={(val) => `₹${val/1000}k`} />
+                <Chart.YAxis type="category" dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={12} width={80} tickLine={false} axisLine={false} />
                 <Chart.Tooltip
                   cursor={false}
                   contentStyle={{

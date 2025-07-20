@@ -197,15 +197,15 @@ export function StrategyBuilder({ legs, setLegs }: StrategyBuilderProps) {
                                         <Chart.ResponsiveContainer>
                                             <Chart.ComposedChart data={payoffData} margin={{ top: 5, right: 20, left: -10, bottom: 5 }}>
                                                 <Chart.CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                                                <Chart.XAxis dataKey="price" stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
-                                                <Chart.YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `₹${value/1000}k`} />
+                                                <Chart.XAxis dataKey="price" name="Underlying Price" stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(val) => `₹${val/1000}k`}/>
+                                                <Chart.YAxis dataKey="pnl" name="Profit/Loss" stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `₹${value/1000}k`} />
                                                 <Chart.Tooltip
                                                     contentStyle={{ 
                                                         backgroundColor: 'hsl(var(--background))', 
                                                         borderColor: 'hsl(var(--border))',
                                                         fontSize: '12px',
                                                     }}
-                                                    labelFormatter={(value) => `Spot: ${value}`}
+                                                    labelFormatter={(value) => `Spot: ${formatCurrency(value)}`}
                                                     formatter={(value: number) => [formatCurrency(value), 'P&L']}
                                                 />
                                                 <Chart.ReferenceLine y={0} stroke="hsl(var(--foreground))" strokeWidth={1.5} strokeDasharray="3 3" />
