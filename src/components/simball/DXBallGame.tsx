@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useRef, useEffect, useState } from 'react';
@@ -18,8 +19,8 @@ export const DXBallGame: React.FC<DXBallGameProps> = ({ brickCount, onGameEnd })
     paddleX: 0,
     ballX: 0,
     ballY: 0,
-    ballDX: 4,
-    ballDY: -4,
+    ballDX: 8,
+    ballDY: -8,
     rightPressed: false,
     leftPressed: false,
     bricks: [] as { x: number; y: number; status: number }[][],
@@ -47,8 +48,8 @@ export const DXBallGame: React.FC<DXBallGameProps> = ({ brickCount, onGameEnd })
     game.ballX = canvas.width / 2;
     game.ballY = canvas.height - 30;
     game.score = 0; // Reset score on new game
-    game.ballDX = 4; // Reset ball speed
-    game.ballDY = -4;
+    game.ballDX = 8; // Reset ball speed
+    game.ballDY = -8;
 
     // Bricks
     const brickRowCount = Math.ceil(brickCount / 10);
