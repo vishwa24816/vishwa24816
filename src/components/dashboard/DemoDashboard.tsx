@@ -16,6 +16,7 @@ import { CryptoOptionChain } from '@/components/dashboard/CryptoOptionChain';
 import { ReadymadeStrategiesSection } from '@/components/dashboard/ReadymadeStrategiesSection';
 import { StrategyBuilder } from '@/components/dashboard/StrategyBuilder';
 import { MarketOverview } from './MarketOverview';
+import { CryptoBasketSection } from './CryptoBasketSection';
 
 
 import React, { useState, useMemo, useEffect } from 'react';
@@ -351,7 +352,7 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
             return null;
         case 'Crypto':
             if (isHoldingsView) return <><CryptoHoldingsSection title="Crypto Wallet & Holdings" holdings={cryptoHoldings} cashBalance={cryptoCashBalance} setCashBalance={setCryptoCashBalance} mainPortfolioCashBalance={mainPortfolioCashBalance} setMainPortfolioCashBalance={setMainPortfolioCashBalance} isRealMode={false} /><NewsSection articles={newsForView} /></>;
-            if (isPositionsView) return <div className="space-y-8"><CryptoFuturesSection positions={mockCryptoFutures} cashBalance={cryptoCashBalance} /><NewsSection articles={newsForView} /></div>;
+            if (isPositionsView) return <div className="space-y-8"><CryptoFuturesSection positions={mockCryptoFutures} cashBalance={cryptoCashBalance} /><CryptoBasketSection /><NewsSection articles={newsForView} /></div>;
             if (isWatchlistView) return <div className="space-y-8"><WatchlistSection title="My Crypto Watchlist" defaultInitialItems={itemsForWatchlist} localStorageKeyOverride={'simCryptoWatchlist'}/><NewsSection articles={newsForView} /></div>;
             return null;
         case 'Web3':

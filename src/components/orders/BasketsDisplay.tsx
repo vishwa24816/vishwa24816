@@ -125,7 +125,7 @@ const BasketItem: React.FC<BasketItemProps> = ({ basket }) => {
 
 interface BasketsDisplayProps {
   isRealMode?: boolean;
-  activeMode: 'Fiat' | 'Crypto';
+  activeMode: 'Fiat' | 'Crypto' | 'Web3';
 }
 
 export function BasketsDisplay({ isRealMode = false, activeMode }: BasketsDisplayProps) {
