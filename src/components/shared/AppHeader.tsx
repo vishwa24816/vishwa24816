@@ -17,8 +17,8 @@ import { mockMarketIndices, mockCryptoAssets } from '@/lib/mockData';
 import { SideMenu } from './SideMenu';
 
 interface AppHeaderProps {
-  activeMode?: 'Portfolio' | 'Fiat' | 'Crypto' | 'Web3';
-  onModeChange?: (mode: 'Portfolio' | 'Fiat' | 'Crypto' | 'Web3') => void;
+  activeMode?: 'Portfolio' | 'Fiat' | 'Crypto' | 'Web3' | 'Wealth';
+  onModeChange?: (mode: 'Portfolio' | 'Fiat' | 'Crypto' | 'Web3' | 'Wealth') => void;
   isRealMode?: boolean;
 }
 
@@ -54,15 +54,9 @@ export function AppHeader({ activeMode, onModeChange, isRealMode }: AppHeaderPro
     }
   };
 
-  const handleModeChange = (mode: 'Portfolio' | 'Fiat' | 'Crypto' | 'Web3') => {
+  const handleModeChange = (mode: 'Portfolio' | 'Fiat' | 'Crypto' | 'Web3' | 'Wealth') => {
     if (onModeChange && mode !== activeMode) {
         onModeChange(mode);
-        // if(!isPortfolioDisabled || mode !== 'Portfolio') {
-        //     toast({
-        //         title: 'Mode Switched',
-        //         description: `Now in ${mode} mode.`,
-        //     });
-        // }
     }
   };
   
@@ -71,6 +65,7 @@ export function AppHeader({ activeMode, onModeChange, isRealMode }: AppHeaderPro
     if (activeMode === 'Fiat') return "Search stocks, futures...";
     if (activeMode === 'Crypto') return "Search crypto spot, futures...";
     if (activeMode === 'Web3') return "Search Web3 assets...";
+    if (activeMode === 'Wealth') return "Search mutual funds, bonds...";
     return "Search...";
   };
 
@@ -85,12 +80,10 @@ export function AppHeader({ activeMode, onModeChange, isRealMode }: AppHeaderPro
       marketOverviewItems: isCryptoView ? mockCryptoAssets.slice(0, 5) : mockMarketIndices,
     };
   }, [activeMode, isRealMode]);
-
-  const hideFiatButton = isRealMode && (pathname === '/' || pathname === '/orders' || pathname === '/screener' || pathname === '/community');
   
-  const availableModes: ('Portfolio' | 'Fiat' | 'Crypto' | 'Web3')[] = isRealMode 
+  const availableModes: ('Portfolio' | 'Fiat' | 'Crypto' | 'Web3' | 'Wealth')[] = isRealMode 
     ? ['Portfolio', 'Crypto', 'Web3'] 
-    : ['Portfolio', 'Fiat', 'Crypto', 'Web3'];
+    : ['Portfolio', 'Fiat', 'Wealth', 'Crypto', 'Web3'];
 
 
   if (!isMounted) {

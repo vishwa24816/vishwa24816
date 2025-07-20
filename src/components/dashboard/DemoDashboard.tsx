@@ -165,7 +165,7 @@ function getRelevantNewsForWatchlistItems(items: Stock[] | undefined, allNews: N
 }
 
 interface DemoDashboardProps {
-  activeMode: 'Portfolio' | 'Fiat' | 'Crypto' | 'Web3';
+  activeMode: 'Portfolio' | 'Fiat' | 'Wealth' | 'Crypto' | 'Web3';
 }
 
 export function DemoDashboard({ activeMode }: DemoDashboardProps) {
@@ -184,15 +184,23 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
     if (activeMode === 'Fiat') {
         const watchlistNav = ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)];
         return {
-            primaryNavItems: ["Indian Stocks", "US Stocks", "Futures", "Options", "Mutual Fund", "Bonds", "IPO"],
+            primaryNavItems: ["Indian Stocks", "US Stocks", "Futures", "Options"],
             secondaryNavTriggerCategories: {
                 "Indian Stocks": watchlistNav,
                 "US Stocks": watchlistNav,
                 "Futures": ["Index Futures", "Stock Futures"],
                 "Options": ["Dashboard", "Custom", "Readymade"],
-                "Mutual Fund": [], // No secondary nav for categorized view
+            }
+        };
+    }
+    if (activeMode === 'Wealth') {
+        return {
+            primaryNavItems: ["Mutual Funds", "Bonds", "Insurance", "NPS"],
+            secondaryNavTriggerCategories: {
+                "Mutual Funds": [],
                 "Bonds": [],
-                "IPO": [],
+                "Insurance": [],
+                "NPS": [],
             }
         };
     }
@@ -247,11 +255,17 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
             'US Stocks': 'brown',
             'Futures': 'caramel',
             'Options': 'yellow',
-            'Mutual Fund': 'pink',
-            'Bonds': 'maroon',
-            'IPO': 'red'
         };
-        const theme = themeMapping[activePrimaryItem] || 'fiat'; // fallback to a generic fiat theme
+        const theme = themeMapping[activePrimaryItem] || 'fiat';
+        document.documentElement.setAttribute('data-theme', theme);
+    } else if (activeMode === 'Wealth') {
+        const themeMapping: { [key: string]: string } = {
+            'Mutual Funds': 'pink',
+            'Bonds': 'maroon',
+            'Insurance': 'red',
+            'NPS': 'caramel',
+        };
+        const theme = themeMapping[activePrimaryItem] || 'pink';
         document.documentElement.setAttribute('data-theme', theme);
     } else {
         document.documentElement.setAttribute('data-theme', activeMode.toLowerCase());
@@ -268,26 +282,10 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
       setActiveSecondaryItem(""); 
     }
   };
-
-  const handleSecondaryNavClick = (item: string) => {
-    setActiveSecondaryItem(item);
-  };
   
   const fiatHoldings = useMemo(() => mockPortfolioHoldings.filter(h => h.type !== 'Crypto'), []);
   const cryptoHoldings = useMemo(() => mockPortfolioHoldings.filter(h => h.type === 'Crypto'), []);
-  const indexFunds = useMemo(() => mockMutualFunds.filter(mf => mf.sector === 'Index Fund'), []);
-  const flexiCapFunds = useMemo(() => mockMutualFunds.filter(mf => mf.sector === 'Flexi Cap'), []);
-  const largeCapFunds = useMemo(() => mockMutualFunds.filter(mf => mf.sector === 'Large Cap'), []);
-  const midCapFunds = useMemo(() => mockMutualFunds.filter(mf => mf.sector === 'Mid Cap'), []);
-  const smallCapFunds = useMemo(() => mockMutualFunds.filter(mf => mf.sector === 'Small Cap'), []);
-  const sectoralFunds = useMemo(() => mockMutualFunds.filter(mf => mf.sector === 'Sectoral'), []);
-  const thematicFunds = useMemo(() => mockMutualFunds.filter(mf => mf.sector === 'Thematic'), []);
-  const debtFunds = useMemo(() => mockMutualFunds.filter(mf => mf.sector === 'Debt'), []);
-  const otherFunds = useMemo(() => mockMutualFunds.filter(mf => !['Index Fund', 'Flexi Cap', 'Large Cap', 'Mid Cap', 'Small Cap', 'Sectoral', 'Thematic', 'Debt'].includes(mf.sector || '')), []);
-  const governmentBonds = useMemo(() => mockBonds.filter(b => b.exchange === 'BOND' || b.exchange === 'SGB'), []);
-  const corporateBonds = useMemo(() => mockBonds.filter(b => b.exchange === 'CORP BOND'), []);
-
-
+  
   let newsForView: NewsArticle[] = mockNewsArticles; 
   let itemsForWatchlist: Stock[] | undefined = undefined;
   let categoryWatchlistTitle: string = "";
@@ -350,7 +348,7 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
     } else {
       newsForView = mockNewsArticles;
     }
-  } else if (activeMode === 'Web3') {
+  } else if (activeMode === 'Web3' || activeMode === 'Wealth') {
       newsForView = mockNewsArticles;
   }
   
@@ -389,42 +387,14 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
 
   const renderMarketContent = () => {
     if (activeMode === 'Fiat') {
-        if (activePrimaryItem === "Options") {
+        if (activePrimaryItem === "Options") { 
             if (activeSecondaryItem === 'Dashboard') return <div className="space-y-8"><MarketOverview title="Options Market Overview" items={mockMarketIndices} /><MarketMovers futuresData={mockIndexFuturesForWatchlist} optionsData={mockOptionsForWatchlist} /><NewsSection articles={newsForView} /></div>;
             if (activeSecondaryItem === "Custom") return ( <div className="space-y-8"><FiatOptionChain onAddLeg={(leg) => setStrategyLegs(prev => [...prev, leg])} />{strategyLegs.length > 0 && <StrategyBuilder legs={strategyLegs} setLegs={setStrategyLegs} />}<NewsSection articles={newsForView} /></div>);
             if (activeSecondaryItem === "Readymade") return ( <div className="space-y-8"><ReadymadeStrategiesSection onStrategySelect={(legs) => setStrategyLegs(legs)} />{strategyLegs.length > 0 && <StrategyBuilder legs={strategyLegs} setLegs={setStrategyLegs} />}<NewsSection articles={newsForView} /></div> );
             return null
         }
-        if (activePrimaryItem === "IPO") {
-            return <div className="flex flex-col items-center justify-center text-center py-12 text-muted-foreground"><PackageOpen className="h-16 w-16 mb-4" /><h2 className="text-2xl font-semibold mb-2 text-foreground">IPO Section</h2><p className="max-w-md">Information about upcoming and recent Initial Public Offerings will be displayed here.</p></div>
-        }
         if (activePrimaryItem === "Futures") {
             return <div className="space-y-8"><WatchlistSection title={categoryWatchlistTitle} displayItems={itemsForWatchlist} isPredefinedList={true} /><NewsSection articles={newsForView} /></div>
-        }
-        if (activePrimaryItem === "Bonds") {
-            return (
-                <div className="space-y-8">
-                    <WatchlistSection title="Government Bonds" displayItems={governmentBonds} isPredefinedList={true} />
-                    <WatchlistSection title="Corporate Bonds" displayItems={corporateBonds} isPredefinedList={true} />
-                    <NewsSection articles={getRelevantNewsForWatchlistItems(mockBonds, mockNewsArticles)} />
-                </div>
-            );
-        }
-        if (activePrimaryItem === "Mutual Fund") {
-            return (
-                <div className="space-y-8">
-                    <WatchlistSection title="Index Funds" displayItems={indexFunds} isPredefinedList={true} />
-                    <WatchlistSection title="Flexi Cap Funds" displayItems={flexiCapFunds} isPredefinedList={true} />
-                    <WatchlistSection title="Large Cap Funds" displayItems={largeCapFunds} isPredefinedList={true} />
-                    <WatchlistSection title="Mid Cap Funds" displayItems={midCapFunds} isPredefinedList={true} />
-                    <WatchlistSection title="Small Cap Funds" displayItems={smallCapFunds} isPredefinedList={true} />
-                    <WatchlistSection title="Sectoral Funds" displayItems={sectoralFunds} isPredefinedList={true} />
-                    <WatchlistSection title="Thematic Funds (ELSS)" displayItems={thematicFunds} isPredefinedList={true} />
-                    <WatchlistSection title="Debt Funds" displayItems={debtFunds} isPredefinedList={true} />
-                    <WatchlistSection title="Other Funds" displayItems={otherFunds} isPredefinedList={true} />
-                    <NewsSection articles={getRelevantNewsForWatchlistItems(mockMutualFunds, mockNewsArticles)} />
-                </div>
-            );
         }
         
         const isIndianStockView = activePrimaryItem === "Indian Stocks";
@@ -447,38 +417,28 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
         let web3Items: Stock[] = [];
         let watchlistTitle = activePrimaryItem;
         switch (activePrimaryItem) {
-            case 'Trending':
-                web3Items = mockWeb3Trending;
-                watchlistTitle = "Trending Web3 Tokens";
-                break;
-            case 'AI':
-                web3Items = mockWeb3AI;
-                watchlistTitle = "Top AI Tokens";
-                break;
-            case 'DeFi':
-                web3Items = mockWeb3DeFi;
-                watchlistTitle = "Top DeFi Tokens";
-                break;
-            case 'Memes':
-                web3Items = mockWeb3Memes;
-                watchlistTitle = "Top Meme Tokens";
-                break;
-             case 'NFT':
-                web3Items = mockWeb3NFTs;
-                watchlistTitle = "Top NFT Collections";
-                break;
+            case 'Trending': web3Items = mockWeb3Trending; watchlistTitle = "Trending Web3 Tokens"; break;
+            case 'AI': web3Items = mockWeb3AI; watchlistTitle = "Top AI Tokens"; break;
+            case 'DeFi': web3Items = mockWeb3DeFi; watchlistTitle = "Top DeFi Tokens"; break;
+            case 'Memes': web3Items = mockWeb3Memes; watchlistTitle = "Top Meme Tokens"; break;
+            case 'NFT': web3Items = mockWeb3NFTs; watchlistTitle = "Top NFT Collections"; break;
         }
         newsForView = getRelevantNewsForWatchlistItems(web3Items, mockNewsArticles);
-        return (
-            <div className="space-y-8">
-                <WatchlistSection 
-                    title={watchlistTitle} 
-                    displayItems={web3Items} 
-                    isPredefinedList={true} 
-                />
-                <NewsSection articles={newsForView} />
-            </div>
-        );
+        return <div className="space-y-8"><WatchlistSection title={watchlistTitle} displayItems={web3Items} isPredefinedList={true} /><NewsSection articles={newsForView} /></div>;
+    } else if (activeMode === 'Wealth') {
+        const governmentBonds = mockBonds.filter(b => b.exchange === 'BOND' || b.exchange === 'SGB');
+        const corporateBonds = mockBonds.filter(b => b.exchange === 'CORP BOND');
+
+        switch(activePrimaryItem) {
+            case "Mutual Funds":
+                return <div className="space-y-8"><WatchlistSection title="Mutual Funds" displayItems={mockMutualFunds} isPredefinedList={true} /><NewsSection articles={newsForView} /></div>;
+            case "Bonds":
+                 return <div className="space-y-8"><WatchlistSection title="Government Bonds" displayItems={governmentBonds} isPredefinedList={true} /><WatchlistSection title="Corporate Bonds" displayItems={corporateBonds} isPredefinedList={true} /><NewsSection articles={newsForView} /></div>;
+            case "Insurance":
+                 return <div className="flex flex-col items-center justify-center text-center py-12 text-muted-foreground"><PackageOpen className="h-16 w-16 mb-4" /><h2 className="text-2xl font-semibold mb-2 text-foreground">Insurance Marketplace</h2><p className="max-w-md">Coming soon: Compare and buy insurance policies.</p></div>
+            case "NPS":
+                 return <div className="flex flex-col items-center justify-center text-center py-12 text-muted-foreground"><PackageOpen className="h-16 w-16 mb-4" /><h2 className="text-2xl font-semibold mb-2 text-foreground">National Pension System</h2><p className="max-w-md">Coming soon: Manage your NPS account.</p></div>
+        }
     }
     
     return <div className="flex flex-col items-center justify-center text-center py-12 text-muted-foreground"><PackageOpen className="h-16 w-16 mb-4" /><h2 className="text-2xl font-semibold mb-2 text-foreground">Welcome!</h2><p className="max-w-md">Select a category above to view your assets and portfolio.</p></div>;
@@ -491,8 +451,7 @@ export function DemoDashboard({ activeMode }: DemoDashboardProps) {
         activePrimaryItem={activePrimaryItem}
         activeSecondaryItem={activeSecondaryItem}
         onPrimaryNavClick={handlePrimaryNavClick}
-        onSecondaryNavClick={handleSecondaryNavClick}
-        secondaryNavTriggerCategories={secondaryNavTriggerCategories}
+        onSecondaryNavClick={handlePrimaryNavClick}
       />
       
       {activeMode === 'Portfolio' ? renderPortfolioContent() : renderMarketContent()}
