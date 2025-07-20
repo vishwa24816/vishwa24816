@@ -16,6 +16,7 @@ import ReactFlow, {
   MiniMap,
   useReactFlow,
   ReactFlowProvider,
+  NodeTypes,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 
@@ -44,49 +45,54 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
-
+import { CustomNode } from '@/components/nocode-algo/CustomNode';
 
 const initialNodes: Node[] = [
   {
     id: '1',
-    type: 'input',
-    data: { label: 'Start Trigger' },
+    type: 'custom',
+    data: { label: 'Start Trigger', icon: Zap, isExpanded: false },
     position: { x: 250, y: 5 },
   },
 ];
 
-const nodeTypes = [
-    { type: 'trigger', label: 'Start Trigger', icon: Zap },
-    { type: 'condition', label: 'If/Else Condition', icon: GitBranch },
-    { type: 'buy', label: 'Execute Buy', icon: CheckCircle, className: "bg-green-500 text-white" },
-    { type: 'sell', label: 'Execute Sell', icon: XCircle, className: "bg-red-500 text-white" },
-    { type: 'output', label: 'End Flow', icon: ArrowRight },
-];
+const nodeConfig = {
+    'start-trigger': { label: 'Start Trigger', icon: Zap },
+    'condition': { label: 'If/Else Condition', icon: GitBranch },
+    'buy': { label: 'Execute Buy', icon: CheckCircle, className: "bg-green-500 text-white" },
+    'sell': { label: 'Execute Sell', icon: XCircle, className: "bg-red-500 text-white" },
+    'end-flow': { label: 'End Flow', icon: ArrowRight },
+};
+type NodeTypeKey = keyof typeof nodeConfig;
 
+// Define custom node types
+const nodeTypes: NodeTypes = {
+  custom: CustomNode,
+};
 
 let id = 2;
 const getId = () => `${id++}`;
 
-const NodePalette = ({ onNodeClick }: { onNodeClick: (type: string) => void }) => {
-    const onDragStart = (event: DragEvent, nodeType: string) => {
+const NodePalette = ({ onNodeClick }: { onNodeClick: (type: NodeTypeKey) => void }) => {
+    const onDragStart = (event: DragEvent, nodeType: NodeTypeKey) => {
         event.dataTransfer.setData('application/reactflow', nodeType);
         event.dataTransfer.effectAllowed = 'move';
     };
 
     return (
         <div className="p-4 flex flex-col space-y-4">
-            {nodeTypes.map((node) => {
-                const Icon = node.icon;
+            {Object.entries(nodeConfig).map(([type, config]) => {
+                const Icon = config.icon;
                 return (
                 <div
-                    key={node.type}
-                    onClick={() => onNodeClick(node.type)}
-                    onDragStart={(event) => onDragStart(event, node.type)}
+                    key={type}
+                    onClick={() => onNodeClick(type as NodeTypeKey)}
+                    onDragStart={(event) => onDragStart(event, type as NodeTypeKey)}
                     draggable
-                    className={cn("p-3 border rounded-md cursor-pointer flex items-center gap-2 transition-colors hover:shadow-md hover:border-primary", node.className)}
+                    className={cn("p-3 border rounded-md cursor-pointer flex items-center gap-2 transition-colors hover:shadow-md hover:border-primary", config.className)}
                 >
                     <Icon className="h-5 w-5" />
-                    <span className="text-sm font-medium">{node.label}</span>
+                    <span className="text-sm font-medium">{config.label}</span>
                 </div>
                 )
             })}
@@ -118,8 +124,8 @@ const NocodeAlgoEditor = () => {
     const onDrop = (event: DragEvent) => {
         event.preventDefault();
 
-        const type = event.dataTransfer.getData('application/reactflow');
-        const nodeInfo = nodeTypes.find(n => n.type === type);
+        const type = event.dataTransfer.getData('application/reactflow') as NodeTypeKey;
+        const nodeInfo = nodeConfig[type];
         if (!nodeInfo) return;
 
         const position = reactFlowInstance.screenToFlowPosition({
@@ -129,32 +135,49 @@ const NocodeAlgoEditor = () => {
 
         const newNode: Node = {
             id: getId(),
-            type: 'default',
+            type: 'custom',
             position,
-            data: { label: `${nodeInfo.label}` },
+            data: { label: nodeInfo.label, icon: nodeInfo.icon, isExpanded: false },
         };
 
         setNodes((nds) => nds.concat(newNode));
     };
 
-    const handleNodeClick = (type: string) => {
-      const nodeInfo = nodeTypes.find(n => n.type === type);
+    const handleNodeClick = (type: NodeTypeKey) => {
+      const nodeInfo = nodeConfig[type];
       if (!nodeInfo) return;
 
       const { x, y } = reactFlowInstance.getViewport();
       const position = {
-        x: -x + reactFlowInstance.width / 2 - 75, // Center horizontally
-        y: -y + reactFlowInstance.height / 2 - 20, // Center vertically
+        x: -x + reactFlowInstance.width / 2 - 100,
+        y: -y + reactFlowInstance.height / 2 - 50,
       };
 
       const newNode: Node = {
         id: getId(),
-        type: 'default',
+        type: 'custom',
         position,
-        data: { label: nodeInfo.label },
+        data: { label: nodeInfo.label, icon: nodeInfo.icon, isExpanded: false },
       };
 
       setNodes((nds) => nds.concat(newNode));
+    };
+
+    const onNodeClick = (event: React.MouseEvent, node: Node) => {
+        setNodes((prevNodes) =>
+            prevNodes.map((n) => {
+                if (n.id === node.id) {
+                    return {
+                        ...n,
+                        data: {
+                            ...n.data,
+                            isExpanded: !n.data.isExpanded,
+                        },
+                    };
+                }
+                return n;
+            })
+        );
     };
 
 
@@ -170,6 +193,8 @@ const NocodeAlgoEditor = () => {
                     onEdgesChange={onEdgesChange}
                     onConnect={onConnect}
                     fitView
+                    nodeTypes={nodeTypes}
+                    onNodeClick={onNodeClick}
                 >
                     <Background />
                     <Controls />
