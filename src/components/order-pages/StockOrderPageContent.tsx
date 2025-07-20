@@ -36,10 +36,6 @@ export function StockOrderPageContent({ asset, assetSpecificNews }: StockOrderPa
   };
 
   const handleSellAction = () => {
-     if (productTypeForOrder === 'Intraday') {
-      toast({ title: "Action Denied", description: "Short selling for Intraday (MIS) might be handled via portfolio for existing positions or specific order options.", variant: "destructive" });
-      return;
-    }
     toast({ title: "Sell Action (Mock)", description: `Initiating SELL for ${asset?.symbol} with product type: ${productTypeForOrder}` });
   };
 
@@ -295,7 +291,7 @@ export function StockOrderPageContent({ asset, assetSpecificNews }: StockOrderPa
               onClick={handleSellAction} 
               variant="destructive" 
               className="flex-1 text-base py-3 bg-red-600 hover:bg-red-700 disabled:opacity-60 disabled:bg-red-800"
-              disabled={productTypeForOrder === 'Intraday'}
+              disabled={productTypeForOrder === 'Longterm' || productTypeForOrder === 'HODL'}
             >
               Sell
             </Button>
