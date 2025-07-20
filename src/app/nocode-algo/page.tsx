@@ -21,6 +21,13 @@ import { AppHeader } from '@/components/shared/AppHeader';
 import { ProtectedRoute } from '@/components/shared/ProtectedRoute';
 import { Button } from '@/components/ui/button';
 import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import {
   GitBranch,
   Search,
   CheckCircle,
@@ -30,6 +37,7 @@ import {
   Save,
   Play,
   Share2,
+  Menu,
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
@@ -56,6 +64,32 @@ const nodeTypes = [
 
 let id = 2;
 const getId = () => `${id++}`;
+
+const NodePalette = () => {
+    const onDragStart = (event: DragEvent, nodeType: string) => {
+        event.dataTransfer.setData('application/reactflow', nodeType);
+        event.dataTransfer.effectAllowed = 'move';
+    };
+
+    return (
+        <div className="p-4 flex flex-col space-y-4">
+            {nodeTypes.map((node) => {
+                const Icon = node.icon;
+                return (
+                <div
+                    key={node.type}
+                    onDragStart={(event) => onDragStart(event, node.type)}
+                    draggable
+                    className={cn("p-3 border rounded-md cursor-grab flex items-center gap-2 transition-colors hover:shadow-md hover:border-primary", node.className)}
+                >
+                    <Icon className="h-5 w-5" />
+                    <span className="text-sm font-medium">{node.label}</span>
+                </div>
+                )
+            })}
+        </div>
+    )
+}
 
 export default function NocodeAlgoPage() {
     const { user } = useAuth();
@@ -85,7 +119,7 @@ export default function NocodeAlgoPage() {
 
         // Adjust for canvas position if necessary (simplified here)
         const position = {
-            x: event.clientX - 300, // Adjust for sidebar width
+            x: event.clientX - 250, // Adjust for typical sidebar width
             y: event.clientY - 100, // Adjust for header height
         };
 
@@ -99,33 +133,11 @@ export default function NocodeAlgoPage() {
         setNodes((nds) => nds.concat(newNode));
     };
 
-    const onDragStart = (event: DragEvent, nodeType: string) => {
-        event.dataTransfer.setData('application/reactflow', nodeType);
-        event.dataTransfer.effectAllowed = 'move';
-    };
-
   return (
     <ProtectedRoute>
       <div className="flex flex-col h-screen bg-background text-foreground">
         <AppHeader activeMode={activeMode} onModeChange={setActiveMode} isRealMode={isRealMode} />
         <main className="flex-grow flex flex-row overflow-hidden">
-            <aside className="w-64 h-full p-4 border-r bg-card flex flex-col space-y-4">
-                <h2 className="text-lg font-semibold">Nodes</h2>
-                {nodeTypes.map((node) => {
-                   const Icon = node.icon;
-                   return (
-                    <div
-                        key={node.type}
-                        onDragStart={(event) => onDragStart(event, node.type)}
-                        draggable
-                        className={cn("p-3 border rounded-md cursor-grab flex items-center gap-2 transition-colors hover:shadow-md hover:border-primary", node.className)}
-                    >
-                        <Icon className="h-5 w-5" />
-                        <span className="text-sm font-medium">{node.label}</span>
-                    </div>
-                   )
-                })}
-            </aside>
             <div className="flex-grow h-full relative" onDrop={onDrop} onDragOver={onDragOver}>
                 <ReactFlow
                     nodes={nodes}
@@ -139,6 +151,24 @@ export default function NocodeAlgoPage() {
                     <Controls />
                     <MiniMap />
                 </ReactFlow>
+
+                <div className="absolute top-4 left-4">
+                    <Sheet>
+                        <SheetTrigger asChild>
+                            <Button variant="outline" size="icon">
+                                <Menu className="h-5 w-5" />
+                                <span className="sr-only">Open Nodes Menu</span>
+                            </Button>
+                        </SheetTrigger>
+                        <SheetContent side="left" className="w-[300px]">
+                            <SheetHeader>
+                                <SheetTitle className="text-lg">Nodes</SheetTitle>
+                            </SheetHeader>
+                            <NodePalette />
+                        </SheetContent>
+                    </Sheet>
+                </div>
+                
                 <div className="absolute top-4 right-4 flex space-x-2">
                     <Button onClick={() => toast({title: "Flow Saved (Mock)"})}>
                         <Save className="mr-2 h-4 w-4" /> Save
