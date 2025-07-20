@@ -1,22 +1,25 @@
+
 "use client";
 
 import React, { useState } from 'react';
 import { AppHeader } from '@/components/shared/AppHeader';
 import { ProtectedRoute } from '@/components/shared/ProtectedRoute';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Clock } from 'lucide-react';
+import { Clock, TrendingUp, TrendingDown } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
 
 const FireCard = ({
-  name,
-  amount,
+  tradeType,
+  stockSymbol,
+  quantity,
   time,
   gradientFrom,
   gradientTo,
 }: {
-  name: string;
-  amount: number;
+  tradeType: 'BUY' | 'SELL';
+  stockSymbol: string;
+  quantity: number;
   time: string;
   gradientFrom: string;
   gradientTo: string;
@@ -28,8 +31,12 @@ const FireCard = ({
     )}
   >
     <div className="relative z-10">
-      <p className="text-sm opacity-90">₹{amount} paid to</p>
-      <p className="text-2xl font-bold mt-1">{name}</p>
+       <p className={cn("text-sm opacity-90 flex items-center", tradeType === 'BUY' ? 'text-green-300' : 'text-red-300')}>
+         {tradeType === 'BUY' ? <TrendingUp className="w-4 h-4 mr-1.5" /> : <TrendingDown className="w-4 h-4 mr-1.5" />}
+        {tradeType}
+      </p>
+      <p className="text-2xl font-bold mt-1">{stockSymbol}</p>
+      <p className="text-lg opacity-90">{quantity} Shares</p>
     </div>
     <div className="relative z-10 flex items-center text-sm opacity-90">
       <Clock className="w-4 h-4 mr-1.5" />
@@ -67,7 +74,7 @@ export default function SimballPage() {
                     <h2 className="text-4xl font-bold flex items-center">
                         Suraj <span className="text-2xl ml-2">🔥</span>
                     </h2>
-                    <p className="text-lg mt-1 opacity-90">with ₹59</p>
+                    <p className="text-lg mt-1 opacity-90">with ₹59,000 P&L</p>
                 </div>
                 <Avatar className="absolute z-10 right-6 top-1/2 -translate-y-1/2 h-16 w-16 border-4 border-white/50">
                     <AvatarImage src="https://placehold.co/100x100.png" alt="Suraj" data-ai-hint="profile avatar" />
@@ -79,19 +86,45 @@ export default function SimballPage() {
             </div>
 
             <div>
-                <h3 className="text-xl font-semibold mb-4">All fires (2)</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <h3 className="text-xl font-semibold mb-4">All fires (5)</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     <FireCard 
-                        name="Chaluvaraju"
-                        amount={28}
-                        time="3 days"
+                        tradeType="BUY"
+                        stockSymbol="RELIANCE"
+                        quantity={50}
+                        time="3 days ago"
                         gradientFrom="from-green-500"
                         gradientTo="to-emerald-600"
                     />
                      <FireCard 
-                        name="Vasanth kumar"
-                        amount={5}
-                        time="2 days"
+                        tradeType="SELL"
+                        stockSymbol="TATAMOTORS"
+                        quantity={100}
+                        time="2 days ago"
+                        gradientFrom="from-red-500"
+                        gradientTo="to-rose-600"
+                    />
+                    <FireCard 
+                        tradeType="BUY"
+                        stockSymbol="INFY"
+                        quantity={75}
+                        time="1 day ago"
+                        gradientFrom="from-blue-500"
+                        gradientTo="to-cyan-600"
+                    />
+                    <FireCard 
+                        tradeType="BUY"
+                        stockSymbol="BTC"
+                        quantity={0.5}
+                        time="8 hours ago"
+                        gradientFrom="from-purple-500"
+                        gradientTo="to-indigo-600"
+                    />
+                    <FireCard 
+                        tradeType="SELL"
+                        stockSymbol="ETH"
+                        quantity={5}
+                        time="2 hours ago"
                         gradientFrom="from-yellow-400"
                         gradientTo="to-amber-500"
                     />
