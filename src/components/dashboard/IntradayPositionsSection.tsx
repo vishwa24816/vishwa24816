@@ -83,6 +83,8 @@ export function IntradayPositionsSection() {
   };
 
   const totalPandL = positions.reduce((acc, pos) => acc + pos.pAndL, 0);
+  // For intraday positions, Day's P&L is the same as Total P&L.
+  const dayPandL = totalPandL;
 
   const chartData = useMemo(() => {
     return positions.map(pos => ({
@@ -181,27 +183,35 @@ export function IntradayPositionsSection() {
   return (
     <Card className="shadow-md">
       <CardHeader>
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-            <CardTitle className="text-xl font-semibold font-headline text-primary flex items-center mb-2 sm:mb-0">
+        <div className="flex justify-between items-center">
+            <CardTitle className="text-xl font-semibold font-headline text-primary flex items-center">
                 <TrendingUp className="h-6 w-6 mr-2" /> Intraday Positions
             </CardTitle>
-            <div className="flex items-center gap-4">
-              <div className="text-left sm:text-right">
-                  <p className="text-sm text-muted-foreground">Total P&L</p>
-                  <p className={cn("text-lg font-semibold", totalPandL >= 0 ? 'text-green-600' : 'text-red-600')}>
-                      {formatCurrency(totalPandL)}
-                  </p>
-              </div>
-              <div className="flex items-center gap-1 rounded-md bg-muted p-1">
+             <div className="flex items-center gap-1 rounded-md bg-muted p-1">
                   <Button variant={viewMode === 'list' ? 'secondary' : 'ghost'} size="icon" className="h-7 w-7" onClick={() => setViewMode('list')}><List /></Button>
                   <Button variant={viewMode === 'bar' ? 'secondary' : 'ghost'} size="icon" className="h-7 w-7" onClick={() => setViewMode('bar')}><BarChart2 /></Button>
                   <Button variant={viewMode === 'heatmap' ? 'secondary' : 'ghost'} size="icon" className="h-7 w-7" onClick={() => setViewMode('heatmap')}><LayoutGrid /></Button>
                   <Button variant={viewMode === 'pie' ? 'secondary' : 'ghost'} size="icon" className="h-7 w-7" onClick={() => setViewMode('pie')}><PieChart /></Button>
               </div>
-            </div>
         </div>
       </CardHeader>
       <CardContent className="p-0">
+         <div className="px-6 py-4 border-b">
+           <div className="grid grid-cols-2 gap-4">
+            <div>
+              <p className="text-sm text-muted-foreground">Day's P&L</p>
+              <p className={cn("text-lg font-semibold", dayPandL >= 0 ? 'text-green-600' : 'text-red-600')}>
+                {formatCurrency(dayPandL)}
+              </p>
+            </div>
+            <div className="text-right">
+              <p className="text-sm text-muted-foreground">Overall P&L</p>
+              <p className={cn("text-lg font-semibold", totalPandL >= 0 ? 'text-green-600' : 'text-red-600')}>
+                {formatCurrency(totalPandL)}
+              </p>
+            </div>
+          </div>
+        </div>
         {renderContent()}
       </CardContent>
     </Card>
