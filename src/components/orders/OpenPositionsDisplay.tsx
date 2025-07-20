@@ -4,7 +4,8 @@
 import React, { useState } from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import type { PortfolioHolding, IntradayPosition, FoPosition, CryptoFuturePosition } from '@/types';
-import { mockPortfolioHoldings, mockWeb3Holdings } from '@/lib/mockData/portfolioHoldings';
+import { mockPortfolioHoldings } from '@/lib/mockData/portfolioHoldings';
+import { mockWeb3Holdings } from '@/lib/mockData/web3Holdings';
 import { mockIntradayPositions } from '@/lib/mockData/intradayPositions';
 import { mockFoPositions } from '@/lib/mockData/foPositions';
 import { mockCryptoFutures } from '@/lib/mockData/cryptoFutures';
