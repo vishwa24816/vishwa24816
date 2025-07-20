@@ -15,7 +15,7 @@ export default function DashboardRouterPage() {
   const isRealMode = user?.id === 'REAL456';
 
   const [activeMode, setActiveMode] = useState<'Portfolio' | 'Fiat' | 'Wealth' | 'Crypto' | 'Web3'>(isRealMode ? 'Crypto' : 'Portfolio');
-  const [walletMode, setWalletMode] = useState<WalletMode>('cold');
+  const [walletMode, setWalletMode] = useState<WalletMode>('hot');
   
   useEffect(() => {
     if (isRealMode && (activeMode === 'Fiat' || activeMode === 'Portfolio')) {
@@ -51,7 +51,7 @@ export default function DashboardRouterPage() {
           walletMode={walletMode}
         />
         {isRealMode ? (
-          <RealDashboard activeMode={activeMode} onModeChange={setActiveMode} />
+          <RealDashboard activeMode={activeMode} />
         ) : (
           <DemoDashboard activeMode={activeMode} onModeChange={setActiveMode} walletMode={walletMode} setWalletMode={setWalletMode} />
         )}
