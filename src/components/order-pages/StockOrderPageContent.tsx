@@ -26,7 +26,7 @@ export function StockOrderPageContent({ asset, assetSpecificNews }: StockOrderPa
   
   const [activeTimescale, setActiveTimescale] = useState('1D');
   const [activeFinancialsCategory, setActiveFinancialsCategory] = useState<'revenue' | 'profit' | 'netWorth'>('revenue');
-  const [productTypeForOrder, setProductTypeForOrder] = useState('Longterm');
+  const [productTypeForOrder, setProductTypeForOrder] = useState('Delivery');
   
   const isUsStock = asset.exchange === 'NASDAQ' || asset.exchange === 'NYSE';
   const currencySymbol = isUsStock ? '$' : '₹';
@@ -291,7 +291,7 @@ export function StockOrderPageContent({ asset, assetSpecificNews }: StockOrderPa
               onClick={handleSellAction} 
               variant="destructive" 
               className="flex-1 text-base py-3 bg-red-600 hover:bg-red-700 disabled:opacity-60 disabled:bg-red-800"
-              disabled={productTypeForOrder === 'Longterm' || productTypeForOrder === 'HODL'}
+              disabled={productTypeForOrder === 'Delivery' || productTypeForOrder === 'HODL'}
             >
               Sell
             </Button>

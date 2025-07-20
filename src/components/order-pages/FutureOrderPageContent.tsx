@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState } from 'react';
@@ -26,7 +27,7 @@ export function FutureOrderPageContent({ asset, assetSpecificNews }: FutureOrder
 
   const [activeTimescale, setActiveTimescale] = useState('1D');
   const [activeFinancialsCategory, setActiveFinancialsCategory] = useState<'revenue' | 'profit' | 'netWorth'>('revenue');
-  const [productTypeForOrder, setProductTypeForOrder] = useState('Longterm'); // NRML for futures
+  const [productTypeForOrder, setProductTypeForOrder] = useState('Delivery'); // NRML for futures
 
   const handleBuyAction = () => {
     toast({ title: "Buy Action (Mock)", description: `Initiating BUY for ${asset?.symbol} (${productTypeForOrder})` });

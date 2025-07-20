@@ -271,7 +271,7 @@ const CommonOrderFields = ({
 }) => {
     const {
         asset, assetType, productType, onProductTypeChange, quantity, setQuantity,
-        price, setPrice, triggerPrice, setTriggerPrice, orderType, setOrderType,
+        price, setPrice, orderType, setOrderType,
         showMoreOptions, setShowMoreOptions,
         isStopLossEnabled, setIsStopLossEnabled, stopLossValue, setStopLossValue, stopLossUnit, setStopLossUnit,
         isTrailingSlEnabled, setIsTrailingSlEnabled, trailingSlValue, setTrailingSlValue, trailingSlUnit, setTrailingSlUnit,
@@ -292,8 +292,8 @@ const CommonOrderFields = ({
                         </div>
                     )}
                     <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="Longterm" id={`longterm-common`} />
-                        <Label htmlFor={`longterm-common`} className="font-normal">Longterm</Label>
+                        <RadioGroupItem value="Delivery" id={`delivery-common`} />
+                        <Label htmlFor={`delivery-common`} className="font-normal">Delivery</Label>
                     </div>
                     {assetType === 'stock' && (
                         <div className="flex items-center space-x-2">
@@ -393,7 +393,6 @@ const StockOrderForm = ({ asset, assetType, productType, onProductTypeChange }: 
     const { toast } = useToast();
     const [quantity, setQuantity] = useState<number | string>(1);
     const [price, setPrice] = useState<number | string>(asset.price.toFixed(2));
-    const [triggerPrice, setTriggerPrice] = useState<number | string>('0');
     const [selectedExchange, setSelectedExchange] = useState<'BSE' | 'NSE'>('NSE');
     const [orderMode, setOrderMode] = useState('Regular');
     const [orderType, setOrderType] = useState('Limit');
@@ -443,7 +442,7 @@ const StockOrderForm = ({ asset, assetType, productType, onProductTypeChange }: 
 
     const commonOrderProps = {
         asset, assetType, productType, onProductTypeChange, quantity, setQuantity,
-        price, setPrice, triggerPrice, setTriggerPrice, orderType, setOrderType,
+        price, setPrice, orderType, setOrderType,
         showMoreOptions, setShowMoreOptions,
         isStopLossEnabled, setIsStopLossEnabled, stopLossValue, setStopLossValue, stopLossUnit, setStopLossUnit,
         isTrailingSlEnabled, setIsTrailingSlEnabled, trailingSlValue, setTrailingSlValue, trailingSlUnit, setTrailingSlUnit,
@@ -505,7 +504,6 @@ const CryptoOrderForm = ({ asset, assetType, productType, onProductTypeChange }:
     const { toast } = useToast();
     const [quantity, setQuantity] = useState<number | string>('1');
     const [price, setPrice] = useState<number | string>(asset.price.toFixed(2));
-    const [triggerPrice, setTriggerPrice] = useState<number | string>('0');
     const [orderMode, setOrderMode] = useState('Regular');
     const [orderType, setOrderType] = useState('Limit');
     const [showMoreOptions, setShowMoreOptions] = useState(false);
@@ -530,7 +528,7 @@ const CryptoOrderForm = ({ asset, assetType, productType, onProductTypeChange }:
 
     const commonOrderProps = {
         asset, assetType, productType, onProductTypeChange, quantity, setQuantity,
-        price, setPrice, triggerPrice, setTriggerPrice, orderType, setOrderType,
+        price, setPrice, orderType, setOrderType,
         showMoreOptions, setShowMoreOptions,
         isStopLossEnabled, setIsStopLossEnabled, stopLossValue, setStopLossValue, stopLossUnit, setStopLossUnit,
         isTrailingSlEnabled, setIsTrailingSlEnabled, trailingSlValue, setTrailingSlValue, trailingSlUnit, setTrailingSlUnit,
@@ -563,7 +561,6 @@ const FutureOrderForm = ({ asset, assetType, productType, onProductTypeChange }:
     const { toast } = useToast();
     const [quantity, setQuantity] = useState<number | string>(1);
     const [price, setPrice] = useState<number | string>(asset.price.toFixed(2));
-    const [triggerPrice, setTriggerPrice] = useState<number | string>('0');
     const [orderType, setOrderType] = useState('Limit');
     const [showMoreOptions, setShowMoreOptions] = useState(false);
     const [selectedExpiryDate, setSelectedExpiryDate] = useState<string>('');
@@ -595,7 +592,7 @@ const FutureOrderForm = ({ asset, assetType, productType, onProductTypeChange }:
 
      const commonOrderProps = {
         asset, assetType, productType, onProductTypeChange, quantity, setQuantity,
-        price, setPrice, triggerPrice, setTriggerPrice, orderType, setOrderType,
+        price, setPrice, orderType, setOrderType,
         showMoreOptions, setShowMoreOptions,
         isStopLossEnabled, setIsStopLossEnabled, stopLossValue, setStopLossValue, stopLossUnit, setStopLossUnit,
         isTrailingSlEnabled, setIsTrailingSlEnabled, trailingSlValue, setTrailingSlValue, trailingSlUnit, setTrailingSlUnit,
@@ -630,7 +627,6 @@ const CryptoFutureOrderForm = ({ asset, assetType, productType, onProductTypeCha
     const { toast } = useToast();
     const [quantity, setQuantity] = useState<number | string>('1');
     const [price, setPrice] = useState<number | string>(asset.price.toFixed(2));
-    const [triggerPrice, setTriggerPrice] = useState<number | string>('0');
     const [orderMode, setOrderMode] = useState('MTF');
     const [orderType, setOrderType] = useState('Limit');
     const [showMoreOptions, setShowMoreOptions] = useState(false);
@@ -660,7 +656,7 @@ const CryptoFutureOrderForm = ({ asset, assetType, productType, onProductTypeCha
     
      const commonOrderProps = {
         asset, assetType, productType, onProductTypeChange, quantity, setQuantity,
-        price, setPrice, triggerPrice, setTriggerPrice, orderType, setOrderType,
+        price, setPrice, orderType, setOrderType,
         showMoreOptions, setShowMoreOptions,
         isStopLossEnabled, setIsStopLossEnabled, stopLossValue, setStopLossValue, stopLossUnit, setStopLossUnit,
         isTrailingSlEnabled, setIsTrailingSlEnabled, trailingSlValue, setTrailingSlValue, trailingSlUnit, setTrailingSlUnit,

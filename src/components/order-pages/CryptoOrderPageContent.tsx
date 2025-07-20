@@ -24,8 +24,8 @@ export function CryptoOrderPageContent({ asset, assetSpecificNews }: CryptoOrder
   const { toast } = useToast();
 
   const [activeTimescale, setActiveTimescale] = useState('24H');
-  // For crypto, productType is always longterm/spot in this context, but we keep state for consistency
-  const [productTypeForOrder, setProductTypeForOrder] = useState('Longterm');
+  // For crypto, productType is always Delivery/spot in this context, but we keep state for consistency
+  const [productTypeForOrder, setProductTypeForOrder] = useState('Delivery');
 
   const handleBuyAction = () => {
     toast({ title: "Buy Action (Mock)", description: `Initiating BUY for ${asset?.symbol}.` });
