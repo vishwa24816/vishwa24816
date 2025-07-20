@@ -186,4 +186,3 @@ export function PledgeDialog({
     </Dialog>
   );
 }
-
