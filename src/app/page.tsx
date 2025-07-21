@@ -1,19 +1,27 @@
 
 "use client";
 
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { ProtectedRoute } from '@/components/shared/ProtectedRoute';
 import { DemoDashboard } from '@/components/dashboard/DemoDashboard';
 import { RealDashboard } from '@/components/dashboard/RealDashboard';
 import { AppHeader } from '@/components/shared/AppHeader';
 import { Skeleton } from '@/components/ui/skeleton';
-import React, { useState, useEffect } from 'react';
 import type { WalletMode } from '@/components/dashboard/CryptoHoldingsSection';
+import { OrdersPageContent } from '@/components/orders/OrdersPageContent';
+import { SimbotPageContent } from '@/components/simbot/SimbotPageContent';
+import { ScreenerPageContent } from '@/components/screener/ScreenerPageContent';
+import { CommunityPageContent } from '@/components/community/CommunityPageContent';
+import { AppFooter } from '@/components/shared/AppFooter';
+
+export type MainView = 'home' | 'orders' | 'simbot' | 'screener' | 'community';
 
 export default function DashboardRouterPage() {
   const { user, loading } = useAuth();
   const isRealMode = user?.id === 'REAL456';
 
+  const [activeMainView, setActiveMainView] = useState<MainView>('home');
   const [activeMode, setActiveMode] = useState<'Portfolio' | 'Fiat' | 'Wealth' | 'Crypto' | 'Web3'>(isRealMode ? 'Crypto' : 'Portfolio');
   const [walletMode, setWalletMode] = useState<WalletMode>('hot');
   
@@ -40,22 +48,40 @@ export default function DashboardRouterPage() {
         </ProtectedRoute>
       );
   }
+
+  const renderContent = () => {
+    switch (activeMainView) {
+      case 'home':
+        return isRealMode ? (
+          <RealDashboard activeMode={activeMode} />
+        ) : (
+          <DemoDashboard activeMode={activeMode} onModeChange={setActiveMode} walletMode={walletMode} setWalletMode={setWalletMode} />
+        );
+      case 'orders':
+        return <OrdersPageContent />;
+      case 'simbot':
+        return <SimbotPageContent />;
+      case 'screener':
+        return <ScreenerPageContent />;
+      case 'community':
+        return <CommunityPageContent />;
+      default:
+        return null;
+    }
+  }
   
   return (
     <ProtectedRoute>
-      <div className="flex flex-col min-h-screen">
+      <div className="flex flex-col min-h-screen pb-16">
         <AppHeader 
           activeMode={activeMode}
           onModeChange={setActiveMode}
           isRealMode={isRealMode}
           walletMode={walletMode}
         />
-        {isRealMode ? (
-          <RealDashboard activeMode={activeMode} />
-        ) : (
-          <DemoDashboard activeMode={activeMode} onModeChange={setActiveMode} walletMode={walletMode} setWalletMode={setWalletMode} />
-        )}
+        {renderContent()}
       </div>
+      <AppFooter activeView={activeMainView} onNavigate={setActiveMainView} />
     </ProtectedRoute>
   );
 }

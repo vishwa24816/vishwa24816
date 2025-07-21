@@ -2,8 +2,6 @@
 "use client";
 
 import React, { useState, useRef, useEffect, FormEvent } from 'react';
-import { AppHeader } from '@/components/shared/AppHeader';
-import { ProtectedRoute } from '@/components/shared/ProtectedRoute';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -14,14 +12,12 @@ import type { ChatMessage } from '@/types';
 import { sendMessageToSimbotAction } from '@/app/actions';
 import { useAuth } from '@/contexts/AuthContext';
 
-export default function SimbotPage() {
+export function SimbotPageContent() {
   const { user: authUser } = useAuth();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
-
-  const isRealMode = authUser?.id === 'REAL456';
   
   const scrollToBottom = () => {
     if (scrollAreaRef.current) {
@@ -85,12 +81,7 @@ export default function SimbotPage() {
   const userEmailInitial = authUser?.email?.[0].toUpperCase() || "U";
   
   return (
-    <ProtectedRoute>
       <div className="flex flex-col h-full">
-        <AppHeader
-          isRealMode={isRealMode}
-        />
-        
         <main className="flex-grow overflow-hidden">
             <ScrollArea className="h-full px-4 pt-4" ref={scrollAreaRef}> 
               <div className="space-y-6 pb-24">
@@ -175,8 +166,5 @@ export default function SimbotPage() {
           </div>
         </footer>
       </div>
-    </ProtectedRoute>
   );
 }
-
-    

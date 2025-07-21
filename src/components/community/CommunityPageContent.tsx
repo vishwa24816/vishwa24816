@@ -2,8 +2,6 @@
 "use client";
 
 import React, { useState, useMemo } from 'react';
-import { AppHeader } from '@/components/shared/AppHeader';
-import { ProtectedRoute } from '@/components/shared/ProtectedRoute';
 import { PostCard } from '@/components/community/PostCard';
 import { mockCommunityPosts } from '@/lib/mockData';
 import type { CommunityPost } from '@/types';
@@ -14,7 +12,7 @@ import { MessageSquarePlus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
 
-export default function CommunityPage() {
+export function CommunityPageContent() {
   const { user } = useAuth();
   const isRealMode = user?.id === 'REAL456';
   
@@ -49,14 +47,7 @@ export default function CommunityPage() {
   }, [activeTab, activeMode]);
 
   return (
-    <ProtectedRoute>
       <div className="flex flex-col h-screen bg-background text-foreground">
-        <AppHeader
-          activeMode={activeMode}
-          onModeChange={setActiveMode}
-          isRealMode={isRealMode}
-        />
-
         <main className="flex-grow flex flex-col overflow-hidden">
           <Tabs defaultValue="hot" value={activeTab} onValueChange={setActiveTab} className="flex flex-col flex-grow overflow-hidden">
             <div className="border-b bg-background">
@@ -111,8 +102,5 @@ export default function CommunityPage() {
             <MessageSquarePlus className="h-7 w-7" />
         </Button>
       </div>
-    </ProtectedRoute>
   );
 }
-
-    

@@ -33,7 +33,7 @@ const realOrderTabs = [
 ];
 
 
-export default function OrdersPage() {
+export function OrdersPageContent() {
   const { user } = useAuth();
   const isRealMode = user?.id === 'REAL456';
   
@@ -67,13 +67,7 @@ export default function OrdersPage() {
   );
 
   return (
-    <ProtectedRoute>
       <div className="flex flex-col min-h-screen">
-        <AppHeader
-          activeMode={activeMode}
-          onModeChange={setActiveMode}
-          isRealMode={isRealMode}
-        />
         <main className="flex-grow flex flex-col">
           <Tabs defaultValue="executed" value={activeTab} onValueChange={setActiveTab} className="flex flex-col flex-grow">
             <div className="bg-background border-b">
@@ -128,8 +122,5 @@ export default function OrdersPage() {
           </Tabs>
         </main>
       </div>
-    </ProtectedRoute>
   );
 }
-
-    

@@ -3,8 +3,6 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
-import { AppHeader } from '@/components/shared/AppHeader';
-import { ProtectedRoute } from '@/components/shared/ProtectedRoute';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -308,7 +306,7 @@ const ExpandedScreenerRow = ({ stock, onAction, onNav }: { stock: Stock, onActio
     );
 };
 
-export default function ScreenerPage() {
+export function ScreenerPageContent() {
     const { toast } = useToast();
     const router = useRouter();
     const { user } = useAuth();
@@ -371,207 +369,196 @@ export default function ScreenerPage() {
     };
 
     return (
-        <ProtectedRoute>
-            <div className="flex flex-col h-screen bg-background text-foreground">
-                <AppHeader 
-                    activeMode={activeMode}
-                    onModeChange={setActiveMode}
-                    isRealMode={isRealMode}
-                />
-                <main className="flex-grow p-4 sm:p-6 lg:p-8 space-y-6 overflow-y-auto">
+        <main className="flex-grow p-4 sm:p-6 lg:p-8 space-y-6 overflow-y-auto">
+            <Card>
+                <CardHeader>
+                    <CardTitle className="text-2xl font-bold flex items-center">
+                        <Zap className="mr-2 h-6 w-6 text-primary" />
+                        AI Stock Screener
+                    </CardTitle>
+                    <CardDescription>
+                        Describe the stocks you're looking for in plain English.
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                        <Textarea
+                            placeholder="e.g., 'Show me banking stocks with P/E under 20 and ROE above 15%'"
+                            value={query}
+                            onChange={(e) => setQuery(e.target.value)}
+                            rows={3}
+                            disabled={isLoading}
+                        />
+                        <div className="flex flex-wrap gap-2">
+                            {suggestionQueries.map((suggestion) => (
+                                <Button
+                                    key={suggestion}
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => handleSuggestionClick(suggestion)}
+                                    disabled={isLoading}
+                                >
+                                    {suggestion}
+                                </Button>
+                            ))}
+                        </div>
+                        <Button type="submit" disabled={isLoading || !query.trim()} className="w-full sm:w-auto">
+                            {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Zap className="mr-2 h-4 w-4" />}
+                            {isLoading ? 'Screening...' : 'Run Screener'}
+                        </Button>
+                    </form>
+                </CardContent>
+            </Card>
+
+            {activeMode === 'Fiat' && (
                     <Card>
+                    <CardContent className="p-2">
+                        <Accordion type="single" collapsible className="w-full">
+                            {fiatScreenerItems.map((item, index) => (
+                                <AccordionItem value={`item-${index}`} key={item.title}>
+                                    <AccordionTrigger className="text-base font-medium hover:no-underline px-2">
+                                        <div className="flex items-center gap-4">
+                                            <item.icon className="h-6 w-6 text-primary" />
+                                            <span>{item.title}</span>
+                                            {item.hasDot && <div className="h-2.5 w-2.5 rounded-full bg-green-500" />}
+                                        </div>
+                                    </AccordionTrigger>
+                                    <AccordionContent className="px-4 pb-2 pt-0 text-muted-foreground">
+                                        {item.title === 'Markets' ? (
+                                            <ul className="space-y-1">
+                                                <li key="indian-stocks">
+                                                    <Button
+                                                        variant="ghost"
+                                                        className="w-full justify-start p-2 h-auto font-normal text-muted-foreground hover:text-primary text-sm"
+                                                        onClick={() => router.push('/markets')}
+                                                    >
+                                                        Indian Stocks
+                                                    </Button>
+                                                </li>
+                                                <li key="us-stocks">
+                                                    <Button
+                                                        variant="ghost"
+                                                        className="w-full justify-start p-2 h-auto font-normal text-muted-foreground hover:text-primary text-sm"
+                                                        onClick={() => toast({ title: `US Stocks Market Page`, description: 'This feature is coming soon!' })}
+                                                    >
+                                                        US Stocks
+                                                    </Button>
+                                                </li>
+                                                {Array.isArray(item.content) && item.content.map((subItem) => (
+                                                    <li key={subItem}>
+                                                    <Button
+                                                        variant="ghost"
+                                                        className="w-full justify-start p-2 h-auto font-normal text-muted-foreground hover:text-primary text-sm"
+                                                        onClick={() =>
+                                                        toast({
+                                                            title: `${subItem}`,
+                                                            description: 'This feature is coming soon!',
+                                                        })
+                                                        }
+                                                    >
+                                                        {subItem}
+                                                    </Button>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        ) : item.title === 'IPO' ? (
+                                            <IpoTable />
+                                        ) : item.title === 'Superstars' ? (
+                                            <SuperstarsTable />
+                                        ) : Array.isArray(item.content) ? (
+                                            <ul className="space-y-1">
+                                                {item.content.map((subItem) => (
+                                                    <li key={subItem}>
+                                                    <Button
+                                                        variant="ghost"
+                                                        className="w-full justify-start p-2 h-auto font-normal text-muted-foreground hover:text-primary text-sm"
+                                                        onClick={() =>
+                                                        toast({
+                                                            title: `${subItem}`,
+                                                            description: 'This feature is coming soon!',
+                                                        })
+                                                        }
+                                                    >
+                                                        {subItem}
+                                                    </Button>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        ) : (
+                                            typeof item.content === 'string' ? item.content : ''
+                                        )}
+                                    </AccordionContent>
+                                </AccordionItem>
+                            ))}
+                        </Accordion>
+                    </CardContent>
+                </Card>
+            )}
+
+            {isLoading && (
+                <div className="text-center py-10">
+                    <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto" />
+                    <p className="mt-4 text-muted-foreground">The AI is analyzing your query and screening stocks...</p>
+                </div>
+            )}
+
+            {error && (
+                <Card className="border-destructive">
                         <CardHeader>
-                            <CardTitle className="text-2xl font-bold flex items-center">
-                                <Zap className="mr-2 h-6 w-6 text-primary" />
-                                AI Stock Screener
-                            </CardTitle>
-                            <CardDescription>
-                                Describe the stocks you're looking for in plain English.
-                            </CardDescription>
+                        <CardTitle className="text-destructive">Error</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <form onSubmit={handleSubmit} className="space-y-4">
-                                <Textarea
-                                    placeholder="e.g., 'Show me banking stocks with P/E under 20 and ROE above 15%'"
-                                    value={query}
-                                    onChange={(e) => setQuery(e.target.value)}
-                                    rows={3}
-                                    disabled={isLoading}
-                                />
-                                <div className="flex flex-wrap gap-2">
-                                    {suggestionQueries.map((suggestion) => (
-                                        <Button
-                                            key={suggestion}
-                                            type="button"
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={() => handleSuggestionClick(suggestion)}
-                                            disabled={isLoading}
-                                        >
-                                            {suggestion}
-                                        </Button>
-                                    ))}
-                                </div>
-                                <Button type="submit" disabled={isLoading || !query.trim()} className="w-full sm:w-auto">
-                                    {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Zap className="mr-2 h-4 w-4" />}
-                                    {isLoading ? 'Screening...' : 'Run Screener'}
-                                </Button>
-                            </form>
+                        <p>{error}</p>
                         </CardContent>
-                    </Card>
+                </Card>
+            )}
 
-                    {activeMode === 'Fiat' && (
-                         <Card>
-                            <CardContent className="p-2">
-                                <Accordion type="single" collapsible className="w-full">
-                                    {fiatScreenerItems.map((item, index) => (
-                                        <AccordionItem value={`item-${index}`} key={item.title}>
-                                            <AccordionTrigger className="text-base font-medium hover:no-underline px-2">
-                                                <div className="flex items-center gap-4">
-                                                    <item.icon className="h-6 w-6 text-primary" />
-                                                    <span>{item.title}</span>
-                                                    {item.hasDot && <div className="h-2.5 w-2.5 rounded-full bg-green-500" />}
-                                                </div>
-                                            </AccordionTrigger>
-                                            <AccordionContent className="px-4 pb-2 pt-0 text-muted-foreground">
-                                                {item.title === 'Markets' ? (
-                                                    <ul className="space-y-1">
-                                                        <li key="indian-stocks">
-                                                            <Button
-                                                                variant="ghost"
-                                                                className="w-full justify-start p-2 h-auto font-normal text-muted-foreground hover:text-primary text-sm"
-                                                                onClick={() => router.push('/markets')}
-                                                            >
-                                                                Indian Stocks
-                                                            </Button>
-                                                        </li>
-                                                        <li key="us-stocks">
-                                                            <Button
-                                                                variant="ghost"
-                                                                className="w-full justify-start p-2 h-auto font-normal text-muted-foreground hover:text-primary text-sm"
-                                                                onClick={() => toast({ title: `US Stocks Market Page`, description: 'This feature is coming soon!' })}
-                                                            >
-                                                                US Stocks
-                                                            </Button>
-                                                        </li>
-                                                        {Array.isArray(item.content) && item.content.map((subItem) => (
-                                                            <li key={subItem}>
-                                                            <Button
-                                                                variant="ghost"
-                                                                className="w-full justify-start p-2 h-auto font-normal text-muted-foreground hover:text-primary text-sm"
-                                                                onClick={() =>
-                                                                toast({
-                                                                    title: `${subItem}`,
-                                                                    description: 'This feature is coming soon!',
-                                                                })
-                                                                }
-                                                            >
-                                                                {subItem}
-                                                            </Button>
-                                                            </li>
-                                                        ))}
-                                                    </ul>
-                                                ) : item.title === 'IPO' ? (
-                                                    <IpoTable />
-                                                ) : item.title === 'Superstars' ? (
-                                                    <SuperstarsTable />
-                                                ) : Array.isArray(item.content) ? (
-                                                    <ul className="space-y-1">
-                                                        {item.content.map((subItem) => (
-                                                            <li key={subItem}>
-                                                            <Button
-                                                                variant="ghost"
-                                                                className="w-full justify-start p-2 h-auto font-normal text-muted-foreground hover:text-primary text-sm"
-                                                                onClick={() =>
-                                                                toast({
-                                                                    title: `${subItem}`,
-                                                                    description: 'This feature is coming soon!',
-                                                                })
-                                                                }
-                                                            >
-                                                                {subItem}
-                                                            </Button>
-                                                            </li>
-                                                        ))}
-                                                    </ul>
-                                                ) : (
-                                                    typeof item.content === 'string' ? item.content : ''
-                                                )}
-                                            </AccordionContent>
-                                        </AccordionItem>
-                                    ))}
-                                </Accordion>
-                            </CardContent>
-                        </Card>
-                    )}
-
-                    {isLoading && (
-                        <div className="text-center py-10">
-                            <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto" />
-                            <p className="mt-4 text-muted-foreground">The AI is analyzing your query and screening stocks...</p>
-                        </div>
-                    )}
-
-                    {error && (
-                        <Card className="border-destructive">
-                             <CardHeader>
-                                <CardTitle className="text-destructive">Error</CardTitle>
-                             </CardHeader>
-                             <CardContent>
-                                <p>{error}</p>
-                             </CardContent>
-                        </Card>
-                    )}
-
-                    {results.length > 0 && !isLoading && (
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>Screening Results</CardTitle>
-                                {analysis && (
-                                    <CardDescription className="pt-2 text-foreground/90">{analysis}</CardDescription>
-                                )}
-                            </CardHeader>
-                            <CardContent>
-                                <Table>
-                                    <TableHeader>
-                                        <TableRow>
-                                            <TableHead>Symbol</TableHead>
-                                            <TableHead>Price (₹)</TableHead>
-                                            <TableHead>P/E</TableHead>
-                                            <TableHead>ROE (%)</TableHead>
-                                            <TableHead>Mkt Cap</TableHead>
+            {results.length > 0 && !isLoading && (
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Screening Results</CardTitle>
+                        {analysis && (
+                            <CardDescription className="pt-2 text-foreground/90">{analysis}</CardDescription>
+                        )}
+                    </CardHeader>
+                    <CardContent>
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Symbol</TableHead>
+                                    <TableHead>Price (₹)</TableHead>
+                                    <TableHead>P/E</TableHead>
+                                    <TableHead>ROE (%)</TableHead>
+                                    <TableHead>Mkt Cap</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {results.map((stock) => (
+                                    <React.Fragment key={stock.id}>
+                                        <TableRow onClick={() => handleRowClick(stock.id)} className="cursor-pointer">
+                                            <TableCell className="font-semibold">{stock.symbol}</TableCell>
+                                            <TableCell>{stock.price.toFixed(2)}</TableCell>
+                                            <TableCell>{stock.fundamentals?.peRatioTTM?.toFixed(2) ?? 'N/A'}</TableCell>
+                                            <TableCell>{stock.fundamentals?.roe?.toFixed(2) ?? 'N/A'}</TableCell>
+                                            <TableCell>{stock.fundamentals?.marketCap ?? 'N/A'}</TableCell>
                                         </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                        {results.map((stock) => (
-                                            <React.Fragment key={stock.id}>
-                                                <TableRow onClick={() => handleRowClick(stock.id)} className="cursor-pointer">
-                                                    <TableCell className="font-semibold">{stock.symbol}</TableCell>
-                                                    <TableCell>{stock.price.toFixed(2)}</TableCell>
-                                                    <TableCell>{stock.fundamentals?.peRatioTTM?.toFixed(2) ?? 'N/A'}</TableCell>
-                                                    <TableCell>{stock.fundamentals?.roe?.toFixed(2) ?? 'N/A'}</TableCell>
-                                                    <TableCell>{stock.fundamentals?.marketCap ?? 'N/A'}</TableCell>
-                                                </TableRow>
-                                                {expandedStockId === stock.id && (
-                                                    <TableRow>
-                                                        <ExpandedScreenerRow
-                                                            stock={stock}
-                                                            onAction={(type, qty) => handleAction(stock, type, qty)}
-                                                            onNav={() => router.push(`/order/stock/${stock.symbol}`)}
-                                                        />
-                                                    </TableRow>
-                                                )}
-                                            </React.Fragment>
-                                        ))}
-                                    </TableBody>
-                                </Table>
-                            </CardContent>
-                        </Card>
-                    )}
-                </main>
-            </div>
-        </ProtectedRoute>
+                                        {expandedStockId === stock.id && (
+                                            <TableRow>
+                                                <ExpandedScreenerRow
+                                                    stock={stock}
+                                                    onAction={(type, qty) => handleAction(stock, type, qty)}
+                                                    onNav={() => router.push(`/order/stock/${stock.symbol}`)}
+                                                />
+                                            </TableRow>
+                                        )}
+                                    </React.Fragment>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </CardContent>
+                </Card>
+            )}
+        </main>
     );
 }
-
-    
