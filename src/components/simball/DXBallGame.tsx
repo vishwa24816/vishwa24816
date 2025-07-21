@@ -59,9 +59,11 @@ export const DXBallGame: React.FC<DXBallGameProps> = ({ brickCount, onGameEnd })
     const brickOffsetTop = 30;
     const brickOffsetLeft = (canvas.width - (brickColumnCount * (brickWidth + brickPadding))) / 2 + brickPadding / 2;
     
+    // Corrected brick generation loop
     for (let i = 0; i < brickCount; i++) {
         const c = i % brickColumnCount;
         const r = Math.floor(i / brickColumnCount);
+
         const brickX = c * (brickWidth + brickPadding) + brickOffsetLeft;
         const brickY = r * (brickHeight + brickPadding) + brickOffsetTop;
 
@@ -138,7 +140,7 @@ export const DXBallGame: React.FC<DXBallGameProps> = ({ brickCount, onGameEnd })
               b.status -= 1; // Decrease status on hit
               
               // Increase speed on every hit
-              const speedMultiplier = 1.15 + Math.random() * 0.10;
+              const speedMultiplier = 1 + (Math.random() * 0.10 + 0.15); // 15% to 25% increase
               game.ballDX *= speedMultiplier;
               game.ballDY *= speedMultiplier;
               
