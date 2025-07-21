@@ -130,8 +130,10 @@ export const DXBallGame: React.FC<DXBallGameProps> = ({ brickCount, onGameEnd })
               b.status = 0;
               game.score++;
               
-              game.ballDX *= 1.05; // Slightly slower speed increase
-              game.ballDY *= 1.05;
+              // Increase speed by a random amount between 15% and 25%
+              const speedMultiplier = 1.15 + Math.random() * 0.10;
+              game.ballDX *= speedMultiplier;
+              game.ballDY *= speedMultiplier;
               
               if (game.score === brickCount) {
                 setGameState('win');
