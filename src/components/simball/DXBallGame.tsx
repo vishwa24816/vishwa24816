@@ -36,8 +36,8 @@ export const DXBallGame: React.FC<DXBallGameProps> = ({ brickCount, onGameEnd })
     if (!ctx) return;
 
     // --- Game Setup ---
-    canvas.width = Math.min(window.innerWidth * 0.9, 800);
-    canvas.height = Math.min(window.innerHeight * 0.8, 600);
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
 
     const paddleHeight = 15;
     const paddleWidth = 120;
@@ -62,10 +62,10 @@ export const DXBallGame: React.FC<DXBallGameProps> = ({ brickCount, onGameEnd })
     
     game.bricks = [];
     game.brickTotal = 0;
-    for (let c = 0; c < brickColumnCount; c++) {
-      game.bricks[c] = [];
-      for (let r = 0; r < brickRowCount; r++) {
+    for (let r = 0; r < brickRowCount; r++) {
+      for (let c = 0; c < brickColumnCount; c++) {
         if(game.brickTotal < brickCount) {
+            if(!game.bricks[c]) game.bricks[c] = [];
             game.bricks[c][r] = { x: 0, y: 0, status: 1 };
             game.brickTotal++;
         }
@@ -115,8 +115,8 @@ export const DXBallGame: React.FC<DXBallGameProps> = ({ brickCount, onGameEnd })
       ctx.closePath();
     }
     const drawBricks = () => {
-      for(let c = 0; c < brickColumnCount; c++) {
-        for(let r = 0; r < brickRowCount; r++) {
+      for(let c = 0; c < game.bricks.length; c++) {
+        for(let r = 0; r < game.bricks[c].length; r++) {
           if(game.bricks[c][r] && game.bricks[c][r].status == 1) {
             const brickX = (c * (brickWidth + brickPadding)) + brickOffsetLeft;
             const brickY = (r * (brickHeight + brickPadding)) + brickOffsetTop;
@@ -133,8 +133,8 @@ export const DXBallGame: React.FC<DXBallGameProps> = ({ brickCount, onGameEnd })
     }
     
     const collisionDetection = () => {
-      for (let c = 0; c < brickColumnCount; c++) {
-        for (let r = 0; r < brickRowCount; r++) {
+      for (let c = 0; c < game.bricks.length; c++) {
+        for (let r = 0; r < game.bricks[c].length; r++) {
           const b = game.bricks[c][r];
           if (b && b.status === 1) {
             if (game.ballX > b.x && game.ballX < b.x + brickWidth && game.ballY > b.y && game.ballY < b.y + brickHeight) {
@@ -212,7 +212,7 @@ export const DXBallGame: React.FC<DXBallGameProps> = ({ brickCount, onGameEnd })
   }
 
   return (
-    <div className="relative bg-gray-900 border-4 border-primary rounded-lg shadow-2xl p-2 animate-scale-in">
+    <div className="relative w-full h-full bg-gray-900 flex items-center justify-center animate-scale-in">
         <canvas ref={canvasRef} />
         <Button variant="ghost" size="icon" className="absolute top-3 right-3 text-white hover:bg-white/20" onClick={onGameEnd}>
             <X className="h-6 w-6"/>

@@ -206,7 +206,7 @@ export default function SimballPage() {
             </div>
         </main>
         {activeGameBrokerage !== null && (
-            <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center animate-fade-in">
+            <div className="fixed inset-0 bg-black/80 z-50 animate-fade-in">
                 <DXBallGame brickCount={activeGameBrokerage} onGameEnd={handleCloseGame} />
             </div>
         )}
