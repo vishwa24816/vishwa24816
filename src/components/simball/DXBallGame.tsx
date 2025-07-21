@@ -61,16 +61,17 @@ export const DXBallGame: React.FC<DXBallGameProps> = ({ brickCount, onGameEnd })
     const brickOffsetLeft = (canvas.width - (brickColumnCount * (brickWidth + brickPadding))) / 2 + brickPadding / 2;
     
     game.bricks = [];
-    game.brickTotal = 0;
-    for (let r = 0; r < brickRowCount; r++) {
-      for (let c = 0; c < brickColumnCount; c++) {
-        if(game.brickTotal < brickCount) {
-            if(!game.bricks[c]) game.bricks[c] = [];
+    let bricksCreated = 0;
+    for (let c = 0; c < brickColumnCount; c++) {
+      game.bricks[c] = [];
+      for (let r = 0; r < brickRowCount; r++) {
+        if(bricksCreated < brickCount) {
             game.bricks[c][r] = { x: 0, y: 0, status: 1 };
-            game.brickTotal++;
+            bricksCreated++;
         }
       }
     }
+    game.brickTotal = bricksCreated;
 
     // --- Controls ---
     const keyDownHandler = (e: KeyboardEvent) => {
