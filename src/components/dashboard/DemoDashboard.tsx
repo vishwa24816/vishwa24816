@@ -212,13 +212,6 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
         };
     }
      if (activeMode === 'Web3') {
-        const themeMapping: { [key: string]: string } = {
-            'Trending': 'web3',
-            'AI': 'ai',
-            'DeFi': 'defi',
-            'Memes': 'memes',
-            'NFT': 'nft',
-        };
         return {
             primaryNavItems: ["Trending", "AI", "DeFi", "Memes", "NFT"],
             secondaryNavTriggerCategories: {
@@ -267,7 +260,7 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
     if (activeMode === 'Fiat') {
         const themeMapping: { [key: string]: string } = {
             'Indian Stocks': 'orange',
-            'US Stocks': 'brown',
+            'US Stocks': 'insurance', // Now brown
             'Futures': 'caramel',
             'Options': 'yellow',
         };
@@ -276,7 +269,7 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
         const themeMapping: { [key: string]: string } = {
             'Mutual Funds': 'mutual_funds',
             'Bonds': 'bonds',
-            'Insurance': 'insurance',
+            'Insurance': 'brown', // Now red
         };
         theme = themeMapping[activePrimaryItem] || 'wealth';
     } else if (activeMode === 'Crypto') {
@@ -289,7 +282,7 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
         theme = themeMapping[activePrimaryItem] || 'crypto';
     } else if (activeMode === 'Web3') {
         const themeMapping: { [key: string]: string } = {
-            'Trending': 'web3', // default Web3 is violet
+            'Trending': 'web3',
             'AI': 'ai',
             'DeFi': 'defi',
             'Memes': 'memes',
@@ -361,16 +354,15 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
             itemsForWatchlist = mockStockFuturesForWatchlist;
         }
         newsForView = getRelevantNewsForWatchlistItems(itemsForWatchlist, mockNewsArticles);
-    } else if (isTopWatchlistView || isCategoryNumberedWatchlistView) {
-        categoryWatchlistTitle = `${activePrimaryItem} - Top Watchlist`;
-        if (isTopWatchlistView) {
-            if (isIndianStockView) itemsForWatchlist = mockStocks;
-            else if (isUsStockView) itemsForWatchlist = mockUsStocks;
-            newsForView = getRelevantNewsForWatchlistItems(itemsForWatchlist, mockNewsArticles);
-        } else {
-            itemsForWatchlist = [];
-            newsForView = mockNewsArticles;
-        }
+    } else if (isTopWatchlistView) {
+        categoryWatchlistTitle = `Top Stocks`;
+        if (isIndianStockView) itemsForWatchlist = mockStocks;
+        else if (isUsStockView) itemsForWatchlist = mockUsStocks;
+        newsForView = getRelevantNewsForWatchlistItems(itemsForWatchlist, mockNewsArticles);
+    } else if (isCategoryNumberedWatchlistView) {
+        categoryWatchlistTitle = `${activePrimaryItem} - ${activeSecondaryItem}`;
+        itemsForWatchlist = [];
+        newsForView = mockNewsArticles;
     } else {
       newsForView = mockNewsArticles;
     }
@@ -432,7 +424,10 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
     if (activeMode === 'Fiat') {
         const isIndianStockView = activePrimaryItem === "Indian Stocks";
         const isUsStockView = activePrimaryItem === "US Stocks";
-        if (isIndianStockView || isUsStockView) {
+        const isTopWatchlistView = (isIndianStockView || isUsStockView) && activeSecondaryItem.startsWith("Top watchlist");
+        const isCategoryNumberedWatchlistView = (isIndianStockView || isUsStockView) && !!activeSecondaryItem.match(/^Watchlist \d+$/);
+
+        if (isTopWatchlistView) {
             const stockData = isIndianStockView ? mockStocks : mockUsStocks;
             const marketMoversTitle = isIndianStockView ? 'Indian Market Movers' : 'US Market Movers';
             return (
@@ -453,10 +448,6 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
             return <div className="space-y-8"><WatchlistSection title={categoryWatchlistTitle} displayItems={itemsForWatchlist} isPredefinedList={true} /><NewsSection articles={newsForView} /></div>
         }
         
-        const isTopWatchlistView = (isIndianStockView || isUsStockView) && activeSecondaryItem.startsWith("Top watchlist");
-        const isCategoryNumberedWatchlistView = (isIndianStockView || isUsStockView) && !!activeSecondaryItem.match(/^Watchlist \d+$/);
-        
-        if(isTopWatchlistView) return <div className="space-y-8"><WatchlistSection title={categoryWatchlistTitle} displayItems={itemsForWatchlist} isPredefinedList={true} /><NewsSection articles={newsForView} /></div>
         if(isCategoryNumberedWatchlistView) return <div className="space-y-8"><WatchlistSection title={categoryWatchlistTitle} isPredefinedList={false} localStorageKeyOverride={`simAppWatchlist_Fiat_${activePrimaryItem.replace(/\s+/g, '_')}_${activeSecondaryItem.replace(/\s+/g, '_')}`} defaultInitialItems={[]}/><NewsSection articles={newsForView} /></div>
     
     } else if (activeMode === 'Crypto') {
