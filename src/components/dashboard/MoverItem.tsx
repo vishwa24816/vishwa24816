@@ -29,10 +29,7 @@ export const MoverItem: React.FC<MoverItemProps> = ({ stock }) => {
   const isPositive = stock.changePercent >= 0;
   const isUsStock = stock.exchange === 'NASDAQ' || stock.exchange === 'NYSE';
   const currencySymbol = isUsStock ? '$' : '₹';
-  const isDerivative = stock.exchange === 'NFO' || stock.exchange === 'Crypto Options' || stock.exchange === 'Crypto Futures';
-  const activityMetric = stock.openInterest ? 'OI' : 'Vol';
-  const activityValue = stock.openInterest || stock.volume;
-
+  
   return (
     <div
       onClick={handleStockClick}
@@ -41,9 +38,6 @@ export const MoverItem: React.FC<MoverItemProps> = ({ stock }) => {
       <div className="flex-1 min-w-0">
         <p className="font-semibold text-sm truncate">{stock.symbol}</p>
         <p className="text-xs text-muted-foreground truncate">{stock.name}</p>
-        {isDerivative && activityValue && (
-            <p className="text-xs text-muted-foreground">{activityMetric}: {activityValue.toLocaleString()}</p>
-        )}
       </div>
       <div className="text-right shrink-0 pl-2">
         <p className="font-medium text-sm">{currencySymbol}{stock.price.toFixed(2)}</p>
