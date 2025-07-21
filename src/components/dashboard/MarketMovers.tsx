@@ -3,7 +3,6 @@
 
 import React, { useMemo } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Flame, Activity, TrendingUp, TrendingDown, ArrowUp, ArrowDown } from 'lucide-react';
 import type { Stock } from '@/types';
@@ -55,50 +54,42 @@ export function MarketMovers({ stocks, displayMode }: MarketMoversProps) {
   }, [stocks]);
   
   const renderTrending = () => (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-xl font-semibold font-headline text-primary flex items-center">
-          <Flame className="h-6 w-6 mr-2" /> Trending Stocks
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="p-2 pt-0">
-          <div className="space-y-1">
-              {mostTraded.map(stock => <MoverItem key={stock.id} stock={stock} onClick={() => handleStockClick(stock.symbol)} />)}
-          </div>
-      </CardContent>
-    </Card>
+    <div>
+      <h2 className="text-xl font-semibold font-headline text-primary flex items-center mb-2">
+        <Flame className="h-6 w-6 mr-2" /> Trending Stocks
+      </h2>
+      <div className="space-y-1">
+        {mostTraded.map(stock => <MoverItem key={stock.id} stock={stock} onClick={() => handleStockClick(stock.symbol)} />)}
+      </div>
+    </div>
   );
   
   const renderGainersLosers = () => (
-     <Card>
-        <CardHeader>
-          <CardTitle className="text-xl font-semibold font-headline text-primary flex items-center">
+     <div>
+        <h2 className="text-xl font-semibold font-headline text-primary flex items-center mb-2">
             <Activity className="h-6 w-6 mr-2" /> Top Gainers & Losers
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="p-0">
-          <Tabs defaultValue="gainers" className="w-full">
+        </h2>
+        <Tabs defaultValue="gainers" className="w-full">
             <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="gainers" className="flex items-center gap-1">
+            <TabsTrigger value="gainers" className="flex items-center gap-1">
                 <ArrowUp className="h-4 w-4 text-green-500" /> Gainers
-              </TabsTrigger>
-              <TabsTrigger value="losers" className="flex items-center gap-1">
+            </TabsTrigger>
+            <TabsTrigger value="losers" className="flex items-center gap-1">
                 <ArrowDown className="h-4 w-4 text-red-500" /> Losers
-              </TabsTrigger>
+            </TabsTrigger>
             </TabsList>
             <TabsContent value="gainers" className="p-2">
-              <div className="space-y-1">
+            <div className="space-y-1">
                 {topGainers.map(stock => <MoverItem key={stock.id} stock={stock} onClick={() => handleStockClick(stock.symbol)} />)}
-              </div>
+            </div>
             </TabsContent>
             <TabsContent value="losers" className="p-2">
-               <div className="space-y-1">
+            <div className="space-y-1">
                 {topLosers.map(stock => <MoverItem key={stock.id} stock={stock} onClick={() => handleStockClick(stock.symbol)} />)}
-              </div>
+            </div>
             </TabsContent>
-          </Tabs>
-        </CardContent>
-      </Card>
+        </Tabs>
+      </div>
   );
 
   switch (displayMode) {
