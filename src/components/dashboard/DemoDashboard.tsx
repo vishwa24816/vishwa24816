@@ -260,7 +260,7 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
     if (activeMode === 'Fiat') {
         const themeMapping: { [key: string]: string } = {
             'Indian Stocks': 'orange',
-            'US Stocks': 'brown',
+            'US Stocks': 'brown', // This is now red
             'Futures': 'caramel',
             'Options': 'yellow',
         };
@@ -269,7 +269,7 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
         const themeMapping: { [key: string]: string } = {
             'Mutual Funds': 'mutual_funds',
             'Bonds': 'bonds',
-            'Insurance': 'insurance',
+            'Insurance': 'insurance', // This is now caramel
         };
         theme = themeMapping[activePrimaryItem] || 'wealth';
     } else if (activeMode === 'Crypto') {
@@ -347,20 +347,12 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
     const isCategoryNumberedWatchlistView = (isIndianStockView || isUsStockView) && !!activeSecondaryItem.match(/^Watchlist \d+$/);
 
     if (activePrimaryItem === 'Futures') {
-        categoryWatchlistTitle = `${activeSecondaryItem} Watchlist`;
-        if (activeSecondaryItem === 'Index Futures') {
-            itemsForWatchlist = mockIndexFuturesForWatchlist;
-        } else if (activeSecondaryItem === 'Stock Futures') {
-            itemsForWatchlist = mockStockFuturesForWatchlist;
-        }
+        itemsForWatchlist = activeSecondaryItem === 'Index Futures' ? mockIndexFuturesForWatchlist : mockStockFuturesForWatchlist;
         newsForView = getRelevantNewsForWatchlistItems(itemsForWatchlist, mockNewsArticles);
     } else if (isTopWatchlistView) {
-        categoryWatchlistTitle = `Top Stocks`;
-        if (isIndianStockView) itemsForWatchlist = mockStocks;
-        else if (isUsStockView) itemsForWatchlist = mockUsStocks;
+        itemsForWatchlist = isIndianStockView ? mockStocks : mockUsStocks;
         newsForView = getRelevantNewsForWatchlistItems(itemsForWatchlist, mockNewsArticles);
     } else if (isCategoryNumberedWatchlistView) {
-        categoryWatchlistTitle = `${activePrimaryItem} - ${activeSecondaryItem}`;
         itemsForWatchlist = [];
         newsForView = mockNewsArticles;
     } else {
@@ -451,15 +443,23 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
                   <MarketMovers stocks={mockStockFuturesForWatchlist} displayMode="trending" />
                   <WatchlistSection title="Top Stock Futures" displayItems={itemsForWatchlist} isPredefinedList={true} />
                   <MarketMovers stocks={mockStockFuturesForWatchlist} displayMode="gainers-losers" />
-                  <NewsSection articles={newsForView} />
+                  <NewsSection articles={getRelevantNewsForWatchlistItems(mockStockFuturesForWatchlist, mockNewsArticles)} />
                 </div>
               );
             }
-            // Default for Index Futures
-            return <div className="space-y-8"><WatchlistSection title={categoryWatchlistTitle} displayItems={itemsForWatchlist} isPredefinedList={true} /><NewsSection articles={newsForView} /></div>
+             if (activeSecondaryItem === "Index Futures") {
+                return (
+                    <div className="space-y-8">
+                        <MarketMovers stocks={mockIndexFuturesForWatchlist} displayMode="trending" />
+                        <WatchlistSection title="Top Indices" displayItems={itemsForWatchlist} isPredefinedList={true} />
+                        <MarketMovers stocks={mockIndexFuturesForWatchlist} displayMode="gainers-losers" />
+                        <NewsSection articles={getRelevantNewsForWatchlistItems(mockIndexFuturesForWatchlist, mockNewsArticles)} />
+                    </div>
+                );
+            }
         }
         
-        if(isCategoryNumberedWatchlistView) return <div className="space-y-8"><WatchlistSection title={categoryWatchlistTitle} isPredefinedList={false} localStorageKeyOverride={`simAppWatchlist_Fiat_${activePrimaryItem.replace(/\s+/g, '_')}_${activeSecondaryItem.replace(/\s+/g, '_')}`} defaultInitialItems={[]}/><NewsSection articles={newsForView} /></div>
+        if(isCategoryNumberedWatchlistView) return <div className="space-y-8"><WatchlistSection title={`${activePrimaryItem} - ${activeSecondaryItem}`} isPredefinedList={false} localStorageKeyOverride={`simAppWatchlist_Fiat_${activePrimaryItem.replace(/\s+/g, '_')}_${activeSecondaryItem.replace(/\s+/g, '_')}`} defaultInitialItems={[]}/><NewsSection articles={newsForView} /></div>
     
     } else if (activeMode === 'Crypto') {
         if (activePrimaryItem === "Options") {
