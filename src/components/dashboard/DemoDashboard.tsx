@@ -7,7 +7,7 @@ import { WatchlistSection } from '@/components/dashboard/WatchlistSection';
 import { CryptoHoldingsSection } from '@/components/dashboard/CryptoHoldingsSection';
 import { FiatHoldingsSection } from '@/components/dashboard/FiatHoldingsSection';
 import { CryptoFuturesSection } from '@/components/dashboard/CryptoFuturesSection';
-import { PackageOpen } from 'lucide-react';
+import { PackageOpen, ShieldCheck } from 'lucide-react';
 import { IntradayPositionsSection } from '@/components/dashboard/IntradayPositionsSection';
 import { FoPositionsSection } from '@/components/dashboard/FoPositionsSection';
 import { FoBasketSection } from '@/components/dashboard/FoBasketSection';
@@ -54,6 +54,7 @@ import { mockCryptoIndices } from '@/lib/mockData/cryptoIndices';
 import { mockUsStocks } from '@/lib/mockData/usStocks';
 import { mockWeb3NFTs } from '@/lib/mockData/web3NFTs';
 import type { WalletMode } from '@/components/dashboard/CryptoHoldingsSection';
+import Image from 'next/image';
 
 // Helper functions
 function getRelevantNewsForHoldings(holdings: PortfolioHolding[], allNews: NewsArticle[]): NewsArticle[] {
@@ -433,7 +434,7 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
             return (
                 <div className="space-y-8">
                     <MarketMovers stocks={stockData} displayMode="trending" />
-                    <WatchlistSection title={categoryWatchlistTitle} displayItems={itemsForWatchlist} isPredefinedList={true} />
+                    <WatchlistSection title={"Top Stocks"} displayItems={itemsForWatchlist} isPredefinedList={true} />
                     <MarketMovers stocks={stockData} displayMode="gainers-losers" />
                     <NewsSection articles={newsForView} />
                 </div>
@@ -443,14 +444,13 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
             if (activeSecondaryItem === 'Dashboard') {
                 return (
                     <div className="space-y-8">
-                        <MarketMovers stocks={mockOptionsForWatchlist} displayMode="trending" optionsData={mockOptionsForWatchlist}/>
-                        <MarketMovers stocks={mockOptionsForWatchlist} displayMode="gainers-losers" />
+                        <MarketMovers stocks={mockOptionsForWatchlist} displayMode="full" optionsData={mockOptionsForWatchlist}/>
                         <VolumeOiSection optionsData={mockOptionsForWatchlist} />
                         <NewsSection articles={newsForView} />
                     </div>
                 );
             }
-            if (activeSecondaryItem === "Custom") return ( <div className="space-y-8"><FiatOptionChain onAddLeg={(leg) => setStrategyLegs(prev => [...prev, leg])} />{strategyLegs.length > 0 && <StrategyBuilder legs={strategyLegs} setLegs={setLegs} />}<NewsSection articles={newsForView} /></div>);
+            if (activeSecondaryItem === "Custom") return ( <div className="space-y-8"><FiatOptionChain onAddLeg={(leg) => setStrategyLegs(prev => [...prev, leg])} />{strategyLegs.length > 0 && <StrategyBuilder legs={strategyLegs} setLegs={setStrategyLegs} />}<NewsSection articles={newsForView} /></div>);
             if (activeSecondaryItem === "Readymade") return ( <div className="space-y-8"><ReadymadeStrategiesSection onStrategySelect={(legs) => setStrategyLegs(legs)} />{strategyLegs.length > 0 && <StrategyBuilder legs={strategyLegs} setLegs={setStrategyLegs} />}<NewsSection articles={newsForView} /></div> );
             return null
         }
@@ -459,7 +459,7 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
                 return (
                     <div className="space-y-8">
                         <MarketMovers stocks={mockIndexFuturesForWatchlist} displayMode="trending" />
-                        <WatchlistSection title={categoryWatchlistTitle} displayItems={itemsForWatchlist} isPredefinedList={true} />
+                        <WatchlistSection title={"Top Indices"} displayItems={itemsForWatchlist} isPredefinedList={true} />
                         <MarketMovers stocks={mockIndexFuturesForWatchlist} displayMode="gainers-losers" />
                         <NewsSection articles={getRelevantNewsForWatchlistItems(mockIndexFuturesForWatchlist, mockNewsArticles)} />
                     </div>
@@ -469,7 +469,7 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
               return (
                 <div className="space-y-8">
                   <MarketMovers stocks={mockStockFuturesForWatchlist} displayMode="trending" />
-                  <WatchlistSection title={categoryWatchlistTitle} displayItems={itemsForWatchlist} isPredefinedList={true} />
+                  <WatchlistSection title={"Top Stock Futures"} displayItems={itemsForWatchlist} isPredefinedList={true} />
                   <MarketMovers stocks={mockStockFuturesForWatchlist} displayMode="gainers-losers" />
                   <NewsSection articles={getRelevantNewsForWatchlistItems(mockStockFuturesForWatchlist, mockNewsArticles)} />
                 </div>
@@ -482,7 +482,7 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
     } else if (activeMode === 'Crypto') {
         if (activePrimaryItem === "Options") {
             if (activeSecondaryItem === 'Dashboard') return <div className="space-y-8"><MarketMovers stocks={mockCryptoOptionsForWatchlist} displayMode="full" /><NewsSection articles={newsForView} /></div>;
-            if (activeSecondaryItem === "Custom") return ( <div className="space-y-8"><CryptoOptionChain onAddLeg={(leg) => setStrategyLegs(prev => [...prev, leg])} />{strategyLegs.length > 0 && <StrategyBuilder legs={strategyLegs} setLegs={setLegs} />}<NewsSection articles={newsForView} /></div>);
+            if (activeSecondaryItem === "Custom") return ( <div className="space-y-8"><CryptoOptionChain onAddLeg={(leg) => setStrategyLegs(prev => [...prev, leg])} />{strategyLegs.length > 0 && <StrategyBuilder legs={strategyLegs} setLegs={setStrategyLegs} />}<NewsSection articles={newsForView} /></div>);
             if (activeSecondaryItem === "Readymade") return ( <div className="space-y-8"><ReadymadeStrategiesSection onStrategySelect={(legs) => setStrategyLegs(legs)} />{strategyLegs.length > 0 && <StrategyBuilder legs={strategyLegs} setLegs={setStrategyLegs} />}<NewsSection articles={newsForView} /></div> );
             return null
         }
@@ -533,17 +533,14 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
             if (isNumberedWatchlist) return <div className="space-y-8"><WatchlistSection title={`Bonds - ${activeSecondaryItem}`} isPredefinedList={false} localStorageKeyOverride={`simAppWatchlist_Wealth_Bonds_${activeSecondaryItem.replace(/\s+/g, '_')}`} defaultInitialItems={[]}/><NewsSection articles={newsForView} /></div>;
         }
         if (activePrimaryItem === "Insurance") {
-            let insuranceItems: Stock[] = [];
-            let insuranceTitle = "Insurance Products";
-            switch(activeSecondaryItem) {
-                case "Life Insurance": insuranceItems = mockLifeInsurance; insuranceTitle="Life Insurance Policies"; break;
-                case "Health Insurance": insuranceItems = mockHealthInsurance; insuranceTitle="Health Insurance Plans"; break;
-                case "Car Insurance": insuranceItems = mockCarInsurance; insuranceTitle="Car Insurance"; break;
-                case "Bike Insurance": insuranceItems = mockBikeInsurance; insuranceTitle="Bike Insurance"; break;
-                case "Other Insurance": insuranceItems = mockOtherInsurance; insuranceTitle="Other Insurance Products"; break;
-            }
-            newsForView = getRelevantNewsForWatchlistItems(insuranceItems, mockNewsArticles);
-            return <div className="space-y-8"><WatchlistSection title={insuranceTitle} displayItems={insuranceItems} isPredefinedList={true} /><NewsSection articles={newsForView} /></div>
+            return (
+                <div className="flex flex-col items-center justify-center text-center py-12 text-muted-foreground">
+                    <Image src="https://placehold.co/200x200.png" alt="Insurance Coming Soon" width={200} height={200} className="mb-8 opacity-75 rounded-lg" data-ai-hint="shield protection" />
+                    <ShieldCheck className="h-16 w-16 mb-4 text-primary" />
+                    <h2 className="text-2xl font-semibold mb-2 text-foreground">Insurance Marketplace Coming Soon!</h2>
+                    <p className="max-w-md">We are working hard to bring you a seamless way to compare and purchase insurance policies directly within SIM.</p>
+                </div>
+            );
         }
     }
     
