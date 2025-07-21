@@ -260,7 +260,7 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
     if (activeMode === 'Fiat') {
         const themeMapping: { [key: string]: string } = {
             'Indian Stocks': 'orange',
-            'US Stocks': 'brown', // now red
+            'US Stocks': 'brown',
             'Futures': 'caramel',
             'Options': 'yellow',
         };
@@ -269,7 +269,7 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
         const themeMapping: { [key: string]: string } = {
             'Mutual Funds': 'mutual_funds',
             'Bonds': 'bonds',
-            'Insurance': 'insurance', // Now caramel
+            'Insurance': 'insurance',
         };
         theme = themeMapping[activePrimaryItem] || 'wealth';
     } else if (activeMode === 'Crypto') {
@@ -446,6 +446,17 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
             return null
         }
         if (activePrimaryItem === "Futures") {
+            if (activeSecondaryItem === "Stock Futures") {
+              return (
+                <div className="space-y-8">
+                  <MarketMovers stocks={mockStockFuturesForWatchlist} displayMode="trending" />
+                  <WatchlistSection title="All Stock Futures" displayItems={itemsForWatchlist} isPredefinedList={true} />
+                  <MarketMovers stocks={mockStockFuturesForWatchlist} displayMode="gainers-losers" />
+                  <NewsSection articles={newsForView} />
+                </div>
+              );
+            }
+            // Default for Index Futures
             return <div className="space-y-8"><WatchlistSection title={categoryWatchlistTitle} displayItems={itemsForWatchlist} isPredefinedList={true} /><NewsSection articles={newsForView} /></div>
         }
         
