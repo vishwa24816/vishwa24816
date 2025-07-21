@@ -260,7 +260,7 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
     if (activeMode === 'Fiat') {
         const themeMapping: { [key: string]: string } = {
             'Indian Stocks': 'orange',
-            'US Stocks': 'brown',
+            'US Stocks': 'insurance', // Using brown (now on insurance)
             'Futures': 'caramel',
             'Options': 'yellow',
         };
@@ -269,7 +269,7 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
         const themeMapping: { [key: string]: string } = {
             'Mutual Funds': 'mutual_funds',
             'Bonds': 'bonds',
-            'Insurance': 'insurance',
+            'Insurance': 'brown', // Using red (now on brown)
         };
         theme = themeMapping[activePrimaryItem] || 'wealth';
     } else if (activeMode === 'Crypto') {
@@ -466,8 +466,8 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
             const isTopWatchlist = activeSecondaryItem.startsWith("Top watchlist");
             const isNumberedWatchlist = !!activeSecondaryItem.match(/^Watchlist \d+$/);
             if (isTopWatchlist) {
-                 const categories = ['Index Fund', 'Large Cap', 'Mid Cap', 'Small Cap', 'Flexi Cap', 'Multi Cap', 'ELSS', 'Sectoral', 'Thematic', 'Debt'];
-                 const groupedFunds = categories.map(category => ({
+                const categories = ['Index Fund', 'Large Cap', 'Mid Cap', 'Small Cap', 'Flexi Cap', 'Multi Cap', 'ELSS', 'Sectoral', 'Thematic', 'Debt'];
+                const groupedFunds = categories.map(category => ({
                     title: `Top ${category} Funds`,
                     items: mockMutualFunds.filter(fund => fund.sector === category)
                 })).filter(group => group.items.length > 0);
