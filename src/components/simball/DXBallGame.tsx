@@ -53,7 +53,7 @@ export const DXBallGame: React.FC<DXBallGameProps> = ({ brickCount, onGameEnd })
     // --- Brick Generation ---
     game.bricks = [];
     const brickColumnCount = 12;
-    const brickWidth = 60; // Reduced from 75
+    const brickWidth = 60;
     const brickHeight = 20;
     const brickPadding = 10;
     const brickOffsetTop = 30;
@@ -137,12 +137,13 @@ export const DXBallGame: React.FC<DXBallGameProps> = ({ brickCount, onGameEnd })
               game.ballDY = -game.ballDY;
               b.status -= 1; // Decrease status on hit
               
+              // Increase speed on every hit
+              const speedMultiplier = 1.15 + Math.random() * 0.10;
+              game.ballDX *= speedMultiplier;
+              game.ballDY *= speedMultiplier;
+              
               if (b.status === 0) {
                   game.score++;
-                  // Increase speed by a random amount between 15% and 25%
-                  const speedMultiplier = 1.15 + Math.random() * 0.10;
-                  game.ballDX *= speedMultiplier;
-                  game.ballDY *= speedMultiplier;
               }
               
               if (game.score === brickCount) {
@@ -211,7 +212,7 @@ export const DXBallGame: React.FC<DXBallGameProps> = ({ brickCount, onGameEnd })
   }
 
   return (
-    <div className="relative w-full h-full bg-gray-900 flex items-center justify-center animate-scale-in">
+    <div className="fixed inset-0 bg-gray-900 flex items-center justify-center animate-scale-in">
         <canvas ref={canvasRef} />
         <Button variant="ghost" size="icon" className="absolute top-3 right-3 text-white hover:bg-white/20" onClick={onGameEnd}>
             <X className="h-6 w-6"/>
