@@ -18,3 +18,8 @@ export * from "./ReadymadeStrategiesSection";
 export * from "./MarketOverview";
 export * from "./MarketMovers";
 export * from "./WealthHoldingsSection";
+export * from "./WatchlistItem";
+export * from "./WatchlistAddForm";
+export * from "./MoverItem";
+export * from "./TrendingSection";
+export * from "./GainersLosersSection";

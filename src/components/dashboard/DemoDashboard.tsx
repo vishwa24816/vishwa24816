@@ -81,7 +81,7 @@ function getRelevantNewsForHoldings(holdings: PortfolioHolding[], allNews: NewsA
 
   allNews.forEach(news => {
     const headlineLower = news.headline.toLowerCase();
-    if (Array.from(holdingKeywords).some(keyword => keyword && headlineLower.includes(keyword))) {
+    if (Array.from(holdingKeywords).some(keyword => keyword && headlineLower.includes(keyword as string))) {
       relevantNews.push(news);
     }
   });
@@ -347,7 +347,13 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
     const isCategoryNumberedWatchlistView = (isIndianStockView || isUsStockView) && !!activeSecondaryItem.match(/^Watchlist \d+$/);
 
     if (activePrimaryItem === 'Futures') {
-        itemsForWatchlist = activeSecondaryItem === 'Index Futures' ? mockIndexFuturesForWatchlist : mockStockFuturesForWatchlist;
+        if(activeSecondaryItem === 'Index Futures') {
+            itemsForWatchlist = mockIndexFuturesForWatchlist;
+            categoryWatchlistTitle = 'Top Indices';
+        } else if (activeSecondaryItem === 'Stock Futures') {
+            itemsForWatchlist = mockStockFuturesForWatchlist;
+            categoryWatchlistTitle = 'Top Stock Futures';
+        }
         newsForView = getRelevantNewsForWatchlistItems(itemsForWatchlist, mockNewsArticles);
     } else if (isTopWatchlistView) {
         itemsForWatchlist = isIndianStockView ? mockStocks : mockUsStocks;
@@ -435,7 +441,7 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
                 return (
                     <div className="space-y-8">
                         <MarketMovers stocks={mockOptionsForWatchlist} displayMode="trending" />
-                        <MarketMovers stocks={mockOptionsForWatchlist} displayMode="full" />
+                        <MarketMovers stocks={mockOptionsForWatchlist} displayMode="gainers-losers" />
                         <NewsSection articles={newsForView} />
                     </div>
                 );
@@ -445,6 +451,16 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
             return null
         }
         if (activePrimaryItem === "Futures") {
+            if (activeSecondaryItem === "Index Futures") {
+                return (
+                    <div className="space-y-8">
+                        <MarketMovers stocks={mockIndexFuturesForWatchlist} displayMode="trending" />
+                        <WatchlistSection title="Top Indices" displayItems={itemsForWatchlist} isPredefinedList={true} />
+                        <MarketMovers stocks={mockIndexFuturesForWatchlist} displayMode="gainers-losers" />
+                        <NewsSection articles={getRelevantNewsForWatchlistItems(mockIndexFuturesForWatchlist, mockNewsArticles)} />
+                    </div>
+                );
+            }
             if (activeSecondaryItem === "Stock Futures") {
               return (
                 <div className="space-y-8">
@@ -454,16 +470,6 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
                   <NewsSection articles={getRelevantNewsForWatchlistItems(mockStockFuturesForWatchlist, mockNewsArticles)} />
                 </div>
               );
-            }
-             if (activeSecondaryItem === "Index Futures") {
-                return (
-                    <div className="space-y-8">
-                        <MarketMovers stocks={mockIndexFuturesForWatchlist} displayMode="trending" />
-                        <WatchlistSection title="Top Indices" displayItems={itemsForWatchlist} isPredefinedList={true} />
-                        <MarketMovers stocks={mockIndexFuturesForWatchlist} displayMode="gainers-losers" />
-                        <NewsSection articles={getRelevantNewsForWatchlistItems(mockIndexFuturesForWatchlist, mockNewsArticles)} />
-                    </div>
-                );
             }
         }
         
