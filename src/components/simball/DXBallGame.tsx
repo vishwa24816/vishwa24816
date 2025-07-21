@@ -50,21 +50,23 @@ export const DXBallGame: React.FC<DXBallGameProps> = ({ brickCount, onGameEnd })
     game.ballDX = 8; // Reset ball speed
     game.ballDY = -8;
 
-    // --- Brick Generation (Refactored Logic) ---
+    // --- Brick Generation ---
     game.bricks = [];
-    const brickColumnCount = 10;
+    const brickColumnCount = 12; // Increased from 10 to 12
     const brickWidth = 75;
     const brickHeight = 20;
     const brickPadding = 10;
     const brickOffsetTop = 30;
     const brickOffsetLeft = (canvas.width - (brickColumnCount * (brickWidth + brickPadding))) / 2 + brickPadding / 2;
-
+    
     for (let i = 0; i < brickCount; i++) {
         const c = i % brickColumnCount;
         const r = Math.floor(i / brickColumnCount);
         const brickX = c * (brickWidth + brickPadding) + brickOffsetLeft;
         const brickY = r * (brickHeight + brickPadding) + brickOffsetTop;
-        game.bricks.push({ x: brickX, y: brickY, status: 1 });
+
+        const isHardBrick = r % 2 === 0; // Even rows (0, 2, 4...) are hard
+        game.bricks.push({ x: brickX, y: brickY, status: isHardBrick ? 2 : 1 });
     }
     
     // --- Controls ---
@@ -111,11 +113,17 @@ export const DXBallGame: React.FC<DXBallGameProps> = ({ brickCount, onGameEnd })
     }
     const drawBricks = () => {
         game.bricks.forEach((brick, index) => {
-            if (brick.status === 1) {
+            if (brick.status > 0) {
                 const row = Math.floor(index / brickColumnCount);
                 ctx.beginPath();
                 ctx.rect(brick.x, brick.y, brickWidth, brickHeight);
-                ctx.fillStyle = `hsl(${200 + row * 20}, 80%, 60%)`;
+                if (brick.status === 2) {
+                    // Hard brick color
+                    ctx.fillStyle = `hsl(${240 + row * 20}, 80%, 60%)`;
+                } else {
+                    // Regular or damaged brick color
+                    ctx.fillStyle = `hsl(${200 + row * 20}, 80%, 60%)`;
+                }
                 ctx.fill();
                 ctx.closePath();
             }
@@ -124,16 +132,18 @@ export const DXBallGame: React.FC<DXBallGameProps> = ({ brickCount, onGameEnd })
     
     const collisionDetection = () => {
       game.bricks.forEach(b => {
-          if (b.status === 1) {
+          if (b.status > 0) {
             if (game.ballX > b.x && game.ballX < b.x + brickWidth && game.ballY > b.y && game.ballY < b.y + brickHeight) {
               game.ballDY = -game.ballDY;
-              b.status = 0;
-              game.score++;
+              b.status -= 1; // Decrease status on hit
               
-              // Increase speed by a random amount between 15% and 25%
-              const speedMultiplier = 1.15 + Math.random() * 0.10;
-              game.ballDX *= speedMultiplier;
-              game.ballDY *= speedMultiplier;
+              if (b.status === 0) {
+                  game.score++;
+                  // Increase speed by a random amount between 15% and 25%
+                  const speedMultiplier = 1.15 + Math.random() * 0.10;
+                  game.ballDX *= speedMultiplier;
+                  game.ballDY *= speedMultiplier;
+              }
               
               if (game.score === brickCount) {
                 setGameState('win');
