@@ -23,9 +23,8 @@ export const DXBallGame: React.FC<DXBallGameProps> = ({ brickCount, onGameEnd })
     ballDY: -8,
     rightPressed: false,
     leftPressed: false,
-    bricks: [] as { x: number; y: number; status: number }[][],
+    bricks: [] as { x: number; y: number; status: number }[],
     score: 0,
-    brickTotal: 0,
     animationFrameId: 0,
   });
 
@@ -51,28 +50,23 @@ export const DXBallGame: React.FC<DXBallGameProps> = ({ brickCount, onGameEnd })
     game.ballDX = 8; // Reset ball speed
     game.ballDY = -8;
 
-    // Bricks
+    // --- Brick Generation (Refactored Logic) ---
+    game.bricks = [];
     const brickColumnCount = 10;
-    const brickRowCount = Math.ceil(brickCount / brickColumnCount);
     const brickWidth = 75;
     const brickHeight = 20;
     const brickPadding = 10;
     const brickOffsetTop = 30;
     const brickOffsetLeft = (canvas.width - (brickColumnCount * (brickWidth + brickPadding))) / 2 + brickPadding / 2;
-    
-    game.bricks = [];
-    let bricksCreated = 0;
-    for (let c = 0; c < brickColumnCount; c++) {
-      game.bricks[c] = [];
-      for (let r = 0; r < brickRowCount; r++) {
-        if(bricksCreated < brickCount) {
-            game.bricks[c][r] = { x: 0, y: 0, status: 1 };
-            bricksCreated++;
-        }
-      }
-    }
-    game.brickTotal = bricksCreated;
 
+    for (let i = 0; i < brickCount; i++) {
+        const c = i % brickColumnCount;
+        const r = Math.floor(i / brickColumnCount);
+        const brickX = c * (brickWidth + brickPadding) + brickOffsetLeft;
+        const brickY = r * (brickHeight + brickPadding) + brickOffsetTop;
+        game.bricks.push({ x: brickX, y: brickY, status: 1 });
+    }
+    
     // --- Controls ---
     const keyDownHandler = (e: KeyboardEvent) => {
       if(e.key == "Right" || e.key == "ArrowRight") game.rightPressed = true;
@@ -95,10 +89,10 @@ export const DXBallGame: React.FC<DXBallGameProps> = ({ brickCount, onGameEnd })
         }
     };
     
-    document.addEventListener("keydown", keyDownHandler);
-    document.addEventListener("keyup", keyUpHandler);
-    document.addEventListener("mousemove", mouseMoveHandler);
-    canvas.addEventListener("touchmove", touchMoveHandler);
+    document.addEventListener("keydown", keyDownHandler, false);
+    document.addEventListener("keyup", keyUpHandler, false);
+    document.addEventListener("mousemove", mouseMoveHandler, false);
+    canvas.addEventListener("touchmove", touchMoveHandler, false);
 
     // --- Drawing Functions ---
     const drawBall = () => {
@@ -116,43 +110,35 @@ export const DXBallGame: React.FC<DXBallGameProps> = ({ brickCount, onGameEnd })
       ctx.closePath();
     }
     const drawBricks = () => {
-      for(let c = 0; c < game.bricks.length; c++) {
-        for(let r = 0; r < game.bricks[c].length; r++) {
-          if(game.bricks[c][r] && game.bricks[c][r].status == 1) {
-            const brickX = (c * (brickWidth + brickPadding)) + brickOffsetLeft;
-            const brickY = (r * (brickHeight + brickPadding)) + brickOffsetTop;
-            game.bricks[c][r].x = brickX;
-            game.bricks[c][r].y = brickY;
-            ctx.beginPath();
-            ctx.rect(brickX, brickY, brickWidth, brickHeight);
-            ctx.fillStyle = `hsl(${200 + r * 20}, 80%, 60%)`;
-            ctx.fill();
-            ctx.closePath();
-          }
-        }
-      }
+        game.bricks.forEach((brick, index) => {
+            if (brick.status === 1) {
+                const row = Math.floor(index / brickColumnCount);
+                ctx.beginPath();
+                ctx.rect(brick.x, brick.y, brickWidth, brickHeight);
+                ctx.fillStyle = `hsl(${200 + row * 20}, 80%, 60%)`;
+                ctx.fill();
+                ctx.closePath();
+            }
+        });
     }
     
     const collisionDetection = () => {
-      for (let c = 0; c < game.bricks.length; c++) {
-        for (let r = 0; r < game.bricks[c].length; r++) {
-          const b = game.bricks[c][r];
-          if (b && b.status === 1) {
+      game.bricks.forEach(b => {
+          if (b.status === 1) {
             if (game.ballX > b.x && game.ballX < b.x + brickWidth && game.ballY > b.y && game.ballY < b.y + brickHeight) {
               game.ballDY = -game.ballDY;
               b.status = 0;
               game.score++;
               
-              game.ballDX *= 1.15;
-              game.ballDY *= 1.15;
+              game.ballDX *= 1.05; // Slightly slower speed increase
+              game.ballDY *= 1.05;
               
-              if (game.score === game.brickTotal) {
+              if (game.score === brickCount) {
                 setGameState('win');
               }
             }
           }
-        }
-      }
+        });
     }
 
     // --- Game Loop ---
@@ -199,7 +185,7 @@ export const DXBallGame: React.FC<DXBallGameProps> = ({ brickCount, onGameEnd })
   }, [brickCount]);
 
   useEffect(() => {
-    if (gameState !== 'playing' && gameInstance.current.animationFrameId !== 0) {
+    if (gameState !== 'playing' && gameInstance.current.animationFrameId > 0) {
       cancelAnimationFrame(gameInstance.current.animationFrameId);
       gameInstance.current.animationFrameId = 0;
     }

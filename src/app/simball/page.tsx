@@ -150,7 +150,7 @@ export default function SimballPage() {
                         time="3 days ago"
                         gradientFrom="from-green-500"
                         gradientTo="to-emerald-600"
-                        brokerage={20.00}
+                        brokerage={20}
                         isPlayed={false}
                         onClick={() => handlePlayGame(20)}
                     />
@@ -161,7 +161,7 @@ export default function SimballPage() {
                         time="2 days ago"
                         gradientFrom="from-red-500"
                         gradientTo="to-rose-600"
-                        brokerage={40.00}
+                        brokerage={40}
                         isPlayed={false}
                         onClick={() => handlePlayGame(40)}
                     />
@@ -172,7 +172,7 @@ export default function SimballPage() {
                         time="1 day ago"
                         gradientFrom="from-blue-500"
                         gradientTo="to-cyan-600"
-                        brokerage={30.00}
+                        brokerage={30}
                         isPlayed={false}
                         onClick={() => handlePlayGame(30)}
                     />
@@ -189,7 +189,7 @@ export default function SimballPage() {
                         time="8 hours ago"
                         gradientFrom="from-gray-500"
                         gradientTo="to-gray-600"
-                        brokerage={50.00}
+                        brokerage={50}
                         isPlayed={true}
                     />
                     <FireCard 
@@ -199,14 +199,14 @@ export default function SimballPage() {
                         time="2 hours ago"
                         gradientFrom="from-gray-500"
                         gradientTo="to-gray-600"
-                        brokerage={80.00}
+                        brokerage={80}
                         isPlayed={true}
                     />
                 </div>
             </div>
         </main>
         {activeGameBrokerage !== null && (
-            <div className="fixed inset-0 bg-black/80 z-50 animate-fade-in">
+            <div className="fixed inset-0 bg-black/80 z-50 animate-fade-in flex items-center justify-center">
                 <DXBallGame brickCount={activeGameBrokerage} onGameEnd={handleCloseGame} />
             </div>
         )}
