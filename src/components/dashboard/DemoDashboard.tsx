@@ -348,7 +348,7 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
     const isUsStockView = activePrimaryItem === "US Stocks";
     const isTopWatchlistView = (isIndianStockView || isUsStockView) && activeSecondaryItem.startsWith("Top watchlist");
     const isCategoryNumberedWatchlistView = (isIndianStockView || isUsStockView) && !!activeSecondaryItem.match(/^Watchlist \d+$/);
-
+    
     if (activePrimaryItem === 'Futures') {
         if(activeSecondaryItem === 'Index Futures') {
             itemsForWatchlist = mockIndexFuturesForWatchlist;
@@ -480,6 +480,22 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
         if(isCategoryNumberedWatchlistView) return <div className="space-y-8"><WatchlistSection title={`${activePrimaryItem} - ${activeSecondaryItem}`} isPredefinedList={false} localStorageKeyOverride={`simAppWatchlist_Fiat_${activePrimaryItem.replace(/\s+/g, '_')}_${activeSecondaryItem.replace(/\s+/g, '_')}`} defaultInitialItems={[]}/><NewsSection articles={newsForView} /></div>
     
     } else if (activeMode === 'Crypto') {
+        const isNumberedWatchlist = !!activeSecondaryItem.match(/^Watchlist \d+$/);
+        
+        if (activePrimaryItem === "Spot" && activeSecondaryItem.startsWith("Top watchlist")) {
+             return (
+                <div className="space-y-8">
+                    <MarketMovers stocks={mockCryptoAssets} displayMode="trending" />
+                    <WatchlistSection title={"Top Crypto"} displayItems={mockCryptoAssets} isPredefinedList={true} />
+                    <MarketMovers stocks={mockCryptoAssets} displayMode="gainers-losers" />
+                    <NewsSection articles={newsForView} />
+                </div>
+            )
+        }
+        if (isNumberedWatchlist) {
+           return <div className="space-y-8"><WatchlistSection title={`${activePrimaryItem} - ${activeSecondaryItem}`} isPredefinedList={false} localStorageKeyOverride={`simAppWatchlist_Crypto_${activePrimaryItem.replace(/\s+/g, '_')}_${activeSecondaryItem.replace(/\s+/g, '_')}`} defaultInitialItems={[]}/><NewsSection articles={newsForView} /></div>
+        }
+
         if (activePrimaryItem === "Options") {
             if (activeSecondaryItem === 'Dashboard') return <div className="space-y-8"><MarketMovers stocks={mockCryptoOptionsForWatchlist} displayMode="full" /><NewsSection articles={newsForView} /></div>;
             if (activeSecondaryItem === "Custom") return ( <div className="space-y-8"><CryptoOptionChain onAddLeg={(leg) => setStrategyLegs(prev => [...prev, leg])} />{strategyLegs.length > 0 && <StrategyBuilder legs={strategyLegs} setLegs={setStrategyLegs} />}<NewsSection articles={newsForView} /></div>);
