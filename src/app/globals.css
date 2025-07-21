@@ -67,13 +67,13 @@
     --ring: 0 72% 51%;
   }
   
-  /* Futures Theme */
+  /* Futures Theme - NOW BROWN */
   [data-theme="caramel"] {
-    --primary: 30 65% 45%; /* Caramel */
-    --primary-foreground: 30 65% 95%;
-    --accent: 35 60% 55%; /* Lighter Caramel */
-    --accent-foreground: 35 60% 95%;
-    --ring: 30 65% 45%;
+    --primary: 30 50% 30%; /* Brown */
+    --primary-foreground: 30 50% 95%;
+    --accent: 30 40% 40%; /* Darker Brown */
+    --accent-foreground: 30 40% 95%;
+    --ring: 30 50% 30%;
   }
 
   /* Options Theme */
@@ -107,13 +107,13 @@
     --accent-foreground: 0 40% 95%;
     --ring: 0 50% 40%;
   }
-  /* Insurance Theme - NOW BROWN */
+  /* Insurance Theme - NOW CARAMEL */
   [data-theme="insurance"] {
-    --primary: 30 50% 30%; /* Brown */
-    --primary-foreground: 30 50% 95%;
-    --accent: 30 40% 40%; /* Darker Brown */
-    --accent-foreground: 30 40% 95%;
-    --ring: 30 50% 30%;
+    --primary: 30 65% 45%; /* Caramel */
+    --primary-foreground: 30 65% 95%;
+    --accent: 35 60% 55%; /* Lighter Caramel */
+    --accent-foreground: 35 60% 95%;
+    --ring: 30 65% 45%;
   }
 
   /* Crypto Main Theme (Fallback) */
@@ -248,11 +248,11 @@
   }
   
   .dark[data-theme="caramel"] {
-    --primary: 30 55% 65%; /* Caramel */
-    --primary-foreground: 30 55% 95%;
-    --accent: 35 50% 75%; /* Lighter Caramel */
-    --accent-foreground: 35 50% 95%;
-    --ring: 30 55% 65%;
+    --primary: 30 40% 50%; /* Brown */
+    --primary-foreground: 30 40% 95%;
+    --accent: 30 30% 60%; /* Lighter Brown */
+    --accent-foreground: 30 30% 95%;
+    --ring: 30 40% 50%;
   }
 
   .dark[data-theme="yellow"] {
@@ -281,11 +281,11 @@
   }
   
   .dark[data-theme="insurance"] {
-    --primary: 30 40% 50%; /* Brown */
-    --primary-foreground: 30 40% 95%;
-    --accent: 30 30% 60%; /* Lighter Brown */
-    --accent-foreground: 30 30% 95%;
-    --ring: 30 40% 50%;
+    --primary: 30 55% 65%; /* Caramel */
+    --primary-foreground: 30 55% 95%;
+    --accent: 35 50% 75%; /* Lighter Caramel */
+    --accent-foreground: 35 50% 95%;
+    --ring: 30 55% 65%;
   }
 
   .dark[data-theme="crypto"],

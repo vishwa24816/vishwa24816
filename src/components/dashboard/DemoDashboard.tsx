@@ -260,7 +260,7 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
     if (activeMode === 'Fiat') {
         const themeMapping: { [key: string]: string } = {
             'Indian Stocks': 'orange',
-            'US Stocks': 'insurance', // Using brown (now on insurance)
+            'US Stocks': 'brown',
             'Futures': 'caramel',
             'Options': 'yellow',
         };
@@ -269,7 +269,7 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
         const themeMapping: { [key: string]: string } = {
             'Mutual Funds': 'mutual_funds',
             'Bonds': 'bonds',
-            'Insurance': 'brown', // Using red (now on brown)
+            'Insurance': 'insurance',
         };
         theme = themeMapping[activePrimaryItem] || 'wealth';
     } else if (activeMode === 'Crypto') {
@@ -478,7 +478,7 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
                 return (
                     <div className="space-y-8">
                         {groupedFunds.map(group => (
-                            <WatchlistSection key={group.title} title={group.title} displayItems={group.items} isPredefinedList={true} />
+                            <WatchlistSection key={group.title} title={group.title.replace(/ Funds$/, '')} displayItems={group.items} isPredefinedList={true} />
                         ))}
                         <NewsSection articles={elssNews} title="Latest on Tax Saver Funds" customDescription="Stay updated with news relevant to ELSS and tax-saving investments." />
                     </div>
