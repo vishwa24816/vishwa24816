@@ -191,7 +191,7 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
         }
     }
     if (activeMode === 'Fiat') {
-        const watchlistNav = ["Top watchlist", ...Array.from({ length: 10 }, (_, i) => `Watchlist ${i + 1}`)];
+        const watchlistNav = ["Top watchlist", ...Array.from({ length: 3 }, (_, i) => `Watchlist ${i + 1}`)];
         return {
             primaryNavItems: ["Indian Stocks", "US Stocks", "Futures", "Options"],
             secondaryNavTriggerCategories: {
@@ -203,7 +203,7 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
         };
     }
     if (activeMode === 'Wealth') {
-        const watchlistNav = ["Top watchlist", ...Array.from({ length: 5 }, (_, i) => `Watchlist ${i + 1}`)];
+        const watchlistNav = ["Top watchlist", ...Array.from({ length: 3 }, (_, i) => `Watchlist ${i + 1}`)];
         return {
             primaryNavItems: ["Mutual Funds", "Bonds", "Insurance"],
             secondaryNavTriggerCategories: {
@@ -231,10 +231,10 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
       "Spot", "Futures", "Options", "Mutual Fund"
     ];
     const cryptoSecondaryNav: Record<string, string[]> = {
-      "Spot": ["Top watchlist"],
-      "Futures": ["Top watchlist"],
+      "Spot": ["Top watchlist", ...Array.from({ length: 3 }, (_, i) => `Watchlist ${i + 1}`)],
+      "Futures": ["Top watchlist", ...Array.from({ length: 3 }, (_, i) => `Watchlist ${i + 1}`)],
       "Options": ["Dashboard", "Custom", "Readymade"],
-      "Mutual Fund": ["Top watchlist"],
+      "Mutual Fund": ["Top watchlist", ...Array.from({ length: 3 }, (_, i) => `Watchlist ${i + 1}`)],
     };
     return { primaryNavItems: cryptoPrimaryNav, secondaryNavTriggerCategories: cryptoSecondaryNav };
   }, [activeMode]);
@@ -443,13 +443,14 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
             if (activeSecondaryItem === 'Dashboard') {
                 return (
                     <div className="space-y-8">
-                        <MarketMovers stocks={mockOptionsForWatchlist} displayMode="full" optionsData={mockOptionsForWatchlist} />
+                        <MarketMovers stocks={mockOptionsForWatchlist} displayMode="trending" optionsData={mockOptionsForWatchlist}/>
+                        <MarketMovers stocks={mockOptionsForWatchlist} displayMode="gainers-losers" />
                         <VolumeOiSection optionsData={mockOptionsForWatchlist} />
                         <NewsSection articles={newsForView} />
                     </div>
                 );
             }
-            if (activeSecondaryItem === "Custom") return ( <div className="space-y-8"><FiatOptionChain onAddLeg={(leg) => setStrategyLegs(prev => [...prev, leg])} />{strategyLegs.length > 0 && <StrategyBuilder legs={strategyLegs} setLegs={setStrategyLegs} />}<NewsSection articles={newsForView} /></div>);
+            if (activeSecondaryItem === "Custom") return ( <div className="space-y-8"><FiatOptionChain onAddLeg={(leg) => setStrategyLegs(prev => [...prev, leg])} />{strategyLegs.length > 0 && <StrategyBuilder legs={strategyLegs} setLegs={setLegs} />}<NewsSection articles={newsForView} /></div>);
             if (activeSecondaryItem === "Readymade") return ( <div className="space-y-8"><ReadymadeStrategiesSection onStrategySelect={(legs) => setStrategyLegs(legs)} />{strategyLegs.length > 0 && <StrategyBuilder legs={strategyLegs} setLegs={setStrategyLegs} />}<NewsSection articles={newsForView} /></div> );
             return null
         }
@@ -458,7 +459,7 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
                 return (
                     <div className="space-y-8">
                         <MarketMovers stocks={mockIndexFuturesForWatchlist} displayMode="trending" />
-                        <WatchlistSection title="Top Indices" displayItems={itemsForWatchlist} isPredefinedList={true} />
+                        <WatchlistSection title={categoryWatchlistTitle} displayItems={itemsForWatchlist} isPredefinedList={true} />
                         <MarketMovers stocks={mockIndexFuturesForWatchlist} displayMode="gainers-losers" />
                         <NewsSection articles={getRelevantNewsForWatchlistItems(mockIndexFuturesForWatchlist, mockNewsArticles)} />
                     </div>
@@ -468,7 +469,7 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
               return (
                 <div className="space-y-8">
                   <MarketMovers stocks={mockStockFuturesForWatchlist} displayMode="trending" />
-                  <WatchlistSection title="Top Stock Futures" displayItems={itemsForWatchlist} isPredefinedList={true} />
+                  <WatchlistSection title={categoryWatchlistTitle} displayItems={itemsForWatchlist} isPredefinedList={true} />
                   <MarketMovers stocks={mockStockFuturesForWatchlist} displayMode="gainers-losers" />
                   <NewsSection articles={getRelevantNewsForWatchlistItems(mockStockFuturesForWatchlist, mockNewsArticles)} />
                 </div>
@@ -481,7 +482,7 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
     } else if (activeMode === 'Crypto') {
         if (activePrimaryItem === "Options") {
             if (activeSecondaryItem === 'Dashboard') return <div className="space-y-8"><MarketMovers stocks={mockCryptoOptionsForWatchlist} displayMode="full" /><NewsSection articles={newsForView} /></div>;
-            if (activeSecondaryItem === "Custom") return ( <div className="space-y-8"><CryptoOptionChain onAddLeg={(leg) => setStrategyLegs(prev => [...prev, leg])} />{strategyLegs.length > 0 && <StrategyBuilder legs={strategyLegs} setLegs={setStrategyLegs} />}<NewsSection articles={newsForView} /></div>);
+            if (activeSecondaryItem === "Custom") return ( <div className="space-y-8"><CryptoOptionChain onAddLeg={(leg) => setStrategyLegs(prev => [...prev, leg])} />{strategyLegs.length > 0 && <StrategyBuilder legs={strategyLegs} setLegs={setLegs} />}<NewsSection articles={newsForView} /></div>);
             if (activeSecondaryItem === "Readymade") return ( <div className="space-y-8"><ReadymadeStrategiesSection onStrategySelect={(legs) => setStrategyLegs(legs)} />{strategyLegs.length > 0 && <StrategyBuilder legs={strategyLegs} setLegs={setStrategyLegs} />}<NewsSection articles={newsForView} /></div> );
             return null
         }
