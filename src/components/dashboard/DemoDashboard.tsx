@@ -125,7 +125,7 @@ function getRelevantNewsForPositions(
   const relevantNews: NewsArticle[] = [];
   allNews.forEach(news => {
     const headlineLower = news.headline.toLowerCase();
-    if (Array.from(positionKeywords).some(keyword => keyword && headlineLower.includes(keyword))) {
+    if (Array.from(positionKeywords).some(keyword => keyword && headlineLower.includes(keyword as string))) {
       relevantNews.push(news);
     }
   });
@@ -160,7 +160,7 @@ function getRelevantNewsForWatchlistItems(items: Stock[] | undefined, allNews: N
 
   allNews.forEach(news => {
     const headlineLower = news.headline.toLowerCase();
-    if (Array.from(itemKeywords).some(keyword => keyword && headlineLower.includes(keyword))) {
+    if (Array.from(itemKeywords).some(keyword => keyword && headlineLower.includes(keyword as string))) {
       relevantNews.push(news);
     }
   });
@@ -269,7 +269,7 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
         const themeMapping: { [key: string]: string } = {
             'Mutual Funds': 'mutual_funds',
             'Bonds': 'bonds',
-            'Insurance': 'insurance', // This is now caramel
+            'Insurance': 'insurance',
         };
         theme = themeMapping[activePrimaryItem] || 'wealth';
     } else if (activeMode === 'Crypto') {
@@ -430,8 +430,16 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
                 </div>
             )
         }
-        if (activePrimaryItem === "Options") { 
-            if (activeSecondaryItem === 'Dashboard') return <div className="space-y-8"><MarketOverview title="Options Market Overview" items={mockMarketIndices} /><MarketMovers stocks={mockStocks} displayMode="full" /><NewsSection articles={newsForView} /></div>;
+        if (activePrimaryItem === "Options") {
+            if (activeSecondaryItem === 'Dashboard') {
+                return (
+                    <div className="space-y-8">
+                        <MarketMovers stocks={mockOptionsForWatchlist} displayMode="trending" />
+                        <MarketMovers stocks={mockOptionsForWatchlist} displayMode="full" />
+                        <NewsSection articles={newsForView} />
+                    </div>
+                );
+            }
             if (activeSecondaryItem === "Custom") return ( <div className="space-y-8"><FiatOptionChain onAddLeg={(leg) => setStrategyLegs(prev => [...prev, leg])} />{strategyLegs.length > 0 && <StrategyBuilder legs={strategyLegs} setLegs={setStrategyLegs} />}<NewsSection articles={newsForView} /></div>);
             if (activeSecondaryItem === "Readymade") return ( <div className="space-y-8"><ReadymadeStrategiesSection onStrategySelect={(legs) => setStrategyLegs(legs)} />{strategyLegs.length > 0 && <StrategyBuilder legs={strategyLegs} setLegs={setStrategyLegs} />}<NewsSection articles={newsForView} /></div> );
             return null
@@ -463,7 +471,7 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
     
     } else if (activeMode === 'Crypto') {
         if (activePrimaryItem === "Options") {
-            if (activeSecondaryItem === 'Dashboard') return <div className="space-y-8"><MarketOverview title="Top Cryptocurrencies" items={mockCryptoAssets.slice(0,5)} /><MarketMovers stocks={mockCryptoAssets} displayMode="full" /><NewsSection articles={newsForView} /></div>;
+            if (activeSecondaryItem === 'Dashboard') return <div className="space-y-8"><MarketMovers stocks={mockCryptoOptionsForWatchlist} displayMode="full" /><NewsSection articles={newsForView} /></div>;
             if (activeSecondaryItem === "Custom") return ( <div className="space-y-8"><CryptoOptionChain onAddLeg={(leg) => setStrategyLegs(prev => [...prev, leg])} />{strategyLegs.length > 0 && <StrategyBuilder legs={strategyLegs} setLegs={setStrategyLegs} />}<NewsSection articles={newsForView} /></div>);
             if (activeSecondaryItem === "Readymade") return ( <div className="space-y-8"><ReadymadeStrategiesSection onStrategySelect={(legs) => setStrategyLegs(legs)} />{strategyLegs.length > 0 && <StrategyBuilder legs={strategyLegs} setLegs={setStrategyLegs} />}<NewsSection articles={newsForView} /></div> );
             return null

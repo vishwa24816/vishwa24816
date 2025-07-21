@@ -18,7 +18,9 @@ const MoverItem: React.FC<{ stock: Stock, onClick: () => void }> = ({ stock, onC
   const isPositive = stock.changePercent >= 0;
   const isUsStock = stock.exchange === 'NASDAQ' || stock.exchange === 'NYSE';
   const currencySymbol = isUsStock ? '$' : '₹';
-  const isFuture = stock.exchange === 'NFO';
+  const isDerivative = stock.exchange === 'NFO' || stock.exchange === 'Crypto Options';
+  const activityMetric = stock.openInterest ? 'OI' : 'Vol';
+  const activityValue = stock.openInterest || stock.volume;
 
   return (
     <div
@@ -28,8 +30,8 @@ const MoverItem: React.FC<{ stock: Stock, onClick: () => void }> = ({ stock, onC
       <div className="flex-1 min-w-0">
         <p className="font-semibold text-sm truncate">{stock.symbol}</p>
         <p className="text-xs text-muted-foreground truncate">{stock.name}</p>
-        {isFuture && stock.openInterest && (
-            <p className="text-xs text-muted-foreground">OI: {(stock.openInterest / 1_00_00_000).toFixed(2)}Cr</p>
+        {isDerivative && activityValue && (
+            <p className="text-xs text-muted-foreground">{activityMetric}: {activityValue.toLocaleString()}</p>
         )}
       </div>
       <div className="text-right shrink-0 pl-2">
@@ -48,17 +50,18 @@ export function MarketMovers({ stocks, displayMode }: MarketMoversProps) {
 
   const handleStockClick = (stock: Stock) => {
     let path = `/order/stock/${stock.symbol}`;
-    if (stock.exchange === 'NFO') {
-      path = `/order/future/${stock.symbol}`;
+    if (stock.exchange === 'NFO' || stock.exchange === 'Crypto Options') {
+        const type = (stock.name.toLowerCase().includes('future') || stock.symbol.includes('FUT')) ? 'future' : 'option';
+        path = `/order/${type}/${stock.symbol}`;
     }
     router.push(path);
   };
 
   const { mostTraded, topGainers, topLosers } = useMemo(() => {
-    const isFuture = stocks.some(s => s.exchange === 'NFO');
+    const isDerivative = stocks.some(s => s.exchange === 'NFO' || s.exchange === 'Crypto Options');
     const sortedByActivity = [...stocks].sort((a, b) => {
-        const activityA = isFuture ? (a.openInterest || a.volume || 0) : (a.volume || 0);
-        const activityB = isFuture ? (b.openInterest || b.volume || 0) : (b.volume || 0);
+        const activityA = isDerivative ? (a.openInterest || a.volume || 0) : (a.volume || 0);
+        const activityB = isDerivative ? (b.openInterest || b.volume || 0) : (b.volume || 0);
         return activityB - activityA;
     }).slice(0, 5);
 
@@ -67,8 +70,8 @@ export function MarketMovers({ stocks, displayMode }: MarketMoversProps) {
     return { mostTraded: sortedByActivity, topGainers: sortedByGain, topLosers: sortedByLoss };
   }, [stocks]);
   
-  const isFuture = stocks.some(s => s.exchange === 'NFO');
-  const trendingTitle = isFuture ? "Trending Futures" : "Trending Stocks";
+  const isDerivative = stocks.some(s => s.exchange === 'NFO' || s.exchange === 'Crypto Options');
+  const trendingTitle = isDerivative ? "Trending Options/Futures" : "Trending Stocks";
 
   const renderTrending = () => (
     <div>
