@@ -1,172 +1,99 @@
-
 "use client";
 
 import React, { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
-import { ArrowUpDown } from 'lucide-react';
+import { Flame, Activity, TrendingUp, TrendingDown, ArrowUp, ArrowDown } from 'lucide-react';
 import type { Stock } from '@/types';
 import { cn } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
 
-type MainTab = 'Futures' | 'Options';
-type FuturesFilter = 'New' | 'Top Gainers' | 'Top Volume' | 'Top OI';
-type OptionsFilter = 'Top Volume' | 'Top OI';
-
-const formatPrice = (value: number) => {
-    return new Intl.NumberFormat('en-IN', {
-        style: 'currency',
-        currency: 'INR',
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-    }).format(value);
-};
-
-const formatFinancialValue = (value: number) => {
-    if (value >= 1_00_00_000) return `₹${(value / 1_00_00_000).toFixed(2)}Cr`;
-    if (value >= 1_00_000) return `₹${(value / 1_00_000).toFixed(2)}L`;
-    if (value >= 1_000) return `₹${(value / 1_000).toFixed(2)}K`;
-    return `₹${value}`;
-};
-
 interface MarketMoversProps {
-    futuresData: Stock[];
-    optionsData: Stock[];
+  stocks: Stock[];
+  title: string;
 }
 
-export function MarketMovers({ futuresData: initialFuturesData, optionsData: initialOptionsData }: MarketMoversProps) {
-  const router = useRouter();
-  const [activeTab, setActiveTab] = useState<MainTab>('Futures');
-  const [activeFuturesFilter, setActiveFuturesFilter] = useState<FuturesFilter>('Top Volume');
-  const [activeOptionsFilter, setActiveOptionsFilter] = useState<OptionsFilter>('Top Volume');
-
-  const futuresData = useMemo(() => {
-    const data = [...initialFuturesData];
-    switch (activeFuturesFilter) {
-      case 'Top Gainers':
-        return data.sort((a, b) => b.changePercent - a.changePercent);
-      case 'Top Volume':
-        return data.sort((a, b) => (b.volume || 0) - (a.volume || 0));
-      case 'Top OI':
-        return data.sort((a, b) => (b.openInterest || 0) - (a.openInterest || 0));
-      case 'New':
-        return data.slice(0, 5); 
-      default:
-        return data;
-    }
-  }, [activeFuturesFilter, initialFuturesData]);
-
-  const optionsData = useMemo(() => {
-      const data = [...initialOptionsData];
-      switch (activeOptionsFilter) {
-        case 'Top OI':
-          return data.sort((a, b) => (b.openInterest || 0) - (a.openInterest || 0));
-        case 'Top Volume':
-        default:
-          return data.sort((a, b) => (b.volume || 0) - (a.volume || 0));
-      }
-  }, [activeOptionsFilter, initialOptionsData]);
-
-  const handleRowClick = (item: Stock) => {
-    if (activeTab === 'Futures') {
-        router.push(`/order/future/${item.symbol}`);
-    } else {
-        router.push(`/order/option/${item.symbol}`);
-    }
-  };
-
-  const getSubtext = (item: Stock) => {
-    if (activeTab === 'Futures') {
-      return activeFuturesFilter === 'Top OI' ? `OI: ${formatFinancialValue(item.openInterest || 0)}` : `Vol: ${formatFinancialValue(item.volume || 0)}`;
-    }
-    if (activeTab === 'Options') {
-        return activeOptionsFilter === 'Top OI' ? `OI: ${formatFinancialValue(item.openInterest || 0)}` : `Vol: ${formatFinancialValue(item.volume || 0)}`;
-    }
-    return `Vol: ${formatFinancialValue(item.volume || 0)}`;
-  }
-
-  const renderList = (items: Stock[]) => (
-    <div className="space-y-2">
-      {items.map((item, index) => (
-        <div key={item.id} className="flex items-center justify-between px-4 py-2 hover:bg-muted/50 cursor-pointer" onClick={() => handleRowClick(item)}>
-          <div className="flex-1">
-            <p className="font-semibold text-sm flex items-center">{item.symbol} {activeTab === 'Futures' && activeFuturesFilter === 'New' && index < 2 && <Badge className="ml-2 text-xs bg-yellow-400 text-black hover:bg-yellow-500">NEW</Badge>}</p>
-            <p className="text-xs text-muted-foreground">{item.name}</p>
-          </div>
-          <div className="flex-1 text-right">
-            <p className="font-semibold text-sm">{formatPrice(item.price)}</p>
-            <p className="text-xs text-muted-foreground">{getSubtext(item)}</p>
-          </div>
-          <div className="w-24 text-right flex justify-end">
-            <div className={cn(
-                "w-20 py-1.5 text-center text-sm font-medium rounded-md text-white",
-                item.changePercent >= 0 ? "bg-green-600" : "bg-red-600"
-            )}>
-                {item.changePercent >= 0 ? '+' : ''}{item.changePercent.toFixed(2)}%
-            </div>
-          </div>
-        </div>
-      ))}
+const MoverItem: React.FC<{ stock: Stock, onClick: () => void }> = ({ stock, onClick }) => {
+  const isPositive = stock.changePercent >= 0;
+  return (
+    <div
+      onClick={onClick}
+      className="flex items-center justify-between p-2 rounded-md cursor-pointer hover:bg-muted"
+    >
+      <div className="flex-1">
+        <p className="font-semibold text-sm">{stock.symbol}</p>
+        <p className="text-xs text-muted-foreground truncate max-w-[120px]">{stock.name}</p>
+      </div>
+      <div className="text-right">
+        <p className="font-medium text-sm">₹{stock.price.toFixed(2)}</p>
+        <p className={cn("text-xs flex items-center justify-end", isPositive ? 'text-green-600' : 'text-red-500')}>
+          {isPositive ? <TrendingUp className="h-3 w-3 mr-1" /> : <TrendingDown className="h-3 w-3 mr-1" />}
+          {stock.changePercent.toFixed(2)}%
+        </p>
+      </div>
     </div>
   );
+};
+
+export function MarketMovers({ stocks, title }: MarketMoversProps) {
+  const router = useRouter();
+
+  const handleStockClick = (symbol: string) => {
+    router.push(`/order/stock/${symbol}`);
+  };
+
+  const { mostTraded, topGainers, topLosers } = useMemo(() => {
+    const sortedByVolume = [...stocks].sort((a, b) => (b.volume || 0) - (a.volume || 0)).slice(0, 5);
+    const sortedByGain = [...stocks].sort((a, b) => b.changePercent - a.changePercent).slice(0, 5);
+    const sortedByLoss = [...stocks].sort((a, b) => a.changePercent - b.changePercent).slice(0, 5);
+    return { mostTraded: sortedByVolume, topGainers: sortedByGain, topLosers: sortedByLoss };
+  }, [stocks]);
 
   return (
-    <div className="mt-6">
-        <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as MainTab)} className="w-full">
-          <TabsList className="w-full justify-start rounded-none bg-transparent border-b p-0 px-4">
-            <TabsTrigger value="Futures" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">Futures</TabsTrigger>
-            <TabsTrigger value="Options" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">Options</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="Futures" className="mt-0">
-            <div className="px-4 py-3 flex items-center space-x-2 border-b overflow-x-auto no-scrollbar">
-                {(['New', 'Top Gainers', 'Top Volume', 'Top OI'] as FuturesFilter[]).map((filter) => (
-                    <Button 
-                        key={filter}
-                        variant={activeFuturesFilter === filter ? 'secondary': 'ghost'}
-                        size="sm"
-                        onClick={() => setActiveFuturesFilter(filter)}
-                        className="rounded-md text-xs shrink-0"
-                    >
-                        {filter}
-                    </Button>
-                ))}
+    <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-xl font-semibold font-headline text-primary flex items-center">
+            <Flame className="h-6 w-6 mr-2" /> Most Traded
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="p-2 pt-0">
+            <div className="space-y-1">
+                {mostTraded.map(stock => <MoverItem key={stock.id} stock={stock} onClick={() => handleStockClick(stock.symbol)} />)}
             </div>
-             <div className="flex justify-between items-center text-xs text-muted-foreground px-4 py-2">
-                <p>Contract</p>
-                <div className="flex items-center gap-6">
-                    <Button variant="ghost" size="sm" className="p-0 h-auto text-xs text-muted-foreground">Price <ArrowUpDown className="h-3 w-3 ml-1" /></Button>
-                    <Button variant="ghost" size="sm" className="p-0 h-auto text-xs text-muted-foreground">24h Chg. <ArrowUpDown className="h-3 w-3 ml-1" /></Button>
-                </div>
-            </div>
-            {renderList(futuresData)}
-          </TabsContent>
-
-          <TabsContent value="Options" className="mt-0">
-            <div className="px-4 py-3 flex items-center space-x-2 border-b overflow-x-auto no-scrollbar">
-                {(['Top Volume', 'Top OI'] as OptionsFilter[]).map((filter) => (
-                    <Button 
-                        key={filter}
-                        variant={activeOptionsFilter === filter ? 'secondary': 'ghost'}
-                        size="sm"
-                        onClick={() => setActiveOptionsFilter(filter)}
-                        className="rounded-md text-xs shrink-0"
-                    >
-                        {filter}
-                    </Button>
-                ))}
-            </div>
-             <div className="flex justify-between items-center text-xs text-muted-foreground px-4 py-2">
-                <p>Contract</p>
-                <div className="flex items-center gap-6">
-                    <Button variant="ghost" size="sm" className="p-0 h-auto text-xs text-muted-foreground">Price <ArrowUpDown className="h-3 w-3 ml-1" /></Button>
-                    <Button variant="ghost" size="sm" className="p-0 h-auto text-xs text-muted-foreground">24h Chg. <ArrowUpDown className="h-3 w-3 ml-1" /></Button>
-                </div>
-            </div>
-            {renderList(optionsData)}
-          </TabsContent>
-        </Tabs>
+        </CardContent>
+      </Card>
+      
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-xl font-semibold font-headline text-primary flex items-center">
+            <Activity className="h-6 w-6 mr-2" /> Top Gainers & Losers
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="p-0">
+          <Tabs defaultValue="gainers" className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="gainers" className="flex items-center gap-1">
+                <ArrowUp className="h-4 w-4 text-green-500" /> Gainers
+              </TabsTrigger>
+              <TabsTrigger value="losers" className="flex items-center gap-1">
+                <ArrowDown className="h-4 w-4 text-red-500" /> Losers
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value="gainers" className="p-2">
+              <div className="space-y-1">
+                {topGainers.map(stock => <MoverItem key={stock.id} stock={stock} onClick={() => handleStockClick(stock.symbol)} />)}
+              </div>
+            </TabsContent>
+            <TabsContent value="losers" className="p-2">
+               <div className="space-y-1">
+                {topLosers.map(stock => <MoverItem key={stock.id} stock={stock} onClick={() => handleStockClick(stock.symbol)} />)}
+              </div>
+            </TabsContent>
+          </Tabs>
+        </CardContent>
+      </Card>
     </div>
   );
 }

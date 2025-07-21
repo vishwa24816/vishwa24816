@@ -212,6 +212,13 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
         };
     }
      if (activeMode === 'Web3') {
+        const themeMapping: { [key: string]: string } = {
+            'Trending': 'web3',
+            'AI': 'ai',
+            'DeFi': 'defi',
+            'Memes': 'memes',
+            'NFT': 'nft',
+        };
         return {
             primaryNavItems: ["Trending", "AI", "DeFi", "Memes", "NFT"],
             secondaryNavTriggerCategories: {
@@ -355,7 +362,7 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
         }
         newsForView = getRelevantNewsForWatchlistItems(itemsForWatchlist, mockNewsArticles);
     } else if (isTopWatchlistView || isCategoryNumberedWatchlistView) {
-        categoryWatchlistTitle = `${activePrimaryItem} - ${activeSecondaryItem}`;
+        categoryWatchlistTitle = `${activePrimaryItem} - Top Watchlist`;
         if (isTopWatchlistView) {
             if (isIndianStockView) itemsForWatchlist = mockStocks;
             else if (isUsStockView) itemsForWatchlist = mockUsStocks;
@@ -423,8 +430,21 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
 
   const renderMarketContent = () => {
     if (activeMode === 'Fiat') {
+        const isIndianStockView = activePrimaryItem === "Indian Stocks";
+        const isUsStockView = activePrimaryItem === "US Stocks";
+        if (isIndianStockView || isUsStockView) {
+            const stockData = isIndianStockView ? mockStocks : mockUsStocks;
+            const marketMoversTitle = isIndianStockView ? 'Indian Market Movers' : 'US Market Movers';
+            return (
+                <div className="space-y-8">
+                    <WatchlistSection title={categoryWatchlistTitle} displayItems={itemsForWatchlist} isPredefinedList={true} />
+                    <MarketMovers stocks={stockData} title={marketMoversTitle} />
+                    <NewsSection articles={newsForView} />
+                </div>
+            )
+        }
         if (activePrimaryItem === "Options") { 
-            if (activeSecondaryItem === 'Dashboard') return <div className="space-y-8"><MarketOverview title="Options Market Overview" items={mockMarketIndices} /><MarketMovers futuresData={mockIndexFuturesForWatchlist} optionsData={mockOptionsForWatchlist} /><NewsSection articles={newsForView} /></div>;
+            if (activeSecondaryItem === 'Dashboard') return <div className="space-y-8"><MarketOverview title="Options Market Overview" items={mockMarketIndices} /><MarketMovers stocks={mockStocks} title="Market Movers" /><NewsSection articles={newsForView} /></div>;
             if (activeSecondaryItem === "Custom") return ( <div className="space-y-8"><FiatOptionChain onAddLeg={(leg) => setStrategyLegs(prev => [...prev, leg])} />{strategyLegs.length > 0 && <StrategyBuilder legs={strategyLegs} setLegs={setStrategyLegs} />}<NewsSection articles={newsForView} /></div>);
             if (activeSecondaryItem === "Readymade") return ( <div className="space-y-8"><ReadymadeStrategiesSection onStrategySelect={(legs) => setStrategyLegs(legs)} />{strategyLegs.length > 0 && <StrategyBuilder legs={strategyLegs} setLegs={setStrategyLegs} />}<NewsSection articles={newsForView} /></div> );
             return null
@@ -433,8 +453,6 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
             return <div className="space-y-8"><WatchlistSection title={categoryWatchlistTitle} displayItems={itemsForWatchlist} isPredefinedList={true} /><NewsSection articles={newsForView} /></div>
         }
         
-        const isIndianStockView = activePrimaryItem === "Indian Stocks";
-        const isUsStockView = activePrimaryItem === "US Stocks";
         const isTopWatchlistView = (isIndianStockView || isUsStockView) && activeSecondaryItem.startsWith("Top watchlist");
         const isCategoryNumberedWatchlistView = (isIndianStockView || isUsStockView) && !!activeSecondaryItem.match(/^Watchlist \d+$/);
         
@@ -443,7 +461,7 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
     
     } else if (activeMode === 'Crypto') {
         if (activePrimaryItem === "Options") {
-            if (activeSecondaryItem === 'Dashboard') return <div className="space-y-8"><MarketOverview title="Top Cryptocurrencies" items={mockCryptoAssets.slice(0,5)} /><MarketMovers futuresData={mockCryptoFuturesForWatchlist} optionsData={mockCryptoOptionsForWatchlist} /><NewsSection articles={newsForView} /></div>;
+            if (activeSecondaryItem === 'Dashboard') return <div className="space-y-8"><MarketOverview title="Top Cryptocurrencies" items={mockCryptoAssets.slice(0,5)} /><MarketMovers stocks={mockCryptoAssets} title="Crypto Market Movers" /><NewsSection articles={newsForView} /></div>;
             if (activeSecondaryItem === "Custom") return ( <div className="space-y-8"><CryptoOptionChain onAddLeg={(leg) => setStrategyLegs(prev => [...prev, leg])} />{strategyLegs.length > 0 && <StrategyBuilder legs={strategyLegs} setLegs={setStrategyLegs} />}<NewsSection articles={newsForView} /></div>);
             if (activeSecondaryItem === "Readymade") return ( <div className="space-y-8"><ReadymadeStrategiesSection onStrategySelect={(legs) => setStrategyLegs(legs)} />{strategyLegs.length > 0 && <StrategyBuilder legs={strategyLegs} setLegs={setStrategyLegs} />}<NewsSection articles={newsForView} /></div> );
             return null
