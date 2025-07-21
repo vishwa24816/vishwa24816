@@ -429,7 +429,6 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
         
         if (isTopWatchlistView) {
             const stockData = isIndianStockView ? mockStocks : mockUsStocks;
-            const moversTitle = isIndianStockView ? 'Indian Market Movers' : 'US Market Movers';
             return (
                 <div className="space-y-8">
                     <MarketMovers stocks={stockData} displayMode="trending" />
@@ -450,7 +449,7 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
               return (
                 <div className="space-y-8">
                   <MarketMovers stocks={mockStockFuturesForWatchlist} displayMode="trending" />
-                  <WatchlistSection title="All Stock Futures" displayItems={itemsForWatchlist} isPredefinedList={true} />
+                  <WatchlistSection title="Top Stock Futures" displayItems={itemsForWatchlist} isPredefinedList={true} />
                   <MarketMovers stocks={mockStockFuturesForWatchlist} displayMode="gainers-losers" />
                   <NewsSection articles={newsForView} />
                 </div>
