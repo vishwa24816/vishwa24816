@@ -52,8 +52,8 @@ export const DXBallGame: React.FC<DXBallGameProps> = ({ brickCount, onGameEnd })
     game.ballDY = -8;
 
     // Bricks
-    const brickRowCount = Math.ceil(brickCount / 10);
     const brickColumnCount = 10;
+    const brickRowCount = Math.ceil(brickCount / brickColumnCount);
     const brickWidth = 75;
     const brickHeight = 20;
     const brickPadding = 10;
