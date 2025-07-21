@@ -118,26 +118,26 @@
 
   /* Crypto Main Theme (Fallback) */
   [data-theme="crypto"] {
-    --primary: 84 90% 50%; /* Yellowish Neon Green (for Spot) */
-    --primary-foreground: 84 90% 10%;
-    --accent: 80 85% 60%; 
-    --accent-foreground: 80 85% 15%;
-    --ring: 84 90% 50%;
+    --primary: 142 76% 36%; /* Green (for Spot) */
+    --primary-foreground: 142 76% 96%;
+    --accent: 140 70% 60%; 
+    --accent-foreground: 140 70% 98%;
+    --ring: 142 76% 46%;
   }
   /* Crypto Sub-Themes */
   [data-theme="spot"] {
-    --primary: 84 90% 50%; /* Yellowish Neon Green */
-    --primary-foreground: 84 90% 10%;
-    --accent: 80 85% 60%; 
-    --accent-foreground: 80 85% 15%;
-    --ring: 84 90% 50%;
-  }
-  [data-theme="crypto_futures"] {
     --primary: 142 76% 36%; /* Green */
     --primary-foreground: 142 76% 96%;
     --accent: 140 70% 60%; /* Light Green */
     --accent-foreground: 140 70% 98%;
     --ring: 142 76% 46%;
+  }
+  [data-theme="crypto_futures"] {
+    --primary: 84 90% 50%; /* Yellowish Neon Green */
+    --primary-foreground: 84 90% 10%;
+    --accent: 80 85% 60%; 
+    --accent-foreground: 80 85% 15%;
+    --ring: 84 90% 50%;
   }
   [data-theme="crypto_options"] {
     --primary: 170 80% 40%; /* Bluish Pine Green */
@@ -290,18 +290,18 @@
 
   .dark[data-theme="crypto"],
   .dark[data-theme="spot"] {
-    --primary: 84 80% 55%;
-    --primary-foreground: 84 80% 15%;
-    --accent: 80 75% 65%;
-    --accent-foreground: 80 75% 18%;
-    --ring: 84 80% 55%;
-  }
-  .dark[data-theme="crypto_futures"] {
     --primary: 142 66% 46%; /* Green */
     --primary-foreground: 142 66% 96%;
     --accent: 140 60% 55%; /* Light Green */
     --accent-foreground: 140 60% 97%;
     --ring: 142 66% 46%;
+  }
+  .dark[data-theme="crypto_futures"] {
+    --primary: 84 80% 55%;
+    --primary-foreground: 84 80% 15%;
+    --accent: 80 75% 65%;
+    --accent-foreground: 80 75% 18%;
+    --ring: 84 80% 55%;
   }
   .dark[data-theme="crypto_options"] {
     --primary: 170 70% 50%; /* Bluish Pine Green */
