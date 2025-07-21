@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import type { Stock } from '@/types';
 import { cn } from '@/lib/utils';
 import { Trash2, TrendingUp, TrendingDown, ChevronsRight, ChevronsLeft } from 'lucide-react';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 
 const DRAG_THRESHOLD = 50;
 const ACTION_AREA_WIDTH = 80;
@@ -101,6 +102,7 @@ export const WatchlistItem: React.FC<WatchlistItemProps> = ({ stock, isPredefine
     itemLink = `/order/crypto-future/${stock.symbol}`;
   }
 
+  const fallbackText = stock.symbol.substring(0, 2);
 
   return (
     <li
@@ -155,9 +157,14 @@ export const WatchlistItem: React.FC<WatchlistItemProps> = ({ stock, isPredefine
           )}
           onClick={handleLinkClick}
         >
-          <div className="flex-grow">
-            <p className="font-semibold text-sm">{stock.symbol}</p>
-            <p className="text-xs text-muted-foreground">{stock.exchange || stock.name.substring(0,20)}{stock.name.length > 20 ? '...' : ''}</p>
+          <div className="flex items-center space-x-3 flex-1 min-w-0">
+            <Avatar className="h-9 w-9 text-xs">
+              <AvatarFallback>{fallbackText}</AvatarFallback>
+            </Avatar>
+            <div className="flex-1 min-w-0">
+                <p className="font-semibold text-sm truncate">{stock.symbol}</p>
+                <p className="text-xs text-muted-foreground truncate">{stock.exchange || stock.name}</p>
+            </div>
           </div>
           <div className="text-right ml-2 shrink-0">
             <p className={`text-sm font-medium ${isPositive ? 'text-green-600' : 'text-red-600'}`}>
