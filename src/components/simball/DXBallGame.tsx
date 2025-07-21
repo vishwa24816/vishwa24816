@@ -52,8 +52,8 @@ export const DXBallGame: React.FC<DXBallGameProps> = ({ brickCount, onGameEnd })
 
     // --- Brick Generation ---
     game.bricks = [];
-    const brickColumnCount = 12; // Increased from 10 to 12
-    const brickWidth = 75;
+    const brickColumnCount = 12;
+    const brickWidth = 60; // Reduced from 75
     const brickHeight = 20;
     const brickPadding = 10;
     const brickOffsetTop = 30;
