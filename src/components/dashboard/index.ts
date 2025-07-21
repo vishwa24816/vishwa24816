@@ -23,3 +23,4 @@ export * from "./WatchlistAddForm";
 export * from "./MoverItem";
 export * from "./TrendingSection";
 export * from "./GainersLosersSection";
+export * from "./VolumeOiSection";

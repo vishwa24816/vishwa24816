@@ -19,6 +19,8 @@ import { MarketOverview } from './MarketOverview';
 import { CryptoBasketSection } from './CryptoBasketSection';
 import { MarketMovers } from './MarketMovers';
 import { WealthHoldingsSection } from './WealthHoldingsSection';
+import { VolumeOiSection } from './VolumeOiSection';
+
 
 import React, { useState, useMemo, useEffect } from 'react';
 import type { PortfolioHolding, NewsArticle, IntradayPosition, FoPosition, CryptoFuturePosition, Stock, SelectedOptionLeg } from '@/types';
@@ -261,7 +263,7 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
         const themeMapping: { [key: string]: string } = {
             'Indian Stocks': 'orange',
             'US Stocks': 'brown', // This is now red
-            'Futures': 'caramel',
+            'Futures': 'caramel', // This is now brown
             'Options': 'yellow',
         };
         theme = themeMapping[activePrimaryItem] || 'fiat';
@@ -269,7 +271,7 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
         const themeMapping: { [key: string]: string } = {
             'Mutual Funds': 'mutual_funds',
             'Bonds': 'bonds',
-            'Insurance': 'insurance',
+            'Insurance': 'insurance', // This is now caramel
         };
         theme = themeMapping[activePrimaryItem] || 'wealth';
     } else if (activeMode === 'Crypto') {
@@ -356,6 +358,7 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
         }
         newsForView = getRelevantNewsForWatchlistItems(itemsForWatchlist, mockNewsArticles);
     } else if (isTopWatchlistView) {
+        categoryWatchlistTitle = 'Top Stocks';
         itemsForWatchlist = isIndianStockView ? mockStocks : mockUsStocks;
         newsForView = getRelevantNewsForWatchlistItems(itemsForWatchlist, mockNewsArticles);
     } else if (isCategoryNumberedWatchlistView) {
@@ -430,7 +433,7 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
             return (
                 <div className="space-y-8">
                     <MarketMovers stocks={stockData} displayMode="trending" />
-                    <WatchlistSection title="Top Stocks" displayItems={itemsForWatchlist} isPredefinedList={true} />
+                    <WatchlistSection title={categoryWatchlistTitle} displayItems={itemsForWatchlist} isPredefinedList={true} />
                     <MarketMovers stocks={stockData} displayMode="gainers-losers" />
                     <NewsSection articles={newsForView} />
                 </div>
@@ -440,8 +443,8 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
             if (activeSecondaryItem === 'Dashboard') {
                 return (
                     <div className="space-y-8">
-                        <MarketMovers stocks={mockOptionsForWatchlist} displayMode="trending" />
-                        <MarketMovers stocks={mockOptionsForWatchlist} displayMode="gainers-losers" />
+                        <MarketMovers stocks={mockOptionsForWatchlist} displayMode="full" optionsData={mockOptionsForWatchlist} />
+                        <VolumeOiSection optionsData={mockOptionsForWatchlist} />
                         <NewsSection articles={newsForView} />
                     </div>
                 );
