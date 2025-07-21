@@ -260,7 +260,7 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
     if (activeMode === 'Fiat') {
         const themeMapping: { [key: string]: string } = {
             'Indian Stocks': 'orange',
-            'US Stocks': 'insurance', // Now brown
+            'US Stocks': 'brown', // now red
             'Futures': 'caramel',
             'Options': 'yellow',
         };
@@ -269,7 +269,7 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
         const themeMapping: { [key: string]: string } = {
             'Mutual Funds': 'mutual_funds',
             'Bonds': 'bonds',
-            'Insurance': 'brown', // Now red
+            'Insurance': 'insurance', // Now caramel
         };
         theme = themeMapping[activePrimaryItem] || 'wealth';
     } else if (activeMode === 'Crypto') {
@@ -426,20 +426,21 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
         const isUsStockView = activePrimaryItem === "US Stocks";
         const isTopWatchlistView = (isIndianStockView || isUsStockView) && activeSecondaryItem.startsWith("Top watchlist");
         const isCategoryNumberedWatchlistView = (isIndianStockView || isUsStockView) && !!activeSecondaryItem.match(/^Watchlist \d+$/);
-
+        
         if (isTopWatchlistView) {
             const stockData = isIndianStockView ? mockStocks : mockUsStocks;
-            const marketMoversTitle = isIndianStockView ? 'Indian Market Movers' : 'US Market Movers';
+            const moversTitle = isIndianStockView ? 'Indian Market Movers' : 'US Market Movers';
             return (
                 <div className="space-y-8">
-                    <WatchlistSection title={categoryWatchlistTitle} displayItems={itemsForWatchlist} isPredefinedList={true} />
-                    <MarketMovers stocks={stockData} title={marketMoversTitle} />
+                    <MarketMovers stocks={stockData} displayMode="trending" />
+                    <WatchlistSection title="Top Stocks" displayItems={itemsForWatchlist} isPredefinedList={true} />
+                    <MarketMovers stocks={stockData} displayMode="gainers-losers" />
                     <NewsSection articles={newsForView} />
                 </div>
             )
         }
         if (activePrimaryItem === "Options") { 
-            if (activeSecondaryItem === 'Dashboard') return <div className="space-y-8"><MarketOverview title="Options Market Overview" items={mockMarketIndices} /><MarketMovers stocks={mockStocks} title="Market Movers" /><NewsSection articles={newsForView} /></div>;
+            if (activeSecondaryItem === 'Dashboard') return <div className="space-y-8"><MarketOverview title="Options Market Overview" items={mockMarketIndices} /><MarketMovers stocks={mockStocks} displayMode="full" /><NewsSection articles={newsForView} /></div>;
             if (activeSecondaryItem === "Custom") return ( <div className="space-y-8"><FiatOptionChain onAddLeg={(leg) => setStrategyLegs(prev => [...prev, leg])} />{strategyLegs.length > 0 && <StrategyBuilder legs={strategyLegs} setLegs={setStrategyLegs} />}<NewsSection articles={newsForView} /></div>);
             if (activeSecondaryItem === "Readymade") return ( <div className="space-y-8"><ReadymadeStrategiesSection onStrategySelect={(legs) => setStrategyLegs(legs)} />{strategyLegs.length > 0 && <StrategyBuilder legs={strategyLegs} setLegs={setStrategyLegs} />}<NewsSection articles={newsForView} /></div> );
             return null
@@ -452,7 +453,7 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
     
     } else if (activeMode === 'Crypto') {
         if (activePrimaryItem === "Options") {
-            if (activeSecondaryItem === 'Dashboard') return <div className="space-y-8"><MarketOverview title="Top Cryptocurrencies" items={mockCryptoAssets.slice(0,5)} /><MarketMovers stocks={mockCryptoAssets} title="Crypto Market Movers" /><NewsSection articles={newsForView} /></div>;
+            if (activeSecondaryItem === 'Dashboard') return <div className="space-y-8"><MarketOverview title="Top Cryptocurrencies" items={mockCryptoAssets.slice(0,5)} /><MarketMovers stocks={mockCryptoAssets} displayMode="full" /><NewsSection articles={newsForView} /></div>;
             if (activeSecondaryItem === "Custom") return ( <div className="space-y-8"><CryptoOptionChain onAddLeg={(leg) => setStrategyLegs(prev => [...prev, leg])} />{strategyLegs.length > 0 && <StrategyBuilder legs={strategyLegs} setLegs={setStrategyLegs} />}<NewsSection articles={newsForView} /></div>);
             if (activeSecondaryItem === "Readymade") return ( <div className="space-y-8"><ReadymadeStrategiesSection onStrategySelect={(legs) => setStrategyLegs(legs)} />{strategyLegs.length > 0 && <StrategyBuilder legs={strategyLegs} setLegs={setStrategyLegs} />}<NewsSection articles={newsForView} /></div> );
             return null

@@ -1,6 +1,7 @@
+
 "use client";
 
-import React, { useState, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -11,11 +12,13 @@ import { useRouter } from 'next/navigation';
 
 interface MarketMoversProps {
   stocks: Stock[];
-  title: string;
+  displayMode: 'trending' | 'gainers-losers' | 'full';
 }
 
 const MoverItem: React.FC<{ stock: Stock, onClick: () => void }> = ({ stock, onClick }) => {
   const isPositive = stock.changePercent >= 0;
+  const isUsStock = stock.exchange === 'NASDAQ' || stock.exchange === 'NYSE';
+  const currencySymbol = isUsStock ? '$' : '₹';
   return (
     <div
       onClick={onClick}
@@ -26,7 +29,7 @@ const MoverItem: React.FC<{ stock: Stock, onClick: () => void }> = ({ stock, onC
         <p className="text-xs text-muted-foreground truncate max-w-[120px]">{stock.name}</p>
       </div>
       <div className="text-right">
-        <p className="font-medium text-sm">₹{stock.price.toFixed(2)}</p>
+        <p className="font-medium text-sm">{currencySymbol}{stock.price.toFixed(2)}</p>
         <p className={cn("text-xs flex items-center justify-end", isPositive ? 'text-green-600' : 'text-red-500')}>
           {isPositive ? <TrendingUp className="h-3 w-3 mr-1" /> : <TrendingDown className="h-3 w-3 mr-1" />}
           {stock.changePercent.toFixed(2)}%
@@ -36,10 +39,11 @@ const MoverItem: React.FC<{ stock: Stock, onClick: () => void }> = ({ stock, onC
   );
 };
 
-export function MarketMovers({ stocks, title }: MarketMoversProps) {
+export function MarketMovers({ stocks, displayMode }: MarketMoversProps) {
   const router = useRouter();
 
   const handleStockClick = (symbol: string) => {
+    const isUsStock = stocks.find(s => s.symbol === symbol)?.exchange === 'NASDAQ' || stocks.find(s => s.symbol === symbol)?.exchange === 'NYSE';
     router.push(`/order/stock/${symbol}`);
   };
 
@@ -49,23 +53,24 @@ export function MarketMovers({ stocks, title }: MarketMoversProps) {
     const sortedByLoss = [...stocks].sort((a, b) => a.changePercent - b.changePercent).slice(0, 5);
     return { mostTraded: sortedByVolume, topGainers: sortedByGain, topLosers: sortedByLoss };
   }, [stocks]);
-
-  return (
-    <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-xl font-semibold font-headline text-primary flex items-center">
-            <Flame className="h-6 w-6 mr-2" /> Most Traded
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="p-2 pt-0">
-            <div className="space-y-1">
-                {mostTraded.map(stock => <MoverItem key={stock.id} stock={stock} onClick={() => handleStockClick(stock.symbol)} />)}
-            </div>
-        </CardContent>
-      </Card>
-      
-      <Card>
+  
+  const renderTrending = () => (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-xl font-semibold font-headline text-primary flex items-center">
+          <Flame className="h-6 w-6 mr-2" /> Trending Stocks
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="p-2 pt-0">
+          <div className="space-y-1">
+              {mostTraded.map(stock => <MoverItem key={stock.id} stock={stock} onClick={() => handleStockClick(stock.symbol)} />)}
+          </div>
+      </CardContent>
+    </Card>
+  );
+  
+  const renderGainersLosers = () => (
+     <Card>
         <CardHeader>
           <CardTitle className="text-xl font-semibold font-headline text-primary flex items-center">
             <Activity className="h-6 w-6 mr-2" /> Top Gainers & Losers
@@ -94,6 +99,20 @@ export function MarketMovers({ stocks, title }: MarketMoversProps) {
           </Tabs>
         </CardContent>
       </Card>
-    </div>
   );
+
+  switch (displayMode) {
+    case 'trending':
+      return renderTrending();
+    case 'gainers-losers':
+      return renderGainersLosers();
+    case 'full':
+    default:
+      return (
+        <div className="space-y-6">
+          {renderTrending()}
+          {renderGainersLosers()}
+        </div>
+      );
+  }
 }
