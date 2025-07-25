@@ -1,21 +1,11 @@
 
 "use client";
 
-import React, { useState, useMemo } from 'react';
-import type { PortfolioHolding, IntradayPosition, FoPosition, CryptoFuturePosition, Stock } from '@/types';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Briefcase, List, BarChart2, PieChart, LayoutGrid } from 'lucide-react';
+import React from 'react';
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import type { PortfolioHolding, IntradayPosition, FoPosition, CryptoFuturePosition } from '@/types';
+import { Briefcase } from 'lucide-react';
 import { PortfolioCategoryCard } from './PortfolioCategoryCard';
-import { Chart } from '@/components/ui/chart';
-import { cn } from '@/lib/utils';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-
 
 type PositionItem = PortfolioHolding | IntradayPosition | FoPosition | CryptoFuturePosition;
 
@@ -27,45 +17,8 @@ interface OpenPositionsDisplayProps {
   intradayPositions: IntradayPosition[];
   foPositions: FoPosition[];
   cryptoFutures: CryptoFuturePosition[];
-  onCategoryClick: (category: 'Fiat' | 'Wealth' | 'Crypto' | 'Web3') => void;
+  onCategoryClick: (category: 'Fiat' | 'Crypto') => void;
 }
-
-type ViewMode = 'list' | 'bar' | 'pie' | 'heatmap';
-
-const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: 'INR',
-      maximumFractionDigits: 0,
-    }).format(value);
-};
-
-const getBackgroundColor = (pnl: number, value: number) => {
-    if (value === 0) return 'bg-gray-400 hover:bg-gray-300';
-    const isPositive = pnl >= 0;
-    const pnlPercent = (pnl / value) * 100;
-    const strength = Math.min(Math.abs(pnlPercent) / 5, 1);
-
-    if (isPositive) {
-        if (strength > 0.8) return 'bg-green-700 hover:bg-green-600';
-        if (strength > 0.5) return 'bg-green-600 hover:bg-green-500';
-        if (strength > 0.2) return 'bg-green-500 hover:bg-green-400';
-        return 'bg-green-400 hover:bg-green-300';
-    } else {
-        if (strength > 0.8) return 'bg-red-700 hover:bg-red-600';
-        if (strength > 0.5) return 'bg-red-600 hover:bg-red-500';
-        if (strength > 0.2) return 'bg-red-500 hover:bg-red-400';
-        return 'bg-red-400 hover:bg-red-300';
-    }
-};
-
-const getTextColor = (pnl: number, value: number) => {
-    if (value === 0) return 'text-gray-800 dark:text-gray-200';
-    const pnlPercent = (pnl / value) * 100;
-    const strength = Math.min(Math.abs(pnlPercent) / 5, 1);
-    return strength > 0.5 ? 'text-white' : 'text-gray-800 dark:text-gray-200';
-};
-
 
 export function OpenPositionsDisplay({
   fiatHoldings,
@@ -77,55 +30,20 @@ export function OpenPositionsDisplay({
   cryptoFutures,
   onCategoryClick,
 }: OpenPositionsDisplayProps) {
-  
-  const [viewMode, setViewMode] = useState<ViewMode>('list');
 
-  const categories = useMemo(() => {
+  const categories = React.useMemo(() => {
     const fiatItems = [...fiatHoldings, ...intradayPositions, ...foPositions];
     const wealthItems = [...wealthHoldings];
     const cryptoItems = [...cryptoHoldings, ...cryptoFutures];
     const web3Items = [...web3Holdings];
 
-    const calculateCategoryData = (items: PositionItem[]) => {
-      let totalValue = 0;
-      let totalPnl = 0;
-      items.forEach(item => {
-        if ('currentValue' in item) totalValue += item.currentValue;
-        else if ('ltp' in item && 'quantity' in item) { // Intraday
-            totalValue += item.ltp * ('lots' in item ? item.lots * item.quantityPerLot : item.quantity);
-        }
-
-        if ('profitAndLoss' in item) totalPnl += item.profitAndLoss;
-        else if ('pAndL' in item) totalPnl += item.pAndL;
-        else if ('unrealizedPnL' in item) totalPnl += item.unrealizedPnL * 80;
-      });
-      return { totalValue, totalPnl };
-    };
-
     return [
-      { title: "Fiat Assets", items: fiatItems, category: 'Fiat' as const, ...calculateCategoryData(fiatItems) },
-      { title: "Wealth Assets", items: wealthItems, category: 'Wealth' as const, ...calculateCategoryData(wealthItems) },
-      { title: "Crypto Assets", items: cryptoItems, category: 'Crypto' as const, ...calculateCategoryData(cryptoItems) },
-      { title: "Web3 Assets", items: web3Items, category: 'Web3' as const, ...calculateCategoryData(web3Items) },
+      { title: "Fiat Assets", items: fiatItems, category: 'Fiat' as const },
+      { title: "Wealth Assets", items: wealthItems, category: 'Fiat' as const }, // Wealth is under Fiat
+      { title: "Crypto Assets", items: cryptoItems, category: 'Crypto' as const },
+      { title: "Web3 Assets", items: web3Items, category: 'Crypto' as const }, // Web3 is under Crypto
     ].filter(cat => cat.items.length > 0);
   }, [fiatHoldings, wealthHoldings, cryptoHoldings, web3Holdings, intradayPositions, foPositions, cryptoFutures]);
-
-  const chartData = useMemo(() => {
-    return categories.map((cat, index) => ({
-      name: cat.title,
-      value: cat.totalValue,
-      pnl: cat.totalPnl,
-      fill: `hsl(var(--chart-${index + 1}))`,
-    }));
-  }, [categories]);
-
-  const chartConfig = {
-    value: { label: 'Total Value' },
-    ...chartData.reduce((acc, item) => {
-      acc[item.name] = { label: item.name, color: item.fill };
-      return acc;
-    }, {} as any)
-  };
   
   const totalItems = categories.reduce((sum, cat) => sum + cat.items.length, 0);
 
@@ -137,107 +55,26 @@ export function OpenPositionsDisplay({
       </div>
     );
   }
-  
-  const renderContent = () => {
-    switch(viewMode) {
-        case 'bar':
-            return (
-                <div className="w-full h-[300px] mt-4">
-                    <Chart.Container config={chartConfig} className="h-full w-full">
-                        <Chart.BarChart data={chartData} layout="vertical" margin={{ left: 10, right: 10 }}>
-                            <Chart.XAxis type="number" dataKey="value" stroke="hsl(var(--muted-foreground))" fontSize={12} tickFormatter={(val) => `₹${val/1000}k`} />
-                            <Chart.YAxis type="category" dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={12} width={100} tickLine={false} axisLine={false} />
-                            <Chart.Tooltip cursor={false} contentStyle={{ backgroundColor: 'hsl(var(--background))', borderColor: 'hsl(var(--border))' }} formatter={(value) => formatCurrency(value as number)} />
-                            <Chart.Bar dataKey="value" radius={4} />
-                        </Chart.BarChart>
-                    </Chart.Container>
-                </div>
-            );
-        case 'pie':
-             return (
-                <div className="w-full h-[300px] mt-4 flex items-center justify-center">
-                    <Chart.Container config={chartConfig} className="h-full w-full">
-                        <Chart.PieChart>
-                            <Chart.Tooltip content={<Chart.TooltipContent hideLabel nameKey="name" />} formatter={(value, name) => `${name}: ${formatCurrency(value as number)}`} />
-                            <Chart.Pie data={chartData} dataKey="value" nameKey="name" />
-                            <Chart.LegendContent />
-                        </Chart.PieChart>
-                    </Chart.Container>
-                </div>
-            );
-        case 'heatmap':
-            const totalPortfolioValue = chartData.reduce((acc, item) => acc + item.value, 0);
-            return (
-                <TooltipProvider delayDuration={100}>
-                    <div className="flex flex-wrap gap-1 p-1 rounded-lg bg-muted/20 w-full min-h-[250px] content-start">
-                        {chartData.map(item => {
-                            const sizePercent = totalPortfolioValue > 0 ? (item.value / totalPortfolioValue) * 100 : 0;
-                            const isPositive = item.pnl >= 0;
-
-                            return (
-                                <Tooltip key={item.name}>
-                                    <TooltipTrigger asChild>
-                                        <div 
-                                          style={{ flexBasis: `${sizePercent}%`, flexGrow: sizePercent }}
-                                          className={cn(
-                                            "p-2 rounded-md flex flex-col justify-between flex-shrink-0 min-h-[70px] min-w-[90px] shadow-inner transition-all duration-300 border-2 border-transparent hover:border-primary/50 cursor-pointer",
-                                            getBackgroundColor(item.pnl, item.value)
-                                          )}
-                                          onClick={() => onCategoryClick(categories.find(c => c.title === item.name)!.category)}
-                                        >
-                                          <span className={cn("text-xs font-semibold", getTextColor(item.pnl, item.value))}>{item.name.replace(' Assets','')}</span>
-                                          <span className={cn("text-xs", getTextColor(item.pnl, item.value), "opacity-80")}>
-                                            {isPositive ? '+' : ''}{formatCurrency(item.pnl)}
-                                          </span>
-                                        </div>
-                                    </TooltipTrigger>
-                                    <TooltipContent>
-                                        <p className="font-semibold">{item.name}</p>
-                                        <p>Value: {formatCurrency(item.value)}</p>
-                                        <p>P&L: {formatCurrency(item.pnl)}</p>
-                                    </TooltipContent>
-                                </Tooltip>
-                            );
-                        })}
-                    </div>
-                </TooltipProvider>
-            );
-        case 'list':
-        default:
-             return (
-                 <div className="space-y-4">
-                    {categories.map((category) => 
-                      category.items.length > 0 && (
-                        <PortfolioCategoryCard
-                          key={category.title}
-                          title={category.title}
-                          items={category.items}
-                          onCategoryClick={() => onCategoryClick(category.category)}
-                        />
-                      )
-                    )}
-                </div>
-            );
-    }
-  }
-
 
   return (
     <Card className="shadow-md">
-      <CardHeader className="flex flex-row items-center justify-between">
+      <CardHeader>
         <CardTitle className="text-xl font-semibold font-headline text-primary flex items-center">
           <Briefcase className="h-6 w-6 mr-2" />
           Asset Overview
         </CardTitle>
-         <div className="flex items-center gap-1 rounded-md bg-muted p-1">
-            <Button variant={viewMode === 'list' ? 'secondary' : 'ghost'} size="icon" className="h-7 w-7" onClick={() => setViewMode('list')}><List /></Button>
-            <Button variant={viewMode === 'bar' ? 'secondary' : 'ghost'} size="icon" className="h-7 w-7" onClick={() => setViewMode('bar')}><BarChart2 /></Button>
-            <Button variant={viewMode === 'heatmap' ? 'secondary' : 'ghost'} size="icon" className="h-7 w-7" onClick={() => setViewMode('heatmap')}><LayoutGrid /></Button>
-            <Button variant={viewMode === 'pie' ? 'secondary' : 'ghost'} size="icon" className="h-7 w-7" onClick={() => setViewMode('pie')}><PieChart /></Button>
-        </div>
       </CardHeader>
       <CardContent className="p-2 sm:p-4">
-        {renderContent()}
+        <div className="space-y-4">
+          {categories.map((category) => 
+            <PortfolioCategoryCard
+              key={category.title}
+              title={category.title}
+              items={category.items}
+              onCategoryClick={() => onCategoryClick(category.category)}
+            />
+          )}
+        </div>
       </CardContent>
     </Card>
   );

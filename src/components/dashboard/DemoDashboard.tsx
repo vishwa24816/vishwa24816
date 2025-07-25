@@ -310,8 +310,14 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
     setActiveSecondaryItem(item);
   };
   
-  const handleCategoryClick = (category: 'Fiat' | 'Wealth' | 'Crypto' | 'Web3') => {
-    onModeChange(category);
+  const handleCategoryClick = (category: 'Fiat' | 'Crypto') => {
+    if (category === 'Fiat') {
+        setActivePrimaryItem('Fiat');
+        setActiveSecondaryItem('Fiat Holdings');
+    } else if (category === 'Crypto') {
+        setActivePrimaryItem('Crypto');
+        setActiveSecondaryItem('Crypto Holdings');
+    }
   };
 
   const fiatHoldings = useMemo(() => mockPortfolioHoldings.filter(h => h.type === 'Stock' || h.type === 'ETF'), []);

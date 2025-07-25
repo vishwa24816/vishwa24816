@@ -23,7 +23,7 @@ const formatCurrency = (value: number, currency: 'INR' | 'USDT' = 'INR') => {
 interface PortfolioCategoryCardProps {
   title: string;
   items: PositionItem[];
-  onCategoryClick: (categoryTitle: string) => void;
+  onCategoryClick: () => void;
 }
 
 export function PortfolioCategoryCard({ title, items, onCategoryClick }: PortfolioCategoryCardProps) {
@@ -57,7 +57,7 @@ export function PortfolioCategoryCard({ title, items, onCategoryClick }: Portfol
   return (
     <button
       className="w-full text-left"
-      onClick={() => onCategoryClick(title)}
+      onClick={onCategoryClick}
       aria-label={`View details for ${title}`}
     >
         <Card className="shadow-md cursor-pointer hover:bg-muted/50 transition-colors">
