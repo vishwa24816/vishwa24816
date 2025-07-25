@@ -351,6 +351,19 @@ export interface PriceAlert {
   notes?: string;
 }
 
+export interface HodlOrder {
+  id: string;
+  instrumentName: string;
+  symbol: string;
+  assetType: 'Stock' | 'Crypto';
+  quantity: number;
+  investedAmount: number;
+  currentValue: number;
+  profit: number;
+  lockInEndDate: string;
+  purchaseDate: string;
+}
+
 export interface HeatmapItem {
   name: string;
   change: number;

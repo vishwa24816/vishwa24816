@@ -13,16 +13,31 @@ import { SipsDisplay } from '@/components/orders/SipsDisplay';
 import { AlertsDisplay } from '@/components/orders/AlertsDisplay';
 import { useAuth } from '@/contexts/AuthContext';
 import type { Stock } from '@/types';
+import { HodlOrdersDisplay } from './HodlOrdersDisplay';
+import { OpenPositionsDisplay } from './OpenPositionsDisplay';
+import {
+    mockPortfolioHoldings,
+    mockIntradayPositions,
+    mockFoPositions,
+    mockCryptoFutures,
+    mockWeb3Holdings,
+    mockCryptoAssets,
+    mockStocks,
+    mockMutualFunds,
+    mockBonds
+} from '@/lib/mockData';
 
 const demoOrderTabs = [
   { value: "limit", label: "Limit" },
   { value: "bids", label: "Bids" },
+  { value: "hodl", label: "HODL" },
   { value: "baskets", label: "Baskets" },
   { value: "sips", label: "SIPs" },
   { value: "alerts", label: "Alerts" },
 ];
 
 const realOrderTabs = [
+  { value: "hodl", label: "HODL" },
   { value: "baskets", label: "Baskets" },
   { value: "sips", label: "SIPs" },
   { value: "alerts", label: "Alerts" },
@@ -36,6 +51,10 @@ export function OrdersPageContent({ activeMode, onAssetClick }: { activeMode: 'P
   const orderTabs = isRealMode ? realOrderTabs : demoOrderTabs;
   const [activeTab, setActiveTab] = useState(orderTabs[0].value);
   
+  const fiatHoldings = mockPortfolioHoldings.filter(h => h.type === 'Stock' || h.type === 'ETF');
+  const wealthHoldings = mockPortfolioHoldings.filter(h => h.type === 'Mutual Fund' || h.type === 'Bond');
+  const cryptoHoldings = mockPortfolioHoldings.filter(h => h.type === 'Crypto');
+
   return (
       <div className="flex flex-col h-full">
         <main className="flex-grow flex flex-col">
@@ -75,6 +94,9 @@ export function OrdersPageContent({ activeMode, onAssetClick }: { activeMode: 'P
               </TabsContent>
               <TabsContent value="bids" className="flex-grow flex flex-col mt-0 data-[state=inactive]:hidden">
                 <BondBidsDisplay />
+              </TabsContent>
+              <TabsContent value="hodl" className="flex-grow flex flex-col mt-0 data-[state=inactive]:hidden">
+                <HodlOrdersDisplay />
               </TabsContent>
               <TabsContent value="baskets" className="flex-grow flex flex-col mt-0 data-[state=inactive]:hidden">
                 <BasketsDisplay />
