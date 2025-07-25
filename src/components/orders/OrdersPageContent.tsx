@@ -6,7 +6,6 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Search, SlidersHorizontal } from 'lucide-react';
-import { OpenPositionsDisplay } from '@/components/orders/OpenPositionsDisplay';
 import { GttOrdersDisplay } from '@/components/orders/GttOrdersDisplay';
 import { BondBidsDisplay } from '@/components/orders/BondBidsDisplay';
 import { BasketsDisplay } from '@/components/orders/BasketsDisplay';
@@ -14,13 +13,9 @@ import { SipsDisplay } from '@/components/orders/SipsDisplay';
 import { AlertsDisplay } from '@/components/orders/AlertsDisplay';
 import { useAuth } from '@/contexts/AuthContext';
 import type { Stock, PortfolioHolding, IntradayPosition, FoPosition, CryptoFuturePosition } from '@/types';
-import {
-  mockPortfolioHoldings,
-  mockIntradayPositions,
-  mockFoPositions,
-  mockCryptoFutures,
-  mockWeb3Holdings
-} from '@/lib/mockData';
+import { mockPortfolioHoldings, mockIntradayPositions, mockFoPositions, mockCryptoFutures, mockWeb3Holdings } from '@/lib/mockData';
+import { FiatHoldingsSection, IntradayPositionsSection, FoPositionsSection, CryptoHoldingsSection, CryptoFuturesSection, WealthHoldingsSection } from '@/components/dashboard';
+import { ScrollArea } from '../ui/scroll-area';
 
 const demoOrderTabs = [
   { value: "executed", label: "Open" }, 
@@ -39,17 +34,9 @@ const realOrderTabs = [
 ];
 
 
-export function OrdersPageContent({ onAssetClick }: { onAssetClick: (asset: Stock) => void }) {
+export function OrdersPageContent({ onAssetClick, activeMode }: { onAssetClick: (asset: Stock) => void, activeMode: 'Portfolio' | 'Fiat' | 'Wealth' | 'Crypto' | 'Web3' }) {
   const { user } = useAuth();
   const isRealMode = user?.id === 'REAL456';
-  
-  const [activeMode, setActiveMode] = useState<'Fiat' | 'Crypto' | 'Web3'>(isRealMode ? 'Crypto' : 'Fiat');
-
-  useEffect(() => {
-    if (isRealMode && activeMode === 'Fiat') {
-      setActiveMode('Crypto');
-    }
-  }, [isRealMode, activeMode]);
 
   const orderTabs = isRealMode ? realOrderTabs : demoOrderTabs;
   const [activeTab, setActiveTab] = useState("executed");
@@ -57,6 +44,52 @@ export function OrdersPageContent({ onAssetClick }: { onAssetClick: (asset: Stoc
   const fiatHoldings = mockPortfolioHoldings.filter(h => h.type === 'Stock' || h.type === 'ETF');
   const wealthHoldings = mockPortfolioHoldings.filter(h => h.type === 'Mutual Fund' || h.type === 'Bond');
   const cryptoHoldings = mockPortfolioHoldings.filter(h => h.type === 'Crypto');
+
+    // Dummy state setters for components that require them but won't be used here.
+    const dummySetState = () => {};
+
+  const renderOpenPositions = () => {
+    switch(activeMode) {
+        case 'Fiat':
+            return (
+                <ScrollArea className="h-full">
+                    <div className="space-y-4 p-1">
+                        <FiatHoldingsSection holdings={fiatHoldings} intradayPositions={mockIntradayPositions} foPositions={mockFoPositions} mainPortfolioCashBalance={0} setMainPortfolioCashBalance={dummySetState} cryptoCashBalance={0} setCryptoCashBalance={dummySetState} onAssetClick={onAssetClick} onAddFunds={dummySetState} />
+                        <IntradayPositionsSection onAssetClick={onAssetClick}/>
+                        <FoPositionsSection onAssetClick={onAssetClick} />
+                    </div>
+                </ScrollArea>
+            );
+        case 'Wealth':
+            return (
+                 <ScrollArea className="h-full">
+                    <div className="space-y-4 p-1">
+                        <WealthHoldingsSection holdings={wealthHoldings} onAssetClick={onAssetClick} />
+                    </div>
+                </ScrollArea>
+            );
+        case 'Crypto':
+            return (
+                 <ScrollArea className="h-full">
+                    <div className="space-y-4 p-1">
+                       <CryptoHoldingsSection title="Crypto Wallet & Holdings" holdings={cryptoHoldings} cashBalance={0} setCashBalance={dummySetState} mainPortfolioCashBalance={0} setMainPortfolioCashBalance={dummySetState} isRealMode={false} walletMode={'hot'} setWalletMode={dummySetState} onAssetClick={onAssetClick} />
+                       <CryptoFuturesSection positions={mockCryptoFutures} cashBalance={0} />
+                    </div>
+                </ScrollArea>
+            );
+        case 'Web3':
+             return (
+                 <ScrollArea className="h-full">
+                    <div className="space-y-4 p-1">
+                        <CryptoHoldingsSection title="Web3 Wallet & Holdings" holdings={mockWeb3Holdings} cashBalance={0} setCashBalance={dummySetState} mainPortfolioCashBalance={0} setMainPortfolioCashBalance={dummySetState} isRealMode={false} walletMode={'hot'} setWalletMode={dummySetState} onAssetClick={onAssetClick} />
+                    </div>
+                </ScrollArea>
+            );
+        default:
+            return <p className="text-center text-muted-foreground p-4">Select a mode to see open positions.</p>
+    }
+  }
+
 
   return (
       <div className="flex flex-col h-full">
@@ -93,19 +126,7 @@ export function OrdersPageContent({ onAssetClick }: { onAssetClick: (asset: Stoc
 
             <div className="w-full px-0 sm:px-2 md:px-4 py-4 flex-grow flex flex-col">
               <TabsContent value="executed" className="flex-grow flex flex-col mt-0 data-[state=inactive]:hidden">
-                <OpenPositionsDisplay
-                    fiatHoldings={fiatHoldings}
-                    wealthHoldings={wealthHoldings}
-                    cryptoHoldings={cryptoHoldings}
-                    web3Holdings={mockWeb3Holdings}
-                    intradayPositions={mockIntradayPositions}
-                    foPositions={mockFoPositions}
-                    cryptoFutures={mockCryptoFutures}
-                    onCategoryClick={(category) => {
-                      // Placeholder for navigation logic if needed
-                    }}
-                    onAssetClick={onAssetClick}
-                />
+                {renderOpenPositions()}
               </TabsContent>
               <TabsContent value="gtt" className="flex-grow flex flex-col mt-0 data-[state=inactive]:hidden">
                 <GttOrdersDisplay activeMode={activeMode} />

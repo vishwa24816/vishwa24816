@@ -78,13 +78,13 @@ export default function DashboardRouterPage() {
           <DemoDashboard activeMode={activeMode} onModeChange={setActiveMode} walletMode={walletMode} setWalletMode={setWalletMode} onAssetClick={handleAssetClick}/>
         );
       case 'orders':
-        return <OrdersPageContent onAssetClick={handleAssetClick} />;
+        return <OrdersPageContent onAssetClick={handleAssetClick} activeMode={activeMode} />;
       case 'simbot':
         return <SimbotPageContent />;
       case 'screener':
-        return <ScreenerPageContent onAssetClick={handleAssetClick} />;
+        return <ScreenerPageContent onAssetClick={onAssetClick} />;
       case 'community':
-        return <CommunityPageContent onAssetClick={handleAssetClick}/>;
+        return <CommunityPageContent onAssetClick={onAssetClick}/>;
       case 'asset_order':
         if (selectedAsset) {
           return <OrderPageDispatcher asset={selectedAsset} onBack={() => handleNavigate(previousMainView)} />;
