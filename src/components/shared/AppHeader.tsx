@@ -83,9 +83,9 @@ export function AppHeader({ activeMode, onModeChange, isRealMode, walletMode }: 
     };
   }, [activeMode, isRealMode]);
   
-  const availableModes: ('Portfolio' | 'Fiat' | 'Crypto' | 'Web3' | 'Wealth')[] = isRealMode 
-    ? ['Portfolio', 'Crypto', 'Web3'] 
-    : ['Portfolio', 'Fiat', 'Wealth', 'Crypto', 'Web3'];
+  const availableModes: ('Portfolio' | 'Fiat' | 'Crypto' | 'Wealth')[] = isRealMode 
+    ? ['Portfolio', 'Crypto'] 
+    : ['Portfolio', 'Fiat', 'Wealth', 'Crypto'];
 
 
   if (!isMounted) {
@@ -140,7 +140,7 @@ export function AppHeader({ activeMode, onModeChange, isRealMode, walletMode }: 
                         return (
                             <Button
                                 key={mode}
-                                onClick={() => handleModeChange(mode)}
+                                onClick={() => handleModeChange(mode as any)}
                                 variant="ghost"
                                 className={cn(
                                     "h-7 px-3 text-xs rounded-md border-none flex-1",
