@@ -2,7 +2,7 @@
 
 "use client";
 
-import { SubNav } from '@/components/dashboard/SubNav';
+import { SubNav } from '@/components/shared/SubNav';
 import { NewsSection } from '@/components/dashboard/NewsSection';
 import { WatchlistSection } from '@/components/dashboard/WatchlistSection';
 import { CryptoHoldingsSection } from '@/components/dashboard/CryptoHoldingsSection';
@@ -492,7 +492,6 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
                     fiatHoldings={fiatHoldings}
                     wealthHoldings={wealthHoldings}
                     cryptoHoldings={cryptoAndWeb3Holdings}
-                    web3Holdings={[]} // Merged into crypto
                     intradayPositions={mockIntradayPositions}
                     foPositions={mockFoPositions}
                     cryptoFutures={mockCryptoFutures}

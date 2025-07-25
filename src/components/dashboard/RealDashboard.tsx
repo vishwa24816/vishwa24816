@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { SubNav } from '@/components/dashboard/SubNav';
@@ -57,9 +58,10 @@ interface RealDashboardProps {
   activeMode: 'Portfolio' | 'Fiat' | 'Crypto' | 'Web3';
   walletMode: WalletMode;
   setWalletMode: (mode: WalletMode) => void;
+  onAssetClick: (asset: Stock) => void;
 }
 
-export function RealDashboard({ activeMode, walletMode, setWalletMode }: RealDashboardProps) {
+export function RealDashboard({ activeMode, walletMode, setWalletMode, onAssetClick }: RealDashboardProps) {
   const { primaryNavItems, secondaryNavTriggerCategories } = useMemo(() => {
     if (activeMode === 'Portfolio') {
        return {
@@ -146,9 +148,9 @@ export function RealDashboard({ activeMode, walletMode, setWalletMode }: RealDas
     const isWatchlistView = activeSecondaryItem === "Portfolio Watchlist";
 
     if (activePrimaryItem === 'Crypto') {
-      if (isHoldingsView) return <><CryptoHoldingsSection title="Crypto Wallet & Holdings" holdings={cryptoHoldings} cashBalance={cryptoCashBalance} setCashBalance={setCryptoCashBalance} mainPortfolioCashBalance={mainPortfolioCashBalance} setMainPortfolioCashBalance={setMainPortfolioCashBalance} isRealMode={true} walletMode={walletMode} setWalletMode={setWalletMode} /><NewsSection articles={newsForView} /></>;
+      if (isHoldingsView) return <><CryptoHoldingsSection title="Crypto Wallet & Holdings" holdings={cryptoHoldings} cashBalance={cryptoCashBalance} setCashBalance={setCryptoCashBalance} mainPortfolioCashBalance={mainPortfolioCashBalance} setMainPortfolioCashBalance={setMainPortfolioCashBalance} isRealMode={true} walletMode={walletMode} setWalletMode={setWalletMode} onAssetClick={onAssetClick} /><NewsSection articles={newsForView} /></>;
       if (isPositionsView) return <div className="space-y-8"><CryptoFuturesSection positions={mockRealCryptoFutures} cashBalance={cryptoCashBalance} /><CryptoBasketSection /><NewsSection articles={newsForView} /></div>;
-      if (isWatchlistView) return <div className="space-y-8"><WatchlistSection title="My Crypto Watchlist" defaultInitialItems={itemsForWatchlist} localStorageKeyOverride={'simCryptoWatchlist_real'}/><NewsSection articles={newsForView} /></div>;
+      if (isWatchlistView) return <div className="space-y-8"><WatchlistSection title="My Crypto Watchlist" defaultInitialItems={itemsForWatchlist} localStorageKeyOverride={'simCryptoWatchlist_real'} onAssetClick={onAssetClick}/><NewsSection articles={newsForView} /></div>;
     }
     return null;
   }
@@ -156,12 +158,12 @@ export function RealDashboard({ activeMode, walletMode, setWalletMode }: RealDas
   const renderMarketContent = () => {
       if(activeMode === 'Crypto') {
           if (activePrimaryItem === "Options") {
-            if (activeSecondaryItem === 'Dashboard') return <div className="space-y-8"><MarketOverview title="Top Cryptocurrencies" items={mockCryptoAssets.slice(0,5)} /><MarketMovers futuresData={mockCryptoFuturesForWatchlist} optionsData={mockCryptoOptionsForWatchlist} /><NewsSection articles={newsForView} /></div>;
+            if (activeSecondaryItem === 'Dashboard') return <div className="space-y-8"><MarketOverview title="Top Cryptocurrencies" items={mockCryptoAssets.slice(0,5)} /><MarketMovers futuresData={mockCryptoFuturesForWatchlist} optionsData={mockCryptoOptionsForWatchlist} onAssetClick={onAssetClick} /><NewsSection articles={newsForView} /></div>;
             if (activeSecondaryItem === "Custom") return ( <div className="space-y-8"><CryptoOptionChain onAddLeg={(leg) => setStrategyLegs(prev => [...prev, leg])} />{strategyLegs.length > 0 && <StrategyBuilder legs={strategyLegs} setLegs={setStrategyLegs} />}<NewsSection articles={newsForView} /></div>);
             if (activeSecondaryItem === "Readymade") return ( <div className="space-y-8"><ReadymadeStrategiesSection onStrategySelect={(legs) => setStrategyLegs(legs)} />{strategyLegs.length > 0 && <StrategyBuilder legs={strategyLegs} setLegs={setStrategyLegs} />}<NewsSection articles={newsForView} /></div> );
             return null
         }
-          return <div className="space-y-8"><WatchlistSection title={categoryWatchlistTitle} displayItems={itemsForWatchlist} isPredefinedList={true}/><NewsSection articles={newsForView} /></div>
+          return <div className="space-y-8"><WatchlistSection title={categoryWatchlistTitle} displayItems={itemsForWatchlist} isPredefinedList={true} onAssetClick={onAssetClick} /><NewsSection articles={newsForView} /></div>
       }
       return null;
   }
