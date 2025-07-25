@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect } from 'react';
@@ -28,7 +29,7 @@ const realOrderTabs = [
 ];
 
 
-export function OrdersPageContent({ activeMode }: { activeMode: 'Portfolio' | 'Fiat' | 'Wealth' | 'Crypto' | 'Web3' }) {
+export function OrdersPageContent({ activeMode, onAssetClick }: { activeMode: 'Portfolio' | 'Fiat' | 'Wealth' | 'Crypto' | 'Web3', onAssetClick: (asset: Stock) => void; }) {
   const { user } = useAuth();
   const isRealMode = user?.id === 'REAL456';
 
@@ -73,16 +74,16 @@ export function OrdersPageContent({ activeMode }: { activeMode: 'Portfolio' | 'F
                 <LimitOrdersDisplay />
               </TabsContent>
               <TabsContent value="bids" className="flex-grow flex flex-col mt-0 data-[state=inactive]:hidden">
-                <BondBidsDisplay activeMode={activeMode} />
+                <BondBidsDisplay />
               </TabsContent>
               <TabsContent value="baskets" className="flex-grow flex flex-col mt-0 data-[state=inactive]:hidden">
-                <BasketsDisplay isRealMode={isRealMode} activeMode={activeMode} />
+                <BasketsDisplay />
               </TabsContent>
               <TabsContent value="sips" className="flex-grow flex flex-col mt-0 data-[state=inactive]:hidden">
-                <SipsDisplay isRealMode={isRealMode} activeMode={activeMode} />
+                <SipsDisplay />
               </TabsContent>
               <TabsContent value="alerts" className="flex-grow flex flex-col mt-0 data-[state=inactive]:hidden">
-                <AlertsDisplay isRealMode={isRealMode} activeMode={activeMode} />
+                <AlertsDisplay />
               </TabsContent>
             </div>
           </Tabs>

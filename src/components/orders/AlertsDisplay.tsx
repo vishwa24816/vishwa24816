@@ -54,40 +54,15 @@ const AlertItem: React.FC<AlertItemProps> = ({ alert }) => {
   );
 };
 
-interface AlertsDisplayProps {
-  isRealMode?: boolean;
-  activeMode: 'Fiat' | 'Crypto' | 'Web3';
-}
-
-export function AlertsDisplay({ isRealMode = false, activeMode }: AlertsDisplayProps) {
-  const alerts = React.useMemo(() => {
-    const fiatAssetTypes: PriceAlert['assetType'][] = ['Stock', 'Future', 'Option', 'ETF', 'Index'];
-    const cryptoAssetTypes: PriceAlert['assetType'][] = ['Crypto', 'Crypto Future'];
-    // No Web3 alerts in mock data
-
-    let filteredAlerts: PriceAlert[] = [];
-
-    if(activeMode === 'Fiat') {
-        filteredAlerts = mockPriceAlerts.filter(alert => fiatAssetTypes.includes(alert.assetType));
-    } else if (activeMode === 'Crypto') {
-        filteredAlerts = mockPriceAlerts.filter(alert => cryptoAssetTypes.includes(alert.assetType));
-    }
-    // No alerts for Web3 mode
-
-    if (isRealMode) {
-      return filteredAlerts.filter(alert => cryptoAssetTypes.includes(alert.assetType));
-    }
-    
-    return filteredAlerts;
-  }, [isRealMode, activeMode]);
-
+export function AlertsDisplay() {
+  const alerts = mockPriceAlerts;
 
   if (alerts.length === 0) {
     return (
       <div className="text-center py-10">
         <BellRing className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
         <p className="text-muted-foreground">
-          No price alerts set for {activeMode} mode.
+          No price alerts set.
         </p>
       </div>
     );
