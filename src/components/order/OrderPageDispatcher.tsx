@@ -44,33 +44,33 @@ export function OrderPageDispatcher({ asset, onBack }: OrderPageDispatcherProps)
   const assetSpecificNews = getRelevantNewsForAsset(asset, mockNewsArticles);
 
   if (!asset.exchange) {
-    return <GenericOrderPageContent asset={asset} assetSpecificNews={assetSpecificNews} />;
+    return <GenericOrderPageContent asset={asset} assetSpecificNews={assetSpecificNews} onBack={onBack} />;
   }
 
   const exchange = asset.exchange.toLowerCase();
 
   if (exchange.includes('crypto')) {
     if(exchange.includes('future')) {
-      return <CryptoFutureOrderPageContent asset={asset} assetSpecificNews={assetSpecificNews} />;
+      return <CryptoFutureOrderPageContent asset={asset} assetSpecificNews={assetSpecificNews} onBack={onBack} />;
     }
     if (exchange.includes('mf')) {
-        return <CryptoMutualFundOrderPageContent asset={asset} assetSpecificNews={assetSpecificNews} />;
+        return <CryptoMutualFundOrderPageContent asset={asset} assetSpecificNews={assetSpecificNews} onBack={onBack} />;
     }
-    return <CryptoOrderPageContent asset={asset} assetSpecificNews={assetSpecificNews} />;
+    return <CryptoOrderPageContent asset={asset} assetSpecificNews={assetSpecificNews} onBack={onBack} />;
   }
   
   if (exchange.includes('nfo')) {
-      return <FutureOrderPageContent asset={asset} assetSpecificNews={assetSpecificNews} />;
+      return <FutureOrderPageContent asset={asset} assetSpecificNews={assetSpecificNews} onBack={onBack} />;
   }
 
   if (exchange.includes('mf')) {
-    return <MutualFundOrderPageContent asset={asset} assetSpecificNews={assetSpecificNews} />;
+    return <MutualFundOrderPageContent asset={asset} assetSpecificNews={assetSpecificNews} onBack={onBack} />;
   }
 
   if (exchange === 'nse' || exchange === 'bse' || exchange === 'nasdaq' || exchange === 'nyse') {
-    return <StockOrderPageContent asset={asset} assetSpecificNews={assetSpecificNews} />;
+    return <StockOrderPageContent asset={asset} assetSpecificNews={assetSpecificNews} onBack={onBack} />;
   }
   
   // Fallback for any other types
-  return <GenericOrderPageContent asset={asset} assetSpecificNews={assetSpecificNews} />;
+  return <GenericOrderPageContent asset={asset} assetSpecificNews={assetSpecificNews} onBack={onBack} />;
 }

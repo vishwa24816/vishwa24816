@@ -2,7 +2,6 @@
 "use client";
 
 import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -18,10 +17,10 @@ import { PerformanceBar, FinancialBar, CollapsibleSection } from './shared/Order
 interface StockOrderPageContentProps {
   asset: Stock;
   assetSpecificNews: NewsArticle[];
+  onBack: () => void;
 }
 
-export function StockOrderPageContent({ asset, assetSpecificNews }: StockOrderPageContentProps) {
-  const router = useRouter();
+export function StockOrderPageContent({ asset, assetSpecificNews, onBack }: StockOrderPageContentProps) {
   const { toast } = useToast();
   
   const [activeTimescale, setActiveTimescale] = useState('1D');
@@ -48,7 +47,7 @@ export function StockOrderPageContent({ asset, assetSpecificNews }: StockOrderPa
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
         <header className="px-4 py-3 sticky top-0 z-10 bg-background border-b border-border">
-          <Button variant="ghost" size="icon" onClick={() => router.back()} className="text-foreground hover:bg-muted">
+          <Button variant="ghost" size="icon" onClick={onBack} className="text-foreground hover:bg-muted">
             <ArrowLeft className="h-5 w-5" />
           </Button>
         </header>

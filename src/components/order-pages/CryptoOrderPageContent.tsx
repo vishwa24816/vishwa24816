@@ -2,7 +2,6 @@
 "use client";
 
 import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -17,10 +16,10 @@ import { PerformanceBar, CollapsibleSection } from './shared/OrderPageComponents
 interface CryptoOrderPageContentProps {
   asset: Stock;
   assetSpecificNews: NewsArticle[];
+  onBack: () => void;
 }
 
-export function CryptoOrderPageContent({ asset, assetSpecificNews }: CryptoOrderPageContentProps) {
-  const router = useRouter();
+export function CryptoOrderPageContent({ asset, assetSpecificNews, onBack }: CryptoOrderPageContentProps) {
   const { toast } = useToast();
 
   const [activeTimescale, setActiveTimescale] = useState('24H');
@@ -41,7 +40,7 @@ export function CryptoOrderPageContent({ asset, assetSpecificNews }: CryptoOrder
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
         <header className="px-4 py-3 sticky top-0 z-10 bg-background border-b border-border">
-          <Button variant="ghost" size="icon" onClick={() => router.back()} className="text-foreground hover:bg-muted">
+          <Button variant="ghost" size="icon" onClick={onBack} className="text-foreground hover:bg-muted">
             <ArrowLeft className="h-5 w-5" />
           </Button>
         </header>

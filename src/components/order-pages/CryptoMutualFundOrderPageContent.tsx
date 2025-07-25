@@ -2,7 +2,6 @@
 "use client";
 
 import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { Stock, NewsArticle } from '@/types';
@@ -17,10 +16,10 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 interface CryptoMutualFundOrderPageContentProps {
   asset: Stock;
   assetSpecificNews: NewsArticle[];
+  onBack: () => void;
 }
 
-export function CryptoMutualFundOrderPageContent({ asset, assetSpecificNews }: CryptoMutualFundOrderPageContentProps) {
-  const router = useRouter();
+export function CryptoMutualFundOrderPageContent({ asset, assetSpecificNews, onBack }: CryptoMutualFundOrderPageContentProps) {
   const { toast } = useToast();
   
   const [activeTimescale, setActiveTimescale] = useState('3Y');
@@ -31,7 +30,7 @@ export function CryptoMutualFundOrderPageContent({ asset, assetSpecificNews }: C
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
       <header className="px-4 py-3 sticky top-0 z-10 bg-background border-b border-border flex justify-between items-center">
-        <Button variant="ghost" size="icon" onClick={() => router.back()} className="text-foreground hover:bg-muted">
+        <Button variant="ghost" size="icon" onClick={onBack} className="text-foreground hover:bg-muted">
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <div className="flex items-center space-x-1">
