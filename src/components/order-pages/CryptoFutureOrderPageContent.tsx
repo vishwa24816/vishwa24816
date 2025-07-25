@@ -23,7 +23,8 @@ export function CryptoFutureOrderPageContent({ asset, assetSpecificNews, onBack 
   const { toast } = useToast();
   
   const [activeTimescale, setActiveTimescale] = useState('24H');
-  const [productTypeForOrder, setProductTypeForOrder] = useState('Longterm');
+  // For crypto futures/options, productType is not applicable.
+  const [productTypeForOrder, setProductTypeForOrder] = useState('');
 
   const handleBuyAction = () => {
     toast({ title: "Buy Action (Mock)", description: `Initiating BUY for ${asset?.symbol}.` });

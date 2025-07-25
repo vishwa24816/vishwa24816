@@ -26,7 +26,7 @@ export function FutureOrderPageContent({ asset, assetSpecificNews, onBack }: Fut
 
   const [activeTimescale, setActiveTimescale] = useState('1D');
   const [activeFinancialsCategory, setActiveFinancialsCategory] = useState<'revenue' | 'profit' | 'netWorth'>('revenue');
-  const [productTypeForOrder, setProductTypeForOrder] = useState('Delivery'); // NRML for futures
+  const [productTypeForOrder, setProductTypeForOrder] = useState('Overnight'); // Use 'Overnight' for Expiry as default for F&O
 
   const handleBuyAction = () => {
     toast({ title: "Buy Action (Mock)", description: `Initiating BUY for ${asset?.symbol} (${productTypeForOrder})` });
