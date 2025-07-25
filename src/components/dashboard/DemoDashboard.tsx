@@ -25,7 +25,7 @@ import { OpenPositionsDisplay } from '../orders/OpenPositionsDisplay';
 
 
 import React, { useState, useMemo, useEffect } from 'react';
-import type { PortfolioHolding, NewsArticle, IntradayPosition, FoPosition, CryptoFuturePosition, Stock, SelectedOptionLeg } from '@/types';
+import type { PortfolioHolding, IntradayPosition, FoPosition, CryptoFuturePosition, Stock, SelectedOptionLeg } from '@/types';
 import { mockPortfolioHoldings } from '@/lib/mockData/portfolioHoldings';
 import { mockNewsArticles } from '@/lib/mockData/newsArticles';
 import { mockIntradayPositions } from '@/lib/mockData/intradayPositions';
@@ -310,13 +310,27 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
     setActiveSecondaryItem(item);
   };
   
-  const handleCategoryClick = (category: 'Fiat' | 'Crypto') => {
+  const handleCategoryClick = (category: 'Fiat' | 'Crypto' | 'Wealth' | 'Web3' | 'Pledged') => {
     if (category === 'Fiat') {
+      onModeChange('Portfolio');
+      setActivePrimaryItem('Fiat');
+      setActiveSecondaryItem('Fiat Holdings');
+    } else if (category === 'Wealth') {
+        onModeChange('Portfolio');
         setActivePrimaryItem('Fiat');
-        setActiveSecondaryItem('Fiat Holdings');
+        setActiveSecondaryItem('Wealth Holdings');
     } else if (category === 'Crypto') {
+      onModeChange('Portfolio');
+      setActivePrimaryItem('Crypto');
+      setActiveSecondaryItem('Crypto Holdings');
+    } else if (category === 'Web3') {
+        onModeChange('Portfolio');
         setActivePrimaryItem('Crypto');
-        setActiveSecondaryItem('Crypto Holdings');
+        setActiveSecondaryItem('Web3 Holdings');
+    } else if (category === 'Pledged') {
+        onModeChange('Portfolio');
+        setActivePrimaryItem('Pledged Holdings');
+        setActiveSecondaryItem('');
     }
   };
 
@@ -444,10 +458,10 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
                     wealthHoldings={wealthHoldings}
                     cryptoHoldings={cryptoHoldings}
                     web3Holdings={mockWeb3Holdings}
-                    onCategoryClick={handleCategoryClick}
                     intradayPositions={mockIntradayPositions}
                     foPositions={mockFoPositions}
                     cryptoFutures={mockCryptoFutures}
+                    onCategoryClick={handleCategoryClick}
                     onAssetClick={onAssetClick}
                 />
             </div>
@@ -512,7 +526,7 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
             const stockData = isIndianStockView ? mockStocks : mockUsStocks;
             return (
                 <div className="space-y-8">
-                    <MarketMovers stocks={stockData} displayMode="trending" onAssetClick={onAssetClick} />
+                    <MarketMovers stocks={stockData} displayMode="trending" category="Stocks" onAssetClick={onAssetClick} />
                     <WatchlistSection title={"Top Stocks"} displayItems={itemsForWatchlist} isPredefinedList={true} onAssetClick={onAssetClick} />
                     <MarketMovers stocks={stockData} displayMode="gainers-losers" onAssetClick={onAssetClick} />
                     <NewsSection articles={newsForView} />
@@ -523,7 +537,7 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
             if (activeSecondaryItem === 'Dashboard') {
                 return (
                     <div className="space-y-8">
-                        <MarketMovers stocks={mockOptionsForWatchlist} displayMode="full" optionsData={mockOptionsForWatchlist} onAssetClick={onAssetClick} />
+                        <MarketMovers stocks={mockOptionsForWatchlist} displayMode="full" category="Options" onAssetClick={onAssetClick} />
                         <VolumeOiSection optionsData={mockOptionsForWatchlist}/>
                         <NewsSection articles={newsForView} />
                     </div>
@@ -537,7 +551,7 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
             if (activeSecondaryItem === "Index Futures") {
                 return (
                     <div className="space-y-8">
-                        <MarketMovers stocks={mockIndexFuturesForWatchlist} displayMode="trending" onAssetClick={onAssetClick} />
+                        <MarketMovers stocks={mockIndexFuturesForWatchlist} displayMode="trending" category="Futures" onAssetClick={onAssetClick} />
                         <WatchlistSection title={"Top Indices"} displayItems={itemsForWatchlist} isPredefinedList={true} onAssetClick={onAssetClick} />
                         <MarketMovers stocks={mockIndexFuturesForWatchlist} displayMode="gainers-losers" onAssetClick={onAssetClick} />
                         <NewsSection articles={getRelevantNewsForWatchlistItems(mockIndexFuturesForWatchlist, mockNewsArticles)} />
@@ -547,7 +561,7 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
             if (activeSecondaryItem === "Stock Futures") {
               return (
                 <div className="space-y-8">
-                  <MarketMovers stocks={mockStockFuturesForWatchlist} displayMode="trending" onAssetClick={onAssetClick} />
+                  <MarketMovers stocks={mockStockFuturesForWatchlist} displayMode="trending" category="Futures" onAssetClick={onAssetClick} />
                   <WatchlistSection title={"Top Stock Futures"} displayItems={itemsForWatchlist} isPredefinedList={true} onAssetClick={onAssetClick} />
                   <MarketMovers stocks={mockStockFuturesForWatchlist} displayMode="gainers-losers" onAssetClick={onAssetClick} />
                   <NewsSection articles={getRelevantNewsForWatchlistItems(mockStockFuturesForWatchlist, mockNewsArticles)} />
@@ -574,7 +588,7 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
         if (activePrimaryItem === "Spot" && activeSecondaryItem.startsWith("Top watchlist")) {
              return (
                 <div className="space-y-8">
-                    <MarketMovers stocks={mockCryptoAssets} displayMode="trending" onAssetClick={onAssetClick} />
+                    <MarketMovers stocks={mockCryptoAssets} displayMode="trending" category="Crypto" onAssetClick={onAssetClick} />
                     <WatchlistSection title={"Top Crypto"} displayItems={mockCryptoAssets} isPredefinedList={true} onAssetClick={onAssetClick} />
                     <MarketMovers stocks={mockCryptoAssets} displayMode="gainers-losers" onAssetClick={onAssetClick} />
                     <NewsSection articles={newsForView} />
@@ -586,7 +600,7 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
         }
 
         if (activePrimaryItem === "Options") {
-            if (activeSecondaryItem === 'Dashboard') return <div className="space-y-8"><MarketMovers stocks={mockCryptoOptionsForWatchlist} displayMode="full" onAssetClick={onAssetClick} /><NewsSection articles={newsForView} /></div>;
+            if (activeSecondaryItem === 'Dashboard') return <div className="space-y-8"><MarketMovers stocks={mockCryptoOptionsForWatchlist} displayMode="full" category="Crypto Options" onAssetClick={onAssetClick} /><NewsSection articles={newsForView} /></div>;
             if (activeSecondaryItem === "Custom") return ( <div className="space-y-8"><CryptoOptionChain onAddLeg={(leg) => setStrategyLegs(prev => [...prev, leg])} />{strategyLegs.length > 0 && <StrategyBuilder legs={strategyLegs} setLegs={setStrategyLegs} />}<NewsSection articles={newsForView} /></div>);
             if (activeSecondaryItem === "Readymade") return ( <div className="space-y-8"><ReadymadeStrategiesSection onStrategySelect={(legs) => setStrategyLegs(legs)} />{strategyLegs.length > 0 && <StrategyBuilder legs={strategyLegs} setLegs={setStrategyLegs} />}<NewsSection articles={newsForView} /></div> );
             return null

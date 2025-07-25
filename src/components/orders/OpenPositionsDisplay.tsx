@@ -22,7 +22,7 @@ interface OpenPositionsDisplayProps {
   intradayPositions: IntradayPosition[];
   foPositions: FoPosition[];
   cryptoFutures: CryptoFuturePosition[];
-  onCategoryClick: (category: 'Fiat' | 'Crypto') => void;
+  onCategoryClick: (category: 'Fiat' | 'Crypto' | 'Wealth' | 'Web3' | 'Pledged') => void;
   onAssetClick: (asset: Stock) => void;
 }
 
@@ -57,9 +57,9 @@ export function OpenPositionsDisplay({
 
     return [
       { title: "Fiat Assets", items: fiatItems, category: 'Fiat' as const },
-      { title: "Wealth Assets", items: wealthItems, category: 'Fiat' as const },
+      { title: "Wealth Assets", items: wealthItems, category: 'Wealth' as const },
       { title: "Crypto Assets", items: cryptoItems, category: 'Crypto' as const },
-      { title: "Web3 Assets", items: web3Items, category: 'Crypto' as const },
+      { title: "Web3 Assets", items: web3Items, category: 'Web3' as const },
     ].filter(cat => cat.items.length > 0);
   }, [fiatHoldings, wealthHoldings, cryptoHoldings, web3Holdings, intradayPositions, foPositions, cryptoFutures]);
 
@@ -109,9 +109,9 @@ export function OpenPositionsDisplay({
           totalValue += item.ltp * qty;
         }
 
-        if ('profitAndLoss' in item) totalPnl += item.profitAndLoss;
-        else if ('pAndL' in item) totalPnl += item.pAndL;
-        else if ('unrealizedPnL' in item) totalPnl += item.unrealizedPnL * 83; // Approx INR conversion
+        if ('profitAndLoss' in item && item.profitAndLoss) totalPnl += item.profitAndLoss;
+        else if ('pAndL' in item && item.pAndL) totalPnl += item.pAndL;
+        else if ('unrealizedPnL' in item && item.unrealizedPnL) totalPnl += item.unrealizedPnL * 83; // Approx INR conversion
       });
       
       const totalInvestment = totalValue - totalPnl;

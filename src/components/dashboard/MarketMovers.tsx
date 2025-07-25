@@ -12,9 +12,10 @@ interface MarketMoversProps {
   optionsData?: Stock[];
   futuresData?: Stock[];
   onAssetClick: (asset: Stock) => void;
+  category?: 'Stocks' | 'Options' | 'Futures' | 'Crypto' | 'Crypto Options';
 }
 
-export function MarketMovers({ stocks, displayMode, optionsData, futuresData, onAssetClick }: MarketMoversProps) {
+export function MarketMovers({ stocks, displayMode, optionsData, futuresData, onAssetClick, category }: MarketMoversProps) {
 
   const { mostTraded, topGainers, topLosers } = useMemo(() => {
     const isDerivative = stocks.some(s => s.exchange === 'NFO' || s.exchange === 'Crypto Options');
@@ -32,19 +33,23 @@ export function MarketMovers({ stocks, displayMode, optionsData, futuresData, on
     return { mostTraded: sortedByActivity, topGainers: sortedByGain, topLosers: sortedByLoss };
   }, [stocks, optionsData, futuresData]);
   
-  const isCrypto = stocks.some(s => s.exchange === 'Crypto' || s.exchange === 'Crypto Futures');
-  const isCryptoOptions = stocks.some(s => s.exchange === 'Crypto Options');
-  const isNfoFutures = stocks.some(s => s.symbol?.includes('FUT'));
-  const isNfoOptions = stocks.some(s => s.symbol?.includes('CE') || s.symbol?.includes('PE'));
-  
   const trendingTitle = useMemo(() => {
-    if (isCryptoOptions) return "Trending Crypto Options";
-    if (isCrypto) return "Trending Crypto";
-    if (isNfoFutures) return "Trending Futures";
-    if (isNfoOptions) return "Trending Options";
-    if (stocks.some(s => s.exchange === 'NFO')) return "Trending Derivatives";
-    return "Trending Stocks";
-  }, [isCrypto, isCryptoOptions, isNfoFutures, isNfoOptions, stocks]);
+    switch(category) {
+        case 'Stocks': return 'Trending Stocks';
+        case 'Options': return 'Trending Options';
+        case 'Futures': return 'Trending Futures';
+        case 'Crypto': return 'Trending Crypto';
+        case 'Crypto Options': return 'Trending Crypto Options';
+        default:
+            const isCrypto = stocks.some(s => s.exchange === 'Crypto' || s.exchange === 'Crypto Futures');
+            if (isCrypto) return "Trending Crypto";
+            const isNfoFutures = stocks.some(s => s.symbol?.includes('FUT'));
+            if(isNfoFutures) return "Trending Futures";
+            const isNfoOptions = stocks.some(s => s.symbol?.includes('CE') || s.symbol?.includes('PE'));
+            if(isNfoOptions) return "Trending Options";
+            return "Trending Stocks";
+    }
+  }, [stocks, category]);
 
 
   switch (displayMode) {

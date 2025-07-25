@@ -33,14 +33,14 @@ export function PortfolioCategoryCard({ title, items, onCategoryClick }: Portfol
     let totalPnl = 0;
     
     items.forEach(item => {
-      if ('currentValue' in item) totalValue += item.currentValue;
+      if ('currentValue' in item && item.currentValue) totalValue += item.currentValue;
       else if ('ltp' in item && 'quantity' in item) { // Intraday
-         totalValue += item.ltp * ('lots' in item ? item.lots * item.quantityPerLot : item.quantity);
+         totalValue += item.ltp * ('lots' in item && item.lots && item.quantityPerLot ? item.lots * item.quantityPerLot : item.quantity);
       }
       
-      if ('profitAndLoss' in item) totalPnl += item.profitAndLoss;
-      else if ('pAndL' in item) totalPnl += item.pAndL;
-      else if ('unrealizedPnL' in item) totalPnl += item.unrealizedPnL * 80; // Approx INR conversion
+      if ('profitAndLoss' in item && item.profitAndLoss) totalPnl += item.profitAndLoss;
+      else if ('pAndL' in item && item.pAndL) totalPnl += item.pAndL;
+      else if ('unrealizedPnL' in item && item.unrealizedPnL) totalPnl += item.unrealizedPnL * 80; // Approx INR conversion
     });
     
     let icon = Briefcase;
