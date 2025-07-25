@@ -79,46 +79,29 @@ const chatWithSimbotFlow = ai.defineFlow(
     inputSchema: ChatWithSimbotInputSchema,
     outputSchema: ChatWithSimbotOutputSchema,
   },
-  async input => {
+  async (input) => {
     const llmResponse = await prompt(input);
-    const toolCalls = llmResponse.toolCalls();
+    const toolRequest = llmResponse.toolRequest();
 
-    for (const toolCall of toolCalls) {
-        if (toolCall.tool === 'navigateToStock') {
-            const toolOutput = await toolCall.run();
-            if (toolOutput.success) {
-                return {
-                    reply: `Navigating you to the order page for ${toolOutput.symbol}...`,
-                    navigationTarget: toolOutput.url,
-                };
-            } else {
-                 return {
-                    reply: `Sorry, I couldn't find the stock with ticker "${toolOutput.symbol}". Please check the symbol and try again.`,
-                };
-            }
+    if (toolRequest?.tool === 'navigateToStock') {
+        const toolOutput = await navigateToStock(toolRequest.input);
+        if (toolOutput.success) {
+            return {
+                reply: `Navigating you to the order page for ${toolOutput.symbol}...`,
+                navigationTarget: toolOutput.url,
+            };
+        } else {
+             return {
+                reply: `Sorry, I couldn't find the stock with ticker "${toolOutput.symbol}". Please check the symbol and try again.`,
+            };
         }
     }
 
     const output = llmResponse.output();
-     if (!output) {
-        // This can happen if the model decides to call a tool but doesn't, or provides no text.
-        // Let's check for tool-call requests that might not have been executed.
-        const toolRequest = llmResponse.toolRequests()?.[0];
-        if (toolRequest?.tool === 'navigateToStock') {
-             const toolOutput = await navigateToStock(toolRequest.input);
-             if (toolOutput.success) {
-                return {
-                    reply: `Navigating you to the order page for ${toolOutput.symbol}...`,
-                    navigationTarget: toolOutput.url,
-                };
-            } else {
-                 return {
-                    reply: `Sorry, I couldn't find the stock with ticker "${toolOutput.symbol}". Please check the symbol and try again.`,
-                };
-            }
-        }
+    if (!output?.reply) {
         return { reply: "I'm having a little trouble understanding that. Could you please rephrase?" };
     }
+    
     return output;
   }
 );
