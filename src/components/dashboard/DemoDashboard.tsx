@@ -311,27 +311,23 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
   };
   
   const handleCategoryClick = (category: 'Fiat' | 'Crypto' | 'Wealth' | 'Web3' | 'Pledged') => {
-    if (category === 'Fiat') {
       onModeChange('Portfolio');
-      setActivePrimaryItem('Fiat');
-      setActiveSecondaryItem('Fiat Holdings');
-    } else if (category === 'Wealth') {
-        onModeChange('Portfolio');
-        setActivePrimaryItem('Fiat');
-        setActiveSecondaryItem('Wealth Holdings');
-    } else if (category === 'Crypto') {
-      onModeChange('Portfolio');
-      setActivePrimaryItem('Crypto');
-      setActiveSecondaryItem('Crypto Holdings');
-    } else if (category === 'Web3') {
-        onModeChange('Portfolio');
-        setActivePrimaryItem('Crypto');
-        setActiveSecondaryItem('Web3 Holdings');
-    } else if (category === 'Pledged') {
-        onModeChange('Portfolio');
-        setActivePrimaryItem('Pledged Holdings');
-        setActiveSecondaryItem('');
-    }
+      if (category === 'Fiat') {
+          setActivePrimaryItem('Fiat');
+          setActiveSecondaryItem('Fiat Holdings');
+      } else if (category === 'Wealth') {
+          setActivePrimaryItem('Fiat');
+          setActiveSecondaryItem('Wealth Holdings');
+      } else if (category === 'Crypto') {
+          setActivePrimaryItem('Crypto');
+          setActiveSecondaryItem('Crypto Holdings');
+      } else if (category === 'Web3') {
+          setActivePrimaryItem('Crypto');
+          setActiveSecondaryItem('Web3 Holdings');
+      } else if (category === 'Pledged') {
+          setActivePrimaryItem('Pledged Holdings');
+          setActiveSecondaryItem('');
+      }
   };
 
   const fiatHoldings = useMemo(() => mockPortfolioHoldings.filter(h => h.type === 'Stock' || h.type === 'ETF'), []);
@@ -408,7 +404,14 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
   }
   
   const allHoldings = useMemo(() => [...fiatHoldings, ...wealthHoldings, ...cryptoHoldings, ...mockWeb3Holdings], [fiatHoldings, wealthHoldings, cryptoHoldings]);
-  const allPositions = useMemo(() => [...mockIntradayPositions, ...mockFoPositions, ...mockCryptoFutures], []);
+  
+  const allPositions = useMemo(() => {
+    return [
+      ...mockIntradayPositions,
+      ...mockFoPositions.map(p => ({ ...p, type: 'FO' })),
+      ...mockCryptoFutures.map(p => ({ ...p, type: 'CryptoFuture' })),
+    ];
+  }, []);
 
   const { totalPortfolioValue, unrealisedPnl, investedMargin } = useMemo(() => {
     let holdingsValue = 0;
@@ -418,20 +421,18 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
         holdingsInvestment += (h.avgCostPrice || 0) * (h.quantity || 0);
     });
 
-    let positionsValue = 0;
-    let positionsInvestment = 0;
+    let positionsPnl = 0;
     allPositions.forEach(p => {
-        const qty = 'lots' in p ? (p.lots || 0) * (p.quantityPerLot || 0) : ('quantity' in p ? (p.quantity || 0) : 0);
-        const ltp = 'ltp' in p ? p.ltp || 0 : ('markPrice' in p ? p.markPrice || 0 : 0);
-        const avgPrice = 'avgPrice' in p ? (p.avgPrice || 0) : ('entryPrice' in p ? (p.entryPrice || 0) : 0);
-        
-        positionsValue += ltp * qty;
-        positionsInvestment += avgPrice * qty;
+      if ('pAndL' in p && p.pAndL) {
+        positionsPnl += p.pAndL;
+      } else if ('unrealizedPnL' in p && p.unrealizedPnL) {
+        positionsPnl += p.unrealizedPnL * 83; // Approx INR conversion
+      }
     });
 
-    const totalPortfolioValue = holdingsValue + positionsValue;
-    const investedMargin = holdingsInvestment + positionsInvestment;
-    const unrealisedPnl = totalPortfolioValue - investedMargin;
+    const totalPortfolioValue = holdingsValue + positionsPnl; // Simplified view
+    const investedMargin = holdingsInvestment; // Simplified view
+    const unrealisedPnl = (holdingsValue - holdingsInvestment) + positionsPnl;
 
     return { totalPortfolioValue, unrealisedPnl, investedMargin };
   }, [allHoldings, allPositions]);
@@ -588,9 +589,20 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
         if (activePrimaryItem === "Spot" && activeSecondaryItem.startsWith("Top watchlist")) {
              return (
                 <div className="space-y-8">
+                    <CryptoHoldingsSection title="Crypto Wallet & Holdings" holdings={cryptoHoldings} cashBalance={cryptoCashBalance} setCashBalance={setCryptoCashBalance} mainPortfolioCashBalance={mainPortfolioCashBalance} setMainPortfolioCashBalance={setMainPortfolioCashBalance} isRealMode={false} walletMode={walletMode} setWalletMode={setWalletMode} onAssetClick={onAssetClick} />
                     <MarketMovers stocks={mockCryptoAssets} displayMode="trending" category="Crypto" onAssetClick={onAssetClick} />
                     <WatchlistSection title={"Top Crypto"} displayItems={mockCryptoAssets} isPredefinedList={true} onAssetClick={onAssetClick} />
                     <MarketMovers stocks={mockCryptoAssets} displayMode="gainers-losers" onAssetClick={onAssetClick} />
+                    <NewsSection articles={newsForView} />
+                </div>
+            )
+        }
+        if (activePrimaryItem === "Futures" && activeSecondaryItem.startsWith("Top watchlist")) {
+             return (
+                <div className="space-y-8">
+                    <MarketMovers stocks={mockCryptoFuturesForWatchlist} displayMode="trending" category="Futures" onAssetClick={onAssetClick} />
+                    <WatchlistSection title={"Top Crypto Futures"} displayItems={mockCryptoFuturesForWatchlist} isPredefinedList={true} onAssetClick={onAssetClick} />
+                    <MarketMovers stocks={mockCryptoFuturesForWatchlist} displayMode="gainers-losers" onAssetClick={onAssetClick} />
                     <NewsSection articles={newsForView} />
                 </div>
             )
