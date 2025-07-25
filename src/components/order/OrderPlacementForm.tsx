@@ -184,28 +184,30 @@ const CommonOrderFields = ({
 
     return (
         <div className="space-y-4">
-             <RadioGroup value={productType} onValueChange={onProductTypeChange} className="flex flex-wrap gap-x-4 sm:gap-x-6 gap-y-2">
-                {assetType !== 'bond' && assetType !== 'mutual-fund' && !(assetType === 'crypto-future') && (
-                    <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="Intraday" id={`intraday-common`} />
-                        <Label htmlFor={`intraday-common`} className="font-normal">Intraday</Label>
-                    </div>
-                )}
-                {(assetType === 'stock' || assetType === 'crypto' || assetType === 'future' || assetType === 'option') && (
-                    <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="Delivery" id={`delivery-common`} />
-                        <Label htmlFor={`delivery-common`} className="font-normal">
-                            {assetType === 'future' ? 'Expiry' : (assetType === 'crypto-future' || assetType === 'option') ? 'Overnight' : 'Delivery'}
-                        </Label>
-                    </div>
-                )}
-                {(assetType === 'stock' || assetType === 'crypto') && orderMode === 'Regular' && (
-                    <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="HODL" id="hodl-common" />
-                        <Label htmlFor="hodl-common" className="font-normal">HODL</Label>
-                    </div>
-                )}
-            </RadioGroup>
+            {assetType !== 'crypto-future' && (
+                <RadioGroup value={productType} onValueChange={onProductTypeChange} className="flex flex-wrap gap-x-4 sm:gap-x-6 gap-y-2">
+                    {assetType !== 'bond' && assetType !== 'mutual-fund' && (
+                        <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="Intraday" id={`intraday-common`} />
+                            <Label htmlFor={`intraday-common`} className="font-normal">Intraday</Label>
+                        </div>
+                    )}
+                    {(assetType === 'stock' || assetType === 'crypto' || assetType === 'future' || assetType === 'option') && (
+                        <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="Delivery" id={`delivery-common`} />
+                            <Label htmlFor={`delivery-common`} className="font-normal">
+                                {assetType === 'future' ? 'Expiry' : (assetType === 'option') ? 'Delivery' : 'Delivery'}
+                            </Label>
+                        </div>
+                    )}
+                    {(assetType === 'stock' || assetType === 'crypto') && orderMode === 'Regular' && (
+                        <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="HODL" id="hodl-common" />
+                            <Label htmlFor="hodl-common" className="font-normal">HODL</Label>
+                        </div>
+                    )}
+                </RadioGroup>
+            )}
 
             <div className="grid grid-cols-2 gap-4 items-end">
                 <div>
