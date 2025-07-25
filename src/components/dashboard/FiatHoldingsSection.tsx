@@ -33,6 +33,7 @@ interface FiatHoldingsSectionProps {
   setCryptoCashBalance: React.Dispatch<React.SetStateAction<number>>;
   isPledged?: boolean;
   onAssetClick: (asset: Stock) => void;
+  onAddFunds: () => void;
 }
 
 export function FiatHoldingsSection({ 
@@ -45,7 +46,8 @@ export function FiatHoldingsSection({
     cryptoCashBalance, 
     setCryptoCashBalance,
     isPledged = false,
-    onAssetClick
+    onAssetClick,
+    onAddFunds,
 }: FiatHoldingsSectionProps) {
   const [activeFilter, setActiveFilter] = useState<HoldingFilterType>('All');
   const [viewMode, setViewMode] = useState<ViewMode>('list');
@@ -53,8 +55,6 @@ export function FiatHoldingsSection({
   const [pledgeDialogOpen, setPledgeDialogOpen] = useState(false);
   const [selectedHoldingForPledge, setSelectedHoldingForPledge] = useState<PortfolioHolding | null>(null);
   const [pledgeDialogMode, setPledgeDialogMode] = useState<'pledge' | 'payback'>('pledge');
-  const [isFundTransferDialogOpen, setIsFundTransferDialogOpen] = useState(false);
-  const [transferDirection, setTransferDirection] = useState<'toCrypto' | 'fromCrypto'>('toCrypto');
 
   const allHoldings = holdings;
 
@@ -80,23 +80,6 @@ export function FiatHoldingsSection({
           description: `${actionText} ${quantity} units of ${holding.symbol}.`,
       });
       setPledgeDialogOpen(false);
-  };
-
-  const handleOpenFundTransferDialog = (direction: 'toCrypto' | 'fromCrypto') => {
-    setTransferDirection(direction);
-    setIsFundTransferDialogOpen(true);
-  };
-  
-  const handleTransferConfirm = (amount: number, direction: 'toCrypto' | 'fromCrypto') => {
-    if (direction === 'toCrypto') {
-      setMainPortfolioCashBalance(prev => prev - amount);
-      setCryptoCashBalance(prev => prev + amount);
-      toast({ title: "Transfer Successful", description: `${formatCurrency(amount, 'INR')} transferred to Crypto Wallet.` });
-    } else { // fromCrypto
-      setMainPortfolioCashBalance(prev => prev + amount);
-      setCryptoCashBalance(prev => prev - amount);
-      toast({ title: "Transfer Successful", description: `${formatCurrency(amount, 'INR')} transferred to Main Portfolio.` });
-    }
   };
 
   const filterOptions: { label: string; value: HoldingFilterType }[] = [
@@ -297,6 +280,14 @@ export function FiatHoldingsSection({
                             <p className="text-muted-foreground">Cash Balance</p>
                             <p className="font-medium text-foreground">{formatCurrency(mainPortfolioCashBalance, 'INR')}</p>
                             </div>
+                            <div className="pt-3 grid grid-cols-2 gap-2">
+                                <Button variant="outline" size="sm" className="h-11" onClick={onAddFunds}>
+                                    <Coins className="mr-2 h-4 w-4" /> Add Funds
+                                </Button>
+                                <Button variant="outline" size="sm" className="h-11" onClick={onAddFunds}>
+                                    <Landmark className="mr-2 h-4 w-4" /> Withdraw
+                                </Button>
+                            </div>
                         </>
                     )}
                   </div>
@@ -340,15 +331,6 @@ export function FiatHoldingsSection({
             mode={pledgeDialogMode}
         />
       )}
-      <FundTransferDialog
-        isOpen={isFundTransferDialogOpen}
-        onOpenChange={setIsFundTransferDialogOpen}
-        transferDirection={transferDirection}
-        mainPortfolioCashBalance={mainPortfolioCashBalance}
-        cryptoCashBalance={cryptoCashBalance}
-        onTransferConfirm={handleTransferConfirm}
-        currencyMode={'INR'}
-      />
     </>
   );
 }

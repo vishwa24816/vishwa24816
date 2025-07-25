@@ -23,6 +23,7 @@ import { WealthHoldingsSection } from './WealthHoldingsSection';
 import { VolumeOiSection } from './VolumeOiSection';
 import { OverallPortfolioSummary } from './OverallPortfolioSummary';
 import { OpenPositionsDisplay } from '../orders/OpenPositionsDisplay';
+import { AddFundsDialog } from '@/components/shared/AddFundsDialog';
 
 
 import React, { useState, useMemo, useEffect } from 'react';
@@ -255,6 +256,7 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
   const [cryptoCashBalance, setCryptoCashBalance] = useState(15000.00);
   const [strategyLegs, setStrategyLegs] = useState<SelectedOptionLeg[]>([]);
   const [isFundTransferDialogOpen, setIsFundTransferDialogOpen] = useState(false);
+  const [isAddFundsDialogOpen, setIsAddFundsDialogOpen] = useState(false);
   const [transferDirection, setTransferDirection] = useState<'toCrypto' | 'fromCrypto'>('toCrypto');
 
   const handleOpenFundTransferDialog = (direction: 'toCrypto' | 'fromCrypto') => {
@@ -276,6 +278,16 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
       setCryptoCashBalance(prev => prev - amount);
       toast({ title: "Transfer Successful", description: `${formatCurrency(amount)} transferred to Main Portfolio.` });
     }
+  };
+
+  const handleAddWithdrawConfirm = (amount: number, type: 'add' | 'withdraw') => {
+      if (type === 'add') {
+        setMainPortfolioCashBalance(prev => prev + amount);
+        toast({ title: "Funds Added", description: `${formatCurrency(amount)} added to your main portfolio.` });
+      } else {
+        setMainPortfolioCashBalance(prev => prev - amount);
+        toast({ title: "Withdrawal Successful", description: `${formatCurrency(amount)} withdrawn from your main portfolio.` });
+      }
   };
 
 
@@ -432,40 +444,22 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
   
   const allHoldings = useMemo(() => [...fiatHoldings, ...wealthHoldings, ...cryptoHoldings, ...mockWeb3Holdings], [fiatHoldings, wealthHoldings, cryptoHoldings]);
   
-  const allPositions = useMemo(() => {
-    return [
-      ...mockIntradayPositions,
-      ...mockFoPositions.map(p => ({ ...p, type: 'FO' })),
-      ...mockCryptoFutures.map(p => ({ ...p, type: 'CryptoFuture' })),
-    ];
-  }, []);
-
     const { totalPortfolioValue, unrealisedPnl, investedMargin } = useMemo(() => {
-        let holdingsValue = allHoldings.reduce((acc, h) => acc + (h.currentValue || 0), 0);
-        let holdingsInvestment = allHoldings.reduce((acc, h) => acc + ((h.avgCostPrice || 0) * (h.quantity || 0)), 0);
+        const holdingsValue = allHoldings.reduce((acc, h) => acc + (h.currentValue || 0), 0);
+        const holdingsInvestment = allHoldings.reduce((acc, h) => acc + ((h.avgCostPrice || 0) * (h.quantity || 0)), 0);
 
-        let positionsInvestment = 0;
-        let positionsPnl = 0;
+        const intradayInvestment = mockIntradayPositions.reduce((acc, p) => acc + (p.avgPrice * p.quantity), 0);
+        const intradayPnl = mockIntradayPositions.reduce((acc, p) => acc + p.pAndL, 0);
 
-        mockIntradayPositions.forEach(p => {
-            positionsInvestment += p.avgPrice * p.quantity;
-            positionsPnl += p.pAndL;
-        });
+        const foInvestment = mockFoPositions.reduce((acc, p) => acc + (p.avgPrice * p.lots * p.quantityPerLot), 0);
+        const foPnl = mockFoPositions.reduce((acc, p) => acc + p.pAndL, 0);
+        
+        const cryptoFuturesInvestment = mockCryptoFutures.reduce((acc, p) => acc + (p.margin || 0), 0);
+        const cryptoFuturesPnl = mockCryptoFutures.reduce((acc, p) => acc + p.unrealizedPnL, 0);
 
-        mockFoPositions.forEach(p => {
-            positionsInvestment += p.avgPrice * p.lots * p.quantityPerLot;
-            positionsPnl += p.pAndL;
-        });
-
-        mockCryptoFutures.forEach(p => {
-            // Margin is the investment for futures
-            positionsInvestment += p.margin;
-            positionsPnl += p.unrealizedPnL;
-        });
-
-        const totalInvestment = holdingsInvestment + positionsInvestment;
-        const totalPnl = (holdingsValue - holdingsInvestment) + positionsPnl;
-
+        const totalInvestment = holdingsInvestment + intradayInvestment + foInvestment + cryptoFuturesInvestment;
+        const totalPnl = (holdingsValue - holdingsInvestment) + intradayPnl + foPnl + cryptoFuturesPnl;
+        
         return {
             totalPortfolioValue: totalInvestment + totalPnl,
             unrealisedPnl: totalPnl,
@@ -489,8 +483,8 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
                     unrealisedPnl={unrealisedPnl}
                     availableMargin={mainPortfolioCashBalance + cryptoCashBalance} // simplified
                     investedMargin={investedMargin}
-                    onAddFunds={() => handleOpenFundTransferDialog('toCrypto')}
-                    onWithdrawFunds={() => handleOpenFundTransferDialog('fromCrypto')}
+                    onAddFunds={() => setIsAddFundsDialogOpen(true)}
+                    onWithdrawFunds={() => setIsAddFundsDialogOpen(true)}
                 />
                 <OpenPositionsDisplay 
                     fiatHoldings={fiatHoldings}
@@ -528,8 +522,8 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
                     unrealisedPnl={unrealisedPnl}
                     availableMargin={availableMargin}
                     investedMargin={investedMargin}
-                    onAddFunds={() => handleOpenFundTransferDialog('toCrypto')}
-                    onWithdrawFunds={() => handleOpenFundTransferDialog('fromCrypto')}
+                    onAddFunds={() => setIsAddFundsDialogOpen(true)}
+                    onWithdrawFunds={() => setIsAddFundsDialogOpen(true)}
                 />
                 <FiatHoldingsSection title="Pledged Fiat Holdings" holdings={pledgedFiatHoldings} intradayPositions={[]} foPositions={[]} mainPortfolioCashBalance={0} setMainPortfolioCashBalance={() => {}} cryptoCashBalance={0} setCryptoCashBalance={() => {}} isPledged={true} onAssetClick={onAssetClick} />
                 <WealthHoldingsSection holdings={pledgedWealthHoldings} isPledged={true} onAssetClick={onAssetClick} />
@@ -756,7 +750,12 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
         onTransferConfirm={handleTransferConfirm}
         currencyMode={'INR'}
       />
+       <AddFundsDialog
+        isOpen={isAddFundsDialogOpen}
+        onOpenChange={setIsAddFundsDialogOpen}
+        currentBalance={mainPortfolioCashBalance}
+        onConfirm={handleAddWithdrawConfirm}
+      />
     </>
   );
 }
-
