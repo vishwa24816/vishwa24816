@@ -34,14 +34,17 @@ export function MarketMovers({ stocks, displayMode, optionsData, futuresData, on
   
   const isCrypto = stocks.some(s => s.exchange === 'Crypto' || s.exchange === 'Crypto Futures');
   const isCryptoOptions = stocks.some(s => s.exchange === 'Crypto Options');
-  const isNfoDerivative = stocks.some(s => s.exchange === 'NFO');
+  const isNfoFutures = stocks.some(s => s.symbol?.includes('FUT'));
+  const isNfoOptions = stocks.some(s => s.symbol?.includes('CE') || s.symbol?.includes('PE'));
   
   const trendingTitle = useMemo(() => {
     if (isCryptoOptions) return "Trending Crypto Options";
     if (isCrypto) return "Trending Crypto";
-    if (isNfoDerivative) return "Trending Options/Futures";
+    if (isNfoFutures) return "Trending Futures";
+    if (isNfoOptions) return "Trending Options";
+    if (stocks.some(s => s.exchange === 'NFO')) return "Trending Derivatives";
     return "Trending Stocks";
-  }, [isCrypto, isCryptoOptions, isNfoDerivative]);
+  }, [isCrypto, isCryptoOptions, isNfoFutures, isNfoOptions, stocks]);
 
 
   switch (displayMode) {
