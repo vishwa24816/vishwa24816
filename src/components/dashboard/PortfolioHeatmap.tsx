@@ -42,7 +42,13 @@ export function PortfolioHeatmap({ items }: PortfolioHeatmapProps) {
           const isPositive = item.pnl >= 0;
           
           const pnlStrength = Math.min(Math.abs(item.pnlPercent) / 5, 1); // Normalize pnl % for color intensity (cap at 5%)
-          const colorIntensity = 400 + Math.floor(pnlStrength * 300); // from 400 to 700
+          
+          // Determine the base color and intensity. Tailwind needs full class names, so we can't build them dynamically with string interpolation easily.
+          // We'll use CSS variables to handle the color intensity dynamically.
+          const colorClass = isPositive
+            ? 'bg-green-500/80 hover:bg-green-500/100'
+            : 'bg-red-500/80 hover:bg-red-500/100';
+          const textColor = pnlStrength > 0.6 ? 'text-white' : 'text-gray-800 dark:text-gray-200';
 
           return (
             <Tooltip key={item.name}>
@@ -51,20 +57,16 @@ export function PortfolioHeatmap({ items }: PortfolioHeatmapProps) {
                   style={{
                     flexBasis: `${sizePercent}%`,
                     flexGrow: sizePercent,
-                    backgroundColor: isPositive 
-                      ? `hsl(140 60% ${95 - pnlStrength * 50}%)` 
-                      : `hsl(0 60% ${95 - pnlStrength * 50}%)`,
+                    // The background color will be set by Tailwind classes
                   }}
                   className={cn(
-                      "p-2 rounded-md flex flex-col justify-between text-white flex-shrink-0 min-h-[60px] min-w-[80px] shadow-inner transition-all duration-300",
-                      isPositive 
-                          ? `bg-green-${colorIntensity} hover:bg-green-${colorIntensity + 100}` 
-                          : `bg-red-${colorIntensity} hover:bg-red-${colorIntensity + 100}`,
+                      "p-2 rounded-md flex flex-col justify-between flex-shrink-0 min-h-[60px] min-w-[80px] shadow-inner transition-all duration-300",
+                      colorClass,
                       "border-2 border-transparent hover:border-primary/50"
                   )}
                 >
-                  <span className={cn("text-xs font-semibold", colorIntensity > 600 ? "text-white" : "text-gray-800")}>{item.name}</span>
-                  <span className={cn("text-xs", colorIntensity > 600 ? "text-white/80" : "text-gray-700")}>
+                  <span className={cn("text-xs font-semibold", textColor)}>{item.name}</span>
+                  <span className={cn("text-xs", textColor, "opacity-80")}>
                     {isPositive ? '+' : ''}{item.pnlPercent.toFixed(2)}%
                   </span>
                 </div>
