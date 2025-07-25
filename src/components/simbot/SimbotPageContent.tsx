@@ -2,16 +2,18 @@
 "use client";
 
 import React, { useState, useRef, useEffect, FormEvent } from 'react';
-import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Bot, User, Send, Mic, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { ChatMessage, Stock } from '@/types';
 import { sendMessageToSimbotAction } from '@/app/actions';
 import { useAuth } from '@/contexts/AuthContext';
+import { mockStocks, mockCryptoAssets, mockMutualFunds } from '@/lib/mockData';
+
+const allAssets = [...mockStocks, ...mockCryptoAssets, ...mockMutualFunds];
 
 export function SimbotPageContent({ onNavigateRequest }: { onNavigateRequest: (asset: Stock) => void; }) {
   const { user: authUser } = useAuth();
@@ -45,7 +47,7 @@ export function SimbotPageContent({ onNavigateRequest }: { onNavigateRequest: (a
     ]);
   }, []);
 
-  const handleSendMessage = async (messageText: string) => {
+  const handleSendMessage = async (messageText: string, assetToNavigate?: Stock) => {
     const trimmedInput = messageText.trim();
     if (!trimmedInput) return;
 
@@ -59,6 +61,12 @@ export function SimbotPageContent({ onNavigateRequest }: { onNavigateRequest: (a
     setInputValue('');
     setIsLoading(true);
 
+    if (assetToNavigate) {
+       setTimeout(() => {
+            onNavigateRequest(assetToNavigate);
+       }, 2000);
+    }
+    
     const result = await sendMessageToSimbotAction(trimmedInput);
     
     let botReplyText = "Sorry, I couldn't process that. Please try again.";
@@ -76,11 +84,20 @@ export function SimbotPageContent({ onNavigateRequest }: { onNavigateRequest: (a
     };
     setMessages(prev => [...prev, botMessage]);
 
-    if (result.asset) {
+    if (result.asset && !assetToNavigate) {
         onNavigateRequest(result.asset);
     }
 
     setIsLoading(false);
+  };
+  
+  const handleSuggestionClick = (message: string, symbol: string) => {
+    const asset = allAssets.find(a => a.symbol === symbol);
+    if (asset) {
+        handleSendMessage(message, asset);
+    } else {
+        handleSendMessage(message);
+    }
   };
 
   const handleFormSubmit = (e: FormEvent) => {
@@ -105,7 +122,6 @@ export function SimbotPageContent({ onNavigateRequest }: { onNavigateRequest: (a
                   >
                     {msg.sender === 'bot' && (
                       <Avatar className="h-8 w-8 self-start">
-                        
                         <AvatarFallback>B</AvatarFallback>
                       </Avatar>
                     )}
@@ -124,7 +140,6 @@ export function SimbotPageContent({ onNavigateRequest }: { onNavigateRequest: (a
                     </div>
                     {msg.sender === 'user' && (
                       <Avatar className="h-8 w-8 self-start">
-                        
                         <AvatarFallback>{userEmailInitial}</AvatarFallback>
                       </Avatar>
                     )}
@@ -133,7 +148,6 @@ export function SimbotPageContent({ onNavigateRequest }: { onNavigateRequest: (a
                 {isLoading && (
                   <div className="flex items-center space-x-2 mr-auto justify-start max-w-[85%] sm:max-w-[75%]">
                     <Avatar className="h-8 w-8 self-start">
-                      
                       <AvatarFallback>B</AvatarFallback>
                     </Avatar>
                     <div className="p-3 rounded-xl shadow bg-muted text-foreground rounded-bl-none">
@@ -148,9 +162,9 @@ export function SimbotPageContent({ onNavigateRequest }: { onNavigateRequest: (a
         <footer className="fixed bottom-16 left-0 right-0 bg-background/80 backdrop-blur-sm border-t z-10">
           <div className="w-full px-4 py-3">
               <div className="flex items-center space-x-2 mb-2 overflow-x-auto no-scrollbar pb-1">
-                <Button variant="outline" size="sm" onClick={() => handleSendMessage('Buy Bitcoin')}>Buy Bitcoin</Button>
-                <Button variant="outline" size="sm" onClick={() => handleSendMessage('Buy Reliance')}>Buy Reliance</Button>
-                <Button variant="outline" size="sm" onClick={() => handleSendMessage('Buy Parag Parikh Flexi cap')}>Buy Parag Parikh Flexi cap</Button>
+                <Button variant="outline" size="sm" onClick={() => handleSuggestionClick('Buy Bitcoin', 'BTC')}>Buy Bitcoin</Button>
+                <Button variant="outline" size="sm" onClick={() => handleSuggestionClick('Buy Reliance', 'RELIANCE')}>Buy Reliance</Button>
+                <Button variant="outline" size="sm" onClick={() => handleSuggestionClick('Buy Parag Parikh Flexi cap', 'PARAGPARIKH')}>Buy Parag Parikh Flexi cap</Button>
               </div>
               <form onSubmit={handleFormSubmit} className="flex items-center space-x-2">
                 <Input
