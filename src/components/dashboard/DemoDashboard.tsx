@@ -393,6 +393,30 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
       newsForView = mockNewsArticles;
   }
   
+  const allHoldings = useMemo(() => [...fiatHoldings, ...wealthHoldings, ...cryptoHoldings, ...mockWeb3Holdings], [fiatHoldings, wealthHoldings, cryptoHoldings]);
+  const allPositions = useMemo(() => [...mockIntradayPositions, ...mockFoPositions, ...mockCryptoFutures], []);
+
+  const { totalPortfolioValue, unrealisedPnl, investedMargin } = useMemo(() => {
+    const holdingsValue = allHoldings.reduce((acc, h) => acc + (h.currentValue || 0), 0);
+    const positionsValue = allPositions.reduce((acc, p) => {
+        const qty = 'lots' in p ? p.lots * p.quantityPerLot : ('quantity' in p ? p.quantity : 0);
+        return acc + (p.ltp * qty);
+    }, 0);
+    
+    const holdingsInvestment = allHoldings.reduce((acc, h) => acc + (h.avgCostPrice * h.quantity), 0);
+    const positionsInvestment = allPositions.reduce((acc, p) => {
+      const qty = 'lots' in p ? p.lots * p.quantityPerLot : ('quantity' in p ? p.quantity : 0);
+      const avgPrice = 'avgPrice' in p ? p.avgPrice : ('entryPrice' in p ? p.entryPrice : 0);
+      return acc + (avgPrice * qty);
+    }, 0);
+
+    const totalPortfolioValue = holdingsValue + positionsValue;
+    const investedMargin = holdingsInvestment + positionsInvestment;
+    const unrealisedPnl = totalPortfolioValue - investedMargin;
+
+    return { totalPortfolioValue, unrealisedPnl, investedMargin };
+  }, [allHoldings, allPositions]);
+
   const renderPortfolioContent = () => {
     const isFiatHoldingsView = activeSecondaryItem === "Fiat Holdings";
     const isWealthHoldingsView = activeSecondaryItem === "Wealth Holdings";
@@ -402,30 +426,23 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
     const isWatchlistView = activeSecondaryItem === "Portfolio Watchlist";
     
     if (activePrimaryItem === 'Overview') {
-        const allHoldings = [...fiatHoldings, ...wealthHoldings, ...cryptoHoldings, ...mockWeb3Holdings];
-        const allPositions = [...mockIntradayPositions, ...mockFoPositions, ...mockCryptoFutures];
-
-        const totalValue = allHoldings.reduce((acc, h) => acc + h.currentValue, 0) + allPositions.reduce((acc, p) => acc + (p.ltp * ('quantity' in p ? p.quantity : ('lots' in p ? p.lots * p.quantityPerLot : 0))), 0);
-        const totalInvestment = allHoldings.reduce((acc, h) => acc + (h.avgCostPrice * h.quantity), 0) + allPositions.reduce((acc, p) => acc + (p.avgPrice * ('quantity' in p ? p.quantity : ('lots' in p ? p.lots * p.quantityPerLot : 0))), 0);
-        const unrealisedPnl = totalValue - totalInvestment;
-
         return (
             <div className="space-y-8">
                 <OverallPortfolioSummary 
-                    totalPortfolioValue={totalValue} 
+                    totalPortfolioValue={totalPortfolioValue} 
                     unrealisedPnl={unrealisedPnl}
                     availableMargin={mainPortfolioCashBalance + cryptoCashBalance} // simplified
-                    investedMargin={totalInvestment}
+                    investedMargin={investedMargin}
                 />
                 <OpenPositionsDisplay 
-                  fiatHoldings={fiatHoldings}
-                  wealthHoldings={wealthHoldings}
-                  cryptoHoldings={cryptoHoldings}
-                  web3Holdings={mockWeb3Holdings}
-                  intradayPositions={mockIntradayPositions}
-                  foPositions={mockFoPositions}
-                  cryptoFutures={mockCryptoFutures}
-                  onCategoryClick={handleCategoryClick}
+                    fiatHoldings={fiatHoldings}
+                    wealthHoldings={wealthHoldings}
+                    cryptoHoldings={cryptoHoldings}
+                    web3Holdings={mockWeb3Holdings}
+                    intradayPositions={mockIntradayPositions}
+                    foPositions={mockFoPositions}
+                    cryptoFutures={mockCryptoFutures}
+                    onCategoryClick={handleCategoryClick}
                 />
             </div>
         )
@@ -463,7 +480,7 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
 
     switch (activePrimaryItem) {
         case 'Fiat':
-            if (isFiatHoldingsView) return <><FiatHoldingsSection holdings={fiatHoldings} intradayPositions={mockIntradayPositions} foPositions={mockFoPositions} mainPortfolioCashBalance={mainPortfolioCashBalance} setMainPortfolioCashBalance={setMainPortfolioCashBalance} cryptoCashBalance={cryptoCashBalance} setCryptoCashBalance={setCryptoCashBalance} onAssetClick={onAssetClick} /><NewsSection articles={newsForView} /></>;
+            if (isFiatHoldingsView) return <><FiatHoldingsSection holdings={fiatHoldings} intradayPositions={[]} foPositions={[]} mainPortfolioCashBalance={mainPortfolioCashBalance} setMainPortfolioCashBalance={setMainPortfolioCashBalance} cryptoCashBalance={cryptoCashBalance} setCryptoCashBalance={setCryptoCashBalance} onAssetClick={onAssetClick} /><NewsSection articles={newsForView} /></>;
             if (isWealthHoldingsView) return <><WealthHoldingsSection holdings={wealthHoldings} onAssetClick={onAssetClick} /><NewsSection articles={newsForView} /></>;
             if (isPositionsView) return <div className="space-y-8"><IntradayPositionsSection onAssetClick={onAssetClick}/><FoPositionsSection onAssetClick={onAssetClick}/><FoBasketSection /><NewsSection articles={newsForView} /></div>;
             if (isWatchlistView) return <div className="space-y-8"><WatchlistSection title="My Fiat Watchlist" defaultInitialItems={itemsForWatchlist} localStorageKeyOverride="simFiatWatchlist" onAssetClick={onAssetClick}/><NewsSection articles={newsForView} /></div>;
@@ -471,7 +488,7 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
         case 'Crypto':
             if (isCryptoHoldingsView) return <><CryptoHoldingsSection title="Crypto Wallet & Holdings" holdings={cryptoHoldings} cashBalance={cryptoCashBalance} setCashBalance={setCryptoCashBalance} mainPortfolioCashBalance={mainPortfolioCashBalance} setMainPortfolioCashBalance={setMainPortfolioCashBalance} isRealMode={false} walletMode={walletMode} setWalletMode={setWalletMode} onAssetClick={onAssetClick} /><NewsSection articles={newsForView} /></>;
             if (isWeb3HoldingsView) return <><CryptoHoldingsSection title="Web3 Wallet & Holdings" holdings={mockWeb3Holdings} cashBalance={cryptoCashBalance} setCashBalance={setCryptoCashBalance} mainPortfolioCashBalance={mainPortfolioCashBalance} setMainPortfolioCashBalance={setMainPortfolioCashBalance} isRealMode={false} walletMode={walletMode} setWalletMode={setWalletMode} onAssetClick={onAssetClick} /><NewsSection articles={newsForView} /></>;
-            if (isPositionsView) return <div className="space-y-8"><CryptoFuturesSection positions={mockCryptoFutures} cashBalance={cryptoCashBalance} onAssetClick={onAssetClick} /><CryptoBasketSection /><NewsSection articles={newsForView} /></div>;
+            if (isPositionsView) return <div className="space-y-8"><CryptoFuturesSection positions={mockCryptoFutures} cashBalance={cryptoCashBalance} /><CryptoBasketSection /><NewsSection articles={newsForView} /></div>;
             if (isWatchlistView) return <div className="space-y-8"><WatchlistSection title="My Crypto Watchlist" defaultInitialItems={itemsForWatchlist} localStorageKeyOverride={'simCryptoWatchlist'} onAssetClick={onAssetClick} /><NewsSection articles={newsForView} /></div>;
             return null;
         default: return null;
@@ -501,7 +518,7 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
                 return (
                     <div className="space-y-8">
                         <MarketMovers stocks={mockOptionsForWatchlist} displayMode="full" optionsData={mockOptionsForWatchlist} onAssetClick={onAssetClick} />
-                        <VolumeOiSection optionsData={mockOptionsForWatchlist} onAssetClick={onAssetClick}/>
+                        <VolumeOiSection optionsData={mockOptionsForWatchlist}/>
                         <NewsSection articles={newsForView} />
                     </div>
                 );
