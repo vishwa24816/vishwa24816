@@ -56,6 +56,7 @@ import { mockCryptoIndices } from '@/lib/mockData/cryptoIndices';
 import { mockUsStocks } from '@/lib/mockData/usStocks';
 import type { WalletMode } from '@/components/dashboard/CryptoHoldingsSection';
 import Image from 'next/image';
+import { PortfolioCategoryCard } from '../orders/PortfolioCategoryCard';
 
 // Helper functions
 function getRelevantNewsForHoldings(holdings: PortfolioHolding[], allNews: NewsArticle[]): NewsArticle[] {
@@ -407,9 +408,16 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
                     availableMargin={mainPortfolioCashBalance + cryptoCashBalance} // simplified
                     investedMargin={totalInvestment}
                 />
-                <OpenPositionsDisplay isRealMode={false} activeMode="Fiat" />
-                <OpenPositionsDisplay isRealMode={false} activeMode="Crypto" />
-                <OpenPositionsDisplay isRealMode={false} activeMode="Web3" />
+                <OpenPositionsDisplay 
+                  fiatHoldings={fiatHoldings}
+                  wealthHoldings={wealthHoldings}
+                  cryptoHoldings={cryptoHoldings}
+                  web3Holdings={mockWeb3Holdings}
+                  intradayPositions={mockIntradayPositions}
+                  foPositions={mockFoPositions}
+                  cryptoFutures={mockCryptoFutures}
+                  onAssetClick={onAssetClick}
+                />
             </div>
         )
     }
