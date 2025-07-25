@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { SubNav } from '@/components/dashboard/SubNav';
@@ -20,6 +21,7 @@ import { CryptoBasketSection } from './CryptoBasketSection';
 import { MarketMovers } from './MarketMovers';
 import { WealthHoldingsSection } from './WealthHoldingsSection';
 import { VolumeOiSection } from './VolumeOiSection';
+import { OverallPortfolioSummary } from './OverallPortfolioSummary';
 
 
 import React, { useState, useMemo, useEffect } from 'react';
@@ -187,7 +189,7 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
                 Wealth: ["Holdings", "Portfolio Watchlist"],
                 Crypto: ["Holdings", "Positions", "Portfolio Watchlist"],
                 Web3: ["Holdings", "Portfolio Watchlist"],
-                "Pledged Holdings": ["Fiat", "Wealth", "Crypto", "Web3"],
+                "Pledged Holdings": [],
             }
         }
     }
@@ -388,6 +390,36 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
     const isPositionsView = activeSecondaryItem === "Positions";
     const isWatchlistView = activeSecondaryItem === "Portfolio Watchlist";
 
+    if (activePrimaryItem === 'Pledged Holdings') {
+        const pledgedFiatHoldings = fiatHoldings.slice(0, 2); 
+        const pledgedWealthHoldings = wealthHoldings.slice(0, 2);
+        const pledgedCryptoHoldings = cryptoHoldings.slice(0, 1);
+        const pledgedWeb3Holdings = mockWeb3Holdings.slice(0, 1);
+        const allPledged = [...pledgedFiatHoldings, ...pledgedWealthHoldings, ...pledgedCryptoHoldings, ...pledgedWeb3Holdings];
+
+        const totalPledgedValue = allPledged.reduce((acc, h) => acc + h.currentValue, 0);
+        const totalPledgedInvestment = allPledged.reduce((acc, h) => acc + (h.quantity * h.avgCostPrice), 0);
+        const unrealisedPnl = totalPledgedValue - totalPledgedInvestment;
+        // Mock margin values
+        const availableMargin = allPledged.reduce((acc, h) => acc + (h.currentValue * 0.8), 0); // 80% of value as margin
+        const investedMargin = totalPledgedInvestment;
+        
+        return (
+            <div className="space-y-8">
+                <OverallPortfolioSummary 
+                    totalPortfolioValue={totalPledgedValue} 
+                    unrealisedPnl={unrealisedPnl}
+                    availableMargin={availableMargin}
+                    investedMargin={investedMargin}
+                />
+                <FiatHoldingsSection title="Pledged Fiat Holdings" holdings={pledgedFiatHoldings} intradayPositions={[]} foPositions={[]} mainPortfolioCashBalance={0} setMainPortfolioCashBalance={() => {}} cryptoCashBalance={0} setCryptoCashBalance={() => {}} isPledged={true} />
+                <WealthHoldingsSection holdings={pledgedWealthHoldings} isPledged={true} />
+                <CryptoHoldingsSection title="Pledged Crypto Holdings" holdings={pledgedCryptoHoldings} cashBalance={0} setCashBalance={() => {}} mainPortfolioCashBalance={0} setMainPortfolioCashBalance={() => {}} isRealMode={false} isPledged={true} walletMode={walletMode} setWalletMode={setWalletMode} />
+                <CryptoHoldingsSection title="Pledged Web3 Holdings" holdings={pledgedWeb3Holdings} cashBalance={0} setCashBalance={() => {}} mainPortfolioCashBalance={0} setMainPortfolioCashBalance={() => {}} isRealMode={false} isPledged={true} walletMode={walletMode} setWalletMode={setWalletMode}/>
+            </div>
+        )
+    }
+
     switch (activePrimaryItem) {
         case 'Fiat':
             if (isHoldingsView) return <><FiatHoldingsSection holdings={fiatHoldings} intradayPositions={mockIntradayPositions} foPositions={mockFoPositions} mainPortfolioCashBalance={mainPortfolioCashBalance} setMainPortfolioCashBalance={setMainPortfolioCashBalance} cryptoCashBalance={cryptoCashBalance} setCryptoCashBalance={setCryptoCashBalance} /><NewsSection articles={newsForView} /></>;
@@ -406,17 +438,6 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
         case 'Web3':
              if (isHoldingsView) return <><CryptoHoldingsSection title="Web3 Wallet & Holdings" holdings={mockWeb3Holdings} cashBalance={cryptoCashBalance} setCashBalance={setCryptoCashBalance} mainPortfolioCashBalance={mainPortfolioCashBalance} setMainPortfolioCashBalance={setMainPortfolioCashBalance} isRealMode={false} walletMode={walletMode} setWalletMode={setWalletMode} /><NewsSection articles={newsForView} /></>;
              if (isWatchlistView) return <div className="space-y-8"><WatchlistSection title="My Web3 Watchlist" localStorageKeyOverride={'simWeb3Watchlist'}/><NewsSection articles={newsForView} /></div>;
-            return null;
-        case 'Pledged Holdings':
-            const pledgedFiatHoldings = fiatHoldings.slice(0, 2); 
-            const pledgedWealthHoldings = wealthHoldings.slice(0, 2);
-            const pledgedCryptoHoldings = cryptoHoldings.slice(0, 1);
-            const pledgedWeb3Holdings = mockWeb3Holdings.slice(0, 1);
-
-            if (activeSecondaryItem === 'Fiat') return <FiatHoldingsSection title="Pledged Fiat Holdings" holdings={pledgedFiatHoldings} intradayPositions={[]} foPositions={[]} mainPortfolioCashBalance={0} setMainPortfolioCashBalance={() => {}} cryptoCashBalance={0} setCryptoCashBalance={() => {}} isPledged={true} />;
-            if (activeSecondaryItem === 'Wealth') return <WealthHoldingsSection holdings={pledgedWealthHoldings} isPledged={true} />;
-            if (activeSecondaryItem === 'Crypto') return <CryptoHoldingsSection title="Pledged Crypto Holdings" holdings={pledgedCryptoHoldings} cashBalance={0} setCashBalance={() => {}} mainPortfolioCashBalance={0} setMainPortfolioCashBalance={() => {}} isRealMode={false} isPledged={true} walletMode={walletMode} setWalletMode={setWalletMode} />;
-            if (activeSecondaryItem === 'Web3') return <CryptoHoldingsSection title="Pledged Web3 Holdings" holdings={pledgedWeb3Holdings} cashBalance={0} setCashBalance={() => {}} mainPortfolioCashBalance={0} setMainPortfolioCashBalance={() => {}} isRealMode={false} isPledged={true} walletMode={walletMode} setWalletMode={setWalletMode}/>;
             return null;
         default: return null;
     }
