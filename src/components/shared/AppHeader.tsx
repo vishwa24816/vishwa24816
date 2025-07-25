@@ -84,9 +84,9 @@ export function AppHeader({ activeMode, onModeChange, isRealMode, walletMode }: 
     };
   }, [activeMode, isRealMode]);
   
-  const availableModes: ('Portfolio' | 'Fiat' | 'Crypto')[] = isRealMode 
-    ? ['Portfolio', 'Crypto'] 
-    : ['Portfolio', 'Fiat', 'Crypto'];
+  const availableModes: ('Portfolio' | 'Fiat' | 'Wealth' | 'Crypto' | 'Web3')[] = isRealMode 
+    ? ['Portfolio', 'Crypto', 'Web3'] 
+    : ['Portfolio', 'Fiat', 'Wealth', 'Crypto', 'Web3'];
 
 
   if (!isMounted) {
