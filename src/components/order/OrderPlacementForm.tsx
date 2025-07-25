@@ -30,66 +30,6 @@ import { AddToBasketDialog } from './AddToBasketDialog';
 import { SipForm } from './SipForm';
 
 // #region Helper Components
-
-const AdvancedOptionInput = ({
-  label,
-  id,
-  isEnabled,
-  onToggle,
-  value,
-  onValueChange,
-  unit,
-  onUnitChange,
-}: {
-  label: string;
-  id: string;
-  isEnabled: boolean;
-  onToggle: (checked: boolean) => void;
-  value: string;
-  onValueChange: (value: string) => void;
-  unit: 'price' | 'percent';
-  onUnitChange: (unit: 'price' | 'percent') => void;
-}) => {
-  return (
-    <div className="space-y-2">
-      <div className="flex items-center space-x-2">
-        <Checkbox id={`${id}-check`} checked={isEnabled} onCheckedChange={onToggle} />
-        <Label htmlFor={`${id}-check`} className="font-normal">{label}</Label>
-      </div>
-      {isEnabled && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pl-6 items-center">
-          <Input
-            id={id}
-            type="number"
-            placeholder="0"
-            value={value}
-            onChange={(e) => onValueChange(e.target.value)}
-            className="w-full"
-          />
-          <div className="flex">
-            <Button
-              type="button"
-              variant={unit === 'price' ? 'secondary' : 'ghost'}
-              onClick={() => onUnitChange('price')}
-              className="h-9 rounded-r-none flex-1 text-xs px-2"
-            >
-              ₹
-            </Button>
-            <Button
-              type="button"
-              variant={unit === 'percent' ? 'secondary' : 'ghost'}
-              onClick={() => onUnitChange('percent')}
-              className="h-9 rounded-l-none flex-1 text-xs px-2"
-            >
-              %
-            </Button>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-};
-
 const MarketDepth = ({ asset, onPriceClick }: { asset: Stock; onPriceClick: (price: number) => void; }) => {
     const marketDepthData = useMemo(() => {
         const basePrice = asset.price;
@@ -168,25 +108,12 @@ const StockOrderForm = ({ asset, assetType, productType, onProductTypeChange }: 
     const [selectedExchange, setSelectedExchange] = useState<'BSE' | 'NSE' | 'NASDAQ' | 'NYSE'>(isUsStock ? (asset.exchange || 'NASDAQ') : 'NSE');
     const [orderMode, setOrderMode] = useState('Regular');
     const [orderType, setOrderType] = useState('Limit');
-    const [showMoreOptions, setShowMoreOptions] = useState(false);
     const [mtfLeverage, setMtfLeverage] = useState('1x');
     const [displayedMargin, setDisplayedMargin] = useState(0);
     const [isAddToBasketDialogOpen, setIsAddToBasketDialogOpen] = useState(false);
 
-    // HODL state
     const [lockInYears, setLockInYears] = useState('');
     const [lockInMonths, setLockInMonths] = useState('');
-
-    // Advanced options state
-    const [isStopLossEnabled, setIsStopLossEnabled] = useState(false);
-    const [stopLossValue, setStopLossValue] = useState('');
-    const [stopLossUnit, setStopLossUnit] = useState<'price' | 'percent'>('price');
-    const [isTrailingSlEnabled, setIsTrailingSlEnabled] = useState(false);
-    const [trailingSlValue, setTrailingSlValue] = useState('');
-    const [trailingSlUnit, setTrailingSlUnit] = useState<'price' | 'percent'>('price');
-    const [isTargetProfitEnabled, setIsTargetProfitEnabled] = useState(false);
-    const [targetProfitValue, setTargetProfitValue] = useState('');
-    const [targetProfitUnit, setTargetProfitUnit] = useState<'price' | 'percent'>('price');
 
     useEffect(() => {
         const currentPrice = asset.price;
@@ -209,7 +136,7 @@ const StockOrderForm = ({ asset, assetType, productType, onProductTypeChange }: 
             if (leverageFactor > 0) baseMargin /= leverageFactor;
         }
         setDisplayedMargin(baseMargin);
-    }, [quantity, price, orderType, asset, orderMode, mtfLeverage, productType, selectedExchange]);
+    }, [quantity, price, orderType, asset, orderMode, mtfLeverage]);
     
     const handleMarketDepthPriceClick = (clickedPrice: number) => {
         setPrice(clickedPrice.toFixed(2));
@@ -219,43 +146,22 @@ const StockOrderForm = ({ asset, assetType, productType, onProductTypeChange }: 
     const regularOrderFields = (
       <div className="space-y-4">
             <RadioGroup value={productType} onValueChange={onProductTypeChange} className="flex flex-wrap gap-x-4 sm:gap-x-6 gap-y-2">
-                <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="Intraday" id="intraday-stock" />
-                    <Label htmlFor="intraday-stock" className="font-normal">Intraday</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="Delivery" id="delivery-stock" />
-                    <Label htmlFor="delivery-stock" className="font-normal">Delivery</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="HODL" id="hodl-stock" />
-                    <Label htmlFor="hodl-stock" className="font-normal">HODL</Label>
-                </div>
+                <div className="flex items-center space-x-2"> <RadioGroupItem value="Intraday" id="intraday-stock" /> <Label htmlFor="intraday-stock" className="font-normal">Intraday</Label> </div>
+                <div className="flex items-center space-x-2"> <RadioGroupItem value="Delivery" id="delivery-stock" /> <Label htmlFor="delivery-stock" className="font-normal">Delivery</Label> </div>
+                <div className="flex items-center space-x-2"> <RadioGroupItem value="HODL" id="hodl-stock" /> <Label htmlFor="hodl-stock" className="font-normal">HODL</Label> </div>
             </RadioGroup>
 
             <div className="grid grid-cols-2 gap-4 items-end">
-                <div>
-                    <Label htmlFor="qty-stock">Qty.</Label>
-                    <Input id="qty-stock" type="number" value={quantity} onChange={(e) => setQuantity(e.target.value)} min="1" step="1"/>
-                </div>
-                <div>
-                    <Label htmlFor="price-stock">Price</Label>
-                    <Input id="price-stock" type="text" value={price} onChange={(e) => setPrice(e.target.value)} disabled={orderType === 'Market'} />
-                </div>
+                <div> <Label htmlFor="qty-stock">Qty.</Label> <Input id="qty-stock" type="number" value={quantity} onChange={(e) => setQuantity(e.target.value)} min="1" step="1"/> </div>
+                <div> <Label htmlFor="price-stock">Price</Label> <Input id="price-stock" type="text" value={price} onChange={(e) => setPrice(e.target.value)} disabled={orderType === 'Market'} /> </div>
             </div>
 
             {productType === 'HODL' && (
                 <div className="space-y-2 pt-2 animate-accordion-down">
                     <Label>Lock-in Period</Label>
                     <div className="grid grid-cols-2 gap-4">
-                        <div>
-                            <Label htmlFor="lock-in-years-stock" className="text-xs text-muted-foreground">Years</Label>
-                            <Input id="lock-in-years-stock" type="number" placeholder="Years" value={lockInYears} onChange={e => setLockInYears(e.target.value)} min="0" />
-                        </div>
-                         <div>
-                            <Label htmlFor="lock-in-months-stock" className="text-xs text-muted-foreground">Months</Label>
-                            <Input id="lock-in-months-stock" type="number" placeholder="Months" value={lockInMonths} onChange={e => setLockInMonths(e.target.value)} min="0" max="11"/>
-                        </div>
+                        <div> <Label htmlFor="lock-in-years-stock" className="text-xs text-muted-foreground">Years</Label> <Input id="lock-in-years-stock" type="number" placeholder="Years" value={lockInYears} onChange={e => setLockInYears(e.target.value)} min="0" /> </div>
+                        <div> <Label htmlFor="lock-in-months-stock" className="text-xs text-muted-foreground">Months</Label> <Input id="lock-in-months-stock" type="number" placeholder="Months" value={lockInMonths} onChange={e => setLockInMonths(e.target.value)} min="0" max="11"/> </div>
                     </div>
                 </div>
             )}
@@ -317,12 +223,10 @@ const StockOrderForm = ({ asset, assetType, productType, onProductTypeChange }: 
 };
 
 const CryptoOrderForm = ({ asset, assetType, productType, onProductTypeChange }: any) => {
-    const { toast } = useToast();
     const [quantity, setQuantity] = useState<number | string>('1');
     const [price, setPrice] = useState<number | string>(asset.price.toFixed(2));
     const [orderMode, setOrderMode] = useState('Regular');
     const [orderType, setOrderType] = useState('Limit');
-    const [showMoreOptions, setShowMoreOptions] = useState(false);
     const [displayedMargin, setDisplayedMargin] = useState(0);
     const [isAddToBasketDialogOpen, setIsAddToBasketDialogOpen] = useState(false);
     const [lockInYears, setLockInYears] = useState('');
@@ -379,7 +283,7 @@ const CryptoOrderForm = ({ asset, assetType, productType, onProductTypeChange }:
             <MarketDepth asset={asset} onPriceClick={handleMarketDepthPriceClick} />
              <div className="p-4 border-t flex flex-col sm:flex-row gap-2">
                 <Button variant="outline" className="flex-1" onClick={() => setIsAddToBasketDialogOpen(true)}><ShoppingBasket className="mr-2 h-4 w-4" /> Add to Basket</Button>
-                <Button variant="outline" className="flex-1" onClick={() => toast({ title: "Add Alert (WIP)" })}><BellPlus className="mr-2 h-4 w-4" /> Add Alert</Button>
+                <Button variant="outline" className="flex-1" onClick={() => {}}><BellPlus className="mr-2 h-4 w-4" /> Add Alert</Button>
             </div>
              <AddToBasketDialog isOpen={isAddToBasketDialogOpen} onOpenChange={setIsAddToBasketDialogOpen} asset={asset} assetType={assetType} />
         </div>
@@ -412,6 +316,8 @@ const FutureOrderForm = ({ asset, assetType, productType, onProductTypeChange }:
         setPrice(clickedPrice.toFixed(2));
         setOrderType('Limit');
     };
+    
+    const isOption = assetType === 'option';
 
     return (
         <div className="bg-card shadow-md rounded-lg mt-4">
@@ -426,8 +332,8 @@ const FutureOrderForm = ({ asset, assetType, productType, onProductTypeChange }:
                     </div>
                 )}
                  <RadioGroup value={productType} onValueChange={onProductTypeChange} className="flex flex-wrap gap-x-4 sm:gap-x-6 gap-y-2">
-                  <div className="flex items-center space-x-2"> <RadioGroupItem value="Intraday" id="intraday-future" /><Label htmlFor="intraday-future" className="font-normal">Intraday</Label></div>
-                  <div className="flex items-center space-x-2"> <RadioGroupItem value="Overnight" id="overnight-future" /><Label htmlFor="overnight-future" className="font-normal">Expiry</Label></div>
+                    <div className="flex items-center space-x-2"> <RadioGroupItem value="Intraday" id="intraday-future" /><Label htmlFor="intraday-future" className="font-normal">Intraday</Label></div>
+                    <div className="flex items-center space-x-2"> <RadioGroupItem value="Overnight" id="overnight-future" /><Label htmlFor="overnight-future" className="font-normal">{isOption ? 'Delivery' : 'Expiry'}</Label></div>
                 </RadioGroup>
 
                 <div className="grid grid-cols-2 gap-4 items-end">
