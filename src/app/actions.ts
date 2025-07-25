@@ -23,18 +23,18 @@ export async function summarizeNewsAction(headlines: string): Promise<{ summary?
 }
 
 
-export async function sendMessageToSimbotAction(userMessage: string): Promise<{ reply?: string; error?: string }> {
+export async function sendMessageToSimbotAction(userMessage: string): Promise<ChatWithSimbotOutput & { error?: string }> {
   if (!userMessage.trim()) {
-    return { error: "Message cannot be empty." };
+    return { error: "Message cannot be empty.", reply: "" };
   }
 
   try {
     const input: ChatWithSimbotInput = { message: userMessage };
     const result: ChatWithSimbotOutput = await chatWithSimbot(input);
-    return { reply: result.reply };
+    return result;
   } catch (error) {
     console.error("Error sending message to Simbot:", error);
-    return { error: "Failed to get a response from Simbot. Please try again." };
+    return { error: "Failed to get a response from Simbot. Please try again.", reply: "An error occurred." };
   }
 }
 

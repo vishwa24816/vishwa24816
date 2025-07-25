@@ -2,6 +2,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect, FormEvent } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -14,6 +15,7 @@ import { useAuth } from '@/contexts/AuthContext';
 
 export function SimbotPageContent() {
   const { user: authUser } = useAuth();
+  const router = useRouter();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -37,7 +39,7 @@ export function SimbotPageContent() {
     setMessages([
       {
         id: 'initial-greeting',
-        text: 'Hello! I am Simbot, your AI assistant for market insights. How can I help you today?',
+        text: 'Hello! I am Simbot, your AI assistant for market insights. How can I help you today? You can ask me to "buy RELIANCE" to try out a command!',
         sender: 'bot',
         timestamp: new Date(),
       },
@@ -75,6 +77,11 @@ export function SimbotPageContent() {
       timestamp: new Date(),
     };
     setMessages(prev => [...prev, botMessage]);
+
+    if (result.navigationTarget) {
+        router.push(result.navigationTarget);
+    }
+
     setIsLoading(false);
   };
   
