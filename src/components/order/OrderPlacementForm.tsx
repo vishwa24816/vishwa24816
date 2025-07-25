@@ -90,7 +90,7 @@ const AdvancedOptionInput = ({
   );
 };
 
-const MarketDepth = ({ asset, selectedExchange, onPriceClick }: { asset: Stock; selectedExchange?: 'BSE' | 'NSE' | 'NASDAQ' | 'NYSE'; onPriceClick: (price: number) => void; }) => {
+const MarketDepth = ({ asset, onPriceClick }: { asset: Stock; onPriceClick: (price: number) => void; }) => {
     const marketDepthData = useMemo(() => {
         const basePrice = asset.price;
         const buy = Array.from({ length: 5 }, (_, i) => ({
@@ -107,7 +107,7 @@ const MarketDepth = ({ asset, selectedExchange, onPriceClick }: { asset: Stock; 
             totalBuyQty: buy.reduce((sum, order) => sum + order.quantity, 0),
             totalSellQty: sell.reduce((sum, order) => sum + order.quantity, 0),
         };
-    }, [asset.price, selectedExchange]);
+    }, [asset.price]);
 
     return (
         <div className="p-4 border-t">
@@ -156,158 +156,10 @@ const MarketDepth = ({ asset, selectedExchange, onPriceClick }: { asset: Stock; 
         </div>
     );
 };
-
-
 // #endregion Helper Components
 
-// #region Common Logic Hooks and Functions
-
-const CommonOrderFields = ({
-    orderProps,
-    orderMode,
-}: {
-    orderProps: any,
-    orderMode: string,
-}) => {
-    const {
-        asset, assetType, productType, onProductTypeChange, quantity, setQuantity,
-        price, setPrice, orderType, setOrderType,
-        showMoreOptions, setShowMoreOptions,
-        isStopLossEnabled, setIsStopLossEnabled, stopLossValue, setStopLossValue, stopLossUnit, setStopLossUnit,
-        isTrailingSlEnabled, setIsTrailingSlEnabled, trailingSlValue, setTrailingSlValue, trailingSlUnit, setTrailingSlUnit,
-        isTargetProfitEnabled, setIsTargetProfitEnabled, targetProfitValue, setTargetProfitValue, targetProfitUnit, setTargetProfitUnit,
-        lockInMonths, setLockInMonths, lockInYears, setLockInYears
-    } = orderProps;
-
-    const quantityInputLabel = (assetType === 'future' || assetType === 'crypto-future' || assetType === 'option') ? 'Lots' : 'Qty.';
-    const isCrypto = assetType === 'crypto' || assetType === 'crypto-future';
-    
-    // Futures and options do not have delivery/HODL product types
-    const showProductTypeSelection = assetType !== 'crypto-future' && assetType !== 'future' && assetType !== 'option';
-
-
-    return (
-        <div className="space-y-4">
-            {showProductTypeSelection && (
-                <RadioGroup value={productType} onValueChange={onProductTypeChange} className="flex flex-wrap gap-x-4 sm:gap-x-6 gap-y-2">
-                    <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="Intraday" id={`intraday-common`} />
-                        <Label htmlFor={`intraday-common`} className="font-normal">Intraday</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="Delivery" id={`delivery-common`} />
-                        <Label htmlFor={`delivery-common`} className="font-normal">Delivery</Label>
-                    </div>
-                     {(assetType === 'stock' || assetType === 'crypto') && orderMode === 'Regular' && (
-                        <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="HODL" id="hodl-common" />
-                            <Label htmlFor="hodl-common" className="font-normal">HODL</Label>
-                        </div>
-                    )}
-                </RadioGroup>
-            )}
-
-            <div className="grid grid-cols-2 gap-4 items-end">
-                <div>
-                    <Label htmlFor={`qty-common`}>{quantityInputLabel}</Label>
-                    <Input
-                        id={`qty-common`}
-                        type="text"
-                        value={quantity}
-                        onChange={(e) => setQuantity(e.target.value)}
-                        onBlur={(e) => {
-                             const numValue = parseFloat(e.target.value);
-                             if (isCrypto) {
-                                if (isNaN(numValue) || numValue < 0) setQuantity('0');
-                                else setQuantity(String(numValue));
-                             } else {
-                                if (isNaN(numValue) || numValue < 1) setQuantity('1');
-                                else setQuantity(String(Math.round(numValue)));
-                             }
-                        }}
-                    />
-                    {(assetType === 'future' || assetType === 'crypto-future' || assetType === 'option') && asset.lotSize && (
-                        <p className="text-xs text-muted-foreground mt-1">Lot Size: {asset.lotSize}</p>
-                    )}
-                </div>
-                <div>
-                    <Label htmlFor={`price-common`}>Price</Label>
-                    <Input id={`price-common`} type="text" value={price} onChange={(e) => setPrice(e.target.value)} disabled={orderType === 'Market'} />
-                </div>
-            </div>
-
-            {productType === 'HODL' && (
-                <div className="space-y-2 pt-2 animate-accordion-down">
-                    <Label>Lock-in Period</Label>
-                    <div className="grid grid-cols-2 gap-4">
-                        <div>
-                            <Label htmlFor="lock-in-years" className="text-xs text-muted-foreground">Years</Label>
-                            <Input id="lock-in-years" type="number" placeholder="Years" value={lockInYears} onChange={e => setLockInYears(e.target.value)} min="0" />
-                        </div>
-                         <div>
-                            <Label htmlFor="lock-in-months" className="text-xs text-muted-foreground">Months</Label>
-                            <Input id="lock-in-months" type="number" placeholder="Months" value={lockInMonths} onChange={e => setLockInMonths(e.target.value)} min="0" max="11"/>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            <RadioGroup value={orderType} onValueChange={(value) => setOrderType(value)} className="flex flex-wrap gap-x-4 gap-y-2">
-                {(['Market', 'Limit'] as const).map(type => (
-                    <div key={type} className="flex items-center space-x-2">
-                        <RadioGroupItem value={type} id={`orderType-${type}-common`} />
-                        <Label htmlFor={`orderType-${type}-common`} className="font-normal">{type}</Label>
-                    </div>
-                ))}
-            </RadioGroup>
-
-            <Button variant="link" size="sm" className="p-0 h-auto text-primary text-xs flex items-center" onClick={() => setShowMoreOptions(!showMoreOptions)}>
-                More options <ChevronDown className={cn("h-3 w-3 ml-0.5 transition-transform duration-200", showMoreOptions && "rotate-180")} />
-            </Button>
-            
-            {showMoreOptions && (
-              <div className="space-y-4 pt-4 border-t border-dashed animate-accordion-down">
-                <AdvancedOptionInput
-                  label="Stop Loss"
-                  id="stop-loss"
-                  isEnabled={isStopLossEnabled}
-                  onToggle={setIsStopLossEnabled}
-                  value={stopLossValue}
-                  onValueChange={setStopLossValue}
-                  unit={stopLossUnit}
-                  onUnitChange={setStopLossUnit}
-                />
-                <AdvancedOptionInput
-                  label="Trailing Stop Loss"
-                  id="trailing-sl"
-                  isEnabled={isTrailingSlEnabled}
-                  onToggle={setIsTrailingSlEnabled}
-                  value={trailingSlValue}
-                  onValueChange={setTrailingSlValue}
-                  unit={trailingSlUnit}
-                  onUnitChange={setTrailingSlUnit}
-                />
-                <AdvancedOptionInput
-                  label="Target Profit"
-                  id="target-profit"
-                  isEnabled={isTargetProfitEnabled}
-                  onToggle={setIsTargetProfitEnabled}
-                  value={targetProfitValue}
-                  onValueChange={setTargetProfitValue}
-                  unit={targetProfitUnit}
-                  onUnitChange={setTargetProfitUnit}
-                />
-              </div>
-            )}
-        </div>
-    );
-};
-
-
-// #endregion
 
 // #region Specialized Form Components
-
 const StockOrderForm = ({ asset, assetType, productType, onProductTypeChange }: any) => {
     const { toast } = useToast();
     const [quantity, setQuantity] = useState<number | string>(1);
@@ -364,15 +216,56 @@ const StockOrderForm = ({ asset, assetType, productType, onProductTypeChange }: 
         setOrderType('Limit');
     };
 
-    const commonOrderProps = {
-        asset, assetType, productType, onProductTypeChange, quantity, setQuantity,
-        price, setPrice, orderType, setOrderType,
-        showMoreOptions, setShowMoreOptions,
-        isStopLossEnabled, setIsStopLossEnabled, stopLossValue, setStopLossValue, stopLossUnit, setStopLossUnit,
-        isTrailingSlEnabled, setIsTrailingSlEnabled, trailingSlValue, setTrailingSlValue, trailingSlUnit, setTrailingSlUnit,
-        isTargetProfitEnabled, setIsTargetProfitEnabled, targetProfitValue, setTargetProfitValue, targetProfitUnit, setTargetProfitUnit,
-        lockInMonths, setLockInMonths, lockInYears, setLockInYears,
-    };
+    const regularOrderFields = (
+      <div className="space-y-4">
+            <RadioGroup value={productType} onValueChange={onProductTypeChange} className="flex flex-wrap gap-x-4 sm:gap-x-6 gap-y-2">
+                <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="Intraday" id="intraday-stock" />
+                    <Label htmlFor="intraday-stock" className="font-normal">Intraday</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="Delivery" id="delivery-stock" />
+                    <Label htmlFor="delivery-stock" className="font-normal">Delivery</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="HODL" id="hodl-stock" />
+                    <Label htmlFor="hodl-stock" className="font-normal">HODL</Label>
+                </div>
+            </RadioGroup>
+
+            <div className="grid grid-cols-2 gap-4 items-end">
+                <div>
+                    <Label htmlFor="qty-stock">Qty.</Label>
+                    <Input id="qty-stock" type="number" value={quantity} onChange={(e) => setQuantity(e.target.value)} min="1" step="1"/>
+                </div>
+                <div>
+                    <Label htmlFor="price-stock">Price</Label>
+                    <Input id="price-stock" type="text" value={price} onChange={(e) => setPrice(e.target.value)} disabled={orderType === 'Market'} />
+                </div>
+            </div>
+
+            {productType === 'HODL' && (
+                <div className="space-y-2 pt-2 animate-accordion-down">
+                    <Label>Lock-in Period</Label>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <Label htmlFor="lock-in-years-stock" className="text-xs text-muted-foreground">Years</Label>
+                            <Input id="lock-in-years-stock" type="number" placeholder="Years" value={lockInYears} onChange={e => setLockInYears(e.target.value)} min="0" />
+                        </div>
+                         <div>
+                            <Label htmlFor="lock-in-months-stock" className="text-xs text-muted-foreground">Months</Label>
+                            <Input id="lock-in-months-stock" type="number" placeholder="Months" value={lockInMonths} onChange={e => setLockInMonths(e.target.value)} min="0" max="11"/>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            <RadioGroup value={orderType} onValueChange={(value) => setOrderType(value)} className="flex flex-wrap gap-x-4 gap-y-2">
+                <div className="flex items-center space-x-2"><RadioGroupItem value="Market" id="orderType-market-stock" /><Label htmlFor="orderType-market-stock" className="font-normal">Market</Label></div>
+                <div className="flex items-center space-x-2"><RadioGroupItem value="Limit" id="orderType-limit-stock" /><Label htmlFor="orderType-limit-stock" className="font-normal">Limit</Label></div>
+            </RadioGroup>
+        </div>
+    );
 
     return (
         <div className="bg-card shadow-md rounded-lg mt-4">
@@ -380,25 +273,13 @@ const StockOrderForm = ({ asset, assetType, productType, onProductTypeChange }: 
                 <RadioGroup value={selectedExchange} onValueChange={(v) => setSelectedExchange(v as any)} className="flex space-x-4">
                     {isUsStock ? (
                         <>
-                            <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="NASDAQ" id="NASDAQ" />
-                                <Label htmlFor="NASDAQ" className="text-sm">NASDAQ: ₹{asset.price.toFixed(2)}</Label>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="NYSE" id="NYSE" />
-                                <Label htmlFor="NYSE" className="text-sm">NYSE: ₹{asset.price.toFixed(2)}</Label>
-                            </div>
+                            <div className="flex items-center space-x-2"> <RadioGroupItem value="NASDAQ" id="NASDAQ" /> <Label htmlFor="NASDAQ" className="text-sm">NASDAQ: ₹{asset.price.toFixed(2)}</Label> </div>
+                            <div className="flex items-center space-x-2"> <RadioGroupItem value="NYSE" id="NYSE" /> <Label htmlFor="NYSE" className="text-sm">NYSE: ₹{asset.price.toFixed(2)}</Label> </div>
                         </>
                     ) : (
                         <>
-                            <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="BSE" id="BSE" />
-                                <Label htmlFor="BSE" className="text-sm">BSE: ₹{asset.price.toFixed(2)}</Label>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="NSE" id="NSE" />
-                                <Label htmlFor="NSE" className="text-sm">NSE: ₹{asset.price.toFixed(2)}</Label>
-                            </div>
+                            <div className="flex items-center space-x-2"> <RadioGroupItem value="BSE" id="BSE" /> <Label htmlFor="BSE" className="text-sm">BSE: ₹{asset.price.toFixed(2)}</Label> </div>
+                            <div className="flex items-center space-x-2"> <RadioGroupItem value="NSE" id="NSE" /> <Label htmlFor="NSE" className="text-sm">NSE: ₹{asset.price.toFixed(2)}</Label> </div>
                         </>
                     )}
                 </RadioGroup>
@@ -410,27 +291,22 @@ const StockOrderForm = ({ asset, assetType, productType, onProductTypeChange }: 
                     <TabsTrigger value="SP" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">SP</TabsTrigger>
                 </TabsList>
                 <TabsContent value="Regular" className="p-4 mt-0">
-                    <CommonOrderFields orderProps={commonOrderProps} orderMode="Regular" />
-                     <div className="mt-4 pt-4 border-t"><p className="text-sm text-muted-foreground">Margin required: <span className="font-semibold text-foreground">₹{displayedMargin.toLocaleString('en-IN')}</span></p></div>
+                    {regularOrderFields}
+                    <div className="mt-4 pt-4 border-t"><p className="text-sm text-muted-foreground">Margin required: <span className="font-semibold text-foreground">₹{displayedMargin.toLocaleString('en-IN')}</span></p></div>
                 </TabsContent>
                 <TabsContent value="MTF" className="p-4 mt-0 space-y-4">
-                    <CommonOrderFields orderProps={commonOrderProps} orderMode="MTF" />
+                    {regularOrderFields}
                     <div className="space-y-2 pt-2">
                          <Label>Leverage</Label>
                          <RadioGroup value={mtfLeverage} onValueChange={setMtfLeverage} className="flex flex-wrap gap-x-4 gap-y-2">
-                             {['1x', '2x', '3x', '4x'].map(val => (
-                                 <div key={val} className="flex items-center space-x-2">
-                                     <RadioGroupItem value={val} id={`leverage-${val}-stock`} />
-                                     <Label htmlFor={`leverage-${val}-stock`} className="font-normal">{val}</Label>
-                                 </div>
-                             ))}
+                             {['1x', '2x', '3x', '4x'].map(val => ( <div key={val} className="flex items-center space-x-2"> <RadioGroupItem value={val} id={`leverage-${val}-stock`} /> <Label htmlFor={`leverage-${val}-stock`} className="font-normal">{val}</Label> </div> ))}
                          </RadioGroup>
                      </div>
                      <div className="mt-4 pt-4 border-t"><p className="text-sm text-muted-foreground">Margin required: <span className="font-semibold text-foreground">₹{displayedMargin.toLocaleString('en-IN')}</span></p></div>
                 </TabsContent>
                 <TabsContent value="SP" className="p-0 mt-0"><SipForm asset={asset} assetType="stock" /></TabsContent>
             </Tabs>
-            <MarketDepth asset={asset} selectedExchange={selectedExchange} onPriceClick={handleMarketDepthPriceClick} />
+            <MarketDepth asset={asset} onPriceClick={handleMarketDepthPriceClick} />
             <div className="p-4 border-t flex flex-col sm:flex-row gap-2">
                 <Button variant="outline" className="flex-1" onClick={() => setIsAddToBasketDialogOpen(true)}><ShoppingBasket className="mr-2 h-4 w-4" /> Add to Basket</Button>
                 <Button variant="outline" className="flex-1" onClick={() => toast({ title: "Add Alert (WIP)" })}><BellPlus className="mr-2 h-4 w-4" /> Add Alert</Button>
@@ -453,16 +329,6 @@ const CryptoOrderForm = ({ asset, assetType, productType, onProductTypeChange }:
     const [lockInMonths, setLockInMonths] = useState('');
 
 
-    const [isStopLossEnabled, setIsStopLossEnabled] = useState(false);
-    const [stopLossValue, setStopLossValue] = useState('');
-    const [stopLossUnit, setStopLossUnit] = useState<'price' | 'percent'>('price');
-    const [isTrailingSlEnabled, setIsTrailingSlEnabled] = useState(false);
-    const [trailingSlValue, setTrailingSlValue] = useState('');
-    const [trailingSlUnit, setTrailingSlUnit] = useState<'price' | 'percent'>('price');
-    const [isTargetProfitEnabled, setIsTargetProfitEnabled] = useState(false);
-    const [targetProfitValue, setTargetProfitValue] = useState('');
-    const [targetProfitUnit, setTargetProfitUnit] = useState<'price' | 'percent'>('price');
-
     useEffect(() => {
         const numQty = parseFloat(String(quantity)) || 0;
         const numPrice = parseFloat(String(price)) || 0;
@@ -474,16 +340,6 @@ const CryptoOrderForm = ({ asset, assetType, productType, onProductTypeChange }:
         setOrderType('Limit');
     };
 
-    const commonOrderProps = {
-        asset, assetType, productType, onProductTypeChange, quantity, setQuantity,
-        price, setPrice, orderType, setOrderType,
-        showMoreOptions, setShowMoreOptions,
-        isStopLossEnabled, setIsStopLossEnabled, stopLossValue, setStopLossValue, stopLossUnit, setStopLossUnit,
-        isTrailingSlEnabled, setIsTrailingSlEnabled, trailingSlValue, setTrailingSlValue, trailingSlUnit, setTrailingSlUnit,
-        isTargetProfitEnabled, setIsTargetProfitEnabled, targetProfitValue, setTargetProfitValue, targetProfitUnit, setTargetProfitUnit,
-        lockInMonths, setLockInMonths, lockInYears, setLockInYears
-    };
-
     return (
         <div className="bg-card shadow-md rounded-lg mt-4">
             <Tabs value={orderMode} onValueChange={setOrderMode} className="w-full">
@@ -492,8 +348,31 @@ const CryptoOrderForm = ({ asset, assetType, productType, onProductTypeChange }:
                     <TabsTrigger value="SP" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">SP</TabsTrigger>
                 </TabsList>
                 <TabsContent value="Regular" className="p-4 mt-0">
-                     <CommonOrderFields orderProps={commonOrderProps} orderMode="Regular" />
-                     <div className="mt-4 pt-4 border-t"><p className="text-sm text-muted-foreground">Margin required: <span className="font-semibold text-foreground">₹{displayedMargin.toLocaleString('en-IN')}</span></p></div>
+                    <div className="space-y-4">
+                        <RadioGroup value={productType} onValueChange={onProductTypeChange} className="flex flex-wrap gap-x-4 sm:gap-x-6 gap-y-2">
+                            <div className="flex items-center space-x-2"> <RadioGroupItem value="Intraday" id="intraday-crypto" /> <Label htmlFor="intraday-crypto" className="font-normal">Intraday</Label> </div>
+                            <div className="flex items-center space-x-2"> <RadioGroupItem value="Delivery" id="delivery-crypto" /> <Label htmlFor="delivery-crypto" className="font-normal">Delivery</Label> </div>
+                            <div className="flex items-center space-x-2"> <RadioGroupItem value="HODL" id="hodl-crypto" /> <Label htmlFor="hodl-crypto" className="font-normal">HODL</Label> </div>
+                        </RadioGroup>
+                        <div className="grid grid-cols-2 gap-4 items-end">
+                            <div><Label htmlFor="qty-crypto">Qty.</Label><Input id="qty-crypto" type="text" value={quantity} onChange={(e) => setQuantity(e.target.value)} /></div>
+                            <div><Label htmlFor="price-crypto">Price</Label><Input id="price-crypto" type="text" value={price} onChange={(e) => setPrice(e.target.value)} disabled={orderType === 'Market'} /></div>
+                        </div>
+                        {productType === 'HODL' && (
+                            <div className="space-y-2 pt-2 animate-accordion-down">
+                                <Label>Lock-in Period</Label>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div><Label htmlFor="lock-in-years-crypto" className="text-xs text-muted-foreground">Years</Label><Input id="lock-in-years-crypto" type="number" placeholder="Years" value={lockInYears} onChange={e => setLockInYears(e.target.value)} min="0" /></div>
+                                    <div><Label htmlFor="lock-in-months-crypto" className="text-xs text-muted-foreground">Months</Label><Input id="lock-in-months-crypto" type="number" placeholder="Months" value={lockInMonths} onChange={e => setLockInMonths(e.target.value)} min="0" max="11"/></div>
+                                </div>
+                            </div>
+                        )}
+                        <RadioGroup value={orderType} onValueChange={(value) => setOrderType(value)} className="flex flex-wrap gap-x-4 gap-y-2">
+                           <div className="flex items-center space-x-2"><RadioGroupItem value="Market" id="orderType-market-crypto" /><Label htmlFor="orderType-market-crypto" className="font-normal">Market</Label></div>
+                           <div className="flex items-center space-x-2"><RadioGroupItem value="Limit" id="orderType-limit-crypto" /><Label htmlFor="orderType-limit-crypto" className="font-normal">Limit</Label></div>
+                        </RadioGroup>
+                    </div>
+                    <div className="mt-4 pt-4 border-t"><p className="text-sm text-muted-foreground">Margin required: <span className="font-semibold text-foreground">₹{displayedMargin.toLocaleString('en-IN')}</span></p></div>
                 </TabsContent>
                 <TabsContent value="SP" className="p-0 mt-0"><SipForm asset={asset} assetType="crypto" /></TabsContent>
             </Tabs>
@@ -512,20 +391,9 @@ const FutureOrderForm = ({ asset, assetType, productType, onProductTypeChange }:
     const [quantity, setQuantity] = useState<number | string>(1);
     const [price, setPrice] = useState<number | string>(asset.price.toFixed(2));
     const [orderType, setOrderType] = useState('Limit');
-    const [showMoreOptions, setShowMoreOptions] = useState(false);
     const [selectedExpiryDate, setSelectedExpiryDate] = useState<string>('');
     const [displayedMargin, setDisplayedMargin] = useState(0);
     const [isAddToBasketDialogOpen, setIsAddToBasketDialogOpen] = useState(false);
-
-    const [isStopLossEnabled, setIsStopLossEnabled] = useState(false);
-    const [stopLossValue, setStopLossValue] = useState('');
-    const [stopLossUnit, setStopLossUnit] = useState<'price' | 'percent'>('price');
-    const [isTrailingSlEnabled, setIsTrailingSlEnabled] = useState(false);
-    const [trailingSlValue, setTrailingSlValue] = useState('');
-    const [trailingSlUnit, setTrailingSlUnit] = useState<'price' | 'percent'>('price');
-    const [isTargetProfitEnabled, setIsTargetProfitEnabled] = useState(false);
-    const [targetProfitValue, setTargetProfitValue] = useState('');
-    const [targetProfitUnit, setTargetProfitUnit] = useState<'price' | 'percent'>('price');
 
     useEffect(() => {
         if (asset.availableExpiries && asset.availableExpiries.length > 0) {
@@ -545,15 +413,6 @@ const FutureOrderForm = ({ asset, assetType, productType, onProductTypeChange }:
         setOrderType('Limit');
     };
 
-     const commonOrderProps = {
-        asset, assetType, productType, onProductTypeChange, quantity, setQuantity,
-        price, setPrice, orderType, setOrderType,
-        showMoreOptions, setShowMoreOptions,
-        isStopLossEnabled, setIsStopLossEnabled, stopLossValue, setStopLossValue, stopLossUnit, setStopLossUnit,
-        isTrailingSlEnabled, setIsTrailingSlEnabled, trailingSlValue, setTrailingSlValue, trailingSlUnit, setTrailingSlUnit,
-        isTargetProfitEnabled, setIsTargetProfitEnabled, targetProfitValue, setTargetProfitValue, targetProfitUnit, setTargetProfitUnit
-    };
-
     return (
         <div className="bg-card shadow-md rounded-lg mt-4">
             <div className="p-4 space-y-4">
@@ -566,7 +425,20 @@ const FutureOrderForm = ({ asset, assetType, productType, onProductTypeChange }:
                         </Select>
                     </div>
                 )}
-                 <CommonOrderFields orderProps={commonOrderProps} orderMode="Regular" />
+                <RadioGroup value={productType} onValueChange={onProductTypeChange} className="flex flex-wrap gap-x-4 sm:gap-x-6 gap-y-2">
+                  <div className="flex items-center space-x-2"> <RadioGroupItem value="Intraday" id="intraday-future" /><Label htmlFor="intraday-future" className="font-normal">Intraday</Label></div>
+                  <div className="flex items-center space-x-2"> <RadioGroupItem value="Overnight" id="overnight-future" /><Label htmlFor="overnight-future" className="font-normal">Expiry</Label></div>
+                </RadioGroup>
+
+                <div className="grid grid-cols-2 gap-4 items-end">
+                    <div><Label htmlFor="qty-future">Lots</Label><Input id="qty-future" type="number" value={quantity} onChange={e => setQuantity(e.target.value)} min="1" step="1"/></div>
+                    <div><Label htmlFor="price-future">Price</Label><Input id="price-future" type="text" value={price} onChange={e => setPrice(e.target.value)} disabled={orderType === 'Market'} /></div>
+                </div>
+                 <RadioGroup value={orderType} onValueChange={(value) => setOrderType(value)} className="flex flex-wrap gap-x-4 gap-y-2">
+                   <div className="flex items-center space-x-2"><RadioGroupItem value="Market" id="orderType-market-future" /><Label htmlFor="orderType-market-future" className="font-normal">Market</Label></div>
+                   <div className="flex items-center space-x-2"><RadioGroupItem value="Limit" id="orderType-limit-future" /><Label htmlFor="orderType-limit-future" className="font-normal">Limit</Label></div>
+                </RadioGroup>
+                
                  <div className="mt-4 pt-4 border-t"><p className="text-sm text-muted-foreground">Margin required: <span className="font-semibold text-foreground">₹{displayedMargin.toLocaleString('en-IN')}</span></p></div>
             </div>
             <MarketDepth asset={asset} onPriceClick={handleMarketDepthPriceClick} />
@@ -585,20 +457,9 @@ const CryptoFutureOrderForm = ({ asset, assetType, productType, onProductTypeCha
     const [price, setPrice] = useState<number | string>(asset.price.toFixed(2));
     const [orderMode, setOrderMode] = useState('MTF');
     const [orderType, setOrderType] = useState('Limit');
-    const [showMoreOptions, setShowMoreOptions] = useState(false);
     const [mtfLeverage, setMtfLeverage] = useState('1x');
     const [displayedMargin, setDisplayedMargin] = useState(0);
     const [isAddToBasketDialogOpen, setIsAddToBasketDialogOpen] = useState(false);
-
-    const [isStopLossEnabled, setIsStopLossEnabled] = useState(false);
-    const [stopLossValue, setStopLossValue] = useState('');
-    const [stopLossUnit, setStopLossUnit] = useState<'price' | 'percent'>('price');
-    const [isTrailingSlEnabled, setIsTrailingSlEnabled] = useState(false);
-    const [trailingSlValue, setTrailingSlValue] = useState('');
-    const [trailingSlUnit, setTrailingSlUnit] = useState<'price' | 'percent'>('price');
-    const [isTargetProfitEnabled, setIsTargetProfitEnabled] = useState(false);
-    const [targetProfitValue, setTargetProfitValue] = useState('');
-    const [targetProfitUnit, setTargetProfitUnit] = useState<'price' | 'percent'>('price');
 
     useEffect(() => {
         const leverageFactor = parseInt(mtfLeverage.replace('x', ''), 10) || 1;
@@ -614,15 +475,6 @@ const CryptoFutureOrderForm = ({ asset, assetType, productType, onProductTypeCha
     };
 
     const leverageOptions = ['1x', '2x', '3x', '4x', '5x', '10x', '20x', '25x', '50x', '100x', '200x'];
-    
-     const commonOrderProps = {
-        asset, assetType, productType, onProductTypeChange, quantity, setQuantity,
-        price, setPrice, orderType, setOrderType,
-        showMoreOptions, setShowMoreOptions,
-        isStopLossEnabled, setIsStopLossEnabled, stopLossValue, setStopLossValue, stopLossUnit, setStopLossUnit,
-        isTrailingSlEnabled, setIsTrailingSlEnabled, trailingSlValue, setTrailingSlValue, trailingSlUnit, setTrailingSlUnit,
-        isTargetProfitEnabled, setIsTargetProfitEnabled, targetProfitValue, setTargetProfitValue, targetProfitUnit, setTargetProfitUnit
-    };
 
     return (
          <div className="bg-card shadow-md rounded-lg mt-4">
@@ -632,17 +484,24 @@ const CryptoFutureOrderForm = ({ asset, assetType, productType, onProductTypeCha
                     <TabsTrigger value="SP" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">SP</TabsTrigger>
                 </TabsList>
                  <TabsContent value="MTF" className="p-4 mt-0 space-y-4">
-                     <CommonOrderFields orderProps={commonOrderProps} orderMode="MTF" />
+                    <div className="grid grid-cols-2 gap-4 items-end">
+                        <div><Label htmlFor="qty-cf">Qty.</Label><Input id="qty-cf" type="text" value={quantity} onChange={e => setQuantity(e.target.value)}/></div>
+                        <div><Label htmlFor="price-cf">Price</Label><Input id="price-cf" type="text" value={price} onChange={e => setPrice(e.target.value)} disabled={orderType === 'Market'} /></div>
+                    </div>
+                     <RadioGroup value={orderType} onValueChange={(value) => setOrderType(value)} className="flex flex-wrap gap-x-4 gap-y-2">
+                       <div className="flex items-center space-x-2"><RadioGroupItem value="Market" id="orderType-market-cf" /><Label htmlFor="orderType-market-cf" className="font-normal">Market</Label></div>
+                       <div className="flex items-center space-x-2"><RadioGroupItem value="Limit" id="orderType-limit-cf" /><Label htmlFor="orderType-limit-cf" className="font-normal">Limit</Label></div>
+                    </RadioGroup>
                      <div className="space-y-2 pt-2">
-                        <Label htmlFor={`leverage-cf`}>Leverage</Label>
+                        <Label htmlFor="leverage-cf">Leverage</Label>
                         <Select value={mtfLeverage} onValueChange={setMtfLeverage}>
-                            <SelectTrigger id={`leverage-cf`} className="w-full sm:w-[180px]"><SelectValue placeholder="Select leverage" /></SelectTrigger>
+                            <SelectTrigger id="leverage-cf" className="w-full sm:w-[180px]"><SelectValue placeholder="Select leverage" /></SelectTrigger>
                             <SelectContent>{leverageOptions.map(val => <SelectItem key={val} value={val}>{val}</SelectItem>)}</SelectContent>
                         </Select>
                     </div>
                      <div className="mt-4 pt-4 border-t"><p className="text-sm text-muted-foreground">Margin required: <span className="font-semibold text-foreground">₹{displayedMargin.toLocaleString('en-IN')}</span></p></div>
                  </TabsContent>
-                 <TabsContent value="SP" className="p-0 mt-0"><SipForm asset={asset} assetType="crypto" /></TabsContent>
+                 <TabsContent value="SP" className="p-0 mt-0"><SipForm asset={asset} assetType="crypto-future" /></TabsContent>
             </Tabs>
             <MarketDepth asset={asset} onPriceClick={handleMarketDepthPriceClick} />
              <div className="p-4 border-t flex flex-col sm:flex-row gap-2">
@@ -653,7 +512,6 @@ const CryptoFutureOrderForm = ({ asset, assetType, productType, onProductTypeCha
         </div>
     );
 };
-
 
 // #endregion
 
@@ -673,14 +531,12 @@ export function OrderPlacementForm({ assetType, ...props }: OrderPlacementFormPr
     case 'crypto':
       return <CryptoOrderForm assetType={assetType} {...props} />;
     case 'future':
-    case 'option': // Options use the same form as futures for this mock
+    case 'option':
       return <FutureOrderForm assetType={assetType} {...props} />;
     case 'crypto-future':
         return <CryptoFutureOrderForm assetType={assetType} {...props} />;
-    // Basic forms for these asset types could be added here
     case 'mutual-fund':
     case 'bond':
-        // For now, let's use a simplified version of the crypto form which is also simple
         return <CryptoOrderForm assetType={assetType} {...props} />;
     default:
       return <div className="p-4 text-center text-muted-foreground">Order placement not available for this asset type.</div>;
@@ -688,5 +544,3 @@ export function OrderPlacementForm({ assetType, ...props }: OrderPlacementFormPr
 }
 
 // #endregion
-
-
