@@ -2,16 +2,19 @@
 "use client";
 
 import React from 'react';
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Info } from 'lucide-react';
+import { Info, Coins, Landmark } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Button } from '../ui/button';
 
 interface OverallPortfolioSummaryProps {
   totalPortfolioValue: number;
   unrealisedPnl: number;
   availableMargin: number;
   investedMargin: number;
+  onAddFunds: () => void;
+  onWithdrawFunds: () => void;
 }
 
 const formatCurrency = (value: number) => {
@@ -28,10 +31,17 @@ export function OverallPortfolioSummary({
   unrealisedPnl,
   availableMargin,
   investedMargin,
+  onAddFunds,
+  onWithdrawFunds
 }: OverallPortfolioSummaryProps) {
   return (
     <Card className="shadow-md">
-      <CardContent className="p-4 space-y-3">
+       <CardHeader>
+        <CardTitle className="text-xl font-semibold font-headline text-primary">
+          Portfolio Overview
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="p-4 pt-0 space-y-3">
         <div className="flex justify-between items-start">
           <div>
             <p className="text-xl font-semibold text-foreground">
@@ -70,6 +80,15 @@ export function OverallPortfolioSummary({
               {formatCurrency(investedMargin)}
             </p>
           </div>
+        </div>
+        
+        <div className="pt-3 grid grid-cols-2 gap-2">
+            <Button variant="outline" size="sm" className="h-11" onClick={onAddFunds}>
+                <Coins className="mr-2 h-4 w-4" /> Add Funds
+            </Button>
+            <Button variant="outline" size="sm" className="h-11" onClick={onWithdrawFunds}>
+                <Landmark className="mr-2 h-4 w-4" /> Withdraw
+            </Button>
         </div>
       </CardContent>
     </Card>
