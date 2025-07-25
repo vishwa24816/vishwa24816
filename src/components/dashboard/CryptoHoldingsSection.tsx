@@ -192,8 +192,8 @@ export function CryptoHoldingsSection({
     }
   }
 
-  const walletCardTitle = title.includes('Web3') ? 'Web3 Wallet' : 'Crypto Wallet';
-  const holdingsCardTitle = title.includes('Web3') ? 'Web3 Holdings' : 'Crypto Holdings';
+  const walletCardTitle = 'Crypto Wallet';
+  const holdingsCardTitle = 'Crypto & Web3 Holdings';
 
   const chartData = useMemo(() => {
     return holdings.map(pos => ({
@@ -581,4 +581,3 @@ export function CryptoHoldingsSection({
     </>
   );
 }
-

@@ -5,7 +5,7 @@ import React from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import type { PortfolioHolding, IntradayPosition, FoPosition, CryptoFuturePosition } from '@/types';
+import type { PortfolioHolding, IntradayPosition, FoPosition, CryptoFuturePosition, Stock } from '@/types';
 import { mockPortfolioHoldings, mockIntradayPositions, mockFoPositions, mockCryptoFutures, mockWeb3Holdings } from '@/lib/mockData';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
@@ -17,37 +17,35 @@ interface OpenPositionsDisplayProps {
   fiatHoldings: PortfolioHolding[];
   wealthHoldings: PortfolioHolding[];
   cryptoHoldings: PortfolioHolding[];
-  web3Holdings: PortfolioHolding[];
   intradayPositions: IntradayPosition[];
   foPositions: FoPosition[];
   cryptoFutures: CryptoFuturePosition[];
   onCategoryClick: (category: 'Fiat' | 'Crypto') => void;
+  onAssetClick: (asset: Stock) => void;
 }
 
 export function OpenPositionsDisplay({
   fiatHoldings,
   wealthHoldings,
   cryptoHoldings,
-  web3Holdings,
   intradayPositions,
   foPositions,
   cryptoFutures,
   onCategoryClick,
+  onAssetClick,
 }: OpenPositionsDisplayProps) {
 
   const categories = React.useMemo(() => {
     const fiatItems = [...fiatHoldings, ...intradayPositions, ...foPositions];
     const wealthItems = [...wealthHoldings];
     const cryptoItems = [...cryptoHoldings, ...cryptoFutures];
-    const web3Items = [...web3Holdings];
 
     return [
       { title: "Fiat Assets", items: fiatItems, category: 'Fiat' as const },
       { title: "Wealth Assets", items: wealthItems, category: 'Fiat' as const }, // Wealth is under Fiat
       { title: "Crypto Assets", items: cryptoItems, category: 'Crypto' as const },
-      { title: "Web3 Assets", items: web3Items, category: 'Crypto' as const }, // Web3 is under Crypto
     ].filter(cat => cat.items.length > 0);
-  }, [fiatHoldings, wealthHoldings, cryptoHoldings, web3Holdings, intradayPositions, foPositions, cryptoFutures]);
+  }, [fiatHoldings, wealthHoldings, cryptoHoldings, intradayPositions, foPositions, cryptoFutures]);
   
   const totalItems = categories.reduce((sum, cat) => sum + cat.items.length, 0);
 
@@ -76,6 +74,7 @@ export function OpenPositionsDisplay({
               title={category.title}
               items={category.items}
               onCategoryClick={() => onCategoryClick(category.category)}
+              onAssetClick={onAssetClick}
             />
           )}
         </div>
