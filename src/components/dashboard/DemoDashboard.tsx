@@ -174,7 +174,7 @@ function getRelevantNewsForWatchlistItems(items: Stock[] | undefined, allNews: N
   return relevantNews;
 }
 
-const usePersistentState = (key: string, defaultValue: number) => {
+const usePersistentState = (key: string, defaultValue: number): [number, React.Dispatch<React.SetStateAction<number>>] => {
     const [state, setState] = useState(() => {
         if (typeof window === 'undefined') {
             return defaultValue;
