@@ -28,6 +28,7 @@ import {
 
 
 export type WalletMode = 'hot' | 'cold';
+type ViewMode = 'list' | 'bar' | 'heatmap' | 'pie';
 
 interface CryptoHoldingsSectionProps {
   holdings: PortfolioHolding[];
@@ -300,9 +301,17 @@ export function CryptoHoldingsSection({
     return (
         <Card className="shadow-md">
             <CardHeader>
+              <div className="flex justify-between items-center">
                 <CardTitle className="text-xl font-semibold font-headline text-primary flex items-center">
                     <Bitcoin className="h-6 w-6 mr-2" /> {title}
                 </CardTitle>
+                 <div className="flex items-center gap-1 rounded-md bg-muted p-1">
+                    <Button variant={viewMode === 'list' ? 'secondary' : 'ghost'} size="icon" className="h-7 w-7" onClick={() => setViewMode('list')}><List /></Button>
+                    <Button variant={viewMode === 'bar' ? 'secondary' : 'ghost'} size="icon" className="h-7 w-7" onClick={() => setViewMode('bar')}><BarChart2 /></Button>
+                    <Button variant={viewMode === 'heatmap' ? 'secondary' : 'ghost'} size="icon" className="h-7 w-7" onClick={() => setViewMode('heatmap')}><LayoutGrid /></Button>
+                    <Button variant={viewMode === 'pie' ? 'secondary' : 'ghost'} size="icon" className="h-7 w-7" onClick={() => setViewMode('pie')}><PieChart /></Button>
+                </div>
+              </div>
             </CardHeader>
             <CardContent>
                 <div className="space-y-3 pt-2 mb-4">
@@ -333,17 +342,7 @@ export function CryptoHoldingsSection({
                     </div>
                 </div>
                  {holdings.length > 0 ? (
-                    <div className="border-t pt-4">
-                        {holdings.map((holding) => (
-                        <HoldingCard 
-                            key={holding.id} 
-                            holding={holding} 
-                            onPledgeClick={handlePledgeClick}
-                            isPledged={isPledged}
-                            onAssetClick={onAssetClick}
-                        />
-                        ))}
-                    </div>
+                    renderContent()
                 ) : (
                      <div className="text-center py-10 text-muted-foreground">
                         <p>No Pledged {title.includes('Web3') ? 'Web3' : 'Crypto'} Holdings.</p>
@@ -582,3 +581,4 @@ export function CryptoHoldingsSection({
     </>
   );
 }
+
