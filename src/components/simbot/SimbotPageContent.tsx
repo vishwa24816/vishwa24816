@@ -102,7 +102,7 @@ export function SimbotPageContent() {
                   >
                     {msg.sender === 'bot' && (
                       <Avatar className="h-8 w-8 self-start">
-                        <AvatarImage src="https://placehold.co/40x40.png?text=B" alt="Simbot" data-ai-hint="bot avatar" />
+                        
                         <AvatarFallback>B</AvatarFallback>
                       </Avatar>
                     )}
@@ -121,7 +121,7 @@ export function SimbotPageContent() {
                     </div>
                     {msg.sender === 'user' && (
                       <Avatar className="h-8 w-8 self-start">
-                        <AvatarImage src={`https://placehold.co/40x40.png?text=${userEmailInitial}`} alt="User" data-ai-hint="user avatar" />
+                        
                         <AvatarFallback>{userEmailInitial}</AvatarFallback>
                       </Avatar>
                     )}
@@ -130,7 +130,7 @@ export function SimbotPageContent() {
                 {isLoading && (
                   <div className="flex items-center space-x-2 mr-auto justify-start max-w-[85%] sm:max-w-[75%]">
                     <Avatar className="h-8 w-8 self-start">
-                      <AvatarImage src="https://placehold.co/40x40.png?text=B" alt="Simbot typing" data-ai-hint="bot avatar" />
+                      
                       <AvatarFallback>B</AvatarFallback>
                     </Avatar>
                     <div className="p-3 rounded-xl shadow bg-muted text-foreground rounded-bl-none">
