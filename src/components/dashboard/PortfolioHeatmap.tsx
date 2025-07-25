@@ -25,6 +25,29 @@ const formatCurrency = (value: number) => {
   return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(value);
 };
 
+const getBackgroundColor = (pnl: number, pnlPercent: number) => {
+    const isPositive = pnl >= 0;
+    const strength = Math.min(Math.abs(pnlPercent) / 5, 1); // Normalize pnl % for color intensity (cap at 5%)
+
+    if (isPositive) {
+        if (strength > 0.8) return 'bg-green-700 hover:bg-green-600';
+        if (strength > 0.5) return 'bg-green-600 hover:bg-green-500';
+        if (strength > 0.2) return 'bg-green-500 hover:bg-green-400';
+        return 'bg-green-400 hover:bg-green-300';
+    } else {
+        if (strength > 0.8) return 'bg-red-700 hover:bg-red-600';
+        if (strength > 0.5) return 'bg-red-600 hover:bg-red-500';
+        if (strength > 0.2) return 'bg-red-500 hover:bg-red-400';
+        return 'bg-red-400 hover:bg-red-300';
+    }
+};
+
+const getTextColor = (pnlPercent: number) => {
+    const strength = Math.min(Math.abs(pnlPercent) / 5, 1);
+    return strength > 0.5 ? 'text-white' : 'text-gray-800 dark:text-gray-200';
+};
+
+
 export function PortfolioHeatmap({ items }: PortfolioHeatmapProps) {
   const totalValue = items.reduce((sum, item) => sum + item.value, 0);
 
@@ -40,15 +63,6 @@ export function PortfolioHeatmap({ items }: PortfolioHeatmapProps) {
         {sortedItems.map(item => {
           const sizePercent = totalValue > 0 ? (item.value / totalValue) * 100 : 0;
           const isPositive = item.pnl >= 0;
-          
-          const pnlStrength = Math.min(Math.abs(item.pnlPercent) / 5, 1); // Normalize pnl % for color intensity (cap at 5%)
-          
-          // Determine the base color and intensity. Tailwind needs full class names, so we can't build them dynamically with string interpolation easily.
-          // We'll use CSS variables to handle the color intensity dynamically.
-          const colorClass = isPositive
-            ? 'bg-green-500/80 hover:bg-green-500/100'
-            : 'bg-red-500/80 hover:bg-red-500/100';
-          const textColor = pnlStrength > 0.6 ? 'text-white' : 'text-gray-800 dark:text-gray-200';
 
           return (
             <Tooltip key={item.name}>
@@ -57,16 +71,15 @@ export function PortfolioHeatmap({ items }: PortfolioHeatmapProps) {
                   style={{
                     flexBasis: `${sizePercent}%`,
                     flexGrow: sizePercent,
-                    // The background color will be set by Tailwind classes
                   }}
                   className={cn(
                       "p-2 rounded-md flex flex-col justify-between flex-shrink-0 min-h-[60px] min-w-[80px] shadow-inner transition-all duration-300",
-                      colorClass,
+                      getBackgroundColor(item.pnl, item.pnlPercent),
                       "border-2 border-transparent hover:border-primary/50"
                   )}
                 >
-                  <span className={cn("text-xs font-semibold", textColor)}>{item.name}</span>
-                  <span className={cn("text-xs", textColor, "opacity-80")}>
+                  <span className={cn("text-xs font-semibold", getTextColor(item.pnlPercent))}>{item.name}</span>
+                  <span className={cn("text-xs", getTextColor(item.pnlPercent), "opacity-80")}>
                     {isPositive ? '+' : ''}{item.pnlPercent.toFixed(2)}%
                   </span>
                 </div>

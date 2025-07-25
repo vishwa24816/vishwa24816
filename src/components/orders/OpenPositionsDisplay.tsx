@@ -41,6 +41,33 @@ const formatCurrency = (value: number) => {
     }).format(value);
 };
 
+const getBackgroundColor = (pnl: number, value: number) => {
+    if (value === 0) return 'bg-gray-400 hover:bg-gray-300';
+    const isPositive = pnl >= 0;
+    const pnlPercent = (pnl / value) * 100;
+    const strength = Math.min(Math.abs(pnlPercent) / 5, 1);
+
+    if (isPositive) {
+        if (strength > 0.8) return 'bg-green-700 hover:bg-green-600';
+        if (strength > 0.5) return 'bg-green-600 hover:bg-green-500';
+        if (strength > 0.2) return 'bg-green-500 hover:bg-green-400';
+        return 'bg-green-400 hover:bg-green-300';
+    } else {
+        if (strength > 0.8) return 'bg-red-700 hover:bg-red-600';
+        if (strength > 0.5) return 'bg-red-600 hover:bg-red-500';
+        if (strength > 0.2) return 'bg-red-500 hover:bg-red-400';
+        return 'bg-red-400 hover:bg-red-300';
+    }
+};
+
+const getTextColor = (pnl: number, value: number) => {
+    if (value === 0) return 'text-gray-800 dark:text-gray-200';
+    const pnlPercent = (pnl / value) * 100;
+    const strength = Math.min(Math.abs(pnlPercent) / 5, 1);
+    return strength > 0.5 ? 'text-white' : 'text-gray-800 dark:text-gray-200';
+};
+
+
 export function OpenPositionsDisplay({
   fiatHoldings,
   wealthHoldings,
@@ -146,8 +173,6 @@ export function OpenPositionsDisplay({
                         {chartData.map(item => {
                             const sizePercent = totalPortfolioValue > 0 ? (item.value / totalPortfolioValue) * 100 : 0;
                             const isPositive = item.pnl >= 0;
-                            const pnlStrength = Math.min(Math.abs(item.pnl / item.value) * 10, 1) || 0; // Normalize PnL %
-                            const colorIntensity = 400 + Math.floor(pnlStrength * 300);
 
                             return (
                                 <Tooltip key={item.name}>
@@ -155,13 +180,13 @@ export function OpenPositionsDisplay({
                                         <div 
                                           style={{ flexBasis: `${sizePercent}%`, flexGrow: sizePercent }}
                                           className={cn(
-                                            "p-2 rounded-md flex flex-col justify-between text-white flex-shrink-0 min-h-[70px] min-w-[90px] shadow-inner transition-all duration-300 border-2 border-transparent hover:border-primary/50 cursor-pointer",
-                                            isPositive ? `bg-green-${colorIntensity}` : `bg-red-${colorIntensity}`
+                                            "p-2 rounded-md flex flex-col justify-between flex-shrink-0 min-h-[70px] min-w-[90px] shadow-inner transition-all duration-300 border-2 border-transparent hover:border-primary/50 cursor-pointer",
+                                            getBackgroundColor(item.pnl, item.value)
                                           )}
                                           onClick={() => onCategoryClick(categories.find(c => c.title === item.name)!.category)}
                                         >
-                                          <span className={cn("text-xs font-semibold", colorIntensity > 600 ? "text-white" : "text-gray-800")}>{item.name.replace(' Assets','')}</span>
-                                          <span className={cn("text-xs", colorIntensity > 600 ? "text-white/80" : "text-gray-700")}>
+                                          <span className={cn("text-xs font-semibold", getTextColor(item.pnl, item.value))}>{item.name.replace(' Assets','')}</span>
+                                          <span className={cn("text-xs", getTextColor(item.pnl, item.value), "opacity-80")}>
                                             {isPositive ? '+' : ''}{formatCurrency(item.pnl)}
                                           </span>
                                         </div>
