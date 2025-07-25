@@ -412,6 +412,14 @@ export function CryptoHoldingsSection({
                     <p className="text-muted-foreground">Cash Balance</p>
                     <p className="font-medium text-foreground">{formatCurrency(cashBalance)}</p>
                 </div>
+                 <div className="pt-3 grid grid-cols-2 gap-2">
+                    <Button variant="outline" size="sm" className="h-11" onClick={() => handleOpenFundTransferDialog('toCrypto')}>
+                        <Coins className="mr-2 h-4 w-4" /> Add Funds
+                    </Button>
+                    <Button variant="outline" size="sm" className="h-11" onClick={() => handleOpenFundTransferDialog('fromCrypto')}>
+                        <Landmark className="mr-2 h-4 w-4" /> Withdraw
+                    </Button>
+                </div>
                 {!isRealMode && (
                     <>
                         <div className="pt-3 grid grid-cols-3 gap-2">
