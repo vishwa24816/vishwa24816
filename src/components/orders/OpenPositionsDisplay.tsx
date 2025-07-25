@@ -3,7 +3,7 @@
 
 import React from 'react';
 import type { PortfolioHolding, IntradayPosition, FoPosition, CryptoFuturePosition, Stock } from '@/types';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Briefcase } from 'lucide-react';
 import { PortfolioCategoryCard } from './PortfolioCategoryCard';
 
@@ -55,17 +55,25 @@ export function OpenPositionsDisplay({
   }
 
   return (
-    <div className="space-y-4 p-1">
-      {categories.map((category) => 
-        category.items.length > 0 && (
-          <PortfolioCategoryCard
-            key={category.title}
-            title={category.title}
-            items={category.items}
-            onCategoryClick={() => onCategoryClick(category.category)}
-          />
-        )
-      )}
-    </div>
+    <Card className="shadow-md">
+      <CardHeader>
+        <CardTitle className="text-xl font-semibold font-headline text-primary flex items-center">
+          <Briefcase className="h-6 w-6 mr-2" />
+          Asset Overview
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="p-2 sm:p-4 space-y-4">
+        {categories.map((category) => 
+          category.items.length > 0 && (
+            <PortfolioCategoryCard
+              key={category.title}
+              title={category.title}
+              items={category.items}
+              onCategoryClick={() => onCategoryClick(category.category)}
+            />
+          )
+        )}
+      </CardContent>
+    </Card>
   );
 }

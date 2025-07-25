@@ -71,7 +71,7 @@ export function PortfolioCategoryCard({ title, items, onCategoryClick }: Portfol
       >
         <CardTitle className="text-lg font-semibold flex items-center gap-2">
             <Icon className="h-5 w-5 text-primary" />
-            {title} ({items.length})
+            {title}
         </CardTitle>
         <div className="flex items-center gap-4">
             <div className="text-right">
