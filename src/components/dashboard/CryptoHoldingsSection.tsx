@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator"; 
-import type { PortfolioHolding } from '@/types';
+import type { PortfolioHolding, Stock } from '@/types';
 import { cn } from '@/lib/utils';
 import { Bitcoin, XCircle, Coins, Landmark, Settings2, ChevronDown, BarChart2, LayoutGrid, List, PieChart, ArrowUpRight, ArrowDownLeft, History, Snowflake, QrCode, Copy, ArrowUpCircle, ArrowDownCircle, Flame } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
@@ -40,6 +40,7 @@ interface CryptoHoldingsSectionProps {
   isPledged?: boolean;
   walletMode: WalletMode;
   setWalletMode: React.Dispatch<React.SetStateAction<WalletMode>>;
+  onAssetClick: (asset: Stock) => void;
 }
 
 const mockTransactions = [
@@ -61,6 +62,7 @@ export function CryptoHoldingsSection({
   isPledged = false,
   walletMode,
   setWalletMode,
+  onAssetClick,
 }: CryptoHoldingsSectionProps) {
   const { toast } = useToast();
   const router = useRouter();
@@ -241,6 +243,7 @@ export function CryptoHoldingsSection({
                   holding={holding} 
                   onPledgeClick={handlePledgeClick}
                   isPledged={isPledged}
+                  onAssetClick={onAssetClick}
               />
             ))}
           </div>
@@ -337,6 +340,7 @@ export function CryptoHoldingsSection({
                             holding={holding} 
                             onPledgeClick={handlePledgeClick}
                             isPledged={isPledged}
+                            onAssetClick={onAssetClick}
                         />
                         ))}
                     </div>
@@ -422,14 +426,6 @@ export function CryptoHoldingsSection({
                             <Button variant="outline" size="sm" className="flex-col h-14" onClick={handleHistoryClick} disabled={walletMode === 'cold'}>
                                 <History className="h-5 w-5 mb-1" />
                                 <span className="text-xs">History</span>
-                            </Button>
-                        </div>
-                        <div className="pt-2 flex gap-2">
-                            <Button variant="outline" size="sm" className="flex-1 h-11" onClick={() => handleOpenFundTransferDialog('toCrypto')}>
-                                <Coins className="mr-2 h-4 w-4" /> Add Funds
-                            </Button>
-                            <Button variant="outline" size="sm" className="flex-1 h-11" onClick={() => handleOpenFundTransferDialog('fromCrypto')}>
-                                <Landmark className="mr-2 h-4 w-4" /> Withdraw Funds
                             </Button>
                         </div>
                         {isSending && (
