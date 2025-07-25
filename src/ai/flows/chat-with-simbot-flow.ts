@@ -66,7 +66,7 @@ const prompt = ai.definePrompt({
   prompt: `You are Simbot, a helpful AI assistant for the Stock Information & Management (SIM) application.
   You are an expert in Indian stock markets, finance, and investment.
   Keep your answers concise and friendly.
-  If the user asks to buy or view a stock, use the navigateToStock tool.
+  If the user asks to buy or view a stock, use the navigateToStock tool. Do not ask for confirmation, just use the tool.
 
   User message: {{{message}}}
   `,
@@ -101,6 +101,22 @@ const chatWithSimbotFlow = ai.defineFlow(
 
     const output = llmResponse.output();
      if (!output) {
+        // This can happen if the model decides to call a tool but doesn't, or provides no text.
+        // Let's check for tool-call requests that might not have been executed.
+        const toolRequest = llmResponse.toolRequests()?.[0];
+        if (toolRequest?.tool === 'navigateToStock') {
+             const toolOutput = await navigateToStock(toolRequest.input);
+             if (toolOutput.success) {
+                return {
+                    reply: `Navigating you to the order page for ${toolOutput.symbol}...`,
+                    navigationTarget: toolOutput.url,
+                };
+            } else {
+                 return {
+                    reply: `Sorry, I couldn't find the stock with ticker "${toolOutput.symbol}". Please check the symbol and try again.`,
+                };
+            }
+        }
         return { reply: "I'm having a little trouble understanding that. Could you please rephrase?" };
     }
     return output;
