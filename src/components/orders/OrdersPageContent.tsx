@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useEffect } from 'react';
@@ -6,18 +5,16 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Search, SlidersHorizontal } from 'lucide-react';
-import { GttOrdersDisplay } from '@/components/orders/GttOrdersDisplay';
+import { LimitOrdersDisplay } from '@/components/orders/LimitOrdersDisplay';
 import { BondBidsDisplay } from '@/components/orders/BondBidsDisplay';
 import { BasketsDisplay } from '@/components/orders/BasketsDisplay';
 import { SipsDisplay } from '@/components/orders/SipsDisplay';
 import { AlertsDisplay } from '@/components/orders/AlertsDisplay';
-import { OpenPositionsDisplay } from '@/components/orders/OpenPositionsDisplay';
 import { useAuth } from '@/contexts/AuthContext';
-import type { Stock, PortfolioHolding, IntradayPosition, FoPosition, CryptoFuturePosition } from '@/types';
-import { mockPortfolioHoldings, mockIntradayPositions, mockFoPositions, mockCryptoFutures, mockWeb3Holdings } from '@/lib/mockData';
+import type { Stock } from '@/types';
 
 const demoOrderTabs = [
-  { value: "gtt", label: "GTT" },
+  { value: "limit", label: "Limit" },
   { value: "bids", label: "Bids" },
   { value: "baskets", label: "Baskets" },
   { value: "sips", label: "SIPs" },
@@ -31,17 +28,13 @@ const realOrderTabs = [
 ];
 
 
-export function OrdersPageContent({ onAssetClick, activeMode }: { onAssetClick: (asset: Stock) => void, activeMode: 'Portfolio' | 'Fiat' | 'Wealth' | 'Crypto' | 'Web3' }) {
+export function OrdersPageContent({ activeMode }: { activeMode: 'Portfolio' | 'Fiat' | 'Wealth' | 'Crypto' | 'Web3' }) {
   const { user } = useAuth();
   const isRealMode = user?.id === 'REAL456';
 
   const orderTabs = isRealMode ? realOrderTabs : demoOrderTabs;
   const [activeTab, setActiveTab] = useState(orderTabs[0].value);
   
-  const fiatHoldings = mockPortfolioHoldings.filter(h => h.type === 'Stock' || h.type === 'ETF');
-  const wealthHoldings = mockPortfolioHoldings.filter(h => h.type === 'Mutual Fund' || h.type === 'Bond');
-  const cryptoHoldings = mockPortfolioHoldings.filter(h => h.type === 'Crypto');
-
   return (
       <div className="flex flex-col h-full">
         <main className="flex-grow flex flex-col">
@@ -76,8 +69,8 @@ export function OrdersPageContent({ onAssetClick, activeMode }: { onAssetClick: 
             </div>
 
             <div className="w-full px-0 sm:px-2 md:px-4 py-4 flex-grow flex flex-col">
-              <TabsContent value="gtt" className="flex-grow flex flex-col mt-0 data-[state=inactive]:hidden">
-                <GttOrdersDisplay activeMode={activeMode} />
+              <TabsContent value="limit" className="flex-grow flex flex-col mt-0 data-[state=inactive]:hidden">
+                <LimitOrdersDisplay />
               </TabsContent>
               <TabsContent value="bids" className="flex-grow flex flex-col mt-0 data-[state=inactive]:hidden">
                 <BondBidsDisplay activeMode={activeMode} />

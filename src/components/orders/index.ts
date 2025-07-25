@@ -3,7 +3,7 @@ export * from "./OrderPlacementForm";
 export * from "./AddToBasketDialog";
 export * from "./ReturnCalculator";
 export * from "./OpenPositionsDisplay";
-export * from "./GttOrdersDisplay";
+export * from "./LimitOrdersDisplay";
 export * from "./BondBidsDisplay";
 export * from "./BasketsDisplay";
 export * from "./SipsDisplay";

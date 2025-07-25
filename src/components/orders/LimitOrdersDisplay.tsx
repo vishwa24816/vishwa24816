@@ -1,4 +1,3 @@
-
 "use client";
 
 import React from 'react';
@@ -10,11 +9,11 @@ import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { Target, Edit3, XCircle } from 'lucide-react';
 
-interface GttOrderItemProps {
+interface LimitOrderItemProps {
   order: GttOrder;
 }
 
-const GttOrderItem: React.FC<GttOrderItemProps> = ({ order }) => {
+const LimitOrderItem: React.FC<LimitOrderItemProps> = ({ order }) => {
   const { toast } = useToast();
   return (
     <div className="border-b">
@@ -48,27 +47,14 @@ const GttOrderItem: React.FC<GttOrderItemProps> = ({ order }) => {
   );
 };
 
-interface GttOrdersDisplayProps {
-  activeMode: 'Fiat' | 'Crypto' | 'Web3';
-}
-
-export function GttOrdersDisplay({ activeMode }: GttOrdersDisplayProps) {
+export function LimitOrdersDisplay() {
   const orders = mockGttOrders;
-
-  if (activeMode !== 'Fiat') {
-    return (
-      <div className="text-center py-10">
-        <Target className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-        <p className="text-muted-foreground">GTT orders are only available in Fiat mode.</p>
-      </div>
-    );
-  }
 
   if (orders.length === 0) {
     return (
       <div className="text-center py-10">
         <Target className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-        <p className="text-muted-foreground">No GTT orders found.</p>
+        <p className="text-muted-foreground">No Limit orders found.</p>
       </div>
     );
   }
@@ -76,7 +62,7 @@ export function GttOrdersDisplay({ activeMode }: GttOrdersDisplayProps) {
   return (
     <ScrollArea className="h-[calc(100vh-200px)] p-1">
       {orders.map((order) => (
-        <GttOrderItem key={order.id} order={order} />
+        <LimitOrderItem key={order.id} order={order} />
       ))}
     </ScrollArea>
   );
