@@ -201,6 +201,10 @@ export function OpenPositionsDisplay({ isRealMode = false, activeMode }: OpenPos
       ...mockWeb3Holdings.map(item => ({ item, typeLabel: "Web3", category: 'Web3' as const })),
     ];
     
+    if (activeMode === 'Overview') {
+        return isRealMode ? realPositions : demoPositions;
+    }
+    
     const basePositions = isRealMode ? realPositions : demoPositions;
 
     return basePositions.filter(p => p.category === activeMode);

@@ -1,5 +1,4 @@
 
-
 "use client";
 
 import { SubNav } from '@/components/dashboard/SubNav';
@@ -22,6 +21,7 @@ import { MarketMovers } from './MarketMovers';
 import { WealthHoldingsSection } from './WealthHoldingsSection';
 import { VolumeOiSection } from './VolumeOiSection';
 import { OverallPortfolioSummary } from './OverallPortfolioSummary';
+import { OpenPositionsDisplay } from '../orders/OpenPositionsDisplay';
 
 
 import React, { useState, useMemo, useEffect } from 'react';
@@ -183,8 +183,9 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
     const { primaryNavItems, secondaryNavTriggerCategories } = useMemo(() => {
     if (activeMode === 'Portfolio') {
         return {
-            primaryNavItems: ["Fiat", "Crypto", "Pledged Holdings"],
+            primaryNavItems: ["Overview", "Fiat", "Crypto", "Pledged Holdings"],
             secondaryNavTriggerCategories: {
+                Overview: [],
                 Fiat: ["Fiat Holdings", "Wealth Holdings", "Positions", "Portfolio Watchlist"],
                 Crypto: ["Crypto Holdings", "Web3 Holdings", "Positions", "Portfolio Watchlist"],
                 "Pledged Holdings": [],
@@ -389,6 +390,29 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
     const isWeb3HoldingsView = activeSecondaryItem === "Web3 Holdings";
     const isPositionsView = activeSecondaryItem === "Positions";
     const isWatchlistView = activeSecondaryItem === "Portfolio Watchlist";
+    
+    if (activePrimaryItem === 'Overview') {
+        const allHoldings = [...fiatHoldings, ...wealthHoldings, ...cryptoHoldings, ...mockWeb3Holdings];
+        const allPositions = [...mockIntradayPositions, ...mockFoPositions, ...mockCryptoFutures];
+
+        const totalValue = allHoldings.reduce((acc, h) => acc + h.currentValue, 0) + allPositions.reduce((acc, p) => acc + (p.ltp * ('quantity' in p ? p.quantity : ('lots' in p ? p.lots * p.quantityPerLot : 0))), 0);
+        const totalInvestment = allHoldings.reduce((acc, h) => acc + (h.avgCostPrice * h.quantity), 0) + allPositions.reduce((acc, p) => acc + (p.avgPrice * ('quantity' in p ? p.quantity : ('lots' in p ? p.lots * p.quantityPerLot : 0))), 0);
+        const unrealisedPnl = totalValue - totalInvestment;
+
+        return (
+            <div className="space-y-8">
+                <OverallPortfolioSummary 
+                    totalPortfolioValue={totalValue} 
+                    unrealisedPnl={unrealisedPnl}
+                    availableMargin={mainPortfolioCashBalance + cryptoCashBalance} // simplified
+                    investedMargin={totalInvestment}
+                />
+                <OpenPositionsDisplay isRealMode={false} activeMode="Fiat" />
+                <OpenPositionsDisplay isRealMode={false} activeMode="Crypto" />
+                <OpenPositionsDisplay isRealMode={false} activeMode="Web3" />
+            </div>
+        )
+    }
 
     if (activePrimaryItem === 'Pledged Holdings') {
         const pledgedFiatHoldings = fiatHoldings.slice(0, 2); 
