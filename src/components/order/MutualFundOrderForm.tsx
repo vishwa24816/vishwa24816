@@ -23,6 +23,9 @@ export function MutualFundOrderForm({ asset, assetType, initialDetails }: Mutual
     const [hodlAmount, setHodlAmount] = useState('');
     const [activeTab, setActiveTab] = useState(initialDetails?.orderType === 'SIP' ? "start-sp" : "one-time");
 
+    const [lockInYears, setLockInYears] = useState('');
+    const [lockInMonths, setLockInMonths] = useState('');
+
     const isCrypto = asset.exchange?.toLowerCase().includes('crypto');
     const currencySymbol = isCrypto ? '₹' : '₹'; // Always INR now
 
@@ -42,9 +45,13 @@ export function MutualFundOrderForm({ asset, assetType, initialDetails }: Mutual
             toast({ title: "Invalid Amount", description: "Please enter a valid amount.", variant: "destructive"});
             return;
         }
+        let lockInPeriod = '';
+        if (lockInYears || lockInMonths) {
+            lockInPeriod = ` for a lock-in period of ${lockInYears || 0} years and ${lockInMonths || 0} months`;
+        }
         toast({
             title: "HODL Investment (Mock)",
-            description: `Investing ${currencySymbol}${hodlAmount} in ${asset.name} for the long term.`,
+            description: `Investing ${currencySymbol}${hodlAmount} in ${asset.name} for the long term${lockInPeriod}.`,
         });
     };
 
@@ -81,6 +88,21 @@ export function MutualFundOrderForm({ asset, assetType, initialDetails }: Mutual
                         <Label htmlFor="hodl-amount">Investment Amount ({currencySymbol})</Label>
                         <Input id="hodl-amount" type="number" value={hodlAmount} onChange={(e) => setHodlAmount(e.target.value)} placeholder="e.g., 50000" />
                     </div>
+
+                    <div className="space-y-2 pt-2">
+                        <Label>Lock-in Period</Label>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <Label htmlFor="lock-in-years" className="text-xs text-muted-foreground">Years</Label>
+                                <Input id="lock-in-years" type="number" placeholder="Years" value={lockInYears} onChange={e => setLockInYears(e.target.value)} min="0" />
+                            </div>
+                            <div>
+                                <Label htmlFor="lock-in-months" className="text-xs text-muted-foreground">Months</Label>
+                                <Input id="lock-in-months" type="number" placeholder="Months" value={lockInMonths} onChange={e => setLockInMonths(e.target.value)} min="0" max="11"/>
+                            </div>
+                        </div>
+                    </div>
+
                     <Button onClick={handleHodlBuy} className="w-full text-base py-3 h-12">Invest for Long Term</Button>
                 </div>
             </TabsContent>
