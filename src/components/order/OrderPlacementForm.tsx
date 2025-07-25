@@ -185,7 +185,7 @@ const CommonOrderFields = ({
     return (
         <div className="space-y-4">
              <RadioGroup value={productType} onValueChange={onProductTypeChange} className="flex flex-wrap gap-x-4 sm:gap-x-6 gap-y-2">
-                {assetType !== 'bond' && assetType !== 'mutual-fund' && (
+                {assetType !== 'bond' && assetType !== 'mutual-fund' && !(assetType === 'crypto-future') && (
                     <div className="flex items-center space-x-2">
                         <RadioGroupItem value="Intraday" id={`intraday-common`} />
                         <Label htmlFor={`intraday-common`} className="font-normal">Intraday</Label>
@@ -195,7 +195,7 @@ const CommonOrderFields = ({
                     <div className="flex items-center space-x-2">
                         <RadioGroupItem value="Delivery" id={`delivery-common`} />
                         <Label htmlFor={`delivery-common`} className="font-normal">
-                            {(assetType === 'future' || assetType === 'crypto-future') ? 'Overnight' : 'Delivery'}
+                            {assetType === 'future' ? 'Expiry' : (assetType === 'crypto-future' || assetType === 'option') ? 'Overnight' : 'Delivery'}
                         </Label>
                     </div>
                 )}
@@ -688,3 +688,4 @@ export function OrderPlacementForm({ assetType, ...props }: OrderPlacementFormPr
 }
 
 // #endregion
+
