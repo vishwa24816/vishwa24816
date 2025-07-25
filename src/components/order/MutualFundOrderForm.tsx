@@ -18,6 +18,7 @@ interface MutualFundOrderFormProps {
 export function MutualFundOrderForm({ asset, assetType }: MutualFundOrderFormProps) {
     const { toast } = useToast();
     const [oneTimeAmount, setOneTimeAmount] = useState('');
+    const [hodlAmount, setHodlAmount] = useState('');
     const [activeTab, setActiveTab] = useState("one-time");
 
     const isCrypto = asset.exchange?.toLowerCase().includes('crypto');
@@ -33,6 +34,17 @@ export function MutualFundOrderForm({ asset, assetType }: MutualFundOrderFormPro
             description: `Investing ${currencySymbol}${oneTimeAmount} in ${asset.name}.`,
         });
     };
+    
+    const handleHodlBuy = () => {
+        if (!hodlAmount || parseFloat(hodlAmount) <= 0) {
+            toast({ title: "Invalid Amount", description: "Please enter a valid amount.", variant: "destructive"});
+            return;
+        }
+        toast({
+            title: "HODL Investment (Mock)",
+            description: `Investing ${currencySymbol}${hodlAmount} in ${asset.name} for the long term.`,
+        });
+    };
 
     const handleStartSip = () => {
         // This is a placeholder for the logic inside SipForm
@@ -45,8 +57,9 @@ export function MutualFundOrderForm({ asset, assetType }: MutualFundOrderFormPro
     return (
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <div className="flex w-full space-x-3">
-                <TabsList className="grid grid-cols-2 flex-1 h-auto p-0 bg-transparent">
+                <TabsList className="grid grid-cols-3 flex-1 h-auto p-0 bg-transparent">
                     <TabsTrigger value="one-time" className="data-[state=active]:bg-muted data-[state=active]:text-foreground h-12 rounded-lg text-base">One-time</TabsTrigger>
+                    <TabsTrigger value="hodl" className="data-[state=active]:bg-muted data-[state=active]:text-foreground h-12 rounded-lg text-base">HODL</TabsTrigger>
                     <TabsTrigger value="start-sp" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground h-12 rounded-lg text-base">Start SP</TabsTrigger>
                 </TabsList>
             </div>
@@ -58,6 +71,15 @@ export function MutualFundOrderForm({ asset, assetType }: MutualFundOrderFormPro
                         <Input id="one-time-amount" type="number" value={oneTimeAmount} onChange={(e) => setOneTimeAmount(e.target.value)} placeholder="e.g., 5000" />
                     </div>
                     <Button onClick={handleOneTimeBuy} className="w-full text-base py-3 h-12">Invest Now</Button>
+                </div>
+            </TabsContent>
+            <TabsContent value="hodl" className="mt-4">
+                <div className="space-y-4">
+                    <div className="space-y-2">
+                        <Label htmlFor="hodl-amount">Investment Amount ({currencySymbol})</Label>
+                        <Input id="hodl-amount" type="number" value={hodlAmount} onChange={(e) => setHodlAmount(e.target.value)} placeholder="e.g., 50000" />
+                    </div>
+                    <Button onClick={handleHodlBuy} className="w-full text-base py-3 h-12">Invest for Long Term</Button>
                 </div>
             </TabsContent>
             <TabsContent value="start-sp" className="mt-4">
