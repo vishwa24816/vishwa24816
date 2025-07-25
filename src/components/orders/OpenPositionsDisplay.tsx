@@ -16,6 +16,7 @@ interface OpenPositionsDisplayProps {
   foPositions: FoPosition[];
   cryptoFutures: CryptoFuturePosition[];
   onAssetClick: (asset: Stock) => void;
+  onCategoryClick: (category: 'Fiat' | 'Wealth' | 'Crypto' | 'Web3') => void;
 }
 
 export function OpenPositionsDisplay({
@@ -27,6 +28,7 @@ export function OpenPositionsDisplay({
   foPositions,
   cryptoFutures,
   onAssetClick,
+  onCategoryClick,
 }: OpenPositionsDisplayProps) {
   
   const fiatItems = [...fiatHoldings, ...intradayPositions, ...foPositions];
@@ -35,10 +37,10 @@ export function OpenPositionsDisplay({
   const web3Items = [...web3Holdings];
 
   const categories = [
-    { title: "Fiat Assets", items: fiatItems, onAssetClick },
-    { title: "Wealth Assets", items: wealthItems, onAssetClick },
-    { title: "Crypto Assets", items: cryptoItems, onAssetClick },
-    { title: "Web3 Assets", items: web3Items, onAssetClick },
+    { title: "Fiat Assets", items: fiatItems, category: 'Fiat' as const },
+    { title: "Wealth Assets", items: wealthItems, category: 'Wealth' as const },
+    { title: "Crypto Assets", items: cryptoItems, category: 'Crypto' as const },
+    { title: "Web3 Assets", items: web3Items, category: 'Web3' as const },
   ];
 
   const totalItems = categories.reduce((sum, cat) => sum + cat.items.length, 0);
@@ -53,19 +55,17 @@ export function OpenPositionsDisplay({
   }
 
   return (
-    <ScrollArea className="h-full">
-        <div className="space-y-4 p-1">
-        {categories.map((category) => 
-            category.items.length > 0 && (
-            <PortfolioCategoryCard
-                key={category.title}
-                title={category.title}
-                items={category.items}
-                onAssetClick={onAssetClick}
-            />
-            )
-        )}
-        </div>
-    </ScrollArea>
+    <div className="space-y-4 p-1">
+      {categories.map((category) => 
+        category.items.length > 0 && (
+          <PortfolioCategoryCard
+            key={category.title}
+            title={category.title}
+            items={category.items}
+            onCategoryClick={() => onCategoryClick(category.category)}
+          />
+        )
+      )}
+    </div>
   );
 }

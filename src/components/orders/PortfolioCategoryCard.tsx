@@ -22,79 +22,14 @@ const formatCurrency = (value: number, currency: 'INR' | 'USDT' = 'INR') => {
   }).format(value);
 };
 
-const PositionItemRow: React.FC<{ item: PositionItem, onAssetClick: (asset: Stock) => void }> = ({ item, onAssetClick }) => {
-  const router = useRouter();
-  const { toast } = useToast();
-
-  const { name, symbol, pnl, pnlPercent, isProfit, details } = useMemo(() => {
-    let name = '', symbol = '', pnl = 0, pnlPercent = 0, isProfit = true, details = '';
-
-    if ('profitAndLoss' in item) { // PortfolioHolding
-      name = item.name;
-      symbol = item.symbol || '';
-      pnl = item.profitAndLoss;
-      pnlPercent = item.profitAndLossPercent;
-      isProfit = pnl >= 0;
-      details = `${item.quantity.toLocaleString()} units @ ${formatCurrency(item.avgCostPrice)}`;
-    } else if ('pAndL' in item) { // IntradayPosition or FoPosition
-      name = 'instrumentName' in item ? item.instrumentName : item.name;
-      symbol = 'symbol' in item ? item.symbol : '';
-      pnl = item.pAndL;
-      pnlPercent = item.pAndLPercent;
-      isProfit = pnl >= 0;
-      details = `${'lots' in item ? item.lots + ' lots' : item.quantity + ' units'} @ ${formatCurrency(item.avgPrice)}`;
-    } else if ('unrealizedPnL' in item) { // CryptoFuturePosition
-      name = item.symbol;
-      pnl = item.unrealizedPnL;
-      isProfit = pnl >= 0;
-      const totalValue = item.entryPrice * item.quantity;
-      pnlPercent = totalValue > 0 ? (pnl / totalValue) * 100 : 0;
-      details = `${item.quantity} contracts @ ${formatCurrency(item.entryPrice, 'USDT')}`;
-    }
-    
-    return { name, symbol, pnl, pnlPercent, isProfit, details };
-  }, [item]);
-  
-  const handleItemClick = () => {
-    // This is a simplified navigation logic. A real app would need a more robust way
-    // to map items to their order page URLs.
-     if ('symbol' in item && item.symbol) {
-      onAssetClick(item as Stock);
-    } else {
-      toast({title: "Navigation not available for this item yet."})
-    }
-  };
-
-  return (
-    <div 
-        className="text-sm p-3 border-t cursor-pointer hover:bg-primary/5"
-        onClick={handleItemClick}
-    >
-      <div className="flex justify-between items-center">
-        <p className="font-medium text-foreground truncate">{name}</p>
-        <p className={cn("font-semibold", isProfit ? "text-green-600" : "text-red-600")}>
-          {formatCurrency(pnl, 'unrealizedPnL' in item ? 'USDT' : 'INR')}
-        </p>
-      </div>
-      <div className="flex justify-between text-xs text-muted-foreground">
-        <span>{details}</span>
-        <span className={cn(isProfit ? "text-green-600" : "text-red-600")}>
-          ({pnlPercent.toFixed(2)}%)
-        </span>
-      </div>
-    </div>
-  );
-};
-
 
 interface PortfolioCategoryCardProps {
   title: string;
   items: PositionItem[];
-  onAssetClick: (asset: Stock) => void;
+  onCategoryClick: (categoryTitle: string) => void;
 }
 
-export function PortfolioCategoryCard({ title, items, onAssetClick }: PortfolioCategoryCardProps) {
-  const [isOpen, setIsOpen] = useState(true);
+export function PortfolioCategoryCard({ title, items, onCategoryClick }: PortfolioCategoryCardProps) {
 
   const { totalValue, totalPnl, icon } = useMemo(() => {
     let totalValue = 0;
@@ -127,11 +62,12 @@ export function PortfolioCategoryCard({ title, items, onAssetClick }: PortfolioC
   const Icon = icon;
 
   return (
-    <Card className="shadow-md">
+    <Card 
+        className="shadow-md cursor-pointer hover:bg-muted/50 transition-colors"
+        onClick={() => onCategoryClick(title)}
+    >
       <CardHeader 
-        className="p-3 cursor-pointer flex-row items-center justify-between" 
-        onClick={() => setIsOpen(!isOpen)}
-        aria-expanded={isOpen}
+        className="p-3 flex-row items-center justify-between"
       >
         <CardTitle className="text-lg font-semibold flex items-center gap-2">
             <Icon className="h-5 w-5 text-primary" />
@@ -144,16 +80,8 @@ export function PortfolioCategoryCard({ title, items, onAssetClick }: PortfolioC
                     {isProfit ? '+' : ''}{formatCurrency(totalPnl)}
                 </p>
             </div>
-            <ChevronDown className={cn("h-5 w-5 transition-transform duration-200", isOpen && "rotate-180")} />
         </div>
       </CardHeader>
-      {isOpen && (
-        <CardContent className="p-0 animate-accordion-down">
-          {items.map((item, index) => (
-            <PositionItemRow key={`${item.id}-${index}`} item={item} onAssetClick={onAssetClick} />
-          ))}
-        </CardContent>
-      )}
     </Card>
   );
 }

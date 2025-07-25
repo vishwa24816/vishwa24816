@@ -311,6 +311,10 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
     setActiveSecondaryItem(item);
   };
   
+  const handleCategoryClick = (category: 'Fiat' | 'Wealth' | 'Crypto' | 'Web3') => {
+    onModeChange(category);
+  };
+
   const fiatHoldings = useMemo(() => mockPortfolioHoldings.filter(h => h.type === 'Stock' || h.type === 'ETF'), []);
   const wealthHoldings = useMemo(() => mockPortfolioHoldings.filter(h => h.type === 'Mutual Fund' || h.type === 'Bond'), []);
   const cryptoHoldings = useMemo(() => mockPortfolioHoldings.filter(h => h.type === 'Crypto'), []);
@@ -417,6 +421,7 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
                   foPositions={mockFoPositions}
                   cryptoFutures={mockCryptoFutures}
                   onAssetClick={onAssetClick}
+                  onCategoryClick={handleCategoryClick}
                 />
             </div>
         )
