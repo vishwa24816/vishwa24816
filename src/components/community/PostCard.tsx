@@ -2,7 +2,7 @@
 "use client";
 
 import Image from 'next/image';
-import type { CommunityPost } from '@/types';
+import type { CommunityPost, Stock } from '@/types';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -14,6 +14,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 
 interface PostCardProps {
   post: CommunityPost;
+  onAssetClick: (asset: Partial<Stock>) => void;
 }
 
 const getRecommendationBadgeVariant = (type?: CommunityPost['recommendationType']) => {
@@ -36,10 +37,16 @@ const RecommendationIcon = ({ type }: { type?: CommunityPost['recommendationType
   }
 };
 
-export function PostCard({ post }: PostCardProps) {
+export function PostCard({ post, onAssetClick }: PostCardProps) {
   const timeAgo = formatDistanceToNow(new Date(post.timestamp), { addSuffix: true });
   const userInitial = post.user.name?.[0].toUpperCase() || post.user.username?.[0].toUpperCase() || 'U';
   const isResearchPost = post.researchFirm || post.recommendationType;
+
+  const handleStockClick = () => {
+    if (post.stockSymbol) {
+        onAssetClick({ symbol: post.stockSymbol, name: post.stockSymbol });
+    }
+  };
 
   return (
     <div className="bg-card border-b border-border p-3 sm:p-4 hover:bg-muted/50 transition-colors duration-150">
@@ -64,7 +71,11 @@ export function PostCard({ post }: PostCardProps) {
 
           {isResearchPost && post.recommendationType && (
             <div className="mt-2 mb-1">
-              <Badge variant="outline" className={cn("text-sm py-1 px-3 border-2", getRecommendationBadgeVariant(post.recommendationType))}>
+              <Badge
+                variant="outline"
+                className={cn("text-sm py-1 px-3 border-2 cursor-pointer", getRecommendationBadgeVariant(post.recommendationType))}
+                onClick={handleStockClick}
+              >
                 <RecommendationIcon type={post.recommendationType} />
                 {post.recommendationType.toUpperCase()}
                 {post.stockSymbol && <span className="ml-1.5 font-normal">({post.stockSymbol})</span>}
@@ -88,7 +99,10 @@ export function PostCard({ post }: PostCardProps) {
                 data-ai-hint={post.imageAiHint || "community post image"}
               />
               {post.stockSymbol && post.stockChangePercent !== undefined && !isResearchPost && ( // Only show this if not a research post with its own symbol display
-                <div className="absolute bottom-2 left-2 bg-black/60 backdrop-blur-sm text-white px-2.5 py-1 rounded-md text-xs font-medium shadow-md">
+                <div 
+                  className="absolute bottom-2 left-2 bg-black/60 backdrop-blur-sm text-white px-2.5 py-1 rounded-md text-xs font-medium shadow-md cursor-pointer"
+                  onClick={handleStockClick}
+                >
                   {post.stockSymbol}: <span className={cn(post.stockChangePercent >= 0 ? "text-green-400" : "text-red-400")}>
                     {post.stockChangePercent >= 0 ? '+' : ''}{post.stockChangePercent.toFixed(2)}%
                   </span>
@@ -129,5 +143,3 @@ export function PostCard({ post }: PostCardProps) {
     </div>
   );
 }
-
-    

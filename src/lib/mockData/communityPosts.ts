@@ -57,6 +57,23 @@ export const mockCommunityPosts: CommunityPost[] = [
     category: 'Fiat',
   },
   {
+    id: 'post_wealth_1',
+    user: {
+        name: 'Wealth Builder',
+        username: '@WealthBuilder',
+        avatarUrl: 'https://placehold.co/40x40.png?text=WB',
+    },
+    timestamp: new Date(Date.now() - 8 * 60 * 60 * 1000).toISOString(), // 8 hours ago
+    content: 'Just started an SIP in the Parag Parikh Flexi Cap Fund. Their strategy of investing in both domestic and international equities seems promising for long-term growth. #SIP #MutualFunds',
+    stockSymbol: 'PARAGPARIKH',
+    tags: ['Investing', 'Mutual Funds', 'Wealth'],
+    source: 'User Generated',
+    likes: 88,
+    comments: 15,
+    reposts: 9,
+    category: 'Wealth',
+  },
+  {
     id: 'post4',
     user: {
       name: 'Value Investor',
@@ -154,6 +171,22 @@ export const mockCommunityPosts: CommunityPost[] = [
     recommendationType: 'Accumulate',
     researchFirm: 'Momentum Traders Inc.',
     category: 'Fiat',
+  },
+  {
+    id: 'research_wealth_1',
+    user: {
+        name: 'SIM Research Desk',
+        username: '@SIM_Research',
+        avatarUrl: 'https://placehold.co/40x40.png?text=SR',
+    },
+    timestamp: new Date(Date.now() - 30 * 60 * 60 * 1000).toISOString(),
+    content: 'The 10-year G-Sec bond yield is expected to remain range-bound in the near term. We recommend investors to look at bonds with 3-5 year maturity for a better risk-reward profile. #Bonds #FixedIncome',
+    tags: ['Bonds', 'Research', 'Fixed Income'],
+    source: 'SIM Research',
+    likes: 60,
+    comments: 10,
+    reposts: 8,
+    category: 'Wealth',
   },
   {
     id: 'research4',

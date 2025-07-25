@@ -4,7 +4,7 @@
 import React, { useState, useMemo } from 'react';
 import { PostCard } from '@/components/community/PostCard';
 import { mockCommunityPosts } from '@/lib/mockData';
-import type { CommunityPost } from '@/types';
+import type { CommunityPost, Stock } from '@/types';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -12,11 +12,12 @@ import { MessageSquarePlus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
 
-export function CommunityPageContent() {
-  const { user } = useAuth();
-  const isRealMode = user?.id === 'REAL456';
-  
-  const [activeMode, setActiveMode] = useState<'Fiat' | 'Crypto'>(isRealMode ? 'Crypto' : 'Fiat');
+interface CommunityPageContentProps {
+  onAssetClick: (asset: Stock) => void;
+  activeMode: 'Portfolio' | 'Fiat' | 'Wealth' | 'Crypto' | 'Web3';
+}
+
+export function CommunityPageContent({ activeMode, onAssetClick }: CommunityPageContentProps) {
   const [activeTab, setActiveTab] = useState("hot");
 
   const displayedTabs = useMemo(() => {
@@ -30,11 +31,12 @@ export function CommunityPageContent() {
   }, []);
 
   const displayedPosts = useMemo(() => {
-    // First, filter by the current mode (Fiat, Crypto)
+    // Filter posts based on the active header mode
     const modeFilteredPosts = mockCommunityPosts.filter(post => {
-      // Default to Fiat if category is missing
-      const postCategory = post.category || 'Fiat'; 
-      return postCategory === activeMode;
+      if (activeMode === 'Portfolio') {
+        return true; // Show all posts in Portfolio mode
+      }
+      return post.category?.toLowerCase() === activeMode.toLowerCase();
     });
 
     // Then, apply the tab-specific filter (e.g., for 'research')
@@ -75,13 +77,11 @@ export function CommunityPageContent() {
                   {displayedTabs.map((tab) => (
                     <TabsContent key={tab.value} value={tab.value} className="mt-0 data-[state=inactive]:hidden">
                       {displayedPosts.length > 0 ? (
-                          displayedPosts.map(post => <PostCard key={post.id} post={post} />)
+                          displayedPosts.map(post => <PostCard key={post.id} post={post} onAssetClick={onAssetClick} />)
                       ) : (
                           <div className="text-center py-10 text-muted-foreground">
                               <p>
-                                {activeTab === 'research' 
-                                  ? "No research reports or recommendations available yet." 
-                                  : `No posts in ${tab.label} yet.`}
+                                No posts in {activeMode} for the '{tab.label}' category yet.
                               </p>
                           </div>
                       )}

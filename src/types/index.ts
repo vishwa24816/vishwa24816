@@ -1,5 +1,4 @@
 
-
 export interface Stock {
   id: string;
   symbol: string;
@@ -172,6 +171,8 @@ export interface ChatMessage {
   text: string;
   sender: 'user' | 'bot';
   timestamp: Date;
+  navigationTarget?: string;
+  asset?: Stock;
 }
 
 export interface OptionData {
@@ -249,10 +250,10 @@ export interface SelectedOptionLeg {
   action: 'Buy' | 'Sell';
   ltp: number;
   quantity: number;
-  delta: number;
-  gamma: number;
-  theta: number;
-  vega: number;
+  delta?: number;
+  gamma?: number;
+  theta?: number;
+  vega?: number;
 }
 
 export type StrategyType = 'bullish' | 'bearish' | 'non-directional';
@@ -293,7 +294,7 @@ export interface CommunityPost {
   targetPrice?: number;
   researchFirm?: string;
   analystName?: string;
-  category?: 'Fiat' | 'Crypto' | 'Web3';
+  category?: 'Fiat' | 'Crypto' | 'Web3' | 'Wealth';
 }
 
 export interface GttOrder {

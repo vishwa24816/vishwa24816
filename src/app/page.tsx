@@ -80,11 +80,11 @@ export default function DashboardRouterPage() {
       case 'orders':
         return <OrdersPageContent onAssetClick={handleAssetClick} activeMode={activeMode} />;
       case 'simbot':
-        return <SimbotPageContent />;
+        return <SimbotPageContent onNavigateRequest={handleAssetClick} />;
       case 'screener':
         return <ScreenerPageContent onAssetClick={handleAssetClick} />;
       case 'community':
-        return <CommunityPageContent onAssetClick={handleAssetClick}/>;
+        return <CommunityPageContent onAssetClick={handleAssetClick} activeMode={activeMode} />;
       case 'asset_order':
         if (selectedAsset) {
           return <OrderPageDispatcher asset={selectedAsset} onBack={() => handleNavigate(previousMainView)} />;
