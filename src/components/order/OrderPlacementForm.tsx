@@ -181,26 +181,24 @@ const CommonOrderFields = ({
 
     const quantityInputLabel = (assetType === 'future' || assetType === 'crypto-future' || assetType === 'option') ? 'Lots' : 'Qty.';
     const isCrypto = assetType === 'crypto' || assetType === 'crypto-future';
+    
+    // Futures and options do not have delivery/HODL product types
+    const showProductTypeSelection = assetType !== 'crypto-future' && assetType !== 'future' && assetType !== 'option';
+
 
     return (
         <div className="space-y-4">
-            {assetType !== 'crypto-future' && (
+            {showProductTypeSelection && (
                 <RadioGroup value={productType} onValueChange={onProductTypeChange} className="flex flex-wrap gap-x-4 sm:gap-x-6 gap-y-2">
-                    {assetType !== 'bond' && assetType !== 'mutual-fund' && (
-                        <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="Intraday" id={`intraday-common`} />
-                            <Label htmlFor={`intraday-common`} className="font-normal">Intraday</Label>
-                        </div>
-                    )}
-                    {(assetType === 'stock' || assetType === 'crypto' || assetType === 'future' || assetType === 'option') && (
-                        <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="Delivery" id={`delivery-common`} />
-                            <Label htmlFor={`delivery-common`} className="font-normal">
-                                {assetType === 'future' ? 'Expiry' : (assetType === 'option') ? 'Delivery' : 'Delivery'}
-                            </Label>
-                        </div>
-                    )}
-                    {(assetType === 'stock' || assetType === 'crypto') && orderMode === 'Regular' && (
+                    <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="Intraday" id={`intraday-common`} />
+                        <Label htmlFor={`intraday-common`} className="font-normal">Intraday</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="Delivery" id={`delivery-common`} />
+                        <Label htmlFor={`delivery-common`} className="font-normal">Delivery</Label>
+                    </div>
+                     {(assetType === 'stock' || assetType === 'crypto') && orderMode === 'Regular' && (
                         <div className="flex items-center space-x-2">
                             <RadioGroupItem value="HODL" id="hodl-common" />
                             <Label htmlFor="hodl-common" className="font-normal">HODL</Label>
@@ -690,4 +688,5 @@ export function OrderPlacementForm({ assetType, ...props }: OrderPlacementFormPr
 }
 
 // #endregion
+
 
