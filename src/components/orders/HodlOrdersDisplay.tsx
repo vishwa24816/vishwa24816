@@ -1,14 +1,14 @@
 
 "use client";
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import type { HodlOrder } from '@/types';
 import { mockHodlOrders } from '@/lib/mockData';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
-import { Lock, Unlock, TrendingUp, Calendar, Coins } from 'lucide-react';
+import { Lock, Unlock, TrendingUp, Calendar, Coins, AlertTriangle } from 'lucide-react';
 
 interface HodlOrderItemProps {
   order: HodlOrder;
@@ -16,27 +16,20 @@ interface HodlOrderItemProps {
 
 const HodlOrderItem: React.FC<HodlOrderItemProps> = ({ order }) => {
   const { toast } = useToast();
+  const [isConfirmingUnhold, setIsConfirmingUnhold] = useState(false);
 
-  const handleUnhold = () => {
-    toast({
-      title: 'Confirm Unhold',
-      description: `Unholding before the lock-in period ends on ${new Date(order.lockInEndDate).toLocaleDateString()} will incur a 10% penalty on the profit earned.`,
-      duration: 10000, // Make toast persistent
-      action: (
-        <Button
-          variant="destructive"
-          onClick={() => {
-            toast({
-              title: 'Unheld (Mock)',
-              description: `${order.quantity} ${order.symbol} has been unheld.`,
-            });
-          }}
-        >
-          Confirm
-        </Button>
-      ),
-    });
+  const handleUnholdClick = () => {
+    setIsConfirmingUnhold(!isConfirmingUnhold);
   };
+  
+  const handleConfirmUnhold = () => {
+    toast({
+        title: 'Unheld (Mock)',
+        description: `${order.quantity} ${order.symbol} has been unheld.`,
+    });
+    setIsConfirmingUnhold(false);
+    // Here you would typically call an action to update the order status
+  }
 
   const isProfit = order.profit >= 0;
 
@@ -63,10 +56,27 @@ const HodlOrderItem: React.FC<HodlOrderItemProps> = ({ order }) => {
             </div>
         </div>
         <div className="px-3 pb-2 flex justify-end space-x-2">
-            <Button variant="outline" size="sm" onClick={handleUnhold}>
+            <Button variant="outline" size="sm" onClick={handleUnholdClick}>
                 <Unlock className="mr-1 h-3 w-3" /> Unhold
             </Button>
         </div>
+        {isConfirmingUnhold && (
+            <div className="bg-destructive/10 border-t border-destructive/20 p-3 animate-accordion-down">
+                <div className="flex items-start">
+                    <AlertTriangle className="h-5 w-5 text-destructive mr-3 mt-1"/>
+                    <div>
+                        <h4 className="font-semibold text-destructive">Confirm Unhold</h4>
+                        <p className="text-xs text-destructive/90 mt-1">
+                            Unholding before {new Date(order.lockInEndDate).toLocaleDateString()} will incur a 10% penalty on the profit earned.
+                        </p>
+                         <div className="mt-3 flex gap-2">
+                            <Button size="sm" variant="destructive" onClick={handleConfirmUnhold}>Confirm Unhold</Button>
+                            <Button size="sm" variant="ghost" onClick={() => setIsConfirmingUnhold(false)}>Cancel</Button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        )}
     </div>
   );
 };
