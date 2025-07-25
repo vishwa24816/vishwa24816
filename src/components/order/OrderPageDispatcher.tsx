@@ -11,10 +11,12 @@ import { GenericOrderPageContent } from '@/components/order-pages/GenericOrderPa
 import { CryptoFutureOrderPageContent } from '@/components/order-pages/CryptoFutureOrderPageContent';
 import { CryptoMutualFundOrderPageContent } from '@/components/order-pages/CryptoMutualFundOrderPageContent';
 import { mockNewsArticles } from '@/lib/mockData';
+import type { InitialOrderDetails } from '@/app/page';
 
 interface OrderPageDispatcherProps {
   asset: Stock;
   onBack: () => void;
+  initialDetails: InitialOrderDetails | null;
 }
 
 // Helper to get relevant news. This could be moved to a shared utility.
@@ -40,7 +42,7 @@ function getRelevantNewsForAsset(stock: Stock | null, allNews: typeof mockNewsAr
 }
 
 
-export function OrderPageDispatcher({ asset, onBack }: OrderPageDispatcherProps) {
+export function OrderPageDispatcher({ asset, onBack, initialDetails }: OrderPageDispatcherProps) {
   const assetSpecificNews = getRelevantNewsForAsset(asset, mockNewsArticles);
 
   if (!asset.exchange) {
@@ -67,11 +69,11 @@ export function OrderPageDispatcher({ asset, onBack }: OrderPageDispatcherProps)
   }
 
   if (exchange.includes('mf')) {
-    return <MutualFundOrderPageContent asset={asset} assetSpecificNews={assetSpecificNews} onBack={onBack} />;
+    return <MutualFundOrderPageContent asset={asset} assetSpecificNews={assetSpecificNews} onBack={onBack} initialDetails={initialDetails} />;
   }
 
   if (exchange === 'nse' || exchange === 'bse' || exchange === 'nasdaq' || exchange === 'nyse') {
-    return <StockOrderPageContent asset={asset} assetSpecificNews={assetSpecificNews} onBack={onBack} />;
+    return <StockOrderPageContent asset={asset} assetSpecificNews={assetSpecificNews} onBack={onBack} initialDetails={initialDetails} />;
   }
   
   // Fallback for any other types

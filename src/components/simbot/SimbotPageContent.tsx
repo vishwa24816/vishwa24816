@@ -12,10 +12,11 @@ import type { ChatMessage, Stock } from '@/types';
 import { sendMessageToSimbotAction } from '@/app/actions';
 import { useAuth } from '@/contexts/AuthContext';
 import { mockStocks, mockCryptoAssets, mockMutualFunds } from '@/lib/mockData';
+import type { InitialOrderDetails } from '@/app/page';
 
 const allAssets = [...mockStocks, ...mockCryptoAssets, ...mockMutualFunds];
 
-export function SimbotPageContent({ onNavigateRequest }: { onNavigateRequest: (asset: Stock) => void; }) {
+export function SimbotPageContent({ onNavigateRequest }: { onNavigateRequest: (asset: Stock, details?: InitialOrderDetails) => void; }) {
   const { user: authUser } = useAuth();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputValue, setInputValue] = useState('');
@@ -47,7 +48,7 @@ export function SimbotPageContent({ onNavigateRequest }: { onNavigateRequest: (a
     ]);
   }, []);
 
-  const handleSendMessage = async (messageText: string, assetToNavigate?: Stock) => {
+  const handleSendMessage = async (messageText: string, assetToNavigate?: { asset: Stock, details?: InitialOrderDetails }) => {
     const trimmedInput = messageText.trim();
     if (!trimmedInput) return;
 
@@ -63,8 +64,8 @@ export function SimbotPageContent({ onNavigateRequest }: { onNavigateRequest: (a
 
     if (assetToNavigate) {
        setTimeout(() => {
-            onNavigateRequest(assetToNavigate);
-       }, 2000);
+            onNavigateRequest(assetToNavigate.asset, assetToNavigate.details);
+       }, 1000); // Shortened delay
     }
     
     const result = await sendMessageToSimbotAction(trimmedInput);
@@ -91,10 +92,10 @@ export function SimbotPageContent({ onNavigateRequest }: { onNavigateRequest: (a
     setIsLoading(false);
   };
   
-  const handleSuggestionClick = (message: string, symbol: string) => {
+  const handleSuggestionClick = (message: string, symbol: string, details?: InitialOrderDetails) => {
     const asset = allAssets.find(a => a.symbol === symbol);
     if (asset) {
-        handleSendMessage(message, asset);
+        handleSendMessage(message, { asset, details });
     } else {
         handleSendMessage(message);
     }
@@ -163,8 +164,8 @@ export function SimbotPageContent({ onNavigateRequest }: { onNavigateRequest: (a
           <div className="w-full px-4 py-3">
               <div className="flex items-center space-x-2 mb-2 overflow-x-auto no-scrollbar pb-1">
                 <Button variant="outline" size="sm" onClick={() => handleSuggestionClick('Buy Bitcoin', 'BTC')}>Buy Bitcoin</Button>
-                <Button variant="outline" size="sm" onClick={() => handleSuggestionClick('Buy Reliance', 'RELIANCE')}>Buy Reliance</Button>
-                <Button variant="outline" size="sm" onClick={() => handleSuggestionClick('Buy Parag Parikh Flexi cap', 'PARAGPARIKH')}>Buy Parag Parikh Flexi cap</Button>
+                <Button variant="outline" size="sm" onClick={() => handleSuggestionClick('Buy reliance qty 123', 'RELIANCE', { quantity: 123 })}>Buy reliance qty 123</Button>
+                <Button variant="outline" size="sm" onClick={() => handleSuggestionClick('Do an SIP on Parag Parikh Flexi cap for 100rs weekly', 'PARAGPARIKH', { orderType: 'SIP', sipAmount: 100, sipFrequency: 'Weekly' })}>Do an SIP on Parag Parikh Flexi cap for 100rs weekly</Button>
               </div>
               <form onSubmit={handleFormSubmit} className="flex items-center space-x-2">
                 <Input

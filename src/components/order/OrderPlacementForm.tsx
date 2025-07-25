@@ -28,6 +28,7 @@ import { cn } from '@/lib/utils';
 import { useToast } from "@/hooks/use-toast";
 import { AddToBasketDialog } from './AddToBasketDialog';
 import { SipForm } from './SipForm';
+import type { InitialOrderDetails } from '@/app/page';
 
 // #region Helper Components
 const MarketDepth = ({ asset, onPriceClick }: { asset: Stock; onPriceClick: (price: number) => void; }) => {
@@ -100,9 +101,9 @@ const MarketDepth = ({ asset, onPriceClick }: { asset: Stock; onPriceClick: (pri
 
 
 // #region Specialized Form Components
-const StockOrderForm = ({ asset, assetType, productType, onProductTypeChange }: any) => {
+const StockOrderForm = ({ asset, assetType, productType, onProductTypeChange, initialDetails }: any) => {
     const { toast } = useToast();
-    const [quantity, setQuantity] = useState<number | string>(1);
+    const [quantity, setQuantity] = useState<number | string>(initialDetails?.quantity || 1);
     const [price, setPrice] = useState<number | string>(asset.price.toFixed(2));
     const isUsStock = asset.exchange === 'NASDAQ' || asset.exchange === 'NYSE';
     const [selectedExchange, setSelectedExchange] = useState<'BSE' | 'NSE' | 'NASDAQ' | 'NYSE'>(isUsStock ? (asset.exchange || 'NASDAQ') : 'NSE');
@@ -425,6 +426,7 @@ interface OrderPlacementFormProps {
   assetType: "stock" | "future" | "option" | "crypto" | "mutual-fund" | "bond" | "crypto-future" | "crypto-option";
   productType: string;
   onProductTypeChange: (value: string) => void;
+  initialDetails?: InitialOrderDetails | null;
 }
 
 export function OrderPlacementForm({ assetType, ...props }: OrderPlacementFormProps) {

@@ -13,22 +13,24 @@ import { CalendarIcon } from 'lucide-react';
 import { format } from "date-fns";
 import { cn } from '@/lib/utils';
 import { useToast } from "@/hooks/use-toast";
+import type { InitialOrderDetails } from '@/app/page';
 
 interface SipFormProps {
     asset: Stock;
     assetType: string;
     onSipStart?: () => void; // Optional callback
+    initialDetails: InitialOrderDetails | null;
 }
 
-export const SipForm = ({ asset, assetType, onSipStart }: SipFormProps) => {
+export const SipForm = ({ asset, assetType, onSipStart, initialDetails }: SipFormProps) => {
     const { toast } = useToast();
     const [scheme, setScheme] = useState<'SIP' | 'SWP'>('SIP');
 
     // SIP State
     const [sipInvestmentType, setSipInvestmentType] = useState<'amount' | 'quantity'>('amount');
-    const [sipAmount, setSipAmount] = useState('');
+    const [sipAmount, setSipAmount] = useState(initialDetails?.sipAmount?.toString() || '');
     const [sipQuantity, setSipQuantity] = useState('1');
-    const [sipFrequency, setSipFrequency] = useState<'Daily' | 'Weekly' | 'Monthly' | 'Annually'>('Monthly');
+    const [sipFrequency, setSipFrequency] = useState<'Daily' | 'Weekly' | 'Monthly' | 'Annually'>(initialDetails?.sipFrequency || 'Monthly');
     const [sipStartDate, setSipStartDate] = useState<Date | undefined>(new Date());
     const [sipInstallments, setSipInstallments] = useState('');
 

@@ -13,14 +13,16 @@ import { cn } from '@/lib/utils';
 import { NewsSection } from '@/components/dashboard/NewsSection';
 import { OrderPlacementForm } from '@/components/order/OrderPlacementForm';
 import { PerformanceBar, FinancialBar, CollapsibleSection } from './shared/OrderPageComponents';
+import type { InitialOrderDetails } from '@/app/page';
 
 interface StockOrderPageContentProps {
   asset: Stock;
   assetSpecificNews: NewsArticle[];
   onBack: () => void;
+  initialDetails: InitialOrderDetails | null;
 }
 
-export function StockOrderPageContent({ asset, assetSpecificNews, onBack }: StockOrderPageContentProps) {
+export function StockOrderPageContent({ asset, assetSpecificNews, onBack, initialDetails }: StockOrderPageContentProps) {
   const { toast } = useToast();
   
   const [activeTimescale, setActiveTimescale] = useState('1D');
@@ -101,7 +103,7 @@ export function StockOrderPageContent({ asset, assetSpecificNews, onBack }: Stoc
               ))}
             </div>
             
-            <OrderPlacementForm asset={asset} productType={productTypeForOrder} onProductTypeChange={setProductTypeForOrder} assetType="stock"/>
+            <OrderPlacementForm asset={asset} productType={productTypeForOrder} onProductTypeChange={setProductTypeForOrder} assetType="stock" initialDetails={initialDetails}/>
 
             <Tabs defaultValue="overview" className="w-full">
               <TabsList className="w-full bg-muted/30 flex overflow-x-auto whitespace-nowrap no-scrollbar rounded-none p-0 h-auto border-b mb-1">

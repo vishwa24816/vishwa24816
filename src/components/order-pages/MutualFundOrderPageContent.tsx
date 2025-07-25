@@ -12,14 +12,16 @@ import { MutualFundOrderForm } from '@/components/order/MutualFundOrderForm';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ReturnCalculator } from '@/components/order/ReturnCalculator';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import type { InitialOrderDetails } from '@/app/page';
 
 interface MutualFundOrderPageContentProps {
   asset: Stock;
   assetSpecificNews: NewsArticle[];
   onBack: () => void;
+  initialDetails: InitialOrderDetails | null;
 }
 
-export function MutualFundOrderPageContent({ asset, assetSpecificNews, onBack }: MutualFundOrderPageContentProps) {
+export function MutualFundOrderPageContent({ asset, assetSpecificNews, onBack, initialDetails }: MutualFundOrderPageContentProps) {
   const { toast } = useToast();
   
   const [activeTimescale, setActiveTimescale] = useState('3Y');
@@ -97,7 +99,7 @@ export function MutualFundOrderPageContent({ asset, assetSpecificNews, onBack }:
           </div>
 
           <div className="py-4">
-             <MutualFundOrderForm asset={asset} assetType="mutual-fund" />
+             <MutualFundOrderForm asset={asset} assetType="mutual-fund" initialDetails={initialDetails} />
           </div>
 
           <div className="grid grid-cols-2 gap-y-4 gap-x-2 text-sm py-4">

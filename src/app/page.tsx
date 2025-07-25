@@ -19,6 +19,13 @@ import { OrderPageDispatcher } from '@/components/order/OrderPageDispatcher';
 
 export type MainView = 'home' | 'orders' | 'simbot' | 'screener' | 'community' | 'asset_order';
 
+export interface InitialOrderDetails {
+    quantity?: number;
+    orderType?: string; // 'SIP' etc.
+    sipAmount?: number;
+    sipFrequency?: 'Daily' | 'Weekly' | 'Monthly' | 'Annually';
+}
+
 export default function DashboardRouterPage() {
   const { user, loading } = useAuth();
   const isRealMode = user?.id === 'REAL456';
@@ -28,6 +35,7 @@ export default function DashboardRouterPage() {
   const [activeMode, setActiveMode] = useState<'Portfolio' | 'Fiat' | 'Wealth' | 'Crypto' | 'Web3'>(isRealMode ? 'Crypto' : 'Portfolio');
   const [walletMode, setWalletMode] = useState<WalletMode>('hot');
   const [selectedAsset, setSelectedAsset] = useState<Stock | null>(null);
+  const [initialOrderDetails, setInitialOrderDetails] = useState<InitialOrderDetails | null>(null);
   
   useEffect(() => {
     if (isRealMode && (activeMode === 'Fiat' || activeMode === 'Portfolio')) {
@@ -42,12 +50,14 @@ export default function DashboardRouterPage() {
     setActiveMainView(view);
     if(view !== 'asset_order') {
         setSelectedAsset(null); // Reset selected asset when changing main view
+        setInitialOrderDetails(null); // Reset order details
     }
   };
 
-  const handleAssetClick = (asset: Stock) => {
+  const handleAssetClick = (asset: Stock, details?: InitialOrderDetails) => {
     setPreviousMainView(activeMainView);
     setSelectedAsset(asset);
+    setInitialOrderDetails(details || null);
     setActiveMainView('asset_order');
   };
 
@@ -87,7 +97,7 @@ export default function DashboardRouterPage() {
         return <CommunityPageContent onAssetClick={handleAssetClick} activeMode={activeMode} />;
       case 'asset_order':
         if (selectedAsset) {
-          return <OrderPageDispatcher asset={selectedAsset} onBack={() => handleNavigate(previousMainView)} />;
+          return <OrderPageDispatcher asset={selectedAsset} onBack={() => handleNavigate(previousMainView)} initialDetails={initialOrderDetails} />;
         }
         // Fallback to home if no asset is selected
         return isRealMode ? <RealDashboard activeMode={activeMode} walletMode={walletMode} setWalletMode={setWalletMode} onAssetClick={handleAssetClick} /> : <DemoDashboard activeMode={activeMode} onModeChange={setActiveMode} walletMode={walletMode} setWalletMode={setWalletMode} onAssetClick={handleAssetClick}/>;

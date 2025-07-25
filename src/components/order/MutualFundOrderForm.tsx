@@ -9,17 +9,19 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { SipForm } from './SipForm';
+import type { InitialOrderDetails } from '@/app/page';
 
 interface MutualFundOrderFormProps {
   asset: Stock;
   assetType: "mutual-fund";
+  initialDetails: InitialOrderDetails | null;
 }
 
-export function MutualFundOrderForm({ asset, assetType }: MutualFundOrderFormProps) {
+export function MutualFundOrderForm({ asset, assetType, initialDetails }: MutualFundOrderFormProps) {
     const { toast } = useToast();
     const [oneTimeAmount, setOneTimeAmount] = useState('');
     const [hodlAmount, setHodlAmount] = useState('');
-    const [activeTab, setActiveTab] = useState("one-time");
+    const [activeTab, setActiveTab] = useState(initialDetails?.orderType === 'SIP' ? "start-sp" : "one-time");
 
     const isCrypto = asset.exchange?.toLowerCase().includes('crypto');
     const currencySymbol = isCrypto ? '₹' : '₹'; // Always INR now
@@ -83,7 +85,7 @@ export function MutualFundOrderForm({ asset, assetType }: MutualFundOrderFormPro
                 </div>
             </TabsContent>
             <TabsContent value="start-sp" className="mt-4">
-                <SipForm asset={asset} assetType={assetType} onSipStart={handleStartSip} />
+                <SipForm asset={asset} assetType={assetType} onSipStart={handleStartSip} initialDetails={initialDetails} />
             </TabsContent>
         </Tabs>
     );
