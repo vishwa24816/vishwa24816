@@ -181,22 +181,23 @@ const CommonOrderFields = ({
 
     const quantityInputLabel = (assetType === 'future' || assetType === 'crypto-future' || assetType === 'option') ? 'Lots' : 'Qty.';
     const isCrypto = assetType === 'crypto' || assetType === 'crypto-future';
-    const isDerivatives = assetType === 'future' || assetType === 'option' || assetType === 'crypto-future';
 
     return (
         <div className="space-y-4">
              <RadioGroup value={productType} onValueChange={onProductTypeChange} className="flex flex-wrap gap-x-4 sm:gap-x-6 gap-y-2">
-                {(assetType === 'stock' || isDerivatives) && (
+                {assetType !== 'bond' && assetType !== 'mutual-fund' && (
                     <div className="flex items-center space-x-2">
                         <RadioGroupItem value="Intraday" id={`intraday-common`} />
                         <Label htmlFor={`intraday-common`} className="font-normal">Intraday</Label>
                     </div>
                 )}
-                {assetType !== 'option' && (
-                  <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="Delivery" id={`delivery-common`} />
-                      <Label htmlFor={`delivery-common`} className="font-normal">{isDerivatives ? 'Overnight' : 'Delivery'}</Label>
-                  </div>
+                {(assetType === 'stock' || assetType === 'crypto' || assetType === 'future' || assetType === 'option') && (
+                    <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="Delivery" id={`delivery-common`} />
+                        <Label htmlFor={`delivery-common`} className="font-normal">
+                            {(assetType === 'future' || assetType === 'crypto-future') ? 'Overnight' : 'Delivery'}
+                        </Label>
+                    </div>
                 )}
                 {(assetType === 'stock' || assetType === 'crypto') && orderMode === 'Regular' && (
                     <div className="flex items-center space-x-2">
