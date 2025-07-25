@@ -163,9 +163,9 @@ export function SimbotPageContent({ onNavigateRequest }: { onNavigateRequest: (a
         <footer className="fixed bottom-16 left-0 right-0 bg-background/80 backdrop-blur-sm border-t z-10">
           <div className="w-full px-4 py-3">
               <div className="flex items-center space-x-2 mb-2 overflow-x-auto no-scrollbar pb-1">
-                <Button variant="outline" size="sm" onClick={() => handleSuggestionClick('Buy Bitcoin', 'BTC')}>Buy Bitcoin</Button>
-                <Button variant="outline" size="sm" onClick={() => handleSuggestionClick('Buy reliance qty 123', 'RELIANCE', { quantity: 123 })}>Buy reliance qty 123</Button>
-                <Button variant="outline" size="sm" onClick={() => handleSuggestionClick('Do an SIP on Parag Parikh Flexi cap for 100rs weekly', 'PARAGPARIKH', { orderType: 'SIP', sipAmount: 100, sipFrequency: 'Weekly' })}>Do an SIP on Parag Parikh Flexi cap for 100rs weekly</Button>
+                <Button variant="outline" size="sm" onClick={() => handleSuggestionClick('Buy Bitcoin', 'BTC')}>बिटकॉइन खरीदें</Button>
+                <Button variant="outline" size="sm" onClick={() => handleSuggestionClick('Buy reliance qty 123', 'RELIANCE', { quantity: 123 })}>रिलायंस खरीदें 123 मात्रा</Button>
+                <Button variant="outline" size="sm" onClick={() => handleSuggestionClick('Do an SIP on Parag Parikh Flexi cap for 100rs weekly', 'PARAGPARIKH', { orderType: 'SIP', sipAmount: 100, sipFrequency: 'Weekly' })}>पराग पारिख फ्लेक्सी कैप में 100 रुपये साप्ताहिक की एसआईपी करें</Button>
               </div>
               <form onSubmit={handleFormSubmit} className="flex items-center space-x-2">
                 <Input
