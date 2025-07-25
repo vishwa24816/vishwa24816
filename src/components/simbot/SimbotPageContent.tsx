@@ -65,7 +65,7 @@ export function SimbotPageContent({ onNavigateRequest }: { onNavigateRequest: (a
     if (assetToNavigate) {
        setTimeout(() => {
             onNavigateRequest(assetToNavigate.asset, assetToNavigate.details);
-       }, 1000); // Shortened delay
+       }, 1000);
     }
     
     const result = await sendMessageToSimbotAction(trimmedInput);
@@ -85,8 +85,12 @@ export function SimbotPageContent({ onNavigateRequest }: { onNavigateRequest: (a
     };
     setMessages(prev => [...prev, botMessage]);
 
-    if (result.asset && !assetToNavigate) {
-        onNavigateRequest(result.asset);
+    if (result.navigationTarget && !assetToNavigate) {
+        const assetSymbol = result.navigationTarget.split('/').pop();
+        const asset = allAssets.find(a => a.symbol === assetSymbol);
+        if (asset) {
+          onNavigateRequest(asset);
+        }
     }
 
     setIsLoading(false);
@@ -164,8 +168,8 @@ export function SimbotPageContent({ onNavigateRequest }: { onNavigateRequest: (a
           <div className="w-full px-4 py-3">
               <div className="flex items-center space-x-2 mb-2 overflow-x-auto no-scrollbar pb-1">
                 <Button variant="outline" size="sm" onClick={() => handleSuggestionClick('Buy Bitcoin', 'BTC')}>बिटकॉइन खरीदें</Button>
-                <Button variant="outline" size="sm" onClick={() => handleSuggestionClick('Buy reliance qty 123', 'RELIANCE', { quantity: 123 })}>रिलायंस खरीदें 123 मात्रा</Button>
-                <Button variant="outline" size="sm" onClick={() => handleSuggestionClick('Do an SIP on Parag Parikh Flexi cap for 100rs weekly', 'PARAGPARIKH', { orderType: 'SIP', sipAmount: 100, sipFrequency: 'Weekly' })}>पराग पारिख फ्लेक्सी कैप में 100 रुपये साप्ताहिक की एसआईपी करें</Button>
+                <Button variant="outline" size="sm" onClick={() => handleSuggestionClick('Buy reliance qty 123', 'RELIANCE', { quantity: 123 })}>Buy reliance qty 123</Button>
+                <Button variant="outline" size="sm" onClick={() => handleSuggestionClick('Do an SIP on Parag Parikh Flexi cap for 100rs weekly', 'PARAGPARIKH', { orderType: 'SIP', sipAmount: 100, sipFrequency: 'Weekly' })}>Do an SIP on Parag Parikh Flexi cap for 100rs weekly</Button>
               </div>
               <form onSubmit={handleFormSubmit} className="flex items-center space-x-2">
                 <Input
