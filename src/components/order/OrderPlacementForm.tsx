@@ -350,9 +350,9 @@ const CryptoOrderForm = ({ asset, assetType, productType, onProductTypeChange }:
                 <TabsContent value="Regular" className="p-4 mt-0">
                     <div className="space-y-4">
                         <RadioGroup value={productType} onValueChange={onProductTypeChange} className="flex flex-wrap gap-x-4 sm:gap-x-6 gap-y-2">
-                            <div className="flex items-center space-x-2"> <RadioGroupItem value="Intraday" id="intraday-crypto" /> <Label htmlFor="intraday-crypto" className="font-normal">Intraday</Label> </div>
-                            <div className="flex items-center space-x-2"> <RadioGroupItem value="Delivery" id="delivery-crypto" /> <Label htmlFor="delivery-crypto" className="font-normal">Delivery</Label> </div>
-                            <div className="flex items-center space-x-2"> <RadioGroupItem value="HODL" id="hodl-crypto" /> <Label htmlFor="hodl-crypto" className="font-normal">HODL</Label> </div>
+                           <div className="flex items-center space-x-2"> <RadioGroupItem value="Intraday" id="intraday-crypto" /> <Label htmlFor="intraday-crypto" className="font-normal">Intraday</Label> </div>
+                           <div className="flex items-center space-x-2"> <RadioGroupItem value="Delivery" id="delivery-crypto" /> <Label htmlFor="delivery-crypto" className="font-normal">Delivery</Label> </div>
+                           <div className="flex items-center space-x-2"> <RadioGroupItem value="HODL" id="hodl-crypto" /> <Label htmlFor="hodl-crypto" className="font-normal">HODL</Label> </div>
                         </RadioGroup>
                         <div className="grid grid-cols-2 gap-4 items-end">
                             <div><Label htmlFor="qty-crypto">Qty.</Label><Input id="qty-crypto" type="text" value={quantity} onChange={(e) => setQuantity(e.target.value)} /></div>
@@ -425,7 +425,7 @@ const FutureOrderForm = ({ asset, assetType, productType, onProductTypeChange }:
                         </Select>
                     </div>
                 )}
-                <RadioGroup value={productType} onValueChange={onProductTypeChange} className="flex flex-wrap gap-x-4 sm:gap-x-6 gap-y-2">
+                 <RadioGroup value={productType} onValueChange={onProductTypeChange} className="flex flex-wrap gap-x-4 sm:gap-x-6 gap-y-2">
                   <div className="flex items-center space-x-2"> <RadioGroupItem value="Intraday" id="intraday-future" /><Label htmlFor="intraday-future" className="font-normal">Intraday</Label></div>
                   <div className="flex items-center space-x-2"> <RadioGroupItem value="Overnight" id="overnight-future" /><Label htmlFor="overnight-future" className="font-normal">Expiry</Label></div>
                 </RadioGroup>
