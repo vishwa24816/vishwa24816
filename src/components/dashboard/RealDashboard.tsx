@@ -26,6 +26,7 @@ import {
 } from '@/lib/mockData';
 import { mockCryptoOptionsForWatchlist } from '@/lib/mockData/cryptoOptionsWatchlist';
 import { mockCryptoIndices } from '@/lib/mockData/cryptoIndices';
+import type { WalletMode } from './CryptoHoldingsSection';
 
 // Helper functions (could be moved to a utils file)
 function getRelevantNewsForHoldings(holdings: PortfolioHolding[], allNews: NewsArticle[]): NewsArticle[] {
@@ -54,9 +55,11 @@ function getRelevantNewsForWatchlistItems(items: Stock[] | undefined, allNews: N
 
 interface RealDashboardProps {
   activeMode: 'Portfolio' | 'Fiat' | 'Crypto' | 'Web3';
+  walletMode: WalletMode;
+  setWalletMode: (mode: WalletMode) => void;
 }
 
-export function RealDashboard({ activeMode }: RealDashboardProps) {
+export function RealDashboard({ activeMode, walletMode, setWalletMode }: RealDashboardProps) {
   const { primaryNavItems, secondaryNavTriggerCategories } = useMemo(() => {
     if (activeMode === 'Portfolio') {
        return {
@@ -143,7 +146,7 @@ export function RealDashboard({ activeMode }: RealDashboardProps) {
     const isWatchlistView = activeSecondaryItem === "Portfolio Watchlist";
 
     if (activePrimaryItem === 'Crypto') {
-      if (isHoldingsView) return <><CryptoHoldingsSection title="Crypto Wallet & Holdings" holdings={cryptoHoldings} cashBalance={cryptoCashBalance} setCashBalance={setCryptoCashBalance} mainPortfolioCashBalance={mainPortfolioCashBalance} setMainPortfolioCashBalance={setMainPortfolioCashBalance} isRealMode={true} /><NewsSection articles={newsForView} /></>;
+      if (isHoldingsView) return <><CryptoHoldingsSection title="Crypto Wallet & Holdings" holdings={cryptoHoldings} cashBalance={cryptoCashBalance} setCashBalance={setCryptoCashBalance} mainPortfolioCashBalance={mainPortfolioCashBalance} setMainPortfolioCashBalance={setMainPortfolioCashBalance} isRealMode={true} walletMode={walletMode} setWalletMode={setWalletMode} /><NewsSection articles={newsForView} /></>;
       if (isPositionsView) return <div className="space-y-8"><CryptoFuturesSection positions={mockRealCryptoFutures} cashBalance={cryptoCashBalance} /><CryptoBasketSection /><NewsSection articles={newsForView} /></div>;
       if (isWatchlistView) return <div className="space-y-8"><WatchlistSection title="My Crypto Watchlist" defaultInitialItems={itemsForWatchlist} localStorageKeyOverride={'simCryptoWatchlist_real'}/><NewsSection articles={newsForView} /></div>;
     }
@@ -172,6 +175,8 @@ export function RealDashboard({ activeMode }: RealDashboardProps) {
         onPrimaryNavClick={handlePrimaryNavClick}
         onSecondaryNavClick={setActiveSecondaryItem}
         secondaryNavTriggerCategories={secondaryNavTriggerCategories}
+        walletMode={walletMode}
+        activeMode={activeMode}
       />
       
        {activeMode === 'Portfolio' ? renderPortfolioContent() : renderMarketContent()}

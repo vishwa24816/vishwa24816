@@ -48,7 +48,6 @@ export function AppHeader({ activeMode, onModeChange, isRealMode, walletMode }: 
 
 
   const isPortfolioDisabled = pathname === '/orders' || pathname === '/screener' || pathname === '/community';
-  const isCryptoDisabled = walletMode === 'cold';
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -136,8 +135,7 @@ export function AppHeader({ activeMode, onModeChange, isRealMode, walletMode }: 
             <div className="flex items-center justify-center pb-2">
                 <div className="flex items-center rounded-md bg-primary-foreground/10 p-1 space-x-1 w-full">
                     {availableModes.map(mode => {
-                        const isDisabled = (mode === 'Portfolio' && isPortfolioDisabled) ||
-                                           ((mode === 'Crypto' || mode === 'Web3') && isCryptoDisabled);
+                        const isDisabled = (mode === 'Portfolio' && isPortfolioDisabled);
 
                         return (
                             <Button

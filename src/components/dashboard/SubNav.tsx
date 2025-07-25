@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { PlusCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import type { WalletMode } from './CryptoHoldingsSection';
 
 interface SubNavProps {
   primaryNavItems: string[];
@@ -14,6 +15,8 @@ interface SubNavProps {
   onPrimaryNavClick: (item: string) => void;
   onSecondaryNavClick: (item: string) => void;
   secondaryNavTriggerCategories: Record<string, string[]>;
+  walletMode?: WalletMode;
+  activeMode: string;
 }
 
 export function SubNav({ 
@@ -22,7 +25,9 @@ export function SubNav({
   activeSecondaryItem, 
   onPrimaryNavClick, 
   onSecondaryNavClick,
-  secondaryNavTriggerCategories 
+  secondaryNavTriggerCategories,
+  walletMode,
+  activeMode
 }: SubNavProps) {
   const { toast } = useToast();
   const currentSecondaryNavItems = secondaryNavTriggerCategories[activePrimaryItem] || [];
@@ -64,22 +69,26 @@ export function SubNav({
       {showSecondaryNav && (
         <div className="border-b border-border mt-1">
           <div className="flex items-center space-x-0 overflow-x-auto whitespace-nowrap pb-0 no-scrollbar">
-            {currentSecondaryNavItems.map((item) => (
+            {currentSecondaryNavItems.map((item) => {
+              const isSpotDisabled = activeMode === 'Crypto' && item === 'Spot' && walletMode === 'cold';
+              return (
               <Button
                 key={item}
                 variant="ghost"
+                disabled={isSpotDisabled}
                 className={cn(
                   "px-4 py-3 h-auto text-sm font-medium rounded-none focus-visible:ring-0 focus-visible:ring-offset-0",
                   "border-b-2 hover:bg-transparent",
                   activeSecondaryItem === item
                     ? "text-primary border-primary font-semibold"
-                    : "text-muted-foreground border-transparent hover:text-primary hover:border-primary/30"
+                    : "text-muted-foreground border-transparent hover:text-primary hover:border-primary/30",
+                   isSpotDisabled && "opacity-50 cursor-not-allowed"
                 )}
                 onClick={() => onSecondaryNavClick(item)}
               >
                 {item}
               </Button>
-            ))}
+            )})}
             {isWatchlistCategory && (
               <Button
                 variant="ghost"

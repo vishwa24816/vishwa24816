@@ -14,8 +14,10 @@ import { SimbotPageContent } from '@/components/simbot/SimbotPageContent';
 import { ScreenerPageContent } from '@/components/screener/ScreenerPageContent';
 import { CommunityPageContent } from '@/components/community/CommunityPageContent';
 import { AppFooter } from '@/components/shared/AppFooter';
+import type { Stock } from '@/types';
+import { OrderPageDispatcher } from '@/components/order/OrderPageDispatcher';
 
-export type MainView = 'home' | 'orders' | 'simbot' | 'screener' | 'community';
+export type MainView = 'home' | 'orders' | 'simbot' | 'screener' | 'community' | 'asset_order';
 
 export default function DashboardRouterPage() {
   const { user, loading } = useAuth();
@@ -24,12 +26,23 @@ export default function DashboardRouterPage() {
   const [activeMainView, setActiveMainView] = useState<MainView>('home');
   const [activeMode, setActiveMode] = useState<'Portfolio' | 'Fiat' | 'Wealth' | 'Crypto' | 'Web3'>(isRealMode ? 'Crypto' : 'Portfolio');
   const [walletMode, setWalletMode] = useState<WalletMode>('hot');
+  const [selectedAsset, setSelectedAsset] = useState<Stock | null>(null);
   
   useEffect(() => {
     if (isRealMode && (activeMode === 'Fiat' || activeMode === 'Portfolio')) {
       setActiveMode('Crypto');
     }
   }, [isRealMode, activeMode]);
+
+  const handleNavigate = (view: MainView) => {
+    setActiveMainView(view);
+    setSelectedAsset(null); // Reset selected asset when changing main view
+  };
+
+  const handleAssetClick = (asset: Stock) => {
+    setSelectedAsset(asset);
+    setActiveMainView('asset_order');
+  };
 
   if (loading || !user) {
      return (
@@ -53,18 +66,24 @@ export default function DashboardRouterPage() {
     switch (activeMainView) {
       case 'home':
         return isRealMode ? (
-          <RealDashboard activeMode={activeMode} />
+          <RealDashboard activeMode={activeMode} walletMode={walletMode} setWalletMode={setWalletMode} onAssetClick={handleAssetClick} />
         ) : (
-          <DemoDashboard activeMode={activeMode} onModeChange={setActiveMode} walletMode={walletMode} setWalletMode={setWalletMode} />
+          <DemoDashboard activeMode={activeMode} onModeChange={setActiveMode} walletMode={walletMode} setWalletMode={setWalletMode} onAssetClick={handleAssetClick}/>
         );
       case 'orders':
-        return <OrdersPageContent />;
+        return <OrdersPageContent onAssetClick={handleAssetClick} />;
       case 'simbot':
         return <SimbotPageContent />;
       case 'screener':
-        return <ScreenerPageContent />;
+        return <ScreenerPageContent onAssetClick={handleAssetClick} />;
       case 'community':
-        return <CommunityPageContent />;
+        return <CommunityPageContent onAssetClick={handleAssetClick}/>;
+      case 'asset_order':
+        if (selectedAsset) {
+          return <OrderPageDispatcher asset={selectedAsset} onBack={() => handleNavigate('home')} />;
+        }
+        // Fallback to home if no asset is selected
+        return isRealMode ? <RealDashboard activeMode={activeMode} walletMode={walletMode} setWalletMode={setWalletMode} onAssetClick={handleAssetClick} /> : <DemoDashboard activeMode={activeMode} onModeChange={setActiveMode} walletMode={walletMode} setWalletMode={setWalletMode} onAssetClick={handleAssetClick}/>;
       default:
         return null;
     }
@@ -81,7 +100,7 @@ export default function DashboardRouterPage() {
         />
         {renderContent()}
       </div>
-      <AppFooter activeView={activeMainView} onNavigate={setActiveMainView} />
+      <AppFooter activeView={activeMainView} onNavigate={handleNavigate} />
     </ProtectedRoute>
   );
 }

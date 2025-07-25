@@ -481,6 +481,16 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
     
     } else if (activeMode === 'Crypto') {
         const isNumberedWatchlist = !!activeSecondaryItem.match(/^Watchlist \d+$/);
+
+        if (walletMode === 'cold' && activePrimaryItem === 'Spot') {
+            return (
+                <div className="flex flex-col items-center justify-center text-center py-12 text-muted-foreground">
+                    <ShieldCheck className="h-16 w-16 mb-4 text-blue-500" />
+                    <h2 className="text-2xl font-semibold mb-2 text-foreground">Spot Trading Disabled</h2>
+                    <p className="max-w-md">Spot trading is unavailable in Cold Wallet mode. Switch to your Hot Wallet to trade spot assets.</p>
+                </div>
+            );
+        }
         
         if (activePrimaryItem === "Spot" && activeSecondaryItem.startsWith("Top watchlist")) {
              return (
@@ -572,6 +582,8 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
         onPrimaryNavClick={handlePrimaryNavClick}
         onSecondaryNavClick={handleSecondaryNavClick}
         secondaryNavTriggerCategories={secondaryNavTriggerCategories}
+        walletMode={walletMode}
+        activeMode={activeMode}
       />
       
       {activeMode === 'Portfolio' ? renderPortfolioContent() : renderMarketContent()}

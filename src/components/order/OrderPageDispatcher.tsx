@@ -1,0 +1,76 @@
+
+"use client";
+
+import React from 'react';
+import type { Stock } from '@/types';
+import { StockOrderPageContent } from '@/components/order-pages/StockOrderPageContent';
+import { CryptoOrderPageContent } from '@/components/order-pages/CryptoOrderPageContent';
+import { FutureOrderPageContent } from '@/components/order-pages/FutureOrderPageContent';
+import { MutualFundOrderPageContent } from '@/components/order-pages/MutualFundOrderPageContent';
+import { GenericOrderPageContent } from '@/components/order-pages/GenericOrderPageContent';
+import { CryptoFutureOrderPageContent } from '@/components/order-pages/CryptoFutureOrderPageContent';
+import { CryptoMutualFundOrderPageContent } from '@/components/order-pages/CryptoMutualFundOrderPageContent';
+import { mockNewsArticles } from '@/lib/mockData';
+
+interface OrderPageDispatcherProps {
+  asset: Stock;
+  onBack: () => void;
+}
+
+// Helper to get relevant news. This could be moved to a shared utility.
+function getRelevantNewsForAsset(stock: Stock | null, allNews: typeof mockNewsArticles): typeof mockNewsArticles {
+    if (!stock || !allNews.length) {
+        return [];
+    }
+    const relevantNews: typeof mockNewsArticles = [];
+    const stockKeywords = [stock.name.toLowerCase(), stock.symbol.toLowerCase()];
+    if(stock.sector) stockKeywords.push(stock.sector.toLowerCase());
+    if(stock.symbol.includes("FUT")) { 
+        const underlying = stock.symbol.replace("JANFUT", "").replace("FEBFUT", "").replace("MARFUT", "");
+        stockKeywords.push(underlying.toLowerCase());
+    }
+
+    allNews.forEach(news => {
+        const headlineLower = news.headline.toLowerCase();
+        if (stockKeywords.some(keyword => keyword && headlineLower.includes(keyword))) {
+        relevantNews.push(news);
+        }
+    });
+    return relevantNews;
+}
+
+
+export function OrderPageDispatcher({ asset, onBack }: OrderPageDispatcherProps) {
+  const assetSpecificNews = getRelevantNewsForAsset(asset, mockNewsArticles);
+
+  if (!asset.exchange) {
+    return <GenericOrderPageContent asset={asset} assetSpecificNews={assetSpecificNews} />;
+  }
+
+  const exchange = asset.exchange.toLowerCase();
+
+  if (exchange.includes('crypto')) {
+    if(exchange.includes('future')) {
+      return <CryptoFutureOrderPageContent asset={asset} assetSpecificNews={assetSpecificNews} />;
+    }
+    if (exchange.includes('mf')) {
+        return <CryptoMutualFundOrderPageContent asset={asset} assetSpecificNews={assetSpecificNews} />;
+    }
+    return <CryptoOrderPageContent asset={asset} assetSpecificNews={assetSpecificNews} />;
+  }
+  
+  if (exchange.includes('nfo')) {
+      return <FutureOrderPageContent asset={asset} assetSpecificNews={assetSpecificNews} />;
+  }
+
+  if (exchange.includes('mf')) {
+    return <MutualFundOrderPageContent asset={asset} assetSpecificNews={assetSpecificNews} />;
+  }
+
+  if (exchange === 'nse' || exchange === 'bse' || exchange === 'nasdaq' || exchange === 'nyse') {
+    return <StockOrderPageContent asset={asset} assetSpecificNews={assetSpecificNews} />;
+  }
+  
+  // Fallback for any other types
+  return <GenericOrderPageContent asset={asset} assetSpecificNews={assetSpecificNews} />;
+}
