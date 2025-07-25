@@ -175,7 +175,8 @@ const CommonOrderFields = ({
         showMoreOptions, setShowMoreOptions,
         isStopLossEnabled, setIsStopLossEnabled, stopLossValue, setStopLossValue, stopLossUnit, setStopLossUnit,
         isTrailingSlEnabled, setIsTrailingSlEnabled, trailingSlValue, setTrailingSlValue, trailingSlUnit, setTrailingSlUnit,
-        isTargetProfitEnabled, setIsTargetProfitEnabled, targetProfitValue, setTargetProfitValue, targetProfitUnit, setTargetProfitUnit
+        isTargetProfitEnabled, setIsTargetProfitEnabled, targetProfitValue, setTargetProfitValue, targetProfitUnit, setTargetProfitUnit,
+        lockInMonths, setLockInMonths, lockInYears, setLockInYears
     } = orderProps;
 
     const quantityInputLabel = (assetType === 'future' || assetType === 'crypto-future' || assetType === 'option') ? 'Lots' : 'Qty.';
@@ -232,6 +233,22 @@ const CommonOrderFields = ({
                     <Input id={`price-common`} type="text" value={price} onChange={(e) => setPrice(e.target.value)} disabled={orderType === 'Market'} />
                 </div>
             </div>
+
+            {productType === 'HODL' && (
+                <div className="space-y-2 pt-2 animate-accordion-down">
+                    <Label>Lock-in Period</Label>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <Label htmlFor="lock-in-years" className="text-xs text-muted-foreground">Years</Label>
+                            <Input id="lock-in-years" type="number" placeholder="Years" value={lockInYears} onChange={e => setLockInYears(e.target.value)} min="0" />
+                        </div>
+                         <div>
+                            <Label htmlFor="lock-in-months" className="text-xs text-muted-foreground">Months</Label>
+                            <Input id="lock-in-months" type="number" placeholder="Months" value={lockInMonths} onChange={e => setLockInMonths(e.target.value)} min="0" max="11"/>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             <RadioGroup value={orderType} onValueChange={(value) => setOrderType(value)} className="flex flex-wrap gap-x-4 gap-y-2">
                 {(['Market', 'Limit'] as const).map(type => (
@@ -302,6 +319,10 @@ const StockOrderForm = ({ asset, assetType, productType, onProductTypeChange }: 
     const [displayedMargin, setDisplayedMargin] = useState(0);
     const [isAddToBasketDialogOpen, setIsAddToBasketDialogOpen] = useState(false);
 
+    // HODL state
+    const [lockInYears, setLockInYears] = useState('');
+    const [lockInMonths, setLockInMonths] = useState('');
+
     // Advanced options state
     const [isStopLossEnabled, setIsStopLossEnabled] = useState(false);
     const [stopLossValue, setStopLossValue] = useState('');
@@ -347,7 +368,8 @@ const StockOrderForm = ({ asset, assetType, productType, onProductTypeChange }: 
         showMoreOptions, setShowMoreOptions,
         isStopLossEnabled, setIsStopLossEnabled, stopLossValue, setStopLossValue, stopLossUnit, setStopLossUnit,
         isTrailingSlEnabled, setIsTrailingSlEnabled, trailingSlValue, setTrailingSlValue, trailingSlUnit, setTrailingSlUnit,
-        isTargetProfitEnabled, setIsTargetProfitEnabled, targetProfitValue, setTargetProfitValue, targetProfitUnit, setTargetProfitUnit
+        isTargetProfitEnabled, setIsTargetProfitEnabled, targetProfitValue, setTargetProfitValue, targetProfitUnit, setTargetProfitUnit,
+        lockInMonths, setLockInMonths, lockInYears, setLockInYears,
     };
 
     return (
