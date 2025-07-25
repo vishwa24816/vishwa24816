@@ -18,6 +18,7 @@ interface WatchlistSectionProps {
   title?: string;
   localStorageKeyOverride?: string;
   defaultInitialItems?: Stock[];
+  onAssetClick: (asset: Stock) => void;
 }
 
 export function WatchlistSection({
@@ -26,6 +27,7 @@ export function WatchlistSection({
   title,
   localStorageKeyOverride,
   defaultInitialItems,
+  onAssetClick,
 }: WatchlistSectionProps) {
   const [watchlist, setWatchlist] = useState<Stock[]>([]);
   const { toast } = useToast();
@@ -120,6 +122,7 @@ export function WatchlistSection({
                 stock={stock}
                 isPredefinedList={isPredefinedList}
                 onRemoveStock={handleRemoveStock}
+                onAssetClick={onAssetClick}
               />
             ))}
           </ul>

@@ -2,7 +2,6 @@
 "use client";
 
 import React, { useState, useRef } from 'react';
-import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { useToast } from "@/hooks/use-toast";
 import type { Stock } from '@/types';
@@ -17,9 +16,10 @@ interface WatchlistItemProps {
   stock: Stock;
   isPredefinedList: boolean;
   onRemoveStock: (stockId: string) => void;
+  onAssetClick: (asset: Stock) => void;
 }
 
-export const WatchlistItem: React.FC<WatchlistItemProps> = ({ stock, isPredefinedList, onRemoveStock }) => {
+export const WatchlistItem: React.FC<WatchlistItemProps> = ({ stock, isPredefinedList, onRemoveStock, onAssetClick }) => {
   const [touchStartX, setTouchStartX] = useState(0);
   const [currentTranslateX, setCurrentTranslateX] = useState(0);
   const [isSwiping, setIsSwiping] = useState(false);
@@ -68,13 +68,16 @@ export const WatchlistItem: React.FC<WatchlistItemProps> = ({ stock, isPredefine
 
   const isPositive = stock.change >= 0;
 
-  const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+  const handleItemClick = (e: React.MouseEvent) => {
     if (ignoreClickAfterSwipeRef.current) {
       e.preventDefault();
+      return;
     }
     if (!isPredefinedList && currentTranslateX !== 0) {
       e.preventDefault();
+      return;
     }
+    onAssetClick(stock);
   };
 
   const handleDeleteClick = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -82,25 +85,6 @@ export const WatchlistItem: React.FC<WatchlistItemProps> = ({ stock, isPredefine
     e.preventDefault();
     onRemoveStock(stock.id);
   };
-
-  let itemLink = `/order/stock/${stock.symbol}`;
-  if (stock.exchange === 'MF') {
-    itemLink = `/order/mutual-fund/${stock.symbol}`;
-  } else if (stock.exchange === 'Crypto') {
-    itemLink = `/order/crypto/${stock.symbol}`;
-  } else if (stock.exchange === 'Crypto MF') {
-    itemLink = `/order/crypto-mutual-fund/${stock.symbol}`;
-  } else if (stock.exchange === 'NFO') {
-    if (stock.symbol.includes('FUT') || stock.name.toLowerCase().includes('future')) {
-      itemLink = `/order/future/${stock.symbol}`;
-    } else if (stock.symbol.includes('CE') || stock.symbol.includes('PE') || stock.name.toLowerCase().includes('option')) {
-      itemLink = `/order/option/${stock.symbol}`;
-    }
-  } else if (stock.exchange === 'BOND' || stock.exchange === 'CORP BOND' || stock.exchange === 'SGB') {
-    itemLink = `/order/bond/${stock.symbol}`;
-  } else if (stock.exchange === 'Crypto Futures') {
-    itemLink = `/order/crypto-future/${stock.symbol}`;
-  }
 
   const fallbackText = stock.symbol.substring(0, 2);
 
@@ -148,14 +132,12 @@ export const WatchlistItem: React.FC<WatchlistItemProps> = ({ stock, isPredefine
           backgroundColor: !isPredefinedList ? 'hsl(var(--card))' : 'transparent',
         }}
       >
-        <Link
-          href={itemLink}
-          passHref
+        <button
+          onClick={handleItemClick}
           className={cn(
-            "flex items-center justify-between w-full p-3",
+            "flex items-center justify-between w-full p-3 text-left",
             isPredefinedList ? "cursor-pointer" : "cursor-grab"
           )}
-          onClick={handleLinkClick}
         >
           <div className="flex items-center space-x-3 flex-1 min-w-0">
             <Avatar className="h-9 w-9 text-xs">
@@ -186,7 +168,7 @@ export const WatchlistItem: React.FC<WatchlistItemProps> = ({ stock, isPredefine
               <Trash2 className="h-4 w-4" />
             </Button>
           )}
-        </Link>
+        </button>
       </div>
     </li>
   );

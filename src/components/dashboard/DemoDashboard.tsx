@@ -27,7 +27,7 @@ import { AddFundsDialog } from '@/components/shared/AddFundsDialog';
 
 
 import React, { useState, useMemo, useEffect } from 'react';
-import type { PortfolioHolding, IntradayPosition, FoPosition, CryptoFuturePosition, Stock, SelectedOptionLeg } from '@/types';
+import type { PortfolioHolding, IntradayPosition, FoPosition, CryptoFuturePosition, Stock, SelectedOptionLeg, NewsArticle } from '@/types';
 import { mockPortfolioHoldings } from '@/lib/mockData/portfolioHoldings';
 import { mockNewsArticles } from '@/lib/mockData/newsArticles';
 import { mockIntradayPositions } from '@/lib/mockData/intradayPositions';
@@ -89,7 +89,7 @@ function getRelevantNewsForHoldings(holdings: PortfolioHolding[], allNews: NewsA
 
   allNews.forEach(news => {
     const headlineLower = news.headline.toLowerCase();
-    if (Array.from(holdingKeywords).some(keyword => keyword && headlineLower.includes(keyword as string))) {
+    if (Array.from(holdingKeywords).some(keyword => keyword && (keyword as string).includes(headlineLower))) {
       relevantNews.push(news);
     }
   });
@@ -133,7 +133,7 @@ function getRelevantNewsForPositions(
   const relevantNews: NewsArticle[] = [];
   allNews.forEach(news => {
     const headlineLower = news.headline.toLowerCase();
-    if (Array.from(positionKeywords).some(keyword => keyword && headlineLower.includes(keyword as string))) {
+    if (Array.from(positionKeywords).some(keyword => keyword && (keyword as string).includes(headlineLower))) {
       relevantNews.push(news);
     }
   });
@@ -168,7 +168,7 @@ function getRelevantNewsForWatchlistItems(items: Stock[] | undefined, allNews: N
 
   allNews.forEach(news => {
     const headlineLower = news.headline.toLowerCase();
-    if (Array.from(itemKeywords).some(keyword => keyword && headlineLower.includes(keyword as string))) {
+    if (Array.from(itemKeywords).some(keyword => keyword && (keyword as string).includes(headlineLower))) {
       relevantNews.push(news);
     }
   });
@@ -445,20 +445,25 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
   const allHoldings = useMemo(() => [...fiatHoldings, ...wealthHoldings, ...cryptoHoldings, ...mockWeb3Holdings], [fiatHoldings, wealthHoldings, cryptoHoldings]);
   
     const { totalPortfolioValue, unrealisedPnl, investedMargin } = useMemo(() => {
-        const holdingsValue = allHoldings.reduce((acc, h) => acc + (h.currentValue || 0), 0);
-        const holdingsInvestment = allHoldings.reduce((acc, h) => acc + ((h.avgCostPrice || 0) * (h.quantity || 0)), 0);
+        let holdingsValue = 0
+        let holdingsInvestment = 0
+        allHoldings.forEach(h => {
+            holdingsValue += h.currentValue || 0;
+            holdingsInvestment += (h.avgCostPrice || 0) * (h.quantity || 0);
+        });
 
-        const intradayInvestment = mockIntradayPositions.reduce((acc, p) => acc + (p.avgPrice * p.quantity), 0);
         const intradayPnl = mockIntradayPositions.reduce((acc, p) => acc + p.pAndL, 0);
 
-        const foInvestment = mockFoPositions.reduce((acc, p) => acc + (p.avgPrice * p.lots * p.quantityPerLot), 0);
         const foPnl = mockFoPositions.reduce((acc, p) => acc + p.pAndL, 0);
         
-        const cryptoFuturesInvestment = mockCryptoFutures.reduce((acc, p) => acc + (p.margin || 0), 0);
         const cryptoFuturesPnl = mockCryptoFutures.reduce((acc, p) => acc + p.unrealizedPnL, 0);
 
-        const totalInvestment = holdingsInvestment + intradayInvestment + foInvestment + cryptoFuturesInvestment;
         const totalPnl = (holdingsValue - holdingsInvestment) + intradayPnl + foPnl + cryptoFuturesPnl;
+        
+        const intradayInvestment = mockIntradayPositions.reduce((acc, p) => acc + (p.avgPrice * p.quantity), 0);
+        const foInvestment = mockFoPositions.reduce((acc, p) => acc + (p.avgPrice * p.lots * p.quantityPerLot), 0);
+        const cryptoFuturesInvestment = mockCryptoFutures.reduce((acc, p) => acc + (p.margin || 0), 0);
+        const totalInvestment = holdingsInvestment + intradayInvestment + foInvestment + cryptoFuturesInvestment;
         
         return {
             totalPortfolioValue: totalInvestment + totalPnl,
@@ -525,7 +530,7 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
                     onAddFunds={() => setIsAddFundsDialogOpen(true)}
                     onWithdrawFunds={() => setIsAddFundsDialogOpen(true)}
                 />
-                <FiatHoldingsSection title="Pledged Fiat Holdings" holdings={pledgedFiatHoldings} intradayPositions={[]} foPositions={[]} mainPortfolioCashBalance={0} setMainPortfolioCashBalance={() => {}} cryptoCashBalance={0} setCryptoCashBalance={() => {}} isPledged={true} onAssetClick={onAssetClick} />
+                <FiatHoldingsSection title="Pledged Fiat Holdings" holdings={pledgedFiatHoldings} intradayPositions={[]} foPositions={[]} mainPortfolioCashBalance={0} setMainPortfolioCashBalance={() => {}} cryptoCashBalance={0} setCryptoCashBalance={() => {}} isPledged={true} onAssetClick={onAssetClick} onAddFunds={() => setIsAddFundsDialogOpen(true)} />
                 <WealthHoldingsSection holdings={pledgedWealthHoldings} isPledged={true} onAssetClick={onAssetClick} />
                 <CryptoHoldingsSection title="Pledged Crypto Holdings" holdings={pledgedCryptoHoldings} cashBalance={0} setCashBalance={() => {}} mainPortfolioCashBalance={0} setMainPortfolioCashBalance={() => {}} isRealMode={false} isPledged={true} walletMode={walletMode} setWalletMode={setWalletMode} onAssetClick={onAssetClick} />
                 <CryptoHoldingsSection title="Pledged Web3 Holdings" holdings={pledgedWeb3Holdings} cashBalance={0} setCashBalance={() => {}} mainPortfolioCashBalance={0} setMainPortfolioCashBalance={() => {}} isRealMode={false} isPledged={true} walletMode={walletMode} setWalletMode={setWalletMode} onAssetClick={onAssetClick}/>
@@ -535,7 +540,7 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
 
     switch (activePrimaryItem) {
         case 'Fiat':
-            if (isFiatHoldingsView) return <><FiatHoldingsSection holdings={fiatHoldings} intradayPositions={[]} foPositions={[]} mainPortfolioCashBalance={mainPortfolioCashBalance} setMainPortfolioCashBalance={setMainPortfolioCashBalance} cryptoCashBalance={cryptoCashBalance} setCryptoCashBalance={setCryptoCashBalance} onAssetClick={onAssetClick} /><NewsSection articles={newsForView} /></>;
+            if (isFiatHoldingsView) return <><FiatHoldingsSection holdings={fiatHoldings} intradayPositions={[]} foPositions={[]} mainPortfolioCashBalance={mainPortfolioCashBalance} setMainPortfolioCashBalance={setMainPortfolioCashBalance} cryptoCashBalance={cryptoCashBalance} setCryptoCashBalance={setCryptoCashBalance} onAssetClick={onAssetClick} onAddFunds={() => setIsAddFundsDialogOpen(true)} /><NewsSection articles={newsForView} /></>;
             if (isWealthHoldingsView) return <><WealthHoldingsSection holdings={wealthHoldings} onAssetClick={onAssetClick} /><NewsSection articles={newsForView} /></>;
             if (isPositionsView) return <div className="space-y-8"><IntradayPositionsSection onAssetClick={onAssetClick}/><FoPositionsSection onAssetClick={onAssetClick}/><FoBasketSection /><NewsSection articles={newsForView} /></div>;
             if (isWatchlistView) return <div className="space-y-8"><WatchlistSection title="My Fiat Watchlist" defaultInitialItems={itemsForWatchlist} localStorageKeyOverride="simFiatWatchlist" onAssetClick={onAssetClick}/><NewsSection articles={newsForView} /></div>;
