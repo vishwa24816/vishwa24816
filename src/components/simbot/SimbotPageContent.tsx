@@ -9,13 +9,12 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Bot, User, Send, Mic, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import type { ChatMessage } from '@/types';
+import type { ChatMessage, Stock } from '@/types';
 import { sendMessageToSimbotAction } from '@/app/actions';
 import { useAuth } from '@/contexts/AuthContext';
 
-export function SimbotPageContent() {
+export function SimbotPageContent({ onNavigateRequest }: { onNavigateRequest: (asset: Stock) => void; }) {
   const { user: authUser } = useAuth();
-  const router = useRouter();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -39,16 +38,15 @@ export function SimbotPageContent() {
     setMessages([
       {
         id: 'initial-greeting',
-        text: 'Hello! I am Simbot, your AI assistant for market insights. How can I help you today? You can ask me to "buy RELIANCE" to try out a command!',
+        text: 'Hello! Ask me to "buy RELIANCE" to try out a command!',
         sender: 'bot',
         timestamp: new Date(),
       },
     ]);
   }, []);
 
-  const handleSendMessage = async (e?: FormEvent) => {
-    if (e) e.preventDefault();
-    const trimmedInput = inputValue.trim();
+  const handleSendMessage = async (messageText: string) => {
+    const trimmedInput = messageText.trim();
     if (!trimmedInput) return;
 
     const userMessage: ChatMessage = {
@@ -78,11 +76,16 @@ export function SimbotPageContent() {
     };
     setMessages(prev => [...prev, botMessage]);
 
-    if (result.navigationTarget) {
-        router.push(result.navigationTarget);
+    if (result.asset) {
+        onNavigateRequest(result.asset);
     }
 
     setIsLoading(false);
+  };
+
+  const handleFormSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    handleSendMessage(inputValue);
   };
   
   const userEmailInitial = authUser?.email?.[0].toUpperCase() || "U";
@@ -144,7 +147,12 @@ export function SimbotPageContent() {
         
         <footer className="fixed bottom-16 left-0 right-0 bg-background/80 backdrop-blur-sm border-t z-10">
           <div className="w-full px-4 py-3">
-              <form onSubmit={handleSendMessage} className="flex items-center space-x-2">
+              <div className="flex items-center space-x-2 mb-2 overflow-x-auto no-scrollbar pb-1">
+                <Button variant="outline" size="sm" onClick={() => handleSendMessage('Buy Bitcoin')}>Buy Bitcoin</Button>
+                <Button variant="outline" size="sm" onClick={() => handleSendMessage('Buy Reliance')}>Buy Reliance</Button>
+                <Button variant="outline" size="sm" onClick={() => handleSendMessage('Buy Parag Parikh Flexi cap')}>Buy Parag Parikh Flexi cap</Button>
+              </div>
+              <form onSubmit={handleFormSubmit} className="flex items-center space-x-2">
                 <Input
                   type="text"
                   placeholder="Ask Simbot about markets, stocks, or strategies..."
