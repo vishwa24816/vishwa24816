@@ -27,7 +27,6 @@ interface OpenPositionsDisplayProps {
   intradayPositions: IntradayPosition[];
   foPositions: FoPosition[];
   cryptoFutures: CryptoFuturePosition[];
-  onAssetClick: (asset: Stock) => void;
   onCategoryClick: (category: 'Fiat' | 'Wealth' | 'Crypto' | 'Web3') => void;
 }
 
@@ -76,7 +75,6 @@ export function OpenPositionsDisplay({
   intradayPositions,
   foPositions,
   cryptoFutures,
-  onAssetClick,
   onCategoryClick,
 }: OpenPositionsDisplayProps) {
   
@@ -93,7 +91,9 @@ export function OpenPositionsDisplay({
       let totalPnl = 0;
       items.forEach(item => {
         if ('currentValue' in item) totalValue += item.currentValue;
-        else if ('ltp' in item && 'quantity' in item) totalValue += item.ltp * ('lots' in item ? item.lots * item.quantityPerLot : item.quantity);
+        else if ('ltp' in item && 'quantity' in item) { // Intraday
+            totalValue += item.ltp * ('lots' in item ? item.lots * item.quantityPerLot : item.quantity);
+        }
 
         if ('profitAndLoss' in item) totalPnl += item.profitAndLoss;
         else if ('pAndL' in item) totalPnl += item.pAndL;

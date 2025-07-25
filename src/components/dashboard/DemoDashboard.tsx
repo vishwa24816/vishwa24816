@@ -419,7 +419,6 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
                   intradayPositions={mockIntradayPositions}
                   foPositions={mockFoPositions}
                   cryptoFutures={mockCryptoFutures}
-                  onAssetClick={onAssetClick}
                   onCategoryClick={handleCategoryClick}
                 />
             </div>
@@ -572,7 +571,19 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
             case 'AI': web3Items = mockWeb3AI; watchlistTitle = "Top AI Tokens"; break;
             case 'DeFi': web3Items = mockWeb3DeFi; watchlistTitle = "Top DeFi Tokens"; break;
             case 'Memes': web3Items = mockWeb3Memes; watchlistTitle = "Top Meme Tokens"; break;
-            case 'NFT': web3Items = mockWeb3NFTs; watchlistTitle = "Top NFT Collections"; break;
+            case 'NFT':
+                // Special case for NFT, since it might need a different display
+                return (
+                    <div className="space-y-8">
+                        <WatchlistSection 
+                            title="Top NFT Collections" 
+                            displayItems={[]} // Let's assume a special NFT component would be used
+                            isPredefinedList={true} 
+                            onAssetClick={onAssetClick} 
+                        />
+                        <NewsSection articles={newsForView} />
+                    </div>
+                );
         }
         newsForView = getRelevantNewsForWatchlistItems(web3Items, mockNewsArticles);
         return <div className="space-y-8"><WatchlistSection title={watchlistTitle} displayItems={web3Items} isPredefinedList={true} onAssetClick={onAssetClick} /><NewsSection articles={newsForView} /></div>;
