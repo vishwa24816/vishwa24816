@@ -3,8 +3,6 @@
 
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { AppHeader } from '@/components/shared/AppHeader';
-import { ProtectedRoute } from '@/components/shared/ProtectedRoute';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Search, SlidersHorizontal } from 'lucide-react';
@@ -15,6 +13,14 @@ import { BasketsDisplay } from '@/components/orders/BasketsDisplay';
 import { SipsDisplay } from '@/components/orders/SipsDisplay';
 import { AlertsDisplay } from '@/components/orders/AlertsDisplay';
 import { useAuth } from '@/contexts/AuthContext';
+import type { Stock, PortfolioHolding, IntradayPosition, FoPosition, CryptoFuturePosition } from '@/types';
+import {
+  mockPortfolioHoldings,
+  mockIntradayPositions,
+  mockFoPositions,
+  mockCryptoFutures,
+  mockWeb3Holdings
+} from '@/lib/mockData';
 
 const demoOrderTabs = [
   { value: "executed", label: "Open" }, 
@@ -33,7 +39,7 @@ const realOrderTabs = [
 ];
 
 
-export function OrdersPageContent() {
+export function OrdersPageContent({ onAssetClick }: { onAssetClick: (asset: Stock) => void }) {
   const { user } = useAuth();
   const isRealMode = user?.id === 'REAL456';
   
@@ -47,27 +53,13 @@ export function OrdersPageContent() {
 
   const orderTabs = isRealMode ? realOrderTabs : demoOrderTabs;
   const [activeTab, setActiveTab] = useState("executed");
-
-
-  const NoDataContent = ({ message }: { message: string }) => (
-    <div className="flex flex-col items-center justify-center text-center py-16 flex-grow">
-      <Image
-        src="https://placehold.co/200x150.png"
-        alt="No data illustration"
-        width={200}
-        height={150}
-        data-ai-hint="documents order papers"
-        className="mb-8 opacity-75"
-      />
-      <h2 className="text-xl font-semibold text-foreground mb-2">
-        Nothing Here Yet
-      </h2>
-      <p className="text-muted-foreground">{message}</p>
-    </div>
-  );
+  
+  const fiatHoldings = mockPortfolioHoldings.filter(h => h.type === 'Stock' || h.type === 'ETF');
+  const wealthHoldings = mockPortfolioHoldings.filter(h => h.type === 'Mutual Fund' || h.type === 'Bond');
+  const cryptoHoldings = mockPortfolioHoldings.filter(h => h.type === 'Crypto');
 
   return (
-      <div className="flex flex-col min-h-screen">
+      <div className="flex flex-col h-full">
         <main className="flex-grow flex flex-col">
           <Tabs defaultValue="executed" value={activeTab} onValueChange={setActiveTab} className="flex flex-col flex-grow">
             <div className="bg-background border-b">
@@ -101,7 +93,19 @@ export function OrdersPageContent() {
 
             <div className="w-full px-0 sm:px-2 md:px-4 py-4 flex-grow flex flex-col">
               <TabsContent value="executed" className="flex-grow flex flex-col mt-0 data-[state=inactive]:hidden">
-                <OpenPositionsDisplay isRealMode={isRealMode} activeMode={activeMode} />
+                <OpenPositionsDisplay
+                    fiatHoldings={fiatHoldings}
+                    wealthHoldings={wealthHoldings}
+                    cryptoHoldings={cryptoHoldings}
+                    web3Holdings={mockWeb3Holdings}
+                    intradayPositions={mockIntradayPositions}
+                    foPositions={mockFoPositions}
+                    cryptoFutures={mockCryptoFutures}
+                    onCategoryClick={(category) => {
+                      // Placeholder for navigation logic if needed
+                    }}
+                    onAssetClick={onAssetClick}
+                />
               </TabsContent>
               <TabsContent value="gtt" className="flex-grow flex flex-col mt-0 data-[state=inactive]:hidden">
                 <GttOrdersDisplay activeMode={activeMode} />

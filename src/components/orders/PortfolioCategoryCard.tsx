@@ -2,10 +2,11 @@
 "use client";
 
 import React, { useMemo } from 'react';
-import type { PortfolioHolding, IntradayPosition, FoPosition, CryptoFuturePosition } from '@/types';
-import { Card, CardHeader, CardTitle } from '@/components/ui/card';
-import { Briefcase, LandPlot, Repeat, Globe } from 'lucide-react';
+import type { PortfolioHolding, IntradayPosition, FoPosition, CryptoFuturePosition, Stock } from '@/types';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Briefcase, LandPlot, Repeat, Globe, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useRouter } from 'next/navigation';
 
 type PositionItem = PortfolioHolding | IntradayPosition | FoPosition | CryptoFuturePosition;
 
@@ -24,9 +25,11 @@ interface PortfolioCategoryCardProps {
   title: string;
   items: PositionItem[];
   onCategoryClick: () => void;
+  onAssetClick: (asset: Stock) => void;
 }
 
-export function PortfolioCategoryCard({ title, items, onCategoryClick }: PortfolioCategoryCardProps) {
+export function PortfolioCategoryCard({ title, items, onCategoryClick, onAssetClick }: PortfolioCategoryCardProps) {
+  const router = useRouter();
 
   const { totalValue, totalPnl, icon } = useMemo(() => {
     let totalValue = 0;
@@ -54,30 +57,72 @@ export function PortfolioCategoryCard({ title, items, onCategoryClick }: Portfol
   const isProfit = totalPnl >= 0;
   const Icon = icon;
 
+  const handleAssetItemClick = (e: React.MouseEvent, item: PositionItem) => {
+    e.stopPropagation(); // Prevent card click from firing
+    
+    // This is a simplification. A real app would need a more robust way
+    // to map a position back to a full Stock object.
+    const asset = {
+      id: 'symbol' in item ? item.symbol : 'instrumentName' in item ? item.instrumentName : 'unknown',
+      symbol: 'symbol' in item ? item.symbol : 'instrumentName' in item ? item.instrumentName : 'Unknown',
+      name: 'name' in item ? item.name : 'instrumentName' in item ? item.instrumentName : 'Unknown',
+      price: 'ltp' in item ? item.ltp : ('markPrice' in item ? item.markPrice : 0),
+      change: 0,
+      changePercent: 0,
+    } as Stock;
+    
+    onAssetClick(asset);
+  };
+
   return (
-    <button
-      className="w-full text-left"
-      onClick={onCategoryClick}
-      aria-label={`View details for ${title}`}
+    <Card 
+        className="shadow-md cursor-pointer hover:bg-muted/50 transition-colors"
+        onClick={onCategoryClick}
     >
-        <Card className="shadow-md cursor-pointer hover:bg-muted/50 transition-colors">
-        <CardHeader 
-            className="p-3 flex-row items-center justify-between"
-        >
-            <CardTitle className="text-lg font-semibold flex items-center gap-2">
-                <Icon className="h-5 w-5 text-primary" />
-                {title.replace(' Assets', '')}
-            </CardTitle>
-            <div className="flex items-center gap-4">
-                <div className="text-right">
-                    <p className="text-sm font-semibold">{formatCurrency(totalValue)}</p>
-                    <p className={cn("text-xs", isProfit ? "text-green-600" : "text-red-600")}>
-                        {isProfit ? '+' : ''}{formatCurrency(totalPnl)}
-                    </p>
-                </div>
+    <CardHeader 
+        className="p-3 flex-row items-center justify-between"
+    >
+        <CardTitle className="text-lg font-semibold flex items-center gap-2">
+            <Icon className="h-5 w-5 text-primary" />
+            {title.replace(' Assets', '')}
+        </CardTitle>
+        <div className="flex items-center gap-4">
+            <div className="text-right">
+                <p className="text-sm font-semibold">{formatCurrency(totalValue)}</p>
+                <p className={cn("text-xs", isProfit ? "text-green-600" : "text-red-600")}>
+                    {isProfit ? '+' : ''}{formatCurrency(totalPnl)}
+                </p>
             </div>
-        </CardHeader>
-        </Card>
-    </button>
+            <ChevronRight className="h-5 w-5 text-muted-foreground" />
+        </div>
+    </CardHeader>
+      {items.length > 0 && (
+         <CardContent className="px-3 pb-3 text-sm">
+           <div className="space-y-2">
+            {items.slice(0, 3).map((item, index) => {
+              const pnl = ('pAndL' in item ? item.pAndL : 'profitAndLoss' in item ? item.profitAndLoss : 'unrealizedPnL' in item ? item.unrealizedPnL * 80 : 0) || 0;
+              const isItemProfit = pnl >= 0;
+              const name = 'name' in item ? item.name : 'instrumentName' in item ? item.instrumentName : 'symbol' in item ? item.symbol : 'Unknown';
+
+              return (
+                 <button key={index} onClick={(e) => handleAssetItemClick(e, item)} className="w-full text-left p-2 rounded-md hover:bg-background/50">
+                    <div className="flex justify-between items-center">
+                        <span className="font-medium truncate pr-4">{name}</span>
+                        <span className={cn(isItemProfit ? 'text-green-600' : 'text-red-600', 'font-mono')}>
+                            {isItemProfit ? '+' : ''}{formatCurrency(pnl)}
+                        </span>
+                    </div>
+                </button>
+              )
+            })}
+             {items.length > 3 && (
+                <div className="text-center text-xs text-muted-foreground pt-1">
+                    + {items.length - 3} more
+                </div>
+            )}
+           </div>
+        </CardContent>
+      )}
+    </Card>
   );
 }

@@ -50,10 +50,10 @@ export function OpenPositionsDisplay({
   const [viewMode, setViewMode] = useState<ViewMode>('list');
 
   const categories = React.useMemo(() => {
-    const fiatItems: PositionItem[] = [...fiatHoldings, ...intradayPositions, ...foPositions];
-    const wealthItems: PositionItem[] = [...wealthHoldings];
-    const cryptoItems: PositionItem[] = [...cryptoHoldings, ...cryptoFutures];
-    const web3Items: PositionItem[] = [...web3Holdings];
+    const fiatItems: PositionItem[] = [...(fiatHoldings || []), ...(intradayPositions || []), ...(foPositions || [])];
+    const wealthItems: PositionItem[] = [...(wealthHoldings || [])];
+    const cryptoItems: PositionItem[] = [...(cryptoHoldings || []), ...(cryptoFutures || [])];
+    const web3Items: PositionItem[] = [...(web3Holdings || [])];
 
     return [
       { title: "Fiat Assets", items: fiatItems, category: 'Fiat' as const },
@@ -68,9 +68,9 @@ export function OpenPositionsDisplay({
   const chartData = useMemo(() => {
     return categories.map((category, index) => {
       const totalValue = category.items.reduce((acc, item) => {
-        if ('currentValue' in item) return acc + item.currentValue;
+        if ('currentValue' in item) return acc + (item.currentValue || 0);
         if ('ltp' in item && 'quantity' in item) {
-          const qty = 'lots' in item ? item.lots * item.quantityPerLot : item.quantity;
+          const qty = 'lots' in item && item.lots && item.quantityPerLot ? item.lots * item.quantityPerLot : item.quantity;
           return acc + (item.ltp * qty);
         }
         return acc;
@@ -105,7 +105,7 @@ export function OpenPositionsDisplay({
       category.items.forEach(item => {
         if ('currentValue' in item) totalValue += item.currentValue;
         else if ('ltp' in item && 'quantity' in item) {
-          const qty = 'lots' in item ? item.lots * item.quantityPerLot : item.quantity;
+          const qty = 'lots' in item && item.lots && item.quantityPerLot ? item.lots * item.quantityPerLot : item.quantity;
           totalValue += item.ltp * qty;
         }
 
@@ -146,6 +146,7 @@ export function OpenPositionsDisplay({
                 title={category.title}
                 items={category.items}
                 onCategoryClick={() => onCategoryClick(category.category)}
+                onAssetClick={onAssetClick}
               />
             )}
           </div>
