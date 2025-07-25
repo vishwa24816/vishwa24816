@@ -11,11 +11,10 @@ import { BondBidsDisplay } from '@/components/orders/BondBidsDisplay';
 import { BasketsDisplay } from '@/components/orders/BasketsDisplay';
 import { SipsDisplay } from '@/components/orders/SipsDisplay';
 import { AlertsDisplay } from '@/components/orders/AlertsDisplay';
+import { OpenPositionsDisplay } from '@/components/orders/OpenPositionsDisplay';
 import { useAuth } from '@/contexts/AuthContext';
 import type { Stock, PortfolioHolding, IntradayPosition, FoPosition, CryptoFuturePosition } from '@/types';
 import { mockPortfolioHoldings, mockIntradayPositions, mockFoPositions, mockCryptoFutures, mockWeb3Holdings } from '@/lib/mockData';
-import { FiatHoldingsSection, IntradayPositionsSection, FoPositionsSection, CryptoHoldingsSection, CryptoFuturesSection, WealthHoldingsSection } from '@/components/dashboard';
-import { ScrollArea } from '../ui/scroll-area';
 
 const demoOrderTabs = [
   { value: "executed", label: "Open" }, 
@@ -45,49 +44,55 @@ export function OrdersPageContent({ onAssetClick, activeMode }: { onAssetClick: 
   const wealthHoldings = mockPortfolioHoldings.filter(h => h.type === 'Mutual Fund' || h.type === 'Bond');
   const cryptoHoldings = mockPortfolioHoldings.filter(h => h.type === 'Crypto');
 
-    // Dummy state setters for components that require them but won't be used here.
-    const dummySetState = () => {};
-
   const renderOpenPositions = () => {
+    let filteredFiatHoldings: PortfolioHolding[] = [];
+    let filteredWealthHoldings: PortfolioHolding[] = [];
+    let filteredCryptoHoldings: PortfolioHolding[] = [];
+    let filteredWeb3Holdings: PortfolioHolding[] = [];
+    let filteredIntradayPositions: IntradayPosition[] = [];
+    let filteredFoPositions: FoPosition[] = [];
+    let filteredCryptoFutures: CryptoFuturePosition[] = [];
+
     switch(activeMode) {
         case 'Fiat':
-            return (
-                <ScrollArea className="h-full">
-                    <div className="space-y-4 p-1">
-                        <FiatHoldingsSection holdings={fiatHoldings} intradayPositions={mockIntradayPositions} foPositions={mockFoPositions} mainPortfolioCashBalance={0} setMainPortfolioCashBalance={dummySetState} cryptoCashBalance={0} setCryptoCashBalance={dummySetState} onAssetClick={onAssetClick} onAddFunds={dummySetState} />
-                        <IntradayPositionsSection onAssetClick={onAssetClick}/>
-                        <FoPositionsSection onAssetClick={onAssetClick} />
-                    </div>
-                </ScrollArea>
-            );
+            filteredFiatHoldings = fiatHoldings;
+            filteredIntradayPositions = mockIntradayPositions;
+            filteredFoPositions = mockFoPositions;
+            break;
         case 'Wealth':
-            return (
-                 <ScrollArea className="h-full">
-                    <div className="space-y-4 p-1">
-                        <WealthHoldingsSection holdings={wealthHoldings} onAssetClick={onAssetClick} />
-                    </div>
-                </ScrollArea>
-            );
+            filteredWealthHoldings = wealthHoldings;
+            break;
         case 'Crypto':
-            return (
-                 <ScrollArea className="h-full">
-                    <div className="space-y-4 p-1">
-                       <CryptoHoldingsSection title="Crypto Wallet & Holdings" holdings={cryptoHoldings} cashBalance={0} setCashBalance={dummySetState} mainPortfolioCashBalance={0} setMainPortfolioCashBalance={dummySetState} isRealMode={false} walletMode={'hot'} setWalletMode={dummySetState} onAssetClick={onAssetClick} />
-                       <CryptoFuturesSection positions={mockCryptoFutures} cashBalance={0} />
-                    </div>
-                </ScrollArea>
-            );
+            filteredCryptoHoldings = cryptoHoldings;
+            filteredCryptoFutures = mockCryptoFutures;
+            break;
         case 'Web3':
-             return (
-                 <ScrollArea className="h-full">
-                    <div className="space-y-4 p-1">
-                        <CryptoHoldingsSection title="Web3 Wallet & Holdings" holdings={mockWeb3Holdings} cashBalance={0} setCashBalance={dummySetState} mainPortfolioCashBalance={0} setMainPortfolioCashBalance={dummySetState} isRealMode={false} walletMode={'hot'} setWalletMode={dummySetState} onAssetClick={onAssetClick} />
-                    </div>
-                </ScrollArea>
-            );
-        default:
-            return <p className="text-center text-muted-foreground p-4">Select a mode to see open positions.</p>
+            filteredWeb3Holdings = mockWeb3Holdings;
+            break;
+        default: // Portfolio
+            filteredFiatHoldings = fiatHoldings;
+            filteredWealthHoldings = wealthHoldings;
+            filteredCryptoHoldings = cryptoHoldings;
+            filteredWeb3Holdings = mockWeb3Holdings;
+            filteredIntradayPositions = mockIntradayPositions;
+            filteredFoPositions = mockFoPositions;
+            filteredCryptoFutures = mockCryptoFutures;
+            break;
     }
+    
+    return (
+      <OpenPositionsDisplay
+        fiatHoldings={filteredFiatHoldings}
+        wealthHoldings={filteredWealthHoldings}
+        cryptoHoldings={filteredCryptoHoldings}
+        web3Holdings={filteredWeb3Holdings}
+        intradayPositions={filteredIntradayPositions}
+        foPositions={filteredFoPositions}
+        cryptoFutures={filteredCryptoFutures}
+        onCategoryClick={() => {}}
+        onAssetClick={onAssetClick}
+      />
+    );
   }
 
 
