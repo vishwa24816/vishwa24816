@@ -397,18 +397,23 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
   const allPositions = useMemo(() => [...mockIntradayPositions, ...mockFoPositions, ...mockCryptoFutures], []);
 
   const { totalPortfolioValue, unrealisedPnl, investedMargin } = useMemo(() => {
-    const holdingsValue = allHoldings.reduce((acc, h) => acc + (h.currentValue || 0), 0);
-    const positionsValue = allPositions.reduce((acc, p) => {
-        const qty = 'lots' in p ? p.lots * p.quantityPerLot : ('quantity' in p ? p.quantity : 0);
-        return acc + (p.ltp * qty);
-    }, 0);
-    
-    const holdingsInvestment = allHoldings.reduce((acc, h) => acc + (h.avgCostPrice * h.quantity), 0);
-    const positionsInvestment = allPositions.reduce((acc, p) => {
-      const qty = 'lots' in p ? p.lots * p.quantityPerLot : ('quantity' in p ? p.quantity : 0);
-      const avgPrice = 'avgPrice' in p ? p.avgPrice : ('entryPrice' in p ? p.entryPrice : 0);
-      return acc + (avgPrice * qty);
-    }, 0);
+    let holdingsValue = 0;
+    let holdingsInvestment = 0;
+    allHoldings.forEach(h => {
+        holdingsValue += h.currentValue || 0;
+        holdingsInvestment += (h.avgCostPrice || 0) * (h.quantity || 0);
+    });
+
+    let positionsValue = 0;
+    let positionsInvestment = 0;
+    allPositions.forEach(p => {
+        const qty = 'lots' in p ? (p.lots || 0) * (p.quantityPerLot || 0) : ('quantity' in p ? (p.quantity || 0) : 0);
+        const ltp = 'ltp' in p ? p.ltp || 0 : ('markPrice' in p ? p.markPrice || 0 : 0);
+        const avgPrice = 'avgPrice' in p ? (p.avgPrice || 0) : ('entryPrice' in p ? (p.entryPrice || 0) : 0);
+        
+        positionsValue += ltp * qty;
+        positionsInvestment += avgPrice * qty;
+    });
 
     const totalPortfolioValue = holdingsValue + positionsValue;
     const investedMargin = holdingsInvestment + positionsInvestment;
@@ -439,10 +444,11 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
                     wealthHoldings={wealthHoldings}
                     cryptoHoldings={cryptoHoldings}
                     web3Holdings={mockWeb3Holdings}
+                    onCategoryClick={handleCategoryClick}
                     intradayPositions={mockIntradayPositions}
                     foPositions={mockFoPositions}
                     cryptoFutures={mockCryptoFutures}
-                    onCategoryClick={handleCategoryClick}
+                    onAssetClick={onAssetClick}
                 />
             </div>
         )
