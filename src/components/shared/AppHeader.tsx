@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import React, { useState, useEffect, useMemo } from 'react';
@@ -83,9 +84,9 @@ export function AppHeader({ activeMode, onModeChange, isRealMode, walletMode }: 
     };
   }, [activeMode, isRealMode]);
   
-  const availableModes: ('Portfolio' | 'Fiat' | 'Crypto' | 'Wealth')[] = isRealMode 
+  const availableModes: ('Portfolio' | 'Fiat' | 'Crypto')[] = isRealMode 
     ? ['Portfolio', 'Crypto'] 
-    : ['Portfolio', 'Fiat', 'Wealth', 'Crypto'];
+    : ['Portfolio', 'Fiat', 'Crypto'];
 
 
   if (!isMounted) {

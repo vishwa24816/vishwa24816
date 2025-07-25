@@ -54,7 +54,6 @@ import { mockOtherInsurance } from '@/lib/mockData/otherInsurance';
 import { mockCryptoOptionsForWatchlist } from '@/lib/mockData/cryptoOptionsWatchlist';
 import { mockCryptoIndices } from '@/lib/mockData/cryptoIndices';
 import { mockUsStocks } from '@/lib/mockData/usStocks';
-import { mockWeb3NFTs } from '@/lib/mockData/web3NFTs';
 import type { WalletMode } from '@/components/dashboard/CryptoHoldingsSection';
 import Image from 'next/image';
 
@@ -184,10 +183,9 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
     const { primaryNavItems, secondaryNavTriggerCategories } = useMemo(() => {
     if (activeMode === 'Portfolio') {
         return {
-            primaryNavItems: ["Fiat", "Wealth", "Crypto", "Pledged Holdings"],
+            primaryNavItems: ["Fiat", "Crypto", "Pledged Holdings"],
             secondaryNavTriggerCategories: {
-                Fiat: ["Holdings", "Positions", "Portfolio Watchlist"],
-                Wealth: ["Holdings", "Portfolio Watchlist"],
+                Fiat: ["Fiat Holdings", "Wealth Holdings", "Positions", "Portfolio Watchlist"],
                 Crypto: ["Crypto Holdings", "Web3 Holdings", "Positions", "Portfolio Watchlist"],
                 "Pledged Holdings": [],
             }
@@ -320,23 +318,20 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
   let categoryWatchlistTitle: string = "";
 
   if (activeMode === 'Portfolio') {
+      const isFiatHoldingsView = activeSecondaryItem === "Fiat Holdings";
+      const isWealthHoldingsView = activeSecondaryItem === "Wealth Holdings";
       const isCryptoHoldingsView = activeSecondaryItem === "Crypto Holdings";
       const isWeb3HoldingsView = activeSecondaryItem === "Web3 Holdings";
       const isPositionsView = activeSecondaryItem === "Positions";
       const isWatchlistView = activeSecondaryItem === "Portfolio Watchlist";
 
       if (activePrimaryItem === 'Fiat') {
-          if (activeSecondaryItem === "Holdings") newsForView = getRelevantNewsForHoldings(fiatHoldings, mockNewsArticles);
+          if (isFiatHoldingsView) newsForView = getRelevantNewsForHoldings(fiatHoldings, mockNewsArticles);
+          if (isWealthHoldingsView) newsForView = getRelevantNewsForHoldings(wealthHoldings, mockNewsArticles);
           if (isPositionsView) newsForView = getRelevantNewsForPositions(mockIntradayPositions, [], mockFoPositions, mockNewsArticles);
           if (isWatchlistView) {
             itemsForWatchlist = mockStocks.slice(0, 5);
             newsForView = getRelevantNewsForWatchlistItems(itemsForWatchlist, mockNewsArticles);
-          }
-      } else if (activePrimaryItem === 'Wealth') {
-          if (activeSecondaryItem === "Holdings") newsForView = getRelevantNewsForHoldings(wealthHoldings, mockNewsArticles);
-          if (isWatchlistView) {
-              itemsForWatchlist = [...mockMutualFunds.slice(0,3), ...mockBonds.slice(0,2)];
-              newsForView = getRelevantNewsForWatchlistItems(itemsForWatchlist, mockNewsArticles);
           }
       } else if (activePrimaryItem === 'Crypto') {
           if (isCryptoHoldingsView) newsForView = getRelevantNewsForHoldings(cryptoHoldings, mockNewsArticles);
@@ -388,6 +383,8 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
   }
   
   const renderPortfolioContent = () => {
+    const isFiatHoldingsView = activeSecondaryItem === "Fiat Holdings";
+    const isWealthHoldingsView = activeSecondaryItem === "Wealth Holdings";
     const isCryptoHoldingsView = activeSecondaryItem === "Crypto Holdings";
     const isWeb3HoldingsView = activeSecondaryItem === "Web3 Holdings";
     const isPositionsView = activeSecondaryItem === "Positions";
@@ -415,8 +412,8 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
                     availableMargin={availableMargin}
                     investedMargin={investedMargin}
                 />
-                <FiatHoldingsSection title="Pledged Fiat Holdings" holdings={pledgedFiatHoldings} intradayPositions={[]} foPositions={[]} mainPortfolioCashBalance={0} setMainPortfolioCashBalance={() => {}} cryptoCashBalance={0} setCryptoCashBalance={() => {}} isPledged={true} />
-                <WealthHoldingsSection holdings={pledgedWealthHoldings} isPledged={true} />
+                <FiatHoldingsSection title="Pledged Fiat Holdings" holdings={pledgedFiatHoldings} intradayPositions={[]} foPositions={[]} mainPortfolioCashBalance={0} setMainPortfolioCashBalance={() => {}} cryptoCashBalance={0} setCryptoCashBalance={() => {}} isPledged={true} onAssetClick={onAssetClick} />
+                <WealthHoldingsSection holdings={pledgedWealthHoldings} isPledged={true} onAssetClick={onAssetClick} />
                 <CryptoHoldingsSection title="Pledged Crypto Holdings" holdings={pledgedCryptoHoldings} cashBalance={0} setCashBalance={() => {}} mainPortfolioCashBalance={0} setMainPortfolioCashBalance={() => {}} isRealMode={false} isPledged={true} walletMode={walletMode} setWalletMode={setWalletMode} onAssetClick={onAssetClick} />
                 <CryptoHoldingsSection title="Pledged Web3 Holdings" holdings={pledgedWeb3Holdings} cashBalance={0} setCashBalance={() => {}} mainPortfolioCashBalance={0} setMainPortfolioCashBalance={() => {}} isRealMode={false} isPledged={true} walletMode={walletMode} setWalletMode={setWalletMode} onAssetClick={onAssetClick}/>
             </div>
@@ -425,13 +422,10 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
 
     switch (activePrimaryItem) {
         case 'Fiat':
-            if (activeSecondaryItem === "Holdings") return <><FiatHoldingsSection holdings={fiatHoldings} intradayPositions={mockIntradayPositions} foPositions={mockFoPositions} mainPortfolioCashBalance={mainPortfolioCashBalance} setMainPortfolioCashBalance={setMainPortfolioCashBalance} cryptoCashBalance={cryptoCashBalance} setCryptoCashBalance={setCryptoCashBalance} onAssetClick={onAssetClick} /><NewsSection articles={newsForView} /></>;
+            if (isFiatHoldingsView) return <><FiatHoldingsSection holdings={fiatHoldings} intradayPositions={mockIntradayPositions} foPositions={mockFoPositions} mainPortfolioCashBalance={mainPortfolioCashBalance} setMainPortfolioCashBalance={setMainPortfolioCashBalance} cryptoCashBalance={cryptoCashBalance} setCryptoCashBalance={setCryptoCashBalance} onAssetClick={onAssetClick} /><NewsSection articles={newsForView} /></>;
+            if (isWealthHoldingsView) return <><WealthHoldingsSection holdings={wealthHoldings} onAssetClick={onAssetClick} /><NewsSection articles={newsForView} /></>;
             if (isPositionsView) return <div className="space-y-8"><IntradayPositionsSection onAssetClick={onAssetClick}/><FoPositionsSection onAssetClick={onAssetClick}/><FoBasketSection /><NewsSection articles={newsForView} /></div>;
             if (isWatchlistView) return <div className="space-y-8"><WatchlistSection title="My Fiat Watchlist" defaultInitialItems={itemsForWatchlist} localStorageKeyOverride="simFiatWatchlist" onAssetClick={onAssetClick}/><NewsSection articles={newsForView} /></div>;
-            return null;
-        case 'Wealth':
-            if (activeSecondaryItem === "Holdings") return <><WealthHoldingsSection holdings={wealthHoldings} onAssetClick={onAssetClick} /><NewsSection articles={newsForView} /></>;
-            if (isWatchlistView) return <div className="space-y-8"><WatchlistSection title="My Wealth Watchlist" defaultInitialItems={itemsForWatchlist} localStorageKeyOverride="simWealthWatchlist" onAssetClick={onAssetClick}/><NewsSection articles={newsForView} /></div>;
             return null;
         case 'Crypto':
             if (isCryptoHoldingsView) return <><CryptoHoldingsSection title="Crypto Wallet & Holdings" holdings={cryptoHoldings} cashBalance={cryptoCashBalance} setCashBalance={setCryptoCashBalance} mainPortfolioCashBalance={mainPortfolioCashBalance} setMainPortfolioCashBalance={setMainPortfolioCashBalance} isRealMode={false} walletMode={walletMode} setWalletMode={setWalletMode} onAssetClick={onAssetClick} /><NewsSection articles={newsForView} /></>;
