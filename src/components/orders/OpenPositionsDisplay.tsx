@@ -24,6 +24,9 @@ interface OpenPositionsDisplayProps {
   wealthHoldings: PortfolioHolding[];
   cryptoHoldings: PortfolioHolding[];
   web3Holdings: PortfolioHolding[];
+  intradayPositions: IntradayPosition[];
+  foPositions: FoPosition[];
+  cryptoFutures: CryptoFuturePosition[];
   onAssetClick: (asset: Stock) => void;
   onCategoryClick: (category: 'Fiat' | 'Wealth' | 'Crypto' | 'Web3') => void;
 }
@@ -43,6 +46,9 @@ export function OpenPositionsDisplay({
   wealthHoldings,
   cryptoHoldings,
   web3Holdings,
+  intradayPositions,
+  foPositions,
+  cryptoFutures,
   onAssetClick,
   onCategoryClick,
 }: OpenPositionsDisplayProps) {
@@ -75,7 +81,7 @@ export function OpenPositionsDisplay({
       { title: "Crypto Assets", items: cryptoItems, category: 'Crypto' as const, ...calculateCategoryData(cryptoItems) },
       { title: "Web3 Assets", items: web3Items, category: 'Web3' as const, ...calculateCategoryData(web3Items) },
     ].filter(cat => cat.items.length > 0);
-  }, [fiatHoldings, wealthHoldings, cryptoHoldings, web3Holdings]);
+  }, [fiatHoldings, wealthHoldings, cryptoHoldings, web3Holdings, intradayPositions, foPositions, cryptoFutures]);
 
   const chartData = useMemo(() => {
     return categories.map((cat, index) => ({

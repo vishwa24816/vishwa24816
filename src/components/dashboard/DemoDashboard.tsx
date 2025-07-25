@@ -56,7 +56,6 @@ import { mockCryptoIndices } from '@/lib/mockData/cryptoIndices';
 import { mockUsStocks } from '@/lib/mockData/usStocks';
 import type { WalletMode } from '@/components/dashboard/CryptoHoldingsSection';
 import Image from 'next/image';
-import { PortfolioCategoryCard } from '../orders/PortfolioCategoryCard';
 
 // Helper functions
 function getRelevantNewsForHoldings(holdings: PortfolioHolding[], allNews: NewsArticle[]): NewsArticle[] {
