@@ -1,5 +1,4 @@
 
-
 "use client";
 
 import { SubNav } from '@/components/shared/SubNav';
@@ -175,6 +174,31 @@ function getRelevantNewsForWatchlistItems(items: Stock[] | undefined, allNews: N
   return relevantNews;
 }
 
+const usePersistentState = (key: string, defaultValue: number) => {
+    const [state, setState] = useState(() => {
+        if (typeof window === 'undefined') {
+            return defaultValue;
+        }
+        try {
+            const storedValue = window.localStorage.getItem(key);
+            return storedValue ? JSON.parse(storedValue) : defaultValue;
+        } catch (error) {
+            console.error(error);
+            return defaultValue;
+        }
+    });
+
+    useEffect(() => {
+        try {
+            window.localStorage.setItem(key, JSON.stringify(state));
+        } catch (error) {
+            console.error(error);
+        }
+    }, [key, state]);
+
+    return [state, setState];
+};
+
 interface DemoDashboardProps {
   activeMode: 'Portfolio' | 'Fiat' | 'Wealth' | 'Crypto' | 'Web3';
   onModeChange: (mode: 'Portfolio' | 'Fiat' | 'Wealth' | 'Crypto' | 'Web3') => void;
@@ -252,8 +276,8 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
     secondaryNavTriggerCategories[primaryNavItems[0]]?.[0] || ""
   );
   
-  const [mainPortfolioCashBalance, setMainPortfolioCashBalance] = useState(50000.00);
-  const [cryptoCashBalance, setCryptoCashBalance] = useState(15000.00);
+  const [mainPortfolioCashBalance, setMainPortfolioCashBalance] = usePersistentState('mainPortfolioCashBalance', 50000.00);
+  const [cryptoCashBalance, setCryptoCashBalance] = usePersistentState('cryptoCashBalance', 15000.00);
   const [strategyLegs, setStrategyLegs] = useState<SelectedOptionLeg[]>([]);
   const [isFundTransferDialogOpen, setIsFundTransferDialogOpen] = useState(false);
   const [isAddFundsDialogOpen, setIsAddFundsDialogOpen] = useState(false);
@@ -270,22 +294,22 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
 
   const handleTransferConfirm = (amount: number, direction: 'toCrypto' | 'fromCrypto') => {
     if (direction === 'toCrypto') {
-      setMainPortfolioCashBalance(prev => prev - amount);
-      setCryptoCashBalance(prev => prev + amount);
+      setMainPortfolioCashBalance((prev: number) => prev - amount);
+      setCryptoCashBalance((prev: number) => prev + amount);
       toast({ title: "Transfer Successful", description: `${formatCurrency(amount)} transferred to Crypto Wallet.` });
     } else { // fromCrypto
-      setMainPortfolioCashBalance(prev => prev + amount);
-      setCryptoCashBalance(prev => prev - amount);
+      setMainPortfolioCashBalance((prev: number) => prev + amount);
+      setCryptoCashBalance((prev: number) => prev - amount);
       toast({ title: "Transfer Successful", description: `${formatCurrency(amount)} transferred to Main Portfolio.` });
     }
   };
 
   const handleAddWithdrawConfirm = (amount: number, type: 'add' | 'withdraw') => {
       if (type === 'add') {
-        setMainPortfolioCashBalance(prev => prev + amount);
+        setMainPortfolioCashBalance((prev: number) => prev + amount);
         toast({ title: "Funds Added", description: `${formatCurrency(amount)} added to your main portfolio.` });
       } else {
-        setMainPortfolioCashBalance(prev => prev - amount);
+        setMainPortfolioCashBalance((prev: number) => prev - amount);
         toast({ title: "Withdrawal Successful", description: `${formatCurrency(amount)} withdrawn from your main portfolio.` });
       }
   };
@@ -757,3 +781,5 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
     </>
   );
 }
+
+    
