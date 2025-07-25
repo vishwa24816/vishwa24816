@@ -11,9 +11,10 @@ interface MarketMoversProps {
   displayMode: 'trending' | 'gainers-losers' | 'full';
   optionsData?: Stock[];
   futuresData?: Stock[];
+  onAssetClick: (asset: Stock) => void;
 }
 
-export function MarketMovers({ stocks, displayMode, optionsData, futuresData }: MarketMoversProps) {
+export function MarketMovers({ stocks, displayMode, optionsData, futuresData, onAssetClick }: MarketMoversProps) {
 
   const { mostTraded, topGainers, topLosers } = useMemo(() => {
     const isDerivative = stocks.some(s => s.exchange === 'NFO' || s.exchange === 'Crypto Options');
@@ -31,20 +32,21 @@ export function MarketMovers({ stocks, displayMode, optionsData, futuresData }: 
     return { mostTraded: sortedByActivity, topGainers: sortedByGain, topLosers: sortedByLoss };
   }, [stocks, optionsData, futuresData]);
   
+  const isCrypto = stocks.some(s => s.exchange === 'Crypto' || s.exchange === 'Crypto Futures' || s.exchange === 'Crypto Options');
   const isDerivative = stocks.some(s => s.exchange === 'NFO' || s.exchange === 'Crypto Options');
-  const trendingTitle = isDerivative ? "Trending Options/Futures" : "Trending Stocks";
+  const trendingTitle = isCrypto ? "Trending Crypto" : isDerivative ? "Trending Options/Futures" : "Trending Stocks";
 
   switch (displayMode) {
     case 'trending':
-      return <TrendingSection title={trendingTitle} items={mostTraded} />;
+      return <TrendingSection title={trendingTitle} items={mostTraded} onAssetClick={onAssetClick} />;
     case 'gainers-losers':
-      return <GainersLosersSection gainers={topGainers} losers={topLosers} />;
+      return <GainersLosersSection gainers={topGainers} losers={topLosers} onAssetClick={onAssetClick} />;
     case 'full':
     default:
       return (
         <div className="space-y-6">
-          <TrendingSection title={trendingTitle} items={mostTraded} />
-          <GainersLosersSection gainers={topGainers} losers={topLosers} />
+          <TrendingSection title={trendingTitle} items={mostTraded} onAssetClick={onAssetClick} />
+          <GainersLosersSection gainers={topGainers} losers={topLosers} onAssetClick={onAssetClick} />
         </div>
       );
   }

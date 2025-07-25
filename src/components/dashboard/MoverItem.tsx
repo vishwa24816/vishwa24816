@@ -5,26 +5,17 @@ import React from 'react';
 import { cn } from '@/lib/utils';
 import type { Stock } from '@/types';
 import { TrendingUp, TrendingDown } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 
 interface MoverItemProps {
   stock: Stock;
+  onAssetClick: (asset: Stock) => void;
 }
 
-export const MoverItem: React.FC<MoverItemProps> = ({ stock }) => {
-  const router = useRouter();
+export const MoverItem: React.FC<MoverItemProps> = ({ stock, onAssetClick }) => {
 
   const handleStockClick = () => {
-    let path = `/order/stock/${stock.symbol}`;
-    if (stock.exchange === 'NFO' || stock.exchange === 'Crypto Options') {
-        const type = (stock.name.toLowerCase().includes('future') || stock.symbol.includes('FUT')) ? 'future' : 'option';
-        path = `/order/${type}/${stock.symbol}`;
-    } else if (stock.exchange === 'Crypto' || stock.exchange === 'Crypto Futures') {
-         const type = (stock.exchange === 'Crypto Futures') ? 'crypto-future' : 'crypto';
-         path = `/order/${type}/${stock.symbol}`;
-    }
-    router.push(path);
+    onAssetClick(stock);
   };
     
   const isPositive = stock.changePercent >= 0;

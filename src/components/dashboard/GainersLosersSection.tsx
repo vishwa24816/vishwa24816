@@ -10,9 +10,10 @@ import type { Stock } from '@/types';
 interface GainersLosersSectionProps {
   gainers: Stock[];
   losers: Stock[];
+  onAssetClick: (asset: Stock) => void;
 }
 
-export const GainersLosersSection: React.FC<GainersLosersSectionProps> = ({ gainers, losers }) => {
+export const GainersLosersSection: React.FC<GainersLosersSectionProps> = ({ gainers, losers, onAssetClick }) => {
   return (
     <div>
       <h2 className="text-xl font-semibold font-headline text-primary flex items-center mb-2">
@@ -29,12 +30,12 @@ export const GainersLosersSection: React.FC<GainersLosersSectionProps> = ({ gain
         </TabsList>
         <TabsContent value="gainers" className="p-2">
           <div className="space-y-1">
-            {gainers.map(stock => <MoverItem key={stock.id} stock={stock} />)}
+            {gainers.map(stock => <MoverItem key={stock.id} stock={stock} onAssetClick={onAssetClick} />)}
           </div>
         </TabsContent>
         <TabsContent value="losers" className="p-2">
           <div className="space-y-1">
-            {losers.map(stock => <MoverItem key={stock.id} stock={stock} />)}
+            {losers.map(stock => <MoverItem key={stock.id} stock={stock} onAssetClick={onAssetClick} />)}
           </div>
         </TabsContent>
       </Tabs>
