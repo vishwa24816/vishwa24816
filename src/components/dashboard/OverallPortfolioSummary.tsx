@@ -15,6 +15,7 @@ interface OverallPortfolioSummaryProps {
   investedMargin: number;
   onAddFunds: () => void;
   onWithdrawFunds: () => void;
+  title?: string;
 }
 
 const formatCurrency = (value: number) => {
@@ -32,13 +33,14 @@ export function OverallPortfolioSummary({
   availableMargin,
   investedMargin,
   onAddFunds,
-  onWithdrawFunds
+  onWithdrawFunds,
+  title = "Portfolio Overview"
 }: OverallPortfolioSummaryProps) {
   return (
     <Card className="shadow-md">
        <CardHeader>
         <CardTitle className="text-xl font-semibold font-headline text-primary">
-          Portfolio Overview
+          {title}
         </CardTitle>
       </CardHeader>
       <CardContent className="p-4 pt-0 space-y-3">

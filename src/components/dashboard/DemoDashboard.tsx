@@ -542,6 +542,7 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
         return (
             <div className="space-y-8">
                 <OverallPortfolioSummary 
+                    title="Pledge Overview"
                     totalPortfolioValue={totalPledgedValue} 
                     unrealisedPnl={unrealisedPnl}
                     availableMargin={availableMargin}
