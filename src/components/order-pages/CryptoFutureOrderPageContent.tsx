@@ -37,6 +37,8 @@ export function CryptoFutureOrderPageContent({ asset, assetSpecificNews, onBack 
   const isPositiveChange = asset.change >= 0;
   const timescaleButtons = ['24H', '1D', '1W', '1M', '1Y', 'ALL'];
   
+  const assetType = asset.exchange?.toLowerCase().includes('option') ? "crypto-option" : "crypto-future";
+
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
       <header className="px-4 py-3 sticky top-0 z-10 bg-background border-b border-border">
@@ -92,7 +94,7 @@ export function CryptoFutureOrderPageContent({ asset, assetSpecificNews, onBack 
             ))}
           </div>
           
-          <OrderPlacementForm asset={asset} productType={productTypeForOrder} onProductTypeChange={setProductTypeForOrder} assetType="crypto-future"/>
+          <OrderPlacementForm asset={asset} productType={productTypeForOrder} onProductTypeChange={setProductTypeForOrder} assetType={assetType}/>
 
           <Tabs defaultValue="overview" className="w-full">
             <TabsList className="w-full bg-muted/30 flex overflow-x-auto whitespace-nowrap no-scrollbar rounded-none p-0 h-auto border-b mb-1">

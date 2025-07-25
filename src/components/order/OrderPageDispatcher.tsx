@@ -48,14 +48,17 @@ export function OrderPageDispatcher({ asset, onBack }: OrderPageDispatcherProps)
   }
 
   const exchange = asset.exchange.toLowerCase();
-
+  
+  // Specific check for crypto futures and options first
+  if (exchange.includes('crypto future') || exchange.includes('crypto options')) {
+    return <CryptoFutureOrderPageContent asset={asset} assetSpecificNews={assetSpecificNews} onBack={onBack} />;
+  }
+  
   if (exchange.includes('crypto')) {
-    if(exchange.includes('future')) {
-      return <CryptoFutureOrderPageContent asset={asset} assetSpecificNews={assetSpecificNews} onBack={onBack} />;
-    }
     if (exchange.includes('mf')) {
         return <CryptoMutualFundOrderPageContent asset={asset} assetSpecificNews={assetSpecificNews} onBack={onBack} />;
     }
+    // This will now only handle spot crypto
     return <CryptoOrderPageContent asset={asset} assetSpecificNews={assetSpecificNews} onBack={onBack} />;
   }
   

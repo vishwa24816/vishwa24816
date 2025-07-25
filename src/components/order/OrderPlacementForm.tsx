@@ -316,8 +316,6 @@ const FutureOrderForm = ({ asset, assetType, productType, onProductTypeChange }:
         setPrice(clickedPrice.toFixed(2));
         setOrderType('Limit');
     };
-    
-    const isOption = assetType === 'option';
 
     return (
         <div className="bg-card shadow-md rounded-lg mt-4">
@@ -333,7 +331,7 @@ const FutureOrderForm = ({ asset, assetType, productType, onProductTypeChange }:
                 )}
                  <RadioGroup value={productType} onValueChange={onProductTypeChange} className="flex flex-wrap gap-x-4 sm:gap-x-6 gap-y-2">
                     <div className="flex items-center space-x-2"> <RadioGroupItem value="Intraday" id="intraday-future" /><Label htmlFor="intraday-future" className="font-normal">Intraday</Label></div>
-                    <div className="flex items-center space-x-2"> <RadioGroupItem value="Overnight" id="overnight-future" /><Label htmlFor="overnight-future" className="font-normal">{isOption ? 'Delivery' : 'Expiry'}</Label></div>
+                    <div className="flex items-center space-x-2"> <RadioGroupItem value="Expiry" id="overnight-future" /><Label htmlFor="overnight-future" className="font-normal">Expiry</Label></div>
                 </RadioGroup>
 
                 <div className="grid grid-cols-2 gap-4 items-end">
@@ -418,14 +416,13 @@ const CryptoFutureOrderForm = ({ asset, assetType, productType, onProductTypeCha
         </div>
     );
 };
-
 // #endregion
 
 // #region Main Dispatcher Component
 
 interface OrderPlacementFormProps {
   asset: Stock;
-  assetType: "stock" | "future" | "option" | "crypto" | "mutual-fund" | "bond" | "crypto-future";
+  assetType: "stock" | "future" | "option" | "crypto" | "mutual-fund" | "bond" | "crypto-future" | "crypto-option";
   productType: string;
   onProductTypeChange: (value: string) => void;
 }
@@ -440,6 +437,7 @@ export function OrderPlacementForm({ assetType, ...props }: OrderPlacementFormPr
     case 'option':
       return <FutureOrderForm assetType={assetType} {...props} />;
     case 'crypto-future':
+    case 'crypto-option':
         return <CryptoFutureOrderForm assetType={assetType} {...props} />;
     case 'mutual-fund':
     case 'bond':
