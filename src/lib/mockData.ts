@@ -31,3 +31,4 @@ export * from './mockData/web3Memes';
 export * from './mockData/web3Trending';
 export * from './mockData/web3Holdings';
 export * from './mockData/marketSectorData';
+export * from './mockData/hodlOrders';
