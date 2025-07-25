@@ -90,7 +90,7 @@ const AdvancedOptionInput = ({
   );
 };
 
-const MarketDepth = ({ asset, selectedExchange, onPriceClick }: { asset: Stock; selectedExchange: 'BSE' | 'NSE' | 'NASDAQ' | 'NYSE'; onPriceClick: (price: number) => void; }) => {
+const MarketDepth = ({ asset, selectedExchange, onPriceClick }: { asset: Stock; selectedExchange?: 'BSE' | 'NSE' | 'NASDAQ' | 'NYSE'; onPriceClick: (price: number) => void; }) => {
     const marketDepthData = useMemo(() => {
         const basePrice = asset.price;
         const buy = Array.from({ length: 5 }, (_, i) => ({
@@ -196,7 +196,7 @@ const CommonOrderFields = ({
                         <RadioGroupItem value="Delivery" id={`delivery-common`} />
                         <Label htmlFor={`delivery-common`} className="font-normal">Delivery</Label>
                     </div>
-                    {assetType === 'stock' && orderMode === 'Regular' && (
+                    {(assetType === 'stock' || assetType === 'crypto') && orderMode === 'Regular' && (
                         <div className="flex items-center space-x-2">
                             <RadioGroupItem value="HODL" id="hodl-common" />
                             <Label htmlFor="hodl-common" className="font-normal">HODL</Label>
@@ -447,6 +447,9 @@ const CryptoOrderForm = ({ asset, assetType, productType, onProductTypeChange }:
     const [showMoreOptions, setShowMoreOptions] = useState(false);
     const [displayedMargin, setDisplayedMargin] = useState(0);
     const [isAddToBasketDialogOpen, setIsAddToBasketDialogOpen] = useState(false);
+    const [lockInYears, setLockInYears] = useState('');
+    const [lockInMonths, setLockInMonths] = useState('');
+
 
     const [isStopLossEnabled, setIsStopLossEnabled] = useState(false);
     const [stopLossValue, setStopLossValue] = useState('');
@@ -464,13 +467,19 @@ const CryptoOrderForm = ({ asset, assetType, productType, onProductTypeChange }:
         setDisplayedMargin(numQty * numPrice);
     }, [quantity, price]);
 
+    const handleMarketDepthPriceClick = (clickedPrice: number) => {
+        setPrice(clickedPrice.toFixed(2));
+        setOrderType('Limit');
+    };
+
     const commonOrderProps = {
         asset, assetType, productType, onProductTypeChange, quantity, setQuantity,
         price, setPrice, orderType, setOrderType,
         showMoreOptions, setShowMoreOptions,
         isStopLossEnabled, setIsStopLossEnabled, stopLossValue, setStopLossValue, stopLossUnit, setStopLossUnit,
         isTrailingSlEnabled, setIsTrailingSlEnabled, trailingSlValue, setTrailingSlValue, trailingSlUnit, setTrailingSlUnit,
-        isTargetProfitEnabled, setIsTargetProfitEnabled, targetProfitValue, setTargetProfitValue, targetProfitUnit, setTargetProfitUnit
+        isTargetProfitEnabled, setIsTargetProfitEnabled, targetProfitValue, setTargetProfitValue, targetProfitUnit, setTargetProfitUnit,
+        lockInMonths, setLockInMonths, lockInYears, setLockInYears
     };
 
     return (
@@ -486,6 +495,7 @@ const CryptoOrderForm = ({ asset, assetType, productType, onProductTypeChange }:
                 </TabsContent>
                 <TabsContent value="SP" className="p-0 mt-0"><SipForm asset={asset} assetType="crypto" /></TabsContent>
             </Tabs>
+            <MarketDepth asset={asset} onPriceClick={handleMarketDepthPriceClick} />
              <div className="p-4 border-t flex flex-col sm:flex-row gap-2">
                 <Button variant="outline" className="flex-1" onClick={() => setIsAddToBasketDialogOpen(true)}><ShoppingBasket className="mr-2 h-4 w-4" /> Add to Basket</Button>
                 <Button variant="outline" className="flex-1" onClick={() => toast({ title: "Add Alert (WIP)" })}><BellPlus className="mr-2 h-4 w-4" /> Add Alert</Button>
@@ -528,6 +538,11 @@ const FutureOrderForm = ({ asset, assetType, productType, onProductTypeChange }:
         setDisplayedMargin(margin);
     }, [quantity, price, asset]);
 
+    const handleMarketDepthPriceClick = (clickedPrice: number) => {
+        setPrice(clickedPrice.toFixed(2));
+        setOrderType('Limit');
+    };
+
      const commonOrderProps = {
         asset, assetType, productType, onProductTypeChange, quantity, setQuantity,
         price, setPrice, orderType, setOrderType,
@@ -552,6 +567,7 @@ const FutureOrderForm = ({ asset, assetType, productType, onProductTypeChange }:
                  <CommonOrderFields orderProps={commonOrderProps} orderMode="Regular" />
                  <div className="mt-4 pt-4 border-t"><p className="text-sm text-muted-foreground">Margin required: <span className="font-semibold text-foreground">₹{displayedMargin.toLocaleString('en-IN')}</span></p></div>
             </div>
+            <MarketDepth asset={asset} onPriceClick={handleMarketDepthPriceClick} />
              <div className="p-4 border-t flex flex-col sm:flex-row gap-2">
                 <Button variant="outline" className="flex-1" onClick={() => setIsAddToBasketDialogOpen(true)}><ShoppingBasket className="mr-2 h-4 w-4" /> Add to Basket</Button>
                 <Button variant="outline" className="flex-1" onClick={() => toast({ title: "Add Alert (WIP)" })}><BellPlus className="mr-2 h-4 w-4" /> Add Alert</Button>
@@ -590,6 +606,11 @@ const CryptoFutureOrderForm = ({ asset, assetType, productType, onProductTypeCha
         setDisplayedMargin(margin);
     }, [quantity, price, asset, mtfLeverage]);
 
+    const handleMarketDepthPriceClick = (clickedPrice: number) => {
+        setPrice(clickedPrice.toFixed(2));
+        setOrderType('Limit');
+    };
+
     const leverageOptions = ['1x', '2x', '3x', '4x', '5x', '10x', '20x', '25x', '50x', '100x', '200x'];
     
      const commonOrderProps = {
@@ -621,6 +642,7 @@ const CryptoFutureOrderForm = ({ asset, assetType, productType, onProductTypeCha
                  </TabsContent>
                  <TabsContent value="SP" className="p-0 mt-0"><SipForm asset={asset} assetType="crypto" /></TabsContent>
             </Tabs>
+            <MarketDepth asset={asset} onPriceClick={handleMarketDepthPriceClick} />
              <div className="p-4 border-t flex flex-col sm:flex-row gap-2">
                 <Button variant="outline" className="flex-1" onClick={() => setIsAddToBasketDialogOpen(true)}><ShoppingBasket className="mr-2 h-4 w-4" /> Add to Basket</Button>
                 <Button variant="outline" className="flex-1" onClick={() => toast({ title: "Add Alert (WIP)" })}><BellPlus className="mr-2 h-4 w-4" /> Add Alert</Button>
