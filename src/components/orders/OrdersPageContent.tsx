@@ -17,7 +17,6 @@ import type { Stock, PortfolioHolding, IntradayPosition, FoPosition, CryptoFutur
 import { mockPortfolioHoldings, mockIntradayPositions, mockFoPositions, mockCryptoFutures, mockWeb3Holdings } from '@/lib/mockData';
 
 const demoOrderTabs = [
-  { value: "executed", label: "Open" }, 
   { value: "gtt", label: "GTT" },
   { value: "bids", label: "Bids" },
   { value: "baskets", label: "Baskets" },
@@ -26,7 +25,6 @@ const demoOrderTabs = [
 ];
 
 const realOrderTabs = [
-  { value: "executed", label: "Open" },
   { value: "baskets", label: "Baskets" },
   { value: "sips", label: "SIPs" },
   { value: "alerts", label: "Alerts" },
@@ -38,68 +36,16 @@ export function OrdersPageContent({ onAssetClick, activeMode }: { onAssetClick: 
   const isRealMode = user?.id === 'REAL456';
 
   const orderTabs = isRealMode ? realOrderTabs : demoOrderTabs;
-  const [activeTab, setActiveTab] = useState("executed");
+  const [activeTab, setActiveTab] = useState(orderTabs[0].value);
   
   const fiatHoldings = mockPortfolioHoldings.filter(h => h.type === 'Stock' || h.type === 'ETF');
   const wealthHoldings = mockPortfolioHoldings.filter(h => h.type === 'Mutual Fund' || h.type === 'Bond');
   const cryptoHoldings = mockPortfolioHoldings.filter(h => h.type === 'Crypto');
 
-  const renderOpenPositions = () => {
-    let filteredFiatHoldings: PortfolioHolding[] = [];
-    let filteredWealthHoldings: PortfolioHolding[] = [];
-    let filteredCryptoHoldings: PortfolioHolding[] = [];
-    let filteredWeb3Holdings: PortfolioHolding[] = [];
-    let filteredIntradayPositions: IntradayPosition[] = [];
-    let filteredFoPositions: FoPosition[] = [];
-    let filteredCryptoFutures: CryptoFuturePosition[] = [];
-
-    switch(activeMode) {
-        case 'Fiat':
-            filteredFiatHoldings = fiatHoldings;
-            filteredIntradayPositions = mockIntradayPositions;
-            filteredFoPositions = mockFoPositions;
-            break;
-        case 'Wealth':
-            filteredWealthHoldings = wealthHoldings;
-            break;
-        case 'Crypto':
-            filteredCryptoHoldings = cryptoHoldings;
-            filteredCryptoFutures = mockCryptoFutures;
-            break;
-        case 'Web3':
-            filteredWeb3Holdings = mockWeb3Holdings;
-            break;
-        default: // Portfolio
-            filteredFiatHoldings = fiatHoldings;
-            filteredWealthHoldings = wealthHoldings;
-            filteredCryptoHoldings = cryptoHoldings;
-            filteredWeb3Holdings = mockWeb3Holdings;
-            filteredIntradayPositions = mockIntradayPositions;
-            filteredFoPositions = mockFoPositions;
-            filteredCryptoFutures = mockCryptoFutures;
-            break;
-    }
-    
-    return (
-      <OpenPositionsDisplay
-        fiatHoldings={filteredFiatHoldings}
-        wealthHoldings={filteredWealthHoldings}
-        cryptoHoldings={filteredCryptoHoldings}
-        web3Holdings={filteredWeb3Holdings}
-        intradayPositions={filteredIntradayPositions}
-        foPositions={filteredFoPositions}
-        cryptoFutures={filteredCryptoFutures}
-        onCategoryClick={() => {}}
-        onAssetClick={onAssetClick}
-      />
-    );
-  }
-
-
   return (
       <div className="flex flex-col h-full">
         <main className="flex-grow flex flex-col">
-          <Tabs defaultValue="executed" value={activeTab} onValueChange={setActiveTab} className="flex flex-col flex-grow">
+          <Tabs defaultValue={orderTabs[0].value} value={activeTab} onValueChange={setActiveTab} className="flex flex-col flex-grow">
             <div className="bg-background border-b">
               <TabsList className="w-full px-4 sm:px-6 lg:px-8 flex overflow-x-auto whitespace-nowrap no-scrollbar rounded-none h-auto p-0 border-none bg-transparent">
                 {orderTabs.map((tab) => (
@@ -130,9 +76,6 @@ export function OrdersPageContent({ onAssetClick, activeMode }: { onAssetClick: 
             </div>
 
             <div className="w-full px-0 sm:px-2 md:px-4 py-4 flex-grow flex flex-col">
-              <TabsContent value="executed" className="flex-grow flex flex-col mt-0 data-[state=inactive]:hidden">
-                {renderOpenPositions()}
-              </TabsContent>
               <TabsContent value="gtt" className="flex-grow flex flex-col mt-0 data-[state=inactive]:hidden">
                 <GttOrdersDisplay activeMode={activeMode} />
               </TabsContent>
