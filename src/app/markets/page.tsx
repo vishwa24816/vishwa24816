@@ -7,7 +7,7 @@ import { AppHeader } from '@/components/shared/AppHeader';
 import { ProtectedRoute } from '@/components/shared/ProtectedRoute';
 import { MarketsHeader } from '@/components/markets/MarketsHeader';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { mockMarketIndices, mockStocks, sectorsHeatmap, industriesHeatmap, indicesHeatmap, sectorsSummary, industriesSummary, indicesSummary } from '@/lib/mockData';
+import { mockMarketIndices, mockStocks, sectorsHeatmap, industriesHeatmap, indicesHeatmap, sectorsSummary, industriesSummary, indicesSummary, mockUsStocks } from '@/lib/mockData';
 import { MarketMoversCard, MoverCategory } from '@/components/markets/MarketMoversCard';
 import { FiiDiiCard } from '@/components/markets/FiiDiiCard';
 import { MarketHeatmap } from '@/components/markets/MarketHeatmap';
@@ -31,14 +31,14 @@ const marketMoversCategories: MoverCategory[] = [
 
 export default function MarketsPage() {
     const searchParams = useSearchParams();
-    const initialTab = searchParams.get('tab') || 'stocks';
+    const initialTab = searchParams.get('tab') || 'indian_stocks';
     
     const [activeMode, setActiveMode] = useState<'Fiat' | 'Crypto'>('Fiat');
     const [activeTab, setActiveTab] = useState(initialTab);
     
     useEffect(() => {
         const tab = searchParams.get('tab');
-        const validTabs = ['stocks', 'sectors', 'events', 'fii-dii', 'insider-deals', 'bulk-deals', 'insights', 'earnings-calls'];
+        const validTabs = ['indian_stocks', 'us_stocks', 'sectors', 'events', 'fii-dii', 'insider-deals', 'bulk-deals', 'insights', 'earnings-calls'];
         if (tab && validTabs.includes(tab)) {
             setActiveTab(tab);
         }
@@ -55,7 +55,8 @@ export default function MarketsPage() {
                 <main className="flex-grow">
                     <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                         <TabsList className="w-full justify-start rounded-none bg-background p-0 px-4 sticky top-16 z-30 border-b overflow-x-auto no-scrollbar">
-                            <TabsTrigger value="stocks">Stocks</TabsTrigger>
+                            <TabsTrigger value="indian_stocks">Indian Stocks</TabsTrigger>
+                            <TabsTrigger value="us_stocks">US Stocks</TabsTrigger>
                             <TabsTrigger value="sectors">Sectors</TabsTrigger>
                             <TabsTrigger value="events">Events Calendar</TabsTrigger>
                             <TabsTrigger value="fii-dii">FII &amp; DII</TabsTrigger>
@@ -67,7 +68,7 @@ export default function MarketsPage() {
                         
                         <MarketsHeader />
 
-                        <TabsContent value="stocks">
+                        <TabsContent value="indian_stocks">
                              <div className="p-4 space-y-6">
                                 {marketMoversCategories.map(category => (
                                     <MarketMoversCard 
@@ -78,6 +79,19 @@ export default function MarketsPage() {
                                     />
                                 ))}
                                 <FiiDiiCard />
+                            </div>
+                        </TabsContent>
+                        
+                        <TabsContent value="us_stocks">
+                             <div className="p-4 space-y-6">
+                                {marketMoversCategories.map(category => (
+                                    <MarketMoversCard 
+                                        key={category.type}
+                                        title={category.title}
+                                        category={category.type}
+                                        stocks={mockUsStocks}
+                                    />
+                                ))}
                             </div>
                         </TabsContent>
 

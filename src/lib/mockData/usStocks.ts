@@ -61,4 +61,3 @@ export const mockUsStocks: Stock[] = [
     marketCap: '₹65T'
   },
 ];
-
