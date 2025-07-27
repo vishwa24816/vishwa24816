@@ -427,3 +427,11 @@ export interface EarningsCall {
     description: string;
     stockData: Pick<Stock, 'price' | 'change' | 'changePercent'>;
 }
+
+export interface Insight {
+    id: string;
+    companyName: string;
+    date: string;
+    tag: string;
+    description: string;
+}

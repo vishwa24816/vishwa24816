@@ -17,6 +17,7 @@ import { FiiDiiActivity } from '@/components/markets/FiiDiiActivity';
 import { InsiderDealsDisplay } from '@/components/markets/InsiderDealsDisplay';
 import { BulkBlockDealsDisplay } from '@/components/markets/BulkBlockDealsDisplay';
 import { EarningsCallsDisplay } from '@/components/markets/EarningsCallsDisplay';
+import { InsightsDisplay } from '@/components/markets/InsightsDisplay';
 
 const marketMoversCategories: MoverCategory[] = [
     { title: "Top Gainers", type: 'gainers' },
@@ -106,7 +107,7 @@ export default function MarketsPage() {
                             <BulkBlockDealsDisplay />
                         </TabsContent>
                         <TabsContent value="insights" className="p-0">
-                             <div className="p-4 text-center text-muted-foreground">Insights content will be displayed here.</div>
+                            <InsightsDisplay />
                         </TabsContent>
                          <TabsContent value="earnings-calls" className="p-0">
                             <EarningsCallsDisplay />
