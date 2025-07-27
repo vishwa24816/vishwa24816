@@ -10,6 +10,7 @@ import { MutualFundOrderPageContent } from '@/components/order-pages/MutualFundO
 import { GenericOrderPageContent } from '@/components/order-pages/GenericOrderPageContent';
 import { CryptoFutureOrderPageContent } from '@/components/order-pages/CryptoFutureOrderPageContent';
 import { CryptoMutualFundOrderPageContent } from '@/components/order-pages/CryptoMutualFundOrderPageContent';
+import { BondOrderPageContent } from '@/components/order-pages/BondOrderPageContent';
 import { mockNewsArticles } from '@/lib/mockData';
 import type { InitialOrderDetails } from '@/app/page';
 
@@ -70,6 +71,10 @@ export function OrderPageDispatcher({ asset, onBack, initialDetails }: OrderPage
 
   if (exchange.includes('mf')) {
     return <MutualFundOrderPageContent asset={asset} assetSpecificNews={assetSpecificNews} onBack={onBack} initialDetails={initialDetails} />;
+  }
+
+  if (exchange.includes('bond')) {
+    return <BondOrderPageContent asset={asset} assetSpecificNews={assetSpecificNews} onBack={onBack} />;
   }
 
   if (exchange === 'nse' || exchange === 'bse' || exchange === 'nasdaq' || exchange === 'nyse') {
