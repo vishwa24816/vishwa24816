@@ -35,3 +35,4 @@ export * from './web3Holdings';
 export * from './marketSectorData';
 export * from './hodlOrders';
 export * from './events';
+export * from './fiiDiiData';

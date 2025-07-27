@@ -13,6 +13,7 @@ import { FiiDiiCard } from '@/components/markets/FiiDiiCard';
 import { MarketHeatmap } from '@/components/markets/MarketHeatmap';
 import { SectorSummaryCard } from '@/components/markets/SectorSummaryCard';
 import { EventsCalendar } from '@/components/markets/EventsCalendar';
+import { FiiDiiActivity } from '@/components/markets/FiiDiiActivity';
 
 const marketMoversCategories: MoverCategory[] = [
     { title: "Top Gainers", type: 'gainers' },
@@ -85,6 +86,10 @@ export default function MarketsPage() {
 
                         <TabsContent value="events" className="p-0">
                             <EventsCalendar />
+                        </TabsContent>
+
+                        <TabsContent value="fii-dii" className="p-0">
+                            <FiiDiiActivity />
                         </TabsContent>
                     </Tabs>
                 </main>
