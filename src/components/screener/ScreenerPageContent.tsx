@@ -37,10 +37,10 @@ const marketSubItems = [
   'Sectors',
   'Events Calendar',
   'FII & DII',
-  'Insider Trades',
-  'Bulk Block Deals',
-  'Insights',
+  'Insider trade deals',
+  'Bulk/Block Deals',
   'Earnings Calls',
+  'Insights',
 ];
 
 const fiatScreenerItems = [
@@ -371,10 +371,20 @@ export function ScreenerPageContent() {
     };
     
     const handleMarketSubItemClick = (subItem: string) => {
-        if (subItem === 'Indian Stocks' || subItem === 'US Stocks') {
+        const tabMapping: Record<string, string> = {
+            'Sectors': 'sectors',
+            'Events Calendar': 'events',
+            'FII & DII': 'fii-dii',
+            'Insider trade deals': 'insider-deals',
+            'Bulk/Block Deals': 'bulk-deals',
+            'Earnings Calls': 'earnings-calls',
+        };
+        const targetTab = tabMapping[subItem];
+
+        if (targetTab) {
+            router.push(`/markets?tab=${targetTab}`);
+        } else if (subItem === 'Indian Stocks' || subItem === 'US Stocks') {
             router.push('/markets');
-        } else if (subItem === 'Sectors') {
-            router.push('/markets?tab=sectors');
         } else {
             toast({
                 title: `${subItem}`,

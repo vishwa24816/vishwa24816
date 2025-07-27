@@ -34,7 +34,8 @@ export default function MarketsPage() {
     
     useEffect(() => {
         const tab = searchParams.get('tab');
-        if (tab && (tab === 'stocks' || tab === 'sectors')) {
+        const validTabs = ['stocks', 'sectors', 'events', 'fii-dii', 'insider-deals', 'bulk-deals', 'earnings-calls'];
+        if (tab && validTabs.includes(tab)) {
             setActiveTab(tab);
         }
     }, [searchParams]);
@@ -49,12 +50,14 @@ export default function MarketsPage() {
                 />
                 <main className="flex-grow">
                     <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                        <TabsList className="w-full justify-start rounded-none bg-background p-0 px-4 sticky top-16 z-30 border-b">
+                        <TabsList className="w-full justify-start rounded-none bg-background p-0 px-4 sticky top-16 z-30 border-b overflow-x-auto no-scrollbar">
                             <TabsTrigger value="stocks">Stocks</TabsTrigger>
                             <TabsTrigger value="sectors">Sectors</TabsTrigger>
                             <TabsTrigger value="events">Events Calendar</TabsTrigger>
                             <TabsTrigger value="fii-dii">FII & DII</TabsTrigger>
-                            <TabsTrigger value="insider">Insider</TabsTrigger>
+                            <TabsTrigger value="insider-deals">Insider trade deals</TabsTrigger>
+                            <TabsTrigger value="bulk-deals">Bulk/Block Deals</TabsTrigger>
+                            <TabsTrigger value="earnings-calls">Earnings Calls</TabsTrigger>
                         </TabsList>
                         
                         <MarketsHeader />
@@ -90,6 +93,16 @@ export default function MarketsPage() {
 
                         <TabsContent value="fii-dii" className="p-0">
                             <FiiDiiActivity />
+                        </TabsContent>
+
+                        <TabsContent value="insider-deals" className="p-4">
+                            <p className="text-center text-muted-foreground">Insider trade deals content coming soon.</p>
+                        </TabsContent>
+                        <TabsContent value="bulk-deals" className="p-4">
+                            <p className="text-center text-muted-foreground">Bulk/Block deals content coming soon.</p>
+                        </TabsContent>
+                        <TabsContent value="earnings-calls" className="p-4">
+                            <p className="text-center text-muted-foreground">Earnings calls content coming soon.</p>
                         </TabsContent>
                     </Tabs>
                 </main>
