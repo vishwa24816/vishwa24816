@@ -108,8 +108,8 @@ export default function MarketsPage() {
                         <TabsContent value="insights" className="p-0">
                             <EarningsCallsDisplay />
                         </TabsContent>
-                         <TabsContent value="earnings-calls" className="p-4">
-                            <p className="text-center text-muted-foreground">Earnings Calls content coming soon.</p>
+                         <TabsContent value="earnings-calls" className="p-0">
+                            <EarningsCallsDisplay />
                         </TabsContent>
                     </Tabs>
                 </main>
