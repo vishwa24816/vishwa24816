@@ -18,6 +18,7 @@ import {
   Moon,
   Sparkles,
   History,
+  FileText,
 } from 'lucide-react';
 import {
   Sheet,
@@ -159,6 +160,16 @@ export function SideMenu() {
             >
               <Sparkles className="mr-3 h-5 w-5 text-primary" />
               SIMBALL
+            </Button>
+          </SheetClose>
+          <SheetClose asChild>
+            <Button
+              variant="ghost"
+              className="justify-start text-base p-3 hover:bg-accent/10"
+              onClick={() => alert('Taxy page coming soon!')}
+            >
+              <FileText className="mr-3 h-5 w-5 text-primary" />
+              Taxy
             </Button>
           </SheetClose>
           <SheetClose asChild>
