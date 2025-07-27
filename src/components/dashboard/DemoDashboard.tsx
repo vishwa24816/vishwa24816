@@ -717,7 +717,7 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
 
                 return (
                     <div className="space-y-8">
-                        {[etfCategory, ...groupedFunds].map(group => (
+                        {[...groupedFunds, etfCategory].map(group => (
                             <WatchlistSection key={group.title} title={group.title.replace(/ Funds$/, '')} displayItems={group.items} isPredefinedList={true} onAssetClick={onAssetClick} />
                         ))}
                         <NewsSection articles={elssNews} title="Latest on Tax Saver Funds" customDescription="Stay updated with news relevant to ELSS and tax-saving investments." />
