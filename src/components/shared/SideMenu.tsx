@@ -17,6 +17,7 @@ import {
   Sun,
   Moon,
   Sparkles,
+  History,
 } from 'lucide-react';
 import {
   Sheet,
@@ -128,6 +129,16 @@ export function SideMenu() {
             >
                 <Puzzle className="mr-3 h-5 w-5 text-primary" />
                 No-Code Algo
+            </Button>
+          </SheetClose>
+          <SheetClose asChild>
+            <Button
+              variant="ghost"
+              className="justify-start text-base p-3 hover:bg-accent/10"
+              onClick={() => alert('Backtester feature coming soon!')}
+            >
+              <History className="mr-3 h-5 w-5 text-primary" />
+              Backtester
             </Button>
           </SheetClose>
           <SheetClose asChild>
