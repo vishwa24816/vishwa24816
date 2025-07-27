@@ -25,7 +25,7 @@ const SubscriptionBar = ({ label, value }: { label: string, value: string }) => 
   );
 };
 
-export const IpoCard = ({ ipo }: { ipo: IpoInfo }) => {
+export const IpoCard = ({ ipo, isApplied }: { ipo: IpoInfo, isApplied: boolean }) => {
   return (
     <Card className="overflow-hidden">
       <Accordion type="single" collapsible>
@@ -63,11 +63,15 @@ export const IpoCard = ({ ipo }: { ipo: IpoInfo }) => {
                 </div>
             </CardContent>
             <CardFooter className="p-4 pt-0 flex justify-between items-center">
-                 <Button variant="ghost" size="sm" className="text-destructive p-0 h-auto">
+                 <Button variant="ghost" size="sm" className="text-primary p-0 h-auto">
                     <FileText className="h-4 w-4 mr-2" />
                     Download PDF
                 </Button>
-                <Button>Apply</Button>
+                {isApplied ? (
+                    <Button variant="destructive">Withdraw</Button>
+                ) : (
+                    <Button>Apply</Button>
+                )}
             </CardFooter>
           </AccordionContent>
         </AccordionItem>

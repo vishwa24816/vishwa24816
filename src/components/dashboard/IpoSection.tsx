@@ -58,14 +58,14 @@ export const IpoSection: React.FC<IpoSectionProps> = ({ activeTab }) => {
                 </TabsList>
                 <TabsContent value="mainboard" className="space-y-4 mt-4">
                     {mainboardIpos.length > 0 ? (
-                        mainboardIpos.map(ipo => <IpoCard key={ipo.id} ipo={ipo} />)
+                        mainboardIpos.map(ipo => <IpoCard key={ipo.id} ipo={ipo} isApplied={activeTab === 'Applied'} />)
                     ) : (
                         <p className="text-muted-foreground text-center py-4">No Mainboard IPOs found.</p>
                     )}
                 </TabsContent>
                 <TabsContent value="sme" className="space-y-4 mt-4">
                      {smeIpos.length > 0 ? (
-                        smeIpos.map(ipo => <IpoCard key={ipo.id} ipo={ipo} />)
+                        smeIpos.map(ipo => <IpoCard key={ipo.id} ipo={ipo} isApplied={activeTab === 'Applied'} />)
                      ) : (
                         <p className="text-muted-foreground text-center py-4">No SME IPOs found.</p>
                      )}
