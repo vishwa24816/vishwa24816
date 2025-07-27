@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Loader2, Zap, TrendingUp, Rocket, Star, PiggyBank, CandlestickChart, Bell, ArrowUpDown, FileText, InfoIcon } from 'lucide-react';
+import { Loader2, Zap, TrendingUp, Rocket, Star, PiggyBank, CandlestickChart, Bell, ArrowUpDown, FileText, InfoIcon, LandPlot } from 'lucide-react';
 import { runScreenerAction } from '@/app/actions';
 import type { Stock } from '@/types';
 import { useToast } from '@/hooks/use-toast';
@@ -65,8 +65,14 @@ const fiatScreenerItems = [
   {
     title: 'Mutual Funds',
     icon: PiggyBank,
-    content: 'Explore and analyze mutual funds.',
+    content: ['Index Funds', 'Large Cap', 'Mid Cap', 'Small Cap', 'Flexi Cap', 'ELSS', 'Sectoral', 'Thematic'],
     hasDot: true,
+  },
+  {
+    title: 'Bonds',
+    icon: LandPlot,
+    content: ['Government Bonds', 'Corporate Bonds'],
+    hasDot: false,
   },
   {
     title: 'Futures and Options',
@@ -308,7 +314,7 @@ const ExpandedScreenerRow = ({ stock, onAction, onNav }: { stock: Stock, onActio
     );
 };
 
-export function ScreenerPageContent() {
+export function ScreenerPageContent({ onAssetClick }: { onAssetClick: (asset: Stock) => void; }) {
     const { toast } = useToast();
     const router = useRouter();
     const { user } = useAuth();
@@ -393,6 +399,11 @@ export function ScreenerPageContent() {
             })
         }
     }
+    
+    const handleWealthSubItemClick = (subItem: string) => {
+        const primaryTab = subItem.includes('Bond') ? 'Bonds' : 'Mutual Funds';
+        router.push(`/?mode=Wealth&primary=${primaryTab}&secondary=Top watchlist`);
+    }
 
     return (
         <main className="flex-grow p-4 sm:p-6 lg:p-8 space-y-6 overflow-y-auto">
@@ -476,12 +487,16 @@ export function ScreenerPageContent() {
                                                     <Button
                                                         variant="ghost"
                                                         className="w-full justify-start p-2 h-auto font-normal text-muted-foreground hover:text-primary text-sm"
-                                                        onClick={() =>
-                                                        toast({
-                                                            title: `${subItem}`,
-                                                            description: 'This feature is coming soon!',
-                                                        })
-                                                        }
+                                                        onClick={() => {
+                                                            if(item.title === 'Mutual Funds' || item.title === 'Bonds') {
+                                                                handleWealthSubItemClick(subItem)
+                                                            } else {
+                                                                toast({
+                                                                    title: `${subItem}`,
+                                                                    description: 'This feature is coming soon!',
+                                                                })
+                                                            }
+                                                        }}
                                                     >
                                                         {subItem}
                                                     </Button>
@@ -551,7 +566,7 @@ export function ScreenerPageContent() {
                                                 <ExpandedScreenerRow
                                                     stock={stock}
                                                     onAction={(type, qty) => handleAction(stock, type, qty)}
-                                                    onNav={() => router.push(`/order/stock/${stock.symbol}`)}
+                                                    onNav={() => onAssetClick(stock)}
                                                 />
                                             </TableRow>
                                         )}
