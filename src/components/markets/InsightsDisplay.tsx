@@ -3,7 +3,7 @@
 
 import React from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { mockInsights } from '@/lib/mockData';
+import { mockInsights } from '@/lib/mockData/insights';
 import { InsightCard } from './InsightCard';
 import { Button } from '@/components/ui/button';
 import { SlidersHorizontal } from 'lucide-react';
