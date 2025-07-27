@@ -6,10 +6,11 @@ import { AppHeader } from '@/components/shared/AppHeader';
 import { ProtectedRoute } from '@/components/shared/ProtectedRoute';
 import { MarketsHeader } from '@/components/markets/MarketsHeader';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { mockMarketIndices, mockStocks } from '@/lib/mockData';
+import { mockMarketIndices, mockStocks, sectorsHeatmap, industriesHeatmap, indicesHeatmap, sectorsSummary, industriesSummary, indicesSummary } from '@/lib/mockData';
 import { MarketMoversCard, MoverCategory } from '@/components/markets/MarketMoversCard';
 import { FiiDiiCard } from '@/components/markets/FiiDiiCard';
-import { IndexCard } from '@/components/markets/IndexCard';
+import { MarketHeatmap } from '@/components/markets/MarketHeatmap';
+import { SectorSummaryCard } from '@/components/markets/SectorSummaryCard';
 
 const marketMoversCategories: MoverCategory[] = [
     { title: "Top Gainers", type: 'gainers' },
@@ -33,25 +34,42 @@ export default function MarketsPage() {
                     onModeChange={setActiveMode} 
                 />
                 <main className="flex-grow">
-                    <MarketsHeader />
-                    <div className="p-4 space-y-6">
-                        <div className="flex space-x-4 overflow-x-auto pb-2 -mb-2 no-scrollbar">
-                            {mockMarketIndices.map(index => (
-                                <IndexCard key={index.id} index={index} />
-                            ))}
-                        </div>
-
-                        {marketMoversCategories.map(category => (
-                             <MarketMoversCard 
-                                key={category.type}
-                                title={category.title}
-                                category={category.type}
-                                stocks={mockStocks}
-                             />
-                        ))}
+                    <Tabs defaultValue="stocks" className="w-full">
+                        <TabsList className="w-full justify-start rounded-none bg-background p-0 px-4 sticky top-16 z-30 border-b">
+                            <TabsTrigger value="stocks">Stocks</TabsTrigger>
+                            <TabsTrigger value="sectors">Sectors</TabsTrigger>
+                            <TabsTrigger value="events">Events Calendar</TabsTrigger>
+                            <TabsTrigger value="fii-dii">FII & DII</TabsTrigger>
+                            <TabsTrigger value="insider">Insider</TabsTrigger>
+                        </TabsList>
                         
-                        <FiiDiiCard />
-                    </div>
+                        <MarketsHeader />
+
+                        <TabsContent value="stocks">
+                             <div className="p-4 space-y-6">
+                                {marketMoversCategories.map(category => (
+                                    <MarketMoversCard 
+                                        key={category.type}
+                                        title={category.title}
+                                        category={category.type}
+                                        stocks={mockStocks}
+                                    />
+                                ))}
+                                <FiiDiiCard />
+                            </div>
+                        </TabsContent>
+
+                        <TabsContent value="sectors">
+                             <div className="p-4 space-y-6">
+                                <MarketHeatmap title="Sectors" items={sectorsHeatmap} />
+                                <SectorSummaryCard items={sectorsSummary} />
+                                <MarketHeatmap title="Industries" items={industriesHeatmap} />
+                                <SectorSummaryCard items={industriesSummary} />
+                                <MarketHeatmap title="Indices" items={indicesHeatmap} />
+                                <SectorSummaryCard items={indicesSummary} />
+                             </div>
+                        </TabsContent>
+                    </Tabs>
                 </main>
             </div>
         </ProtectedRoute>

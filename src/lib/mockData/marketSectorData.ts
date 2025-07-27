@@ -1,3 +1,4 @@
+
 import type { HeatmapItem, SummaryCardItem } from '@/types';
 
 export const sectorsHeatmap: HeatmapItem[] = [
