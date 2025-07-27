@@ -55,7 +55,6 @@ import { mockOtherInsurance } from '@/lib/mockData/otherInsurance';
 import { mockCryptoOptionsForWatchlist } from '@/lib/mockData/cryptoOptionsWatchlist';
 import { mockCryptoIndices } from '@/lib/mockData/cryptoIndices';
 import { mockUsStocks } from '@/lib/mockData/usStocks';
-import { mockETFs } from '@/lib/mockData/etfs';
 import type { WalletMode } from '@/components/dashboard/CryptoHoldingsSection';
 import Image from 'next/image';
 import { FundTransferDialog } from '../shared/FundTransferDialog';
@@ -231,7 +230,7 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
                 "US Stocks": watchlistNav,
                 "Futures": ["Index Futures", "Stock Futures"],
                 "Options": ["Dashboard", "Custom", "Readymade"],
-                "IPO": [],
+                "IPO": ["All", "Upcoming", "Open", "Applied"],
             }
         };
     }
@@ -609,6 +608,9 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
             return null
         }
         if (activePrimaryItem === "IPO") {
+             if(activeSecondaryItem === 'All' || activeSecondaryItem === 'Upcoming' || activeSecondaryItem === 'Open' || activeSecondaryItem === 'Applied') {
+                 return <div className="flex flex-col items-center justify-center text-center py-12 text-muted-foreground"><PackageOpen className="h-16 w-16 mb-4" /><h2 className="text-2xl font-semibold mb-2 text-foreground">IPO Section</h2><p className="max-w-md">Detailed {activeSecondaryItem} IPO information will be displayed here soon.</p></div>
+            }
             return <div className="flex flex-col items-center justify-center text-center py-12 text-muted-foreground"><PackageOpen className="h-16 w-16 mb-4" /><h2 className="text-2xl font-semibold mb-2 text-foreground">IPO Section</h2><p className="max-w-md">Information about upcoming and recent Initial Public Offerings will be displayed here.</p></div>
         }
         if (activePrimaryItem === "Futures") {
