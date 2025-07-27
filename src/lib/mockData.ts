@@ -3,6 +3,7 @@
 
 export * from './mockData/marketIndices';
 export * from './mockData/stocks';
+export * from './mockData/usStocks';
 export * from './mockData/cryptoAssets';
 export * from './mockData/newsArticles';
 export * from './mockData/portfolioHoldings';
@@ -32,3 +33,13 @@ export * from './mockData/web3Trending';
 export * from './mockData/web3Holdings';
 export * from './mockData/marketSectorData';
 export * from './mockData/hodlOrders';
+export * from './mockData/bulkBlockDeals';
+export * from './mockData/earningsCalls';
+export * from './mockData/events';
+export * from './mockData/fiiDiiData';
+export * from './mockData/insiderTrades';
+export * from './mockData/bikeInsurance';
+export * from './mockData/carInsurance';
+export * from './mockData/healthInsurance';
+export * from './mockData/lifeInsurance';
+export * from './mockData/otherInsurance';

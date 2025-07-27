@@ -1,5 +1,3 @@
-
-
 // This file now acts as an index for the mockData directory.
 // It imports and re-exports all mock data arrays.
 
@@ -35,8 +33,13 @@ export * from './web3Trending';
 export * from './web3Holdings';
 export * from './marketSectorData';
 export * from './hodlOrders';
+export * from './bulkBlockDeals';
+export * from './earningsCalls';
 export * from './events';
 export * from './fiiDiiData';
 export * from './insiderTrades';
-export * from './bulkBlockDeals';
-export * from './earningsCalls';
+export * from './bikeInsurance';
+export * from './carInsurance';
+export * from './healthInsurance';
+export * from './lifeInsurance';
+export * from './otherInsurance';
