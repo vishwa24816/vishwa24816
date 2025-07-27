@@ -1,7 +1,8 @@
 
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { AppHeader } from '@/components/shared/AppHeader';
 import { ProtectedRoute } from '@/components/shared/ProtectedRoute';
 import { MarketsHeader } from '@/components/markets/MarketsHeader';
@@ -23,7 +24,18 @@ const marketMoversCategories: MoverCategory[] = [
 ];
 
 export default function MarketsPage() {
+    const searchParams = useSearchParams();
+    const initialTab = searchParams.get('tab') || 'stocks';
+    
     const [activeMode, setActiveMode] = useState<'Fiat' | 'Crypto'>('Fiat');
+    const [activeTab, setActiveTab] = useState(initialTab);
+    
+    useEffect(() => {
+        const tab = searchParams.get('tab');
+        if (tab && (tab === 'stocks' || tab === 'sectors')) {
+            setActiveTab(tab);
+        }
+    }, [searchParams]);
 
     return (
         <ProtectedRoute>
@@ -34,7 +46,7 @@ export default function MarketsPage() {
                     onModeChange={setActiveMode} 
                 />
                 <main className="flex-grow">
-                    <Tabs defaultValue="stocks" className="w-full">
+                    <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                         <TabsList className="w-full justify-start rounded-none bg-background p-0 px-4 sticky top-16 z-30 border-b">
                             <TabsTrigger value="stocks">Stocks</TabsTrigger>
                             <TabsTrigger value="sectors">Sectors</TabsTrigger>

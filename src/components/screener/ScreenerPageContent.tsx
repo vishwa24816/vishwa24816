@@ -32,6 +32,8 @@ const suggestionQueries = [
 ];
 
 const marketSubItems = [
+  'Indian Stocks',
+  'US Stocks',
   'Sectors',
   'Events Calendar',
   'FII & DII',
@@ -367,6 +369,19 @@ export function ScreenerPageContent() {
             description: `Placed ${type.toUpperCase()} order for ${qty} shares of ${stock.symbol}.`,
         });
     };
+    
+    const handleMarketSubItemClick = (subItem: string) => {
+        if (subItem === 'Indian Stocks' || subItem === 'US Stocks') {
+            router.push('/markets');
+        } else if (subItem === 'Sectors') {
+            router.push('/markets?tab=sectors');
+        } else {
+            toast({
+                title: `${subItem}`,
+                description: 'This feature is coming soon!',
+            })
+        }
+    }
 
     return (
         <main className="flex-grow p-4 sm:p-6 lg:p-8 space-y-6 overflow-y-auto">
@@ -427,35 +442,12 @@ export function ScreenerPageContent() {
                                     <AccordionContent className="px-4 pb-2 pt-0 text-muted-foreground">
                                         {item.title === 'Markets' ? (
                                             <ul className="space-y-1">
-                                                <li key="indian-stocks">
-                                                    <Button
-                                                        variant="ghost"
-                                                        className="w-full justify-start p-2 h-auto font-normal text-muted-foreground hover:text-primary text-sm"
-                                                        onClick={() => router.push('/markets')}
-                                                    >
-                                                        Indian Stocks
-                                                    </Button>
-                                                </li>
-                                                <li key="us-stocks">
-                                                    <Button
-                                                        variant="ghost"
-                                                        className="w-full justify-start p-2 h-auto font-normal text-muted-foreground hover:text-primary text-sm"
-                                                        onClick={() => router.push('/markets')}
-                                                    >
-                                                        US Stocks
-                                                    </Button>
-                                                </li>
                                                 {Array.isArray(item.content) && item.content.map((subItem) => (
                                                     <li key={subItem}>
                                                     <Button
                                                         variant="ghost"
                                                         className="w-full justify-start p-2 h-auto font-normal text-muted-foreground hover:text-primary text-sm"
-                                                        onClick={() =>
-                                                        toast({
-                                                            title: `${subItem}`,
-                                                            description: 'This feature is coming soon!',
-                                                        })
-                                                        }
+                                                        onClick={() => handleMarketSubItemClick(subItem)}
                                                     >
                                                         {subItem}
                                                     </Button>
