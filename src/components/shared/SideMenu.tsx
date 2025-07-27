@@ -166,7 +166,7 @@ export function SideMenu() {
             <Button
               variant="ghost"
               className="justify-start text-base p-3 hover:bg-accent/10"
-              onClick={() => alert('Taxy page coming soon!')}
+              onClick={() => router.push('/taxy')}
             >
               <FileText className="mr-3 h-5 w-5 text-primary" />
               Taxy
