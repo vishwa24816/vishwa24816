@@ -39,8 +39,8 @@ const marketSubItems = [
   'FII & DII',
   'Insider trade deals',
   'Bulk/Block Deals',
-  'Earnings Calls',
   'Insights',
+  'Earnings Calls',
 ];
 
 const fiatScreenerItems = [
@@ -377,6 +377,7 @@ export function ScreenerPageContent() {
             'FII & DII': 'fii-dii',
             'Insider trade deals': 'insider-deals',
             'Bulk/Block Deals': 'bulk-deals',
+            'Insights': 'insights',
             'Earnings Calls': 'earnings-calls',
         };
         const targetTab = tabMapping[subItem];

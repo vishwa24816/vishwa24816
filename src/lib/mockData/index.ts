@@ -39,3 +39,4 @@ export * from './events';
 export * from './fiiDiiData';
 export * from './insiderTrades';
 export * from './bulkBlockDeals';
+export * from './earningsCalls';

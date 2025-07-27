@@ -415,3 +415,15 @@ export interface BulkBlockDeal {
     percentTraded: number;
     dealType: 'Bulk' | 'Block';
 }
+
+export interface EarningsCall {
+    id: string;
+    companyName: string;
+    bseCode: string;
+    nseCode?: string;
+    date: string;
+    time: string;
+    title: string;
+    description: string;
+    stockData: Pick<Stock, 'price' | 'change' | 'changePercent'>;
+}

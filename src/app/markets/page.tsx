@@ -17,6 +17,7 @@ import { EventsCalendar } from '@/components/markets/EventsCalendar';
 import { FiiDiiActivity } from '@/components/markets/FiiDiiActivity';
 import { InsiderDealsDisplay } from '@/components/markets/InsiderDealsDisplay';
 import { BulkBlockDealsDisplay } from '@/components/markets/BulkBlockDealsDisplay';
+import { EarningsCallsDisplay } from '@/components/markets/EarningsCallsDisplay';
 
 const marketMoversCategories: MoverCategory[] = [
     { title: "Top Gainers", type: 'gainers' },
@@ -37,7 +38,7 @@ export default function MarketsPage() {
     
     useEffect(() => {
         const tab = searchParams.get('tab');
-        const validTabs = ['stocks', 'sectors', 'events', 'fii-dii', 'insider-deals', 'bulk-deals', 'earnings-calls'];
+        const validTabs = ['stocks', 'sectors', 'events', 'fii-dii', 'insider-deals', 'bulk-deals', 'insights', 'earnings-calls'];
         if (tab && validTabs.includes(tab)) {
             setActiveTab(tab);
         }
@@ -60,6 +61,7 @@ export default function MarketsPage() {
                             <TabsTrigger value="fii-dii">FII &amp; DII</TabsTrigger>
                             <TabsTrigger value="insider-deals">Insider trade deals</TabsTrigger>
                             <TabsTrigger value="bulk-deals">Bulk/Block Deals</TabsTrigger>
+                            <TabsTrigger value="insights">Insights</TabsTrigger>
                             <TabsTrigger value="earnings-calls">Earnings Calls</TabsTrigger>
                         </TabsList>
                         
@@ -104,8 +106,11 @@ export default function MarketsPage() {
                         <TabsContent value="bulk-deals" className="p-0">
                             <BulkBlockDealsDisplay />
                         </TabsContent>
-                        <TabsContent value="earnings-calls" className="p-4">
-                            <p className="text-center text-muted-foreground">Earnings calls content coming soon.</p>
+                        <TabsContent value="insights" className="p-4">
+                            <p className="text-center text-muted-foreground">Insights content coming soon.</p>
+                        </TabsContent>
+                         <TabsContent value="earnings-calls" className="p-0">
+                            <EarningsCallsDisplay />
                         </TabsContent>
                     </Tabs>
                 </main>

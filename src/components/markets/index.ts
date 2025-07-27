@@ -13,3 +13,5 @@ export * from './InsiderDealsDisplay';
 export * from './InsiderTradeCard';
 export * from './BulkBlockDealsDisplay';
 export * from './DealCard';
+export * from './EarningsCallsDisplay';
+export * from './EarningsCallCard';
