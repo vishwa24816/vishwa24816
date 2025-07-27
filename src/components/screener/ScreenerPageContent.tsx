@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import React, { useState, useMemo, useEffect } from 'react';
@@ -51,12 +52,6 @@ const fiatScreenerItems = [
     hasDot: false,
   },
   {
-    title: 'IPO',
-    icon: Rocket,
-    content: 'Information on upcoming and recent Initial Public Offerings.',
-    hasDot: true,
-  },
-  {
     title: 'Superstars',
     icon: Star,
     content: 'Track portfolios of well-known investors and superstar funds.',
@@ -82,176 +77,6 @@ const fiatScreenerItems = [
   },
 ];
 
-// IPO Table Component
-type IpoInfo = {
-  companyName: string;
-  openDate: string;
-  closeDate: string;
-  lotSize: number;
-  issuePrice: number;
-  type: 'SME' | 'Mainboard';
-  qib: string;
-  hni: string;
-  retail: string;
-  totalSubscription: string;
-};
-
-const ipoData: IpoInfo[] = [
-  { companyName: 'SambhV Steel Tubes', openDate: "25 Jun '25", closeDate: "27 Jun '25", lotSize: 182, issuePrice: 82, type: 'SME', qib: '15.2x', hni: '45.1x', retail: '22.8x', totalSubscription: '27.7x' },
-  { companyName: 'HDB Financial Services', openDate: "25 Jun '25", closeDate: "27 Jun '25", lotSize: 20, issuePrice: 740, type: 'Mainboard', qib: '90.5x', hni: '150.2x', retail: '40.1x', totalSubscription: '95.3x' },
-  { companyName: 'Suntech Infra Solutions', openDate: "25 Jun '25", closeDate: "27 Jun '25", lotSize: 1600, issuePrice: 86, type: 'SME', qib: '12.1x', hni: '33.4x', retail: '18.9x', totalSubscription: '21.5x' },
-  { companyName: 'Supertech EV', openDate: "25 Jun '25", closeDate: "27 Jun '25", lotSize: 1200, issuePrice: 92, type: 'SME', qib: '20.8x', hni: '60.7x', retail: '30.2x', totalSubscription: '37.2x' },
-  { companyName: 'Rama Telecom', openDate: "25 Jun '25", closeDate: "27 Jun '25", lotSize: 2000, issuePrice: 68, type: 'SME', qib: '8.9x', hni: '25.6x', retail: '15.3x', totalSubscription: '16.6x' },
-  { companyName: 'Kalpataru', openDate: "24 Jun '25", closeDate: "26 Jun '25", lotSize: 36, issuePrice: 414, type: 'Mainboard', qib: '75.3x', hni: '110.8x', retail: '32.6x', totalSubscription: '72.1x' },
-  { companyName: 'Ellenbarrie Industrial Gases', openDate: "24 Jun '25", closeDate: "26 Jun '25", lotSize: 37, issuePrice: 400, type: 'Mainboard', qib: '55.1x', hni: '80.2x', retail: '25.9x', totalSubscription: '53.7x' },
-  { companyName: 'Globe Civil Projects', openDate: "24 Jun '25", closeDate: "26 Jun '25", lotSize: 211, issuePrice: 71, type: 'SME', qib: '18.4x', hni: '55.9x', retail: '28.1x', totalSubscription: '34.1x' },
-];
-
-
-const SortableHeader = ({ children, className }: { children: React.ReactNode; className?: string }) => (
-    <TableHead className={cn(className)}>
-        <Button variant="ghost" size="sm" className="p-1 h-auto -ml-2">
-            {children}
-            <ArrowUpDown className="ml-2 h-3 w-3" />
-        </Button>
-    </TableHead>
-);
-
-const IpoTable = () => {
-    const mainboardIpos = ipoData.filter((ipo) => ipo.type === 'Mainboard');
-    const smeIpos = ipoData.filter((ipo) => ipo.type === 'SME');
-
-    const renderTable = (data: IpoInfo[], title: string) => {
-        if (data.length === 0) {
-            return <p className="text-sm text-muted-foreground mt-4">No {title.toLowerCase()} found.</p>;
-        }
-
-        return (
-            <div className="mb-8">
-                <h4 className="text-md font-semibold mb-2">{title}</h4>
-                <div className="overflow-x-auto">
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <SortableHeader>Company Name</SortableHeader>
-                                <SortableHeader>Close Date</SortableHeader>
-                                <SortableHeader className="text-right">Price</SortableHeader>
-                                <SortableHeader className="text-right">QIB</SortableHeader>
-                                <SortableHeader className="text-right">HNI</SortableHeader>
-                                <SortableHeader className="text-right">Retail</SortableHeader>
-                                <SortableHeader className="text-right">Total</SortableHeader>
-                                <TableHead className="text-center">PDF</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {data.map((ipo) => (
-                                <TableRow key={ipo.companyName}>
-                                    <TableCell className="font-medium">
-                                        <Link href="#" className="text-primary hover:underline">{ipo.companyName}</Link>
-                                        <p className="text-xs text-muted-foreground">Lot: {ipo.lotSize}</p>
-                                    </TableCell>
-                                    <TableCell>{ipo.closeDate}</TableCell>
-                                    <TableCell className="text-right">₹{ipo.issuePrice}</TableCell>
-                                    <TableCell className="text-right">{ipo.qib}</TableCell>
-                                    <TableCell className="text-right">{ipo.hni}</TableCell>
-                                    <TableCell className="text-right">{ipo.retail}</TableCell>
-                                    <TableCell className="text-right font-semibold">{ipo.totalSubscription}</TableCell>
-                                    <TableCell className="text-center">
-                                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => alert(`Downloading PDF for ${ipo.companyName}`)}>
-                                            <FileText className="h-4 w-4 text-destructive" />
-                                        </Button>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </div>
-            </div>
-        );
-    }
-
-    return (
-        <div className="w-full">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-4">
-                <div>
-                    <h3 className="text-lg font-semibold">UPCOMING/OPEN IPOS</h3>
-                    <p className="text-sm text-muted-foreground">New and upcoming IPOs tracker</p>
-                </div>
-            </div>
-            {renderTable(mainboardIpos, 'Mainboard IPOs')}
-            {renderTable(smeIpos, 'SME IPOs')}
-        </div>
-    );
-};
-
-// Superstars Table Component
-type InvestorType = 'Individual' | 'DII' | 'FII';
-
-type SuperstarInvestor = {
-  name: string;
-  stocks: number;
-  netWorth: string; 
-  type: InvestorType;
-};
-
-const superstarData: SuperstarInvestor[] = [
-  { name: 'Mukesh Ambani and Family', stocks: 2, netWorth: '4,02,775.592 Cr', type: 'Individual' },
-  { name: 'Radhakishan Damani', stocks: 12, netWorth: '1,95,517.365 Cr', type: 'Individual' },
-  { name: 'Rekha Jhunjhunwala', stocks: 26, netWorth: '40,687.162 Cr', type: 'Individual' },
-  { name: 'Mukul Agrawal', stocks: 60, netWorth: '6,343.217 Cr', type: 'Individual' },
-  { name: 'Akash Bhanshali', stocks: 18, netWorth: '5,787.057 Cr', type: 'Individual' },
-  // DII Data
-  { name: 'LIC India', stocks: 275, netWorth: '12,50,000.000 Cr', type: 'DII'},
-  { name: 'HDFC Mutual Fund', stocks: 350, netWorth: '5,20,000.000 Cr', type: 'DII'},
-  { name: 'SBI Mutual Fund', stocks: 400, netWorth: '6,00,000.000 Cr', type: 'DII' },
-  // FII Data
-  { name: 'Government Pension Fund Global', stocks: 150, netWorth: '1,50,000.000 Cr', type: 'FII' },
-  { name: 'Vanguard Group', stocks: 200, netWorth: '1,20,000.000 Cr', type: 'FII' },
-];
-
-const SuperstarsTable = () => {
-    const [activeFilter, setActiveFilter] = useState<InvestorType>('Individual');
-
-    const filteredData = superstarData.filter(investor => investor.type === activeFilter);
-
-    return (
-        <div className="w-full">
-            <div className="flex items-center gap-2 mb-4">
-                {(['Individual', 'DII', 'FII'] as InvestorType[]).map(filter => (
-                    <Button
-                        key={filter}
-                        variant={activeFilter === filter ? 'default' : 'outline'}
-                        size="sm"
-                        onClick={() => setActiveFilter(filter)}
-                        className="rounded-full px-4"
-                    >
-                        {filter}
-                    </Button>
-                ))}
-            </div>
-            <Table>
-                <TableHeader>
-                    <TableRow>
-                        <TableHead>INVESTOR</TableHead>
-                        <TableHead className="text-right"># STOCKS</TableHead>
-                        <TableHead className="text-right">NET WORTH</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {filteredData.map((investor) => (
-                        <TableRow key={investor.name}>
-                            <TableCell className="font-medium">
-                                <Link href="#" className="text-primary hover:underline">{investor.name}</Link>
-                            </TableCell>
-                            <TableCell className="text-right">{investor.stocks}</TableCell>
-                            <TableCell className="text-right font-semibold">{investor.netWorth}</TableCell>
-                        </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
-        </div>
-    );
-};
 
 const ExpandedScreenerRow = ({ stock, onAction, onNav }: { stock: Stock, onAction: (type: 'buy' | 'sell', qty: number) => void, onNav: () => void }) => {
     const { toast } = useToast();
@@ -464,10 +289,6 @@ export function ScreenerPageContent({ onAssetClick }: { onAssetClick: (asset: St
                                                     </li>
                                                 ))}
                                             </ul>
-                                        ) : item.title === 'IPO' ? (
-                                            <IpoTable />
-                                        ) : item.title === 'Superstars' ? (
-                                            <SuperstarsTable />
                                         ) : Array.isArray(item.content) ? (
                                             <ul className="space-y-1">
                                                 {item.content.map((subItem) => (

@@ -435,3 +435,17 @@ export interface Insight {
     tag: string;
     description: string;
 }
+
+export interface IpoInfo {
+  id: string;
+  companyName: string;
+  openDate: string;
+  closeDate: string;
+  lotSize: number;
+  issuePrice: number;
+  type: 'SME' | 'Mainboard';
+  qib: string;
+  hni: string;
+  retail: string;
+  totalSubscription: string;
+};
