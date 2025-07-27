@@ -611,7 +611,7 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
             return null
         }
         if (activePrimaryItem === "IPO") {
-            return <IpoSection />;
+            return <IpoSection activeTab={activeSecondaryItem} />;
         }
         if (activePrimaryItem === "Futures") {
             if (activeSecondaryItem === "Index Futures") {

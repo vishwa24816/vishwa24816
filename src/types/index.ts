@@ -448,4 +448,5 @@ export interface IpoInfo {
   hni: string;
   retail: string;
   totalSubscription: string;
+  status: 'Open' | 'Upcoming' | 'Closed';
 };
