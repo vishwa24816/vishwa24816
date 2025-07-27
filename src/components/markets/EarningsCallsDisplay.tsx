@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, 'react';
+import React from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { mockEarningsCalls } from '@/lib/mockData';
 import { EarningsCallCard } from './EarningsCallCard';
