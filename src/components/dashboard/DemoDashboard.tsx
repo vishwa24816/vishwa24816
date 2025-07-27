@@ -225,12 +225,13 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
     if (activeMode === 'Fiat') {
         const watchlistNav = ["Top watchlist", ...Array.from({ length: 3 }, (_, i) => `Watchlist ${i + 1}`)];
         return {
-            primaryNavItems: ["Indian Stocks", "US Stocks", "Futures", "Options"],
+            primaryNavItems: ["Indian Stocks", "US Stocks", "Futures", "Options", "IPO"],
             secondaryNavTriggerCategories: {
                 "Indian Stocks": watchlistNav,
                 "US Stocks": watchlistNav,
                 "Futures": ["Index Futures", "Stock Futures"],
                 "Options": ["Dashboard", "Custom", "Readymade"],
+                "IPO": [],
             }
         };
     }
@@ -331,6 +332,7 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
             'US Stocks': 'brown', // This is now red
             'Futures': 'caramel', // This is now brown
             'Options': 'yellow',
+            'IPO': 'red'
         };
         theme = themeMapping[activePrimaryItem] || 'fiat';
     } else if (activeMode === 'Wealth') {
@@ -605,6 +607,9 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
             if (activeSecondaryItem === "Custom") return ( <div className="space-y-8"><FiatOptionChain onAddLeg={(leg) => setStrategyLegs(prev => [...prev, leg])} />{strategyLegs.length > 0 && <StrategyBuilder legs={strategyLegs} setLegs={setStrategyLegs} />}<NewsSection articles={newsForView} /></div>);
             if (activeSecondaryItem === "Readymade") return ( <div className="space-y-8"><ReadymadeStrategiesSection onStrategySelect={(legs) => setStrategyLegs(legs)} />{strategyLegs.length > 0 && <StrategyBuilder legs={strategyLegs} setLegs={setStrategyLegs} />}<NewsSection articles={newsForView} /></div> );
             return null
+        }
+        if (activePrimaryItem === "IPO") {
+            return <div className="flex flex-col items-center justify-center text-center py-12 text-muted-foreground"><PackageOpen className="h-16 w-16 mb-4" /><h2 className="text-2xl font-semibold mb-2 text-foreground">IPO Section</h2><p className="max-w-md">Information about upcoming and recent Initial Public Offerings will be displayed here.</p></div>
         }
         if (activePrimaryItem === "Futures") {
             if (activeSecondaryItem === "Index Futures") {
