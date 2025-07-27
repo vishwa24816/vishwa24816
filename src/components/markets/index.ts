@@ -6,3 +6,7 @@ export * from './MarketsHeader';
 export * from './MarketHeatmap';
 export * from './SectorSummaryCard';
 export * from './FiiDiiActivity';
+export * from './EventsCalendar';
+export * from './EventCard';
+export * from './InsiderDealsDisplay';
+export * from './InsiderTradeCard';

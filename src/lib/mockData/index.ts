@@ -36,3 +36,4 @@ export * from './marketSectorData';
 export * from './hodlOrders';
 export * from './events';
 export * from './fiiDiiData';
+export * from './insiderTrades';

@@ -14,6 +14,7 @@ import { MarketHeatmap } from '@/components/markets/MarketHeatmap';
 import { SectorSummaryCard } from '@/components/markets/SectorSummaryCard';
 import { EventsCalendar } from '@/components/markets/EventsCalendar';
 import { FiiDiiActivity } from '@/components/markets/FiiDiiActivity';
+import { InsiderDealsDisplay } from '@/components/markets/InsiderDealsDisplay';
 
 const marketMoversCategories: MoverCategory[] = [
     { title: "Top Gainers", type: 'gainers' },
@@ -95,8 +96,8 @@ export default function MarketsPage() {
                             <FiiDiiActivity />
                         </TabsContent>
 
-                        <TabsContent value="insider-deals" className="p-4">
-                            <p className="text-center text-muted-foreground">Insider trade deals content coming soon.</p>
+                        <TabsContent value="insider-deals" className="p-0">
+                           <InsiderDealsDisplay />
                         </TabsContent>
                         <TabsContent value="bulk-deals" className="p-4">
                             <p className="text-center text-muted-foreground">Bulk/Block deals content coming soon.</p>

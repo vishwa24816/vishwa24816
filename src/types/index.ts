@@ -389,3 +389,16 @@ export interface CorporateEvent {
     tags: string[];
     description: string;
 }
+
+export interface InsiderTrade {
+    id: string;
+    companyName: string;
+    date: string;
+    insiderName: string;
+    insiderRelation: string;
+    quantity: number;
+    avgPrice: number;
+    percentTraded: number;
+    transactionType: 'Acquisition' | 'Disposal' | 'Pledge' | 'Revoke';
+    transactionMode: 'Market Purchase' | 'Market Sale' | 'Off Market' | 'Pledge Creation' | 'Pledge Released';
+}
