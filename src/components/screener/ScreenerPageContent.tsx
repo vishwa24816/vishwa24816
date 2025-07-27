@@ -65,25 +65,13 @@ const fiatScreenerItems = [
   {
     title: 'Mutual Funds',
     icon: PiggyBank,
-    content: ['Index Funds', 'Large Cap', 'Mid Cap', 'Small Cap', 'Flexi Cap', 'ELSS', 'Sectoral', 'Thematic'],
+    content: ['Index Fund', 'Large Cap', 'Mid Cap', 'Small Cap', 'Flexi Cap', 'ELSS', 'Sectoral', 'Thematic'],
     hasDot: true,
   },
   {
     title: 'Bonds',
     icon: LandPlot,
     content: ['Government Bonds', 'Corporate Bonds'],
-    hasDot: false,
-  },
-  {
-    title: 'Futures and Options',
-    icon: CandlestickChart,
-    content: [
-      'Dashboard',
-      'Options Screeners',
-      'Futures Heatmap',
-      'Futures Screeners',
-      'FnO Participants OI',
-    ],
     hasDot: false,
   },
   {
