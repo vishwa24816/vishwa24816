@@ -106,10 +106,10 @@ export default function MarketsPage() {
                             <BulkBlockDealsDisplay />
                         </TabsContent>
                         <TabsContent value="insights" className="p-0">
-                            <EarningsCallsDisplay />
+                             <div className="p-4 text-center text-muted-foreground">Insights content will be displayed here.</div>
                         </TabsContent>
                          <TabsContent value="earnings-calls" className="p-0">
-                            <div className="p-4 text-center text-muted-foreground">Earnings call content will be displayed here.</div>
+                            <EarningsCallsDisplay />
                         </TabsContent>
                     </Tabs>
                 </main>
