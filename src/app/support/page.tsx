@@ -8,8 +8,6 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import {
-  MessageSquare,
-  Phone,
   Mail,
   Compass,
   User,
@@ -22,27 +20,12 @@ import {
 const SupportPage = () => {
     const [activeMode, setActiveMode] = useState<'Portfolio' | 'Fiat' | 'Crypto' | 'Web3' | 'Wealth'>('Portfolio');
     
-    const contactOptions = [
-        {
-            icon: MessageSquare,
-            title: "Chat with us",
-            subtitle: "Get an instant reply",
-            href: "mailto:support@sim.app"
-        }
-    ];
-
     const contactMethods = [
-         {
-            icon: Phone,
-            title: "Call us",
-            details: "+91 9108800604",
-             href: "tel:+919108800604"
-        },
         {
             icon: Mail,
             title: "Email us",
-            details: "support@groww.in",
-             href: "mailto:support@groww.in"
+            details: "support@simulationexchange.com",
+             href: "mailto:support@simulationexchange.com"
         }
     ]
 
@@ -66,17 +49,6 @@ const SupportPage = () => {
             <h1 className="text-2xl font-bold mb-6">Contact us 24x7</h1>
             
             <div className="space-y-4">
-                {contactOptions.map((option, index) => (
-                    <a href={option.href} key={index} className="block">
-                         <Card className="p-4 flex items-center space-x-4 hover:bg-muted/50 transition-colors">
-                            <option.icon className="w-6 h-6 text-primary" />
-                            <div>
-                                <p className="font-semibold">{option.title}</p>
-                                <p className="text-sm text-muted-foreground">{option.subtitle}</p>
-                            </div>
-                        </Card>
-                    </a>
-                ))}
                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {contactMethods.map((method, index) => (
                          <a href={method.href} key={index} className="block">
@@ -112,7 +84,7 @@ const SupportPage = () => {
         <footer className="border-t p-4">
             <div className="container mx-auto flex justify-around items-center text-sm font-medium">
                  <Button variant="link" className="text-muted-foreground hover:text-primary">
-                    Past queries
+                    Past tickets
                     <ChevronRight className="w-4 h-4 ml-1" />
                 </Button>
                  <Button variant="link" className="text-muted-foreground hover:text-primary">
