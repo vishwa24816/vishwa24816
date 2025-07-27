@@ -1,0 +1,53 @@
+
+import type { BulkBlockDeal } from '@/types';
+
+export const mockBulkBlockDeals: BulkBlockDeal[] = [
+    {
+        id: 'deal1',
+        companyName: 'Jayaswal Neco Industries Ltd.',
+        clientName: 'GRAVITON RESEARCH CAPITAL LLP',
+        date: '25 Jul ‘25',
+        action: 'Purchase',
+        quantity: 10062877,
+        exchange: 'NSE',
+        price: 43.50,
+        percentTraded: 1.04,
+        dealType: 'Bulk',
+    },
+    {
+        id: 'deal2',
+        companyName: 'Jayaswal Neco Industries Ltd.',
+        clientName: 'ASSETS CARE AND RECONSTRUCTION...',
+        date: '25 Jul ‘25',
+        action: 'Sell',
+        quantity: 37125602,
+        exchange: 'NSE',
+        price: 43.16,
+        percentTraded: 3.82,
+        dealType: 'Bulk',
+    },
+    {
+        id: 'deal3',
+        companyName: 'Jayaswal Neco Industries Ltd.',
+        clientName: 'GRAVITON RESEARCH CAPITAL LLP',
+        date: '25 Jul ‘25',
+        action: 'Purchase',
+        quantity: 188598,
+        exchange: 'NSE',
+        price: 600,
+        percentTraded: 0.43,
+        dealType: 'Block',
+    },
+    {
+        id: 'deal4',
+        companyName: 'Jindal Poly Films Ltd.',
+        clientName: 'HARESH TIKAMDAS KASWANI',
+        date: '25 Jul ‘25',
+        action: 'Sell',
+        quantity: 188598,
+        exchange: 'NSE',
+        price: 600,
+        percentTraded: 0.43,
+        dealType: 'Block',
+    },
+];

@@ -402,3 +402,16 @@ export interface InsiderTrade {
     transactionType: 'Acquisition' | 'Disposal' | 'Pledge' | 'Revoke';
     transactionMode: 'Market Purchase' | 'Market Sale' | 'Off Market' | 'Pledge Creation' | 'Pledge Released';
 }
+
+export interface BulkBlockDeal {
+    id: string;
+    companyName: string;
+    clientName: string;
+    date: string;
+    action: 'Purchase' | 'Sell';
+    quantity: number;
+    exchange: 'NSE' | 'BSE';
+    price: number;
+    percentTraded: number;
+    dealType: 'Bulk' | 'Block';
+}

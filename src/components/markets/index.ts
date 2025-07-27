@@ -1,4 +1,5 @@
 
+
 export * from './FiiDiiCard';
 export * from './IndexCard';
 export * from './MarketMoversCard';
@@ -10,3 +11,5 @@ export * from './EventsCalendar';
 export * from './EventCard';
 export * from './InsiderDealsDisplay';
 export * from './InsiderTradeCard';
+export * from './BulkBlockDealsDisplay';
+export * from './DealCard';
