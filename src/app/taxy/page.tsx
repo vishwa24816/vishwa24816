@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState } from 'react';
@@ -48,7 +49,7 @@ const ReportCard = ({ report, isSelected, onSelect }: { report: ReportInfo; isSe
   const Icon = report.icon;
   return (
     <Card 
-        className="bg-slate-800 border-slate-700 hover:border-primary/50 transition-colors cursor-pointer"
+        className="bg-card border-border hover:border-primary/50 transition-colors cursor-pointer"
         onClick={() => onSelect(report.id)}
     >
         <div className="p-4 flex flex-col h-full">
@@ -57,12 +58,12 @@ const ReportCard = ({ report, isSelected, onSelect }: { report: ReportInfo; isSe
                     <div className={`w-10 h-10 rounded-full flex items-center justify-center ${report.iconBgColor}`}>
                         <Icon className="w-5 h-5 text-white" />
                     </div>
-                    <h3 className="font-semibold text-lg text-gray-100">{report.title}</h3>
+                    <h3 className="font-semibold text-lg text-card-foreground">{report.title}</h3>
                 </div>
-                <Checkbox checked={isSelected} onCheckedChange={() => onSelect(report.id)} className="border-gray-500 data-[state=checked]:bg-primary data-[state=checked]:border-primary" />
+                <Checkbox checked={isSelected} onCheckedChange={() => onSelect(report.id)} className="border-muted-foreground data-[state=checked]:bg-primary data-[state=checked]:border-primary" />
             </div>
-            <p className="text-sm text-gray-400 flex-grow mb-4">{report.description}</p>
-            <Button variant="link" className="p-0 h-auto text-gray-400 hover:text-primary justify-start">
+            <p className="text-sm text-muted-foreground flex-grow mb-4">{report.description}</p>
+            <Button variant="link" className="p-0 h-auto text-muted-foreground hover:text-primary justify-start">
                 <Download className="w-4 h-4 mr-2" /> Sample Report
             </Button>
         </div>
@@ -84,7 +85,7 @@ export default function TaxyPage() {
   
   return (
     <ProtectedRoute>
-      <div className="flex flex-col min-h-screen bg-slate-900 text-gray-300 dark">
+      <div className="flex flex-col min-h-screen bg-background text-foreground">
         <AppHeader 
             isRealMode={isRealMode} 
             activeMode={activeMode} 
@@ -92,26 +93,26 @@ export default function TaxyPage() {
         />
         <main className="flex-grow container mx-auto p-4 sm:p-6 lg:p-8">
             <div className="flex flex-col sm:flex-row justify-between sm:items-center mb-6 gap-4">
-                <h1 className="text-3xl font-bold text-gray-100">Tax Reports</h1>
+                <h1 className="text-3xl font-bold text-foreground">Tax Reports</h1>
                 <Button>Previously Generated Reports</Button>
             </div>
 
             <div className="flex items-center gap-4 mb-6">
                 <label htmlFor="tax-year" className="text-sm font-medium">Tax Year:</label>
                 <Select defaultValue="fy-24-25">
-                    <SelectTrigger id="tax-year" className="w-[180px] bg-slate-800 border-slate-700">
+                    <SelectTrigger id="tax-year" className="w-[180px]">
                         <SelectValue placeholder="Select Tax Year" />
                     </SelectTrigger>
-                    <SelectContent className="bg-slate-800 border-slate-700 text-gray-200">
+                    <SelectContent>
                         <SelectItem value="fy-24-25">FY 2024-25</SelectItem>
                         <SelectItem value="fy-23-24">FY 2023-24</SelectItem>
                         <SelectItem value="fy-22-23">FY 2022-23</SelectItem>
                     </SelectContent>
                 </Select>
-                <span className="text-sm text-gray-400">1 Apr '24 - 31 Mar '25</span>
+                <span className="text-sm text-muted-foreground">1 Apr '24 - 31 Mar '25</span>
             </div>
 
-            <div className="flex items-center gap-2 text-sm text-gray-400 mb-6">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
                 <Info className="w-4 h-4"/>
                 <p>Tap on a card to select</p>
             </div>
@@ -129,9 +130,9 @@ export default function TaxyPage() {
             
             <div className="mt-8 sticky bottom-4 z-10">
               {selectedReports.length > 0 && (
-                <Card className="bg-slate-800/80 backdrop-blur-sm border-primary/30 max-w-2xl mx-auto animate-fade-in">
+                <Card className="bg-background/80 backdrop-blur-sm border-primary/30 max-w-2xl mx-auto animate-fade-in">
                   <div className="p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-                    <p className="font-medium text-gray-200">{selectedReports.length} report{selectedReports.length > 1 && 's'} selected</p>
+                    <p className="font-medium text-foreground">{selectedReports.length} report{selectedReports.length > 1 && 's'} selected</p>
                     <div className="flex gap-2">
                        <Button variant="outline" onClick={() => setSelectedReports([])}>Clear</Button>
                        <Button>Download</Button>
