@@ -43,5 +43,6 @@ export * from './carInsurance';
 export * from './healthInsurance';
 export * from './lifeInsurance';
 export * from './otherInsurance';
-export * from './insights';
 export * from './ipo';
+export * from './insights';
+export * from './etfs';

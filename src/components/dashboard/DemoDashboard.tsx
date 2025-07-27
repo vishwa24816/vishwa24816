@@ -61,6 +61,7 @@ import type { WalletMode } from '@/components/dashboard/CryptoHoldingsSection';
 import Image from 'next/image';
 import { FundTransferDialog } from '../shared/FundTransferDialog';
 import { useToast } from '@/hooks/use-toast';
+import { mockETFs } from '@/lib/mockData/etfs';
 
 // Helper functions
 function getRelevantNewsForHoldings(holdings: PortfolioHolding[], allNews: NewsArticle[]): NewsArticle[] {
