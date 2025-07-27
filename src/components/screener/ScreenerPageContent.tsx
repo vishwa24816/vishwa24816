@@ -440,7 +440,7 @@ export function ScreenerPageContent() {
                                                     <Button
                                                         variant="ghost"
                                                         className="w-full justify-start p-2 h-auto font-normal text-muted-foreground hover:text-primary text-sm"
-                                                        onClick={() => toast({ title: `US Stocks Market Page`, description: 'This feature is coming soon!' })}
+                                                        onClick={() => router.push('/markets')}
                                                     >
                                                         US Stocks
                                                     </Button>
