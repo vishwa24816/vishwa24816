@@ -55,6 +55,7 @@ import { mockOtherInsurance } from '@/lib/mockData/otherInsurance';
 import { mockCryptoOptionsForWatchlist } from '@/lib/mockData/cryptoOptionsWatchlist';
 import { mockCryptoIndices } from '@/lib/mockData/cryptoIndices';
 import { mockUsStocks } from '@/lib/mockData/usStocks';
+import { mockETFs } from '@/lib/mockData/etfs';
 import type { WalletMode } from '@/components/dashboard/CryptoHoldingsSection';
 import Image from 'next/image';
 import { FundTransferDialog } from '../shared/FundTransferDialog';
@@ -705,6 +706,7 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
             const isNumberedWatchlist = !!activeSecondaryItem.match(/^Watchlist \d+$/);
             if (isTopWatchlist) {
                 const categories = ['Index Fund', 'Large Cap', 'Mid Cap', 'Small Cap', 'Flexi Cap', 'Multi Cap', 'ELSS', 'Sectoral', 'Thematic', 'Debt'];
+                const etfCategory = { title: 'Top ETFs', items: mockETFs };
                 const groupedFunds = categories.map(category => ({
                     title: `Top ${category} Funds`,
                     items: mockMutualFunds.filter(fund => fund.sector === category)
@@ -715,7 +717,7 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
 
                 return (
                     <div className="space-y-8">
-                        {groupedFunds.map(group => (
+                        {[etfCategory, ...groupedFunds].map(group => (
                             <WatchlistSection key={group.title} title={group.title.replace(/ Funds$/, '')} displayItems={group.items} isPredefinedList={true} onAssetClick={onAssetClick} />
                         ))}
                         <NewsSection articles={elssNews} title="Latest on Tax Saver Funds" customDescription="Stay updated with news relevant to ELSS and tax-saving investments." />
@@ -782,5 +784,3 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
     </>
   );
 }
-
-    
