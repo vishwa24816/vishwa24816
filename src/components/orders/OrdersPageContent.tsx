@@ -77,7 +77,6 @@ export function OrdersPageContent({ activeMode, onAssetClick }: { activeMode: 'P
                 <div className="w-full px-4 sm:px-6 lg:px-8 flex items-center justify-between py-3">
                     <div className="flex items-center space-x-4">
                         <Search className="h-5 w-5 text-muted-foreground cursor-pointer hover:text-primary" />
-                        <SlidersHorizontal className="h-5 w-5 text-muted-foreground cursor-pointer hover:text-primary" />
                     </div>
                     <Button variant="link" className="text-primary text-sm font-medium flex items-center p-0 h-auto hover:no-underline">
                         <svg viewBox="0 0 8 8" width="8" height="8" className="mr-1.5 fill-primary">
