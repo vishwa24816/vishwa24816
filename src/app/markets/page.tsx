@@ -1,5 +1,4 @@
 
-
 "use client";
 
 import React, { useState, useEffect } from 'react';
@@ -106,11 +105,11 @@ export default function MarketsPage() {
                         <TabsContent value="bulk-deals" className="p-0">
                             <BulkBlockDealsDisplay />
                         </TabsContent>
-                        <TabsContent value="insights" className="p-4">
-                            <p className="text-center text-muted-foreground">Insights content coming soon.</p>
-                        </TabsContent>
-                         <TabsContent value="earnings-calls" className="p-0">
+                        <TabsContent value="insights" className="p-0">
                             <EarningsCallsDisplay />
+                        </TabsContent>
+                         <TabsContent value="earnings-calls" className="p-4">
+                            <p className="text-center text-muted-foreground">Earnings Calls content coming soon.</p>
                         </TabsContent>
                     </Tabs>
                 </main>
