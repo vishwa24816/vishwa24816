@@ -6,7 +6,6 @@ import { AppHeader } from '@/components/shared/AppHeader';
 import { ProtectedRoute } from '@/components/shared/ProtectedRoute';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Checkbox } from '@/components/ui/checkbox';
 import {
   Select,
   SelectContent,
@@ -43,29 +42,24 @@ const reportsData: ReportInfo[] = [
   { id: 'income-summary', title: 'Income Summary Report', description: 'A consolidated report of all your crypto income earned during the year, including staking rewards, interest, airdrops, and other earnings.', icon: PieChart, iconBgColor: 'bg-green-500' },
   { id: 'buy-sell', title: 'Buy-Sell Report', description: 'A detailed report of all your crypto buy and sell transactions. This report helps you to track cost basis and realized gains or losses.', icon: ArrowRightLeft, iconBgColor: 'bg-cyan-500' },
   { id: 'transaction-history', title: 'Transaction History Report', description: 'Chronological report of all your trades, transfers, deposits, and withdrawals across your integrations.', icon: History, iconBgColor: 'bg-rose-500' },
+  { id: 'tds-summary', title: 'TDS Summary Report', description: 'A summary of all Tax Deducted at Source (TDS) on your crypto transactions for the financial year.', icon: FileText, iconBgColor: 'bg-indigo-500' },
+  { id: 'tds-certificate', title: 'TDS Certificate', description: 'Download your TDS certificate (Form 16A) for the selected quarter to claim tax credits.', icon: FileText, iconBgColor: 'bg-teal-500' },
 ];
 
-const ReportCard = ({ report, isSelected, onSelect }: { report: ReportInfo; isSelected: boolean; onSelect: (id: string) => void; }) => {
+const ReportCard = ({ report }: { report: ReportInfo; }) => {
   const Icon = report.icon;
   return (
     <Card 
-        className="bg-card border-border hover:border-primary/50 transition-colors cursor-pointer"
-        onClick={() => onSelect(report.id)}
+        className="bg-card border-border hover:border-primary/50 transition-colors"
     >
         <div className="p-4 flex flex-col h-full">
-            <div className="flex justify-between items-start mb-2">
-                <div className="flex items-center gap-3">
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${report.iconBgColor}`}>
-                        <Icon className="w-5 h-5 text-white" />
-                    </div>
-                    <h3 className="font-semibold text-lg text-card-foreground">{report.title}</h3>
+            <div className="flex items-center gap-3 mb-2">
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${report.iconBgColor}`}>
+                    <Icon className="w-5 h-5 text-white" />
                 </div>
-                <Checkbox checked={isSelected} onCheckedChange={() => onSelect(report.id)} className="border-muted-foreground data-[state=checked]:bg-primary data-[state=checked]:border-primary" />
+                <h3 className="font-semibold text-lg text-card-foreground">{report.title}</h3>
             </div>
             <p className="text-sm text-muted-foreground flex-grow mb-4">{report.description}</p>
-            <Button variant="link" className="p-0 h-auto text-muted-foreground hover:text-primary justify-start">
-                <Download className="w-4 h-4 mr-2" /> Sample Report
-            </Button>
         </div>
     </Card>
   )
@@ -75,13 +69,6 @@ export default function TaxyPage() {
   const { user } = useAuth();
   const isRealMode = user?.id === 'REAL456';
   const [activeMode, setActiveMode] = useState<'Fiat' | 'Crypto'>(isRealMode ? 'Crypto' : 'Fiat');
-  const [selectedReports, setSelectedReports] = useState<string[]>([]);
-  
-  const handleSelectReport = (id: string) => {
-    setSelectedReports(prev => 
-      prev.includes(id) ? prev.filter(rId => rId !== id) : [...prev, id]
-    );
-  };
   
   return (
     <ProtectedRoute>
@@ -112,34 +99,21 @@ export default function TaxyPage() {
                 <span className="text-sm text-muted-foreground">1 Apr '24 - 31 Mar '25</span>
             </div>
 
-            <div className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
-                <Info className="w-4 h-4"/>
-                <p>Tap on a card to select</p>
-            </div>
-
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {reportsData.map(report => (
                     <ReportCard 
                       key={report.id} 
                       report={report} 
-                      isSelected={selectedReports.includes(report.id)}
-                      onSelect={handleSelectReport}
                     />
                 ))}
             </div>
             
             <div className="mt-8 sticky bottom-4 z-10">
-              {selectedReports.length > 0 && (
                 <Card className="bg-background/80 backdrop-blur-sm border-primary/30 max-w-2xl mx-auto animate-fade-in">
-                  <div className="p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-                    <p className="font-medium text-foreground">{selectedReports.length} report{selectedReports.length > 1 && 's'} selected</p>
-                    <div className="flex gap-2">
-                       <Button variant="outline" onClick={() => setSelectedReports([])}>Clear</Button>
-                       <Button>Download</Button>
-                    </div>
+                  <div className="p-4 flex flex-col sm:flex-row items-center justify-center gap-4">
+                    <Button>Download All Reports</Button>
                   </div>
                 </Card>
-              )}
             </div>
         </main>
       </div>
