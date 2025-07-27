@@ -54,7 +54,7 @@ const fiatScreenerItems = [
   {
     title: 'Superstars',
     icon: Star,
-    content: 'Track portfolios of well-known investors and superstar funds.',
+    content: ['Radhakishan Damani', 'Ashish Kacholia', 'Dolly Khanna', 'Vijay Kedia', 'Mukul Agrawal'],
     hasDot: false,
   },
   {
