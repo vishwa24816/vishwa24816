@@ -1,4 +1,5 @@
 
+
 export interface Stock {
   id: string;
   symbol: string;
@@ -378,4 +379,13 @@ export interface SummaryCardItem {
   advances?: number;
   declines?: number;
   ltp?: number;
+}
+
+export interface CorporateEvent {
+    id: string;
+    companyName: string;
+    date: string;
+    dateType: string;
+    tags: string[];
+    description: string;
 }

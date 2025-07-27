@@ -12,6 +12,7 @@ import { MarketMoversCard, MoverCategory } from '@/components/markets/MarketMove
 import { FiiDiiCard } from '@/components/markets/FiiDiiCard';
 import { MarketHeatmap } from '@/components/markets/MarketHeatmap';
 import { SectorSummaryCard } from '@/components/markets/SectorSummaryCard';
+import { EventsCalendar } from '@/components/markets/EventsCalendar';
 
 const marketMoversCategories: MoverCategory[] = [
     { title: "Top Gainers", type: 'gainers' },
@@ -80,6 +81,10 @@ export default function MarketsPage() {
                                 <MarketHeatmap title="Indices" items={indicesHeatmap} />
                                 <SectorSummaryCard items={indicesSummary} />
                              </div>
+                        </TabsContent>
+
+                        <TabsContent value="events" className="p-0">
+                            <EventsCalendar />
                         </TabsContent>
                     </Tabs>
                 </main>
