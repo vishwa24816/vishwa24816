@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Search, SlidersHorizontal } from 'lucide-react';
+import { Search, SlidersHorizontal, TrendingUp } from 'lucide-react';
 import { LimitOrdersDisplay } from '@/components/orders/LimitOrdersDisplay';
 import { BondBidsDisplay } from '@/components/orders/BondBidsDisplay';
 import { BasketsDisplay } from '@/components/orders/BasketsDisplay';
@@ -79,10 +79,8 @@ export function OrdersPageContent({ activeMode, onAssetClick }: { activeMode: 'P
                         <Search className="h-5 w-5 text-muted-foreground cursor-pointer hover:text-primary" />
                     </div>
                     <Button variant="link" className="text-primary text-sm font-medium flex items-center p-0 h-auto hover:no-underline">
-                        <svg viewBox="0 0 8 8" width="8" height="8" className="mr-1.5 fill-primary">
-                        <circle cx="4" cy="4" r="4"/>
-                        </svg>
-                        Tradebook
+                        <TrendingUp className="mr-1.5 h-4 w-4" />
+                        Analytics
                     </Button>
                 </div>
             </div>
