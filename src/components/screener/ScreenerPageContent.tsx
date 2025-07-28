@@ -249,6 +249,10 @@ export function ScreenerPageContent({ onAssetClick }: { onAssetClick: (asset: St
         }
     }
     
+    const handleAlertsSubItemClick = () => {
+        router.push('/alerts');
+    }
+
     const handleWealthSubItemClick = (subItem: string) => {
         const primaryTab = subItem.includes('Bond') ? 'Bonds' : 'Mutual Funds';
         router.push(`/?mode=Wealth&primary=${primaryTab}&secondary=Top watchlist`);
@@ -436,6 +440,8 @@ export function ScreenerPageContent({ onAssetClick }: { onAssetClick: (asset: St
                                                                 handleMarketSubItemClick(subItem)
                                                             } else if(item.title === 'Mutual Funds' || item.title === 'Bonds') {
                                                                 handleWealthSubItemClick(subItem)
+                                                            } else if (item.title === 'Alerts') {
+                                                                handleAlertsSubItemClick()
                                                             } else {
                                                                 toast({
                                                                     title: `${subItem}`,
