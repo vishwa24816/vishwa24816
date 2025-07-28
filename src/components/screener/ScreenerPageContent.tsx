@@ -24,12 +24,13 @@ import { Input } from '@/components/ui/input';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { SuperstarsScreener } from './SuperstarsScreener';
+import { mockStocks } from '@/lib/mockData';
 
 const suggestionQueries = [
-    "IT stocks with P/E less than 30",
-    "Banking stocks with ROE greater than 15%",
-    "Large cap stocks over 5,00,000Cr market cap",
-    "FMCG stocks with low debt",
+    { label: "IT stocks with P/E less than 30", key: 'it' },
+    { label: "Banking stocks with ROE greater than 15%", key: 'banking' },
+    { label: "Large cap stocks over 5,00,000Cr market cap", key: 'large_cap' },
+    { label: "FMCG stocks with low debt", key: 'fmcg' },
 ];
 
 const marketSubItems = [
@@ -144,6 +145,7 @@ export function ScreenerPageContent({ onAssetClick }: { onAssetClick: (asset: St
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
     const [expandedStockId, setExpandedStockId] = useState<string | null>(null);
+    const [suggestedResults, setSuggestedResults] = useState<{ title: string; stocks: Stock[] } | null>(null);
 
     const isRealMode = user?.id === 'REAL456';
     const [activeMode, setActiveMode] = useState<'Fiat' | 'Crypto'>(isRealMode ? 'Crypto' : 'Fiat');
@@ -158,6 +160,7 @@ export function ScreenerPageContent({ onAssetClick }: { onAssetClick: (asset: St
         setError('');
         setResults([]);
         setAnalysis('');
+        setSuggestedResults(null);
         setExpandedStockId(null);
 
         try {
@@ -181,8 +184,34 @@ export function ScreenerPageContent({ onAssetClick }: { onAssetClick: (asset: St
         }
     };
     
-    const handleSuggestionClick = (suggestion: string) => {
-        setQuery(suggestion);
+    const handleSuggestionClick = (suggestionKey: string, suggestionLabel: string) => {
+        let stocksToShow: Stock[] = [];
+        switch (suggestionKey) {
+            case 'it':
+                stocksToShow = mockStocks.filter(s => s.sector === 'IT Services' && s.fundamentals?.peRatioTTM && s.fundamentals.peRatioTTM < 30);
+                break;
+            case 'banking':
+                stocksToShow = mockStocks.filter(s => s.sector === 'Banking' && s.fundamentals?.roe && s.fundamentals.roe > 15);
+                break;
+            case 'large_cap':
+                stocksToShow = mockStocks.filter(s => {
+                    const mc = s.fundamentals?.marketCap || '0';
+                    return parseFloat(mc.replace(/,/g, '').replace('Cr', '')) > 500000;
+                });
+                break;
+            case 'fmcg':
+                 stocksToShow = mockStocks.filter(s => s.sector === 'FMCG' || s.sector === 'FMCG Conglomerate' && s.fundamentals?.debtToEquity && s.fundamentals.debtToEquity < 0.1);
+                 break;
+            default:
+                stocksToShow = [];
+        }
+        setSuggestedResults({ title: `Results for: "${suggestionLabel}"`, stocks: stocksToShow });
+        // Clear AI results
+        setResults([]);
+        setAnalysis('');
+        setError('');
+        setQuery('');
+        setExpandedStockId(null);
     };
     
     const handleRowClick = (stockId: string) => {
@@ -234,7 +263,7 @@ export function ScreenerPageContent({ onAssetClick }: { onAssetClick: (asset: St
                         AI Stock Screener
                     </CardTitle>
                     <CardDescription>
-                        Describe the stocks you're looking for in plain English.
+                        Describe the stocks you're looking for in plain English, or use a preset filter below.
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -249,14 +278,14 @@ export function ScreenerPageContent({ onAssetClick }: { onAssetClick: (asset: St
                         <div className="flex flex-wrap gap-2">
                             {suggestionQueries.map((suggestion) => (
                                 <Button
-                                    key={suggestion}
+                                    key={suggestion.key}
                                     type="button"
                                     variant="outline"
                                     size="sm"
-                                    onClick={() => handleSuggestionClick(suggestion)}
+                                    onClick={() => handleSuggestionClick(suggestion.key, suggestion.label)}
                                     disabled={isLoading}
                                 >
-                                    {suggestion}
+                                    {suggestion.label}
                                 </Button>
                             ))}
                         </div>
@@ -338,10 +367,12 @@ export function ScreenerPageContent({ onAssetClick }: { onAssetClick: (asset: St
                 </Card>
             )}
 
-            {results.length > 0 && !isLoading && (
+            {(results.length > 0 || suggestedResults) && !isLoading && (
                 <Card>
                     <CardHeader>
-                        <CardTitle>Screening Results</CardTitle>
+                        <CardTitle>
+                            {suggestedResults ? suggestedResults.title : 'AI Screening Results'}
+                        </CardTitle>
                         {analysis && (
                             <CardDescription className="pt-2 text-foreground/90">{analysis}</CardDescription>
                         )}
@@ -358,7 +389,7 @@ export function ScreenerPageContent({ onAssetClick }: { onAssetClick: (asset: St
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {results.map((stock) => (
+                                {(suggestedResults ? suggestedResults.stocks : results).map((stock) => (
                                     <React.Fragment key={stock.id}>
                                         <TableRow onClick={() => handleRowClick(stock.id)} className="cursor-pointer">
                                             <TableCell className="font-semibold">{stock.symbol}</TableCell>
