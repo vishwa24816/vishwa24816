@@ -27,7 +27,7 @@ import { SuperstarsScreener } from './SuperstarsScreener';
 import { mockStocks } from '@/lib/mockData';
 
 const suggestionQueries = [
-    { label: "IT stocks with P/E less than 30", key: 'it' },
+    { label: "IT stocks with P/E greater than 30", key: 'it' },
     { label: "Banking stocks with ROE greater than 15%", key: 'banking' },
     { label: "Large cap stocks over 5,00,000Cr market cap", key: 'large_cap' },
     { label: "FMCG stocks with low debt", key: 'fmcg' },
@@ -200,7 +200,7 @@ export function ScreenerPageContent({ onAssetClick }: { onAssetClick: (asset: St
                 });
                 break;
             case 'fmcg':
-                 stocksToShow = mockStocks.filter(s => s.sector === 'FMCG' || s.sector === 'FMCG Conglomerate' && s.fundamentals?.debtToEquity && s.fundamentals.debtToEquity < 0.1);
+                 stocksToShow = mockStocks.filter(s => (s.sector === 'FMCG' || s.sector === 'FMCG Conglomerate') && s.fundamentals?.debtToEquity && s.fundamentals.debtToEquity < 0.1);
                  break;
             default:
                 stocksToShow = [];
