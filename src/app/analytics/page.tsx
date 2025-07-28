@@ -21,9 +21,9 @@ import {
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 
-const ReportItem = ({ icon: Icon, title, description }: { icon: React.ElementType, title: string, description: string }) => (
+const ReportItem = ({ icon: Icon, title, description, onClick }: { icon: React.ElementType, title: string, description: string, onClick?: () => void }) => (
     <React.Fragment>
-        <button className="w-full text-left p-4 hover:bg-muted/50 transition-colors">
+        <button className="w-full text-left p-4 hover:bg-muted/50 transition-colors" onClick={onClick}>
             <div className="flex items-center">
                 <div className="w-12 h-12 bg-muted rounded-lg flex items-center justify-center mr-4">
                     <Icon className="w-6 h-6 text-muted-foreground" />
@@ -47,7 +47,7 @@ const AnalyticsPage = () => {
     const [activeMode, setActiveMode] = useState<'Fiat' | 'Crypto'>(isRealMode ? 'Crypto' : 'Fiat');
 
     const reports = [
-        { icon: FileText, title: 'Ledger', description: 'See all your transactions along with the billing details.' },
+        { icon: FileText, title: 'Ledger', description: 'See all your transactions along with the billing details.', onClick: () => router.push('/analytics/ledger') },
         { icon: FileText, title: 'Profit & Loss', description: 'Get your profit and loss report.' },
         { icon: FileText, title: 'Tax', description: 'Get your tax report.' },
         { icon: FileText, title: 'Tax loss harvesting', description: 'Reduce tax liability on capital gains.' },
