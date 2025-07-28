@@ -1,5 +1,6 @@
 
 
+
 export interface Stock {
   id: string;
   symbol: string;
@@ -450,3 +451,10 @@ export interface IpoInfo {
   totalSubscription: string;
   status: 'Open' | 'Upcoming' | 'Closed';
 };
+
+export interface SuperstarInvestor {
+  id: string;
+  name: string;
+  stocksCount: number;
+  netWorth: number; // In Crores
+}

@@ -24,6 +24,7 @@ import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
+import { SuperstarsScreener } from './SuperstarsScreener';
 
 const suggestionQueries = [
     "IT stocks with P/E less than 30",
@@ -54,7 +55,7 @@ const fiatScreenerItems = [
   {
     title: 'Superstars',
     icon: Star,
-    content: ['Radhakishan Damani', 'Ashish Kacholia', 'Dolly Khanna', 'Vijay Kedia', 'Mukul Agrawal'],
+    content: 'Superstars screener content',
     hasDot: false,
   },
   {
@@ -275,7 +276,9 @@ export function ScreenerPageContent({ onAssetClick }: { onAssetClick: (asset: St
                                         </div>
                                     </AccordionTrigger>
                                     <AccordionContent className="px-4 pb-2 pt-0 text-muted-foreground">
-                                        {item.title === 'Markets' ? (
+                                        {item.title === 'Superstars' ? (
+                                            <SuperstarsScreener />
+                                        ) : item.title === 'Markets' ? (
                                             <ul className="space-y-1">
                                                 {Array.isArray(item.content) && item.content.map((subItem) => (
                                                     <li key={subItem}>

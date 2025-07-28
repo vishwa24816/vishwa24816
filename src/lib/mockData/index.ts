@@ -46,3 +46,4 @@ export * from './otherInsurance';
 export * from './ipo';
 export * from './insights';
 export * from './etfs';
+export * from './superstars';
