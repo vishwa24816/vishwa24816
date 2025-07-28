@@ -11,6 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MessageSquarePlus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
+import { useRouter } from 'next/navigation';
 
 interface CommunityPageContentProps {
   onAssetClick: (asset: Stock) => void;
@@ -19,6 +20,7 @@ interface CommunityPageContentProps {
 
 export function CommunityPageContent({ activeMode, onAssetClick }: CommunityPageContentProps) {
   const [activeTab, setActiveTab] = useState("hot");
+  const router = useRouter();
 
   const displayedTabs = useMemo(() => {
     return [
@@ -96,7 +98,7 @@ export function CommunityPageContent({ activeMode, onAssetClick }: CommunityPage
             variant="default"
             size="icon"
             className="fixed bottom-20 right-4 sm:right-6 md:right-8 z-40 rounded-full h-14 w-14 shadow-xl bg-green-500 hover:bg-green-600 text-white flex items-center justify-center"
-            onClick={() => alert("Create new post feature coming soon!")}
+            onClick={() => router.push('/community/create')}
             aria-label="Create new post"
             >
             <MessageSquarePlus className="h-7 w-7" />
