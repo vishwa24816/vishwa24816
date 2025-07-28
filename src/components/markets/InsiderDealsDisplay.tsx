@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -11,6 +11,24 @@ import { InsiderTradeCard } from './InsiderTradeCard';
 
 export function InsiderDealsDisplay() {
     const [activeTab, setActiveTab] = useState('all');
+
+    const filteredTrades = useMemo(() => {
+        if (activeTab === 'all') {
+            return mockInsiderTrades;
+        }
+        return mockInsiderTrades.filter(trade => {
+            const relation = trade.insiderRelation.toLowerCase();
+            const tab = activeTab.toLowerCase();
+
+            if (tab === 'promoters') return relation.includes('promoter');
+            if (tab === 'officers') return relation.includes('officer') || relation.includes('key managerial personnel');
+            if (tab === 'directors') return relation.includes('director');
+            if (tab === 'others') return !relation.includes('promoter') && !relation.includes('officer') && !relation.includes('director') && !relation.includes('key managerial personnel');
+            
+            return false;
+        });
+    }, [activeTab]);
+
 
     return (
         <div className="flex flex-col h-full bg-muted/30">
@@ -28,9 +46,12 @@ export function InsiderDealsDisplay() {
              <p className="text-xs text-muted-foreground p-2">SAST Disclosures are in Rs Crores</p>
             <ScrollArea className="flex-grow">
                 <div className="p-2 space-y-2">
-                    {mockInsiderTrades.map(trade => (
+                    {filteredTrades.map(trade => (
                         <InsiderTradeCard key={trade.id} trade={trade} />
                     ))}
+                     {filteredTrades.length === 0 && (
+                        <p className="text-center text-muted-foreground pt-10">No insider trades found for this category.</p>
+                    )}
                 </div>
             </ScrollArea>
         </div>
