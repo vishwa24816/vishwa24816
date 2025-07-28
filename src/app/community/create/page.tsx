@@ -30,9 +30,9 @@ export default function CreatePostPage() {
   const userName = user?.name || user?.email || 'Anonymous';
   
   return (
-    <div className="flex flex-col h-screen bg-black text-white">
+    <div className="flex flex-col h-screen bg-background text-foreground">
       {/* Header */}
-      <header className="flex items-center justify-between p-4 border-b border-gray-800">
+      <header className="flex items-center justify-between p-4 border-b">
         <div className="flex items-center gap-4">
             <Button variant="ghost" size="icon" onClick={() => router.back()}>
                 <ArrowLeft className="h-6 w-6" />
@@ -42,7 +42,7 @@ export default function CreatePostPage() {
         <Button 
           onClick={handlePost} 
           disabled={!postContent.trim()}
-          className="rounded-full bg-white text-black font-bold px-6 hover:bg-gray-200 disabled:bg-gray-500 disabled:text-gray-300"
+          className="rounded-full bg-primary text-primary-foreground font-bold px-6 hover:bg-primary/90 disabled:bg-muted-foreground disabled:text-background"
         >
           Post
         </Button>
@@ -58,29 +58,29 @@ export default function CreatePostPage() {
                 alt={userName}
                 data-ai-hint="profile avatar"
               />
-              <AvatarFallback className="bg-gray-700 text-lg">
+              <AvatarFallback className="bg-muted text-lg">
                 {isAnonymous ? <UserIcon /> : userInitial}
               </AvatarFallback>
             </Avatar>
             <Button 
                 variant="ghost" 
                 size="icon" 
-                className="absolute -bottom-1 -right-1 h-6 w-6 rounded-full bg-gray-700 hover:bg-gray-600"
+                className="absolute -bottom-1 -right-1 h-6 w-6 rounded-full bg-muted-foreground/50 hover:bg-muted-foreground/70"
                 onClick={() => setIsAnonymous(!isAnonymous)}
             >
-                <Repeat className="h-4 w-4 text-white" />
+                <Repeat className="h-4 w-4 text-background" />
             </Button>
           </div>
 
           <div className="flex-1">
             <p className="font-semibold">{isAnonymous ? 'Anonymous' : userName}</p>
-            <p className="text-sm text-gray-400">
+            <p className="text-sm text-muted-foreground">
               Click on your profile picture to toggle posting mode.
             </p>
           </div>
         </div>
 
-        <div className="my-6 p-3 bg-indigo-900/50 text-indigo-200 rounded-lg text-sm text-center">
+        <div className="my-6 p-3 bg-primary/10 text-primary rounded-lg text-sm text-center">
             Read Community Guidelines before posting!
         </div>
 
@@ -92,31 +92,31 @@ export default function CreatePostPage() {
             }
           }}
           placeholder="Enter your post here"
-          className="w-full bg-transparent text-white border-none focus-visible:ring-0 text-lg placeholder:text-gray-500 p-0 h-48"
+          className="w-full bg-transparent text-foreground border-none focus-visible:ring-0 text-lg placeholder:text-muted-foreground p-0 h-48"
         />
-        <p className="text-right text-sm text-gray-500 mt-2">
+        <p className="text-right text-sm text-muted-foreground mt-2">
           {postContent.length}/{characterLimit}
         </p>
       </main>
 
       {/* Footer */}
-      <footer className="p-4 border-t border-gray-800">
+      <footer className="p-4 border-t">
         <div className="flex items-center justify-between">
            <div className="flex items-center space-x-2">
-                <Button variant="ghost" size="icon" className="text-gray-400 hover:text-white hover:bg-gray-800 rounded-full">
+                <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-full">
                     <AtSign className="h-6 w-6" />
                 </Button>
-                <Button variant="ghost" size="icon" className="text-gray-400 hover:text-white hover:bg-gray-800 rounded-full">
+                <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-full">
                     <ImageIcon className="h-6 w-6" />
                 </Button>
-                 <Button variant="ghost" size="icon" className="text-gray-400 hover:text-white hover:bg-gray-800 rounded-full">
+                 <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-full">
                     <BarChart2 className="h-6 w-6" />
                 </Button>
            </div>
            <Button 
               onClick={handlePost} 
               disabled={!postContent.trim()}
-              className="rounded-full bg-white text-black font-bold px-6 hover:bg-gray-200 md:hidden"
+              className="rounded-full bg-primary text-primary-foreground font-bold px-6 hover:bg-primary/90 md:hidden"
             >
               Post
             </Button>
