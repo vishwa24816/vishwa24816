@@ -194,9 +194,10 @@ export function ScreenerPageContent({ onAssetClick }: { onAssetClick: (asset: St
                 stocksToShow = mockStocks.filter(s => s.sector === 'Banking' && s.fundamentals?.roe && s.fundamentals.roe > 15);
                 break;
             case 'large_cap':
-                stocksToShow = mockStocks.filter(s => {
-                    const mc = s.fundamentals?.marketCap || '0';
-                    return parseFloat(mc.replace(/,/g, '').replace('Cr', '')) > 500000;
+                 stocksToShow = mockStocks.filter(s => {
+                    if (!s.fundamentals?.marketCap) return false;
+                    const mcValue = parseFloat(s.fundamentals.marketCap.replace(/,/g, '').replace('Cr', ''));
+                    return !isNaN(mcValue) && mcValue > 500000;
                 });
                 break;
             case 'fmcg':
@@ -205,7 +206,7 @@ export function ScreenerPageContent({ onAssetClick }: { onAssetClick: (asset: St
             default:
                 stocksToShow = [];
         }
-        setSuggestedResults({ title: `Results for: "${suggestionLabel}"`, stocks: stocksToShow });
+        setSuggestedResults({ title: `Results`, stocks: stocksToShow });
         // Clear AI results
         setResults([]);
         setAnalysis('');
