@@ -11,7 +11,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   FileText,
   ChevronRight,
-  HelpCircle
+  HelpCircle,
+  Gavel,
+  Wallet,
+  ShieldAlert,
+  XCircle,
+  ArrowRightLeft,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
@@ -54,6 +59,15 @@ const AnalyticsPage = () => {
         { icon: FileText, title: 'Mutual Funds', description: 'See all of your mutual funds\' details here like ELSS and Capital Gains.' },
         { icon: FileText, title: 'Interest Charged', description: 'Reports on interest & payment charges.' },
     ];
+
+    const actions = [
+        { icon: Gavel, title: 'Corporate Actions', description: 'View and place request for corporate actions' },
+        { icon: Wallet, title: 'Margin Pledge', description: 'Pledge your existing holdings for extra margin' },
+        { icon: ShieldAlert, title: 'MTF authorisation', description: 'Authorize your MTF orders for the day' },
+        { icon: ShieldAlert, title: 'Post-trade authorisation', description: 'Authorize your Post-trades for the day' },
+        { icon: XCircle, title: 'Revoke authorised scrips', description: 'Cancel or revoke the scrips already authorised' },
+        { icon: ArrowRightLeft, title: 'MTF: Convert to Delivery', description: 'Convert your MTF shares to delivery' },
+    ];
     
   return (
     <ProtectedRoute>
@@ -79,8 +93,12 @@ const AnalyticsPage = () => {
                             ))}
                         </div>
                     </TabsContent>
-                    <TabsContent value="actions">
-                        <div className="p-8 text-center text-muted-foreground">Actions content coming soon.</div>
+                    <TabsContent value="actions" className="mt-0">
+                       <div className="bg-background">
+                            {actions.map((action, index) => (
+                                <ReportItem key={index} {...action} />
+                            ))}
+                        </div>
                     </TabsContent>
                 </div>
             </Tabs>
