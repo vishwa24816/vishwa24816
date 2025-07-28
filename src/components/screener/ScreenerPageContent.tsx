@@ -297,58 +297,6 @@ export function ScreenerPageContent({ onAssetClick }: { onAssetClick: (asset: St
                 </CardContent>
             </Card>
 
-            {activeMode === 'Fiat' && (
-                    <Card>
-                    <CardContent className="p-2">
-                        <Accordion type="single" collapsible className="w-full">
-                            {fiatScreenerItems.map((item, index) => (
-                                <AccordionItem value={`item-${index}`} key={item.title}>
-                                    <AccordionTrigger className="text-base font-medium hover:no-underline px-2">
-                                        <div className="flex items-center gap-4">
-                                            <item.icon className="h-6 w-6 text-primary" />
-                                            <span>{item.title}</span>
-                                            {item.hasDot && <div className="h-2.5 w-2.5 rounded-full bg-green-500" />}
-                                        </div>
-                                    </AccordionTrigger>
-                                    <AccordionContent className="px-4 pb-2 pt-0 text-muted-foreground">
-                                        {item.title === 'Superstars' ? (
-                                            <SuperstarsScreener />
-                                        ) : Array.isArray(item.content) ? (
-                                            <ul className="space-y-1">
-                                                {item.content.map((subItem) => (
-                                                    <li key={subItem}>
-                                                    <Button
-                                                        variant="ghost"
-                                                        className="w-full justify-start p-2 h-auto font-normal text-muted-foreground hover:text-primary text-sm"
-                                                        onClick={() => {
-                                                            if(item.title === 'Markets') {
-                                                                handleMarketSubItemClick(subItem)
-                                                            } else if(item.title === 'Mutual Funds' || item.title === 'Bonds') {
-                                                                handleWealthSubItemClick(subItem)
-                                                            } else {
-                                                                toast({
-                                                                    title: `${subItem}`,
-                                                                    description: 'This feature is coming soon!',
-                                                                })
-                                                            }
-                                                        }}
-                                                    >
-                                                        {subItem}
-                                                    </Button>
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        ) : (
-                                            typeof item.content === 'string' ? item.content : ''
-                                        )}
-                                    </AccordionContent>
-                                </AccordionItem>
-                            ))}
-                        </Accordion>
-                    </CardContent>
-                </Card>
-            )}
-
             {isLoading && (
                 <div className="text-center py-10">
                     <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto" />
@@ -411,6 +359,58 @@ export function ScreenerPageContent({ onAssetClick }: { onAssetClick: (asset: St
                                 ))}
                             </TableBody>
                         </Table>
+                    </CardContent>
+                </Card>
+            )}
+
+            {activeMode === 'Fiat' && (
+                    <Card>
+                    <CardContent className="p-2">
+                        <Accordion type="single" collapsible className="w-full">
+                            {fiatScreenerItems.map((item, index) => (
+                                <AccordionItem value={`item-${index}`} key={item.title}>
+                                    <AccordionTrigger className="text-base font-medium hover:no-underline px-2">
+                                        <div className="flex items-center gap-4">
+                                            <item.icon className="h-6 w-6 text-primary" />
+                                            <span>{item.title}</span>
+                                            {item.hasDot && <div className="h-2.5 w-2.5 rounded-full bg-green-500" />}
+                                        </div>
+                                    </AccordionTrigger>
+                                    <AccordionContent className="px-4 pb-2 pt-0 text-muted-foreground">
+                                        {item.title === 'Superstars' ? (
+                                            <SuperstarsScreener />
+                                        ) : Array.isArray(item.content) ? (
+                                            <ul className="space-y-1">
+                                                {item.content.map((subItem) => (
+                                                    <li key={subItem}>
+                                                    <Button
+                                                        variant="ghost"
+                                                        className="w-full justify-start p-2 h-auto font-normal text-muted-foreground hover:text-primary text-sm"
+                                                        onClick={() => {
+                                                            if(item.title === 'Markets') {
+                                                                handleMarketSubItemClick(subItem)
+                                                            } else if(item.title === 'Mutual Funds' || item.title === 'Bonds') {
+                                                                handleWealthSubItemClick(subItem)
+                                                            } else {
+                                                                toast({
+                                                                    title: `${subItem}`,
+                                                                    description: 'This feature is coming soon!',
+                                                                })
+                                                            }
+                                                        }}
+                                                    >
+                                                        {subItem}
+                                                    </Button>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        ) : (
+                                            typeof item.content === 'string' ? item.content : ''
+                                        )}
+                                    </AccordionContent>
+                                </AccordionItem>
+                            ))}
+                        </Accordion>
                     </CardContent>
                 </Card>
             )}
