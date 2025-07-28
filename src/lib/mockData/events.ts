@@ -138,4 +138,12 @@ export const mockEvents: CorporateEvent[] = [
     tags: ['Dividend'],
     description: 'FINAL - Rs.5 per share(250%)Final Dividend',
   },
+  {
+    id: 'evt18',
+    companyName: 'TCS Ltd.',
+    date: '2025-07-29',
+    dateType: 'Board Meet Date',
+    tags: ['Buyback'],
+    description: 'Consideration of a proposal for buyback of equity shares of the Company.',
+  },
 ];

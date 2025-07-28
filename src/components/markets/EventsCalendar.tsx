@@ -38,15 +38,16 @@ export function EventsCalendar() {
       if (!isInRange) return false;
 
       if (activeFilter === 'All Events') return true;
-      // Case-insensitive tag matching
+
+      // Simple, direct tag matching
       const lowerCaseTags = event.tags.map(tag => tag.toLowerCase());
-      const lowerCaseFilter = activeFilter.toLowerCase().replace(/s$/, ''); // "Dividends" -> "dividend"
+      const filterTag = activeFilter.replace(/s$/, '').toLowerCase(); // e.g., "Dividends" -> "dividend"
       
-      return lowerCaseTags.includes(lowerCaseFilter);
+      return lowerCaseTags.includes(filterTag);
     });
   }, [dateRange, activeFilter]);
 
-  const filterButtons: EventFilter[] = ['All Events', 'Results', 'Dividends', 'Bonus', 'Split'];
+  const filterButtons: EventFilter[] = ['All Events', 'Results', 'Dividends', 'Bonus', 'Split', 'Buybacks'];
 
   return (
     <div className="flex flex-col h-full">
