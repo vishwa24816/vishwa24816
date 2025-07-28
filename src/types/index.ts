@@ -2,6 +2,7 @@
 
 
 
+
 export interface Stock {
   id: string;
   symbol: string;
@@ -451,7 +452,7 @@ export interface IpoInfo {
   retail: string;
   totalSubscription: string;
   status: 'Open' | 'Upcoming' | 'Closed';
-};
+}
 
 export interface SuperstarInvestor {
   id: string;
