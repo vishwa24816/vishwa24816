@@ -29,44 +29,43 @@ export default function AlertsPage() {
             activeMode={activeMode} 
             onModeChange={setActiveMode} 
         />
-        <main className="flex-grow container mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
-            <div className="text-center">
-                <h1 className="text-3xl font-bold">Alerts</h1>
-                <p className="text-muted-foreground">Stay ahead of the market with custom alerts.</p>
-            </div>
-            
-            <Tabs defaultValue="alpha" className="w-full">
-                <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 h-auto">
-                    <TabsTrigger value="alpha" className="py-2">Alpha Alerts</TabsTrigger>
-                    <TabsTrigger value="superstar" className="py-2">Superstar & Deals</TabsTrigger>
-                    <TabsTrigger value="price" className="py-2">Price Target</TabsTrigger>
-                    <TabsTrigger value="email" className="py-2">Email</TabsTrigger>
-                </TabsList>
-                <TabsContent value="alpha" className="mt-4">
-                    <div className="space-y-3">
-                        <AlertItem text="52 Week High/Low Breakouts" />
-                        <AlertItem text="Unusual Volume Spikes" />
-                        <AlertItem text="Block/Bulk Deal Notifications" />
-                    </div>
-                </TabsContent>
-                <TabsContent value="superstar" className="mt-4">
-                    <div className="space-y-3">
-                        <AlertItem text="Superstar Investor Portfolio Changes" />
-                        <AlertItem text="Insider Trading Activity" />
-                    </div>
-                </TabsContent>
-                <TabsContent value="price" className="mt-4">
-                    <div className="space-y-3">
-                         <AlertItem text="RELIANCE hits ₹3000" />
-                         <AlertItem text="BTC crosses ₹60,00,000" />
-                    </div>
-                </TabsContent>
-                <TabsContent value="email" className="mt-4">
-                    <div className="space-y-3">
-                        <AlertItem text="Daily Market Summary" />
-                        <AlertItem text="Weekly Portfolio Recap" />
-                    </div>
-                </TabsContent>
+        <main className="flex-grow flex flex-col">
+            <Tabs defaultValue="alpha" className="w-full flex flex-col">
+                 <div className="border-b bg-background sticky top-0 z-10">
+                    <TabsList className="w-full justify-start rounded-none bg-transparent p-0 px-4 overflow-x-auto no-scrollbar h-auto">
+                        <TabsTrigger value="alpha" className="py-3 px-4 rounded-none flex-shrink-0 data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:shadow-none">Alpha Alerts</TabsTrigger>
+                        <TabsTrigger value="superstar" className="py-3 px-4 rounded-none flex-shrink-0 data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:shadow-none">Superstar & Deals</TabsTrigger>
+                        <TabsTrigger value="price" className="py-3 px-4 rounded-none flex-shrink-0 data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:shadow-none">Price Target</TabsTrigger>
+                        <TabsTrigger value="email" className="py-3 px-4 rounded-none flex-shrink-0 data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:shadow-none">Email</TabsTrigger>
+                    </TabsList>
+                </div>
+                <div className="container mx-auto p-4 sm:p-6 lg:p-8">
+                    <TabsContent value="alpha" className="mt-4">
+                        <div className="space-y-3">
+                            <AlertItem text="52 Week High/Low Breakouts" />
+                            <AlertItem text="Unusual Volume Spikes" />
+                            <AlertItem text="Block/Bulk Deal Notifications" />
+                        </div>
+                    </TabsContent>
+                    <TabsContent value="superstar" className="mt-4">
+                        <div className="space-y-3">
+                            <AlertItem text="Superstar Investor Portfolio Changes" />
+                            <AlertItem text="Insider Trading Activity" />
+                        </div>
+                    </TabsContent>
+                    <TabsContent value="price" className="mt-4">
+                        <div className="space-y-3">
+                            <AlertItem text="RELIANCE hits ₹3000" />
+                            <AlertItem text="BTC crosses ₹60,00,000" />
+                        </div>
+                    </TabsContent>
+                    <TabsContent value="email" className="mt-4">
+                        <div className="space-y-3">
+                            <AlertItem text="Daily Market Summary" />
+                            <AlertItem text="Weekly Portfolio Recap" />
+                        </div>
+                    </TabsContent>
+                </div>
             </Tabs>
             
         </main>
