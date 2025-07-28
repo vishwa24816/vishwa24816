@@ -24,7 +24,7 @@ import { EventCard } from './EventCard';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { ScrollArea } from '@/components/ui/scroll-area';
 
-type EventFilter = 'All Events' | 'Results' | 'Dividends' | 'Buybacks';
+type EventFilter = 'All Events' | 'Results' | 'Dividends' | 'Buybacks' | 'Bonus' | 'Split';
 
 export function EventsCalendar() {
   const [dateRange, setDateRange] = useState({ from: new Date(), to: new Date(new Date().setDate(new Date().getDate() + 7)) });
@@ -38,16 +38,15 @@ export function EventsCalendar() {
       if (!isInRange) return false;
 
       if (activeFilter === 'All Events') return true;
-      // Simple text matching for filtering
-      if (activeFilter === 'Results' && event.tags.includes('Results')) return true;
-      if (activeFilter === 'Dividends' && event.tags.includes('Dividend')) return true;
-      if (activeFilter === 'Buybacks' && event.description.toLowerCase().includes('buyback')) return true;
-
-      return false;
+      // Case-insensitive tag matching
+      const lowerCaseTags = event.tags.map(tag => tag.toLowerCase());
+      const lowerCaseFilter = activeFilter.toLowerCase().replace(/s$/, ''); // "Dividends" -> "dividend"
+      
+      return lowerCaseTags.includes(lowerCaseFilter);
     });
   }, [dateRange, activeFilter]);
 
-  const filterButtons: EventFilter[] = ['All Events', 'Results', 'Dividends', 'Buybacks'];
+  const filterButtons: EventFilter[] = ['All Events', 'Results', 'Dividends', 'Bonus', 'Split'];
 
   return (
     <div className="flex flex-col h-full">
@@ -117,9 +116,15 @@ export function EventsCalendar() {
       
       <ScrollArea className="flex-grow px-2">
         <div className="space-y-3 p-2">
-            {filteredEvents.map(event => (
-                <EventCard key={event.id} event={event} />
-            ))}
+            {filteredEvents.length > 0 ? (
+                filteredEvents.map(event => (
+                    <EventCard key={event.id} event={event} />
+                ))
+            ) : (
+                <div className="text-center py-10 text-muted-foreground">
+                    No {activeFilter !== 'All Events' ? activeFilter.toLowerCase() : 'events'} found for the selected date range.
+                </div>
+            )}
         </div>
       </ScrollArea>
     </div>
