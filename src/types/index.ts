@@ -1,6 +1,7 @@
 
 
 
+
 export interface Stock {
   id: string;
   symbol: string;
@@ -457,4 +458,5 @@ export interface SuperstarInvestor {
   name: string;
   stocksCount: number;
   netWorth: number; // In Crores
+  investorType: 'individual' | 'institutional' | 'fii';
 }

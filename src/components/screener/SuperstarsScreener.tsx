@@ -5,7 +5,7 @@ import React, { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHeader, TableHead, TableRow } from '@/components/ui/table';
 import { ArrowUpDown } from 'lucide-react';
-import { mockSuperstarInvestors } from '@/lib/mockData/superstars';
+import { mockSuperstarInvestors, mockInstitutionalInvestors, mockFiiInvestors } from '@/lib/mockData/superstars';
 import type { SuperstarInvestor } from '@/types';
 import { ScrollArea } from '../ui/scroll-area';
 
@@ -22,9 +22,23 @@ export const SuperstarsScreener = () => {
     const [activeTab, setActiveTab] = useState<InvestorType>('individual');
     const [sortConfig, setSortConfig] = useState<{ key: SortKey; direction: 'asc' | 'desc' }>({ key: 'netWorth', direction: 'desc' });
 
-    // In a real app, this data would be filtered based on activeTab
     const investors = useMemo(() => {
-        const sortedInvestors = [...mockSuperstarInvestors].sort((a, b) => {
+        let sourceData: SuperstarInvestor[];
+        switch (activeTab) {
+            case 'individual':
+                sourceData = mockSuperstarInvestors;
+                break;
+            case 'institutional':
+                sourceData = mockInstitutionalInvestors;
+                break;
+            case 'fii':
+                sourceData = mockFiiInvestors;
+                break;
+            default:
+                sourceData = [];
+        }
+
+        const sortedInvestors = [...sourceData].sort((a, b) => {
             if (a[sortConfig.key] < b[sortConfig.key]) {
                 return sortConfig.direction === 'asc' ? -1 : 1;
             }
@@ -34,7 +48,7 @@ export const SuperstarsScreener = () => {
             return 0;
         });
         return sortedInvestors;
-    }, [sortConfig]);
+    }, [activeTab, sortConfig]);
     
     const requestSort = (key: SortKey) => {
         let direction: 'asc' | 'desc' = 'desc';
