@@ -188,7 +188,7 @@ export function ScreenerPageContent({ onAssetClick }: { onAssetClick: (asset: St
         let stocksToShow: Stock[] = [];
         switch (suggestionKey) {
             case 'it':
-                stocksToShow = mockStocks.filter(s => s.sector === 'IT Services' && s.fundamentals?.peRatioTTM && s.fundamentals.peRatioTTM < 30);
+                stocksToShow = mockStocks.filter(s => s.sector === 'IT Services' && s.fundamentals?.peRatioTTM && s.fundamentals.peRatioTTM > 30);
                 break;
             case 'banking':
                 stocksToShow = mockStocks.filter(s => s.sector === 'Banking' && s.fundamentals?.roe && s.fundamentals.roe > 15);
@@ -297,6 +297,51 @@ export function ScreenerPageContent({ onAssetClick }: { onAssetClick: (asset: St
                 </CardContent>
             </Card>
 
+            {(suggestedResults) && !isLoading && (
+                 <Card>
+                    <CardHeader>
+                        <CardTitle>
+                            {suggestedResults.title}
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Symbol</TableHead>
+                                    <TableHead>Price (₹)</TableHead>
+                                    <TableHead>P/E</TableHead>
+                                    <TableHead>ROE (%)</TableHead>
+                                    <TableHead>Mkt Cap</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {suggestedResults.stocks.map((stock) => (
+                                    <React.Fragment key={stock.id}>
+                                        <TableRow onClick={() => handleRowClick(stock.id)} className="cursor-pointer">
+                                            <TableCell className="font-semibold">{stock.symbol}</TableCell>
+                                            <TableCell>{stock.price.toFixed(2)}</TableCell>
+                                            <TableCell>{stock.fundamentals?.peRatioTTM?.toFixed(2) ?? 'N/A'}</TableCell>
+                                            <TableCell>{stock.fundamentals?.roe?.toFixed(2) ?? 'N/A'}</TableCell>
+                                            <TableCell>{stock.fundamentals?.marketCap ?? 'N/A'}</TableCell>
+                                        </TableRow>
+                                        {expandedStockId === stock.id && (
+                                            <TableRow>
+                                                <ExpandedScreenerRow
+                                                    stock={stock}
+                                                    onAction={(type, qty) => handleAction(stock, type, qty)}
+                                                    onNav={() => onAssetClick(stock)}
+                                                />
+                                            </TableRow>
+                                        )}
+                                    </React.Fragment>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </CardContent>
+                </Card>
+            )}
+
             {isLoading && (
                 <div className="text-center py-10">
                     <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto" />
@@ -315,11 +360,11 @@ export function ScreenerPageContent({ onAssetClick }: { onAssetClick: (asset: St
                 </Card>
             )}
 
-            {(results.length > 0 || suggestedResults) && !isLoading && (
+            {(results.length > 0) && !isLoading && (
                 <Card>
                     <CardHeader>
                         <CardTitle>
-                            {suggestedResults ? suggestedResults.title : 'AI Screening Results'}
+                            AI Screening Results
                         </CardTitle>
                         {analysis && (
                             <CardDescription className="pt-2 text-foreground/90">{analysis}</CardDescription>
@@ -337,7 +382,7 @@ export function ScreenerPageContent({ onAssetClick }: { onAssetClick: (asset: St
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {(suggestedResults ? suggestedResults.stocks : results).map((stock) => (
+                                {results.map((stock) => (
                                     <React.Fragment key={stock.id}>
                                         <TableRow onClick={() => handleRowClick(stock.id)} className="cursor-pointer">
                                             <TableCell className="font-semibold">{stock.symbol}</TableCell>
