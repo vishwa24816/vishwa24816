@@ -17,6 +17,8 @@ import {
   ShieldAlert,
   XCircle,
   ArrowRightLeft,
+  ListOrdered,
+  Scaling,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
@@ -49,8 +51,8 @@ const AnalyticsPage = () => {
     const reports = [
         { icon: FileText, title: 'Ledger', description: 'See all your transactions along with the billing details.', onClick: () => router.push('/analytics/ledger') },
         { icon: FileText, title: 'Profit & Loss', description: 'Get your profit and loss report.' },
-        { icon: FileText, title: 'Tax', description: 'Get your tax report.' },
-        { icon: FileText, title: 'Tax loss harvesting', description: 'Reduce tax liability on capital gains.' },
+        { icon: ListOrdered, title: 'VDA Report', description: 'A detailed report of all your crypto disposals, gains, and losses formatted for the Schedule VDA section of the ITR.'},
+        { icon: Scaling, title: 'VDA Derivatives Report', description: 'A detailed report of gains and losses from crypto derivatives such as futures, formatted for the Schedule VDA section of the ITR.'},
         { icon: FileText, title: 'Dividend Reports', description: 'Get your Dividend report.' },
         { icon: FileText, title: 'Holdings', description: 'See all your equity and mutual funds.' },
         { icon: FileText, title: 'Trade', description: 'Get an overview of all your trades (sell/buy orders).' },
