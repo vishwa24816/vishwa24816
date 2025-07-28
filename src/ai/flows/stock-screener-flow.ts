@@ -59,11 +59,12 @@ const getStockScreenerResults = ai.defineTool(
     name: 'getStockScreenerResults',
     description: 'Retrieves a list of stocks based on specified filtering criteria.',
     inputSchema: z.object({
-      sector: z.string().optional().describe('Filter by sector (e.g., "IT Services", "Banking").'),
+      sector: z.string().optional().describe('Filter by sector (e.g., "IT", "Banking", "FMCG").'),
       peRatioMax: z.number().optional().describe('Maximum Price-to-Earnings (P/E) ratio.'),
       peRatioMin: z.number().optional().describe('Minimum Price-to-Earnings (P/E) ratio.'),
       roeMin: z.number().optional().describe('Minimum Return on Equity (ROE) in percent.'),
       marketCapMin: z.number().optional().describe('Minimum market capitalization in crores (e.g., 50000 for 50,000 Cr).'),
+      debtToEquityMax: z.number().optional().describe('Maximum debt-to-equity ratio. Use a low value like 0.5 for "low debt".'),
     }),
     outputSchema: z.array(StockSchema),
   },
@@ -71,7 +72,7 @@ const getStockScreenerResults = ai.defineTool(
     let results: Stock[] = mockStocks;
 
     if (input.sector) {
-      results = results.filter(stock => stock.sector?.toLowerCase() === input.sector.toLowerCase());
+      results = results.filter(stock => stock.sector?.toLowerCase().includes(input.sector!.toLowerCase()));
     }
     if (input.peRatioMax !== undefined) {
       results = results.filter(stock => stock.fundamentals?.peRatioTTM != null && stock.fundamentals.peRatioTTM <= input.peRatioMax);
@@ -85,9 +86,13 @@ const getStockScreenerResults = ai.defineTool(
     if (input.marketCapMin !== undefined) {
         results = results.filter(stock => {
             if (!stock.fundamentals?.marketCap) return false;
+            // Convert '16,50,000Cr' string to a number
             const mcValue = parseFloat(stock.fundamentals.marketCap.replace(/,/g, '').replace('Cr', ''));
             return !isNaN(mcValue) && mcValue >= input.marketCapMin;
         });
+    }
+    if (input.debtToEquityMax !== undefined) {
+      results = results.filter(stock => stock.fundamentals?.debtToEquity != null && stock.fundamentals.debtToEquity <= input.debtToEquityMax);
     }
     
     return results as z.infer<typeof StockSchema>[];
@@ -104,9 +109,11 @@ const stockScreenerFlow = ai.defineFlow(
     const llmResponse = await ai.generate({
       prompt: `You are an expert stock market analyst. Your task is to help a user screen for stocks based on their request.
       1. Analyze the user's query to understand the filtering criteria. The user may mention sectors, valuation metrics like P/E ratio, performance metrics like ROE, or company size like market cap.
-      2. Use the 'getStockScreenerResults' tool with the extracted criteria to find matching stocks.
-      3. After receiving the stock list from the tool, provide a brief, insightful analysis. Explain *why* these stocks match the user's query and add any relevant context.
-      4. Return both the list of stocks and your analysis.
+      2. For a "low debt" query, use a 'debtToEquityMax' of 0.5.
+      3. For "Large cap", interpret it as a high market capitalization, for example, above 500,000 Cr.
+      4. Use the 'getStockScreenerResults' tool with the extracted criteria to find matching stocks.
+      5. After receiving the stock list from the tool, provide a brief, insightful analysis. Explain *why* these stocks match the user's query and add any relevant context.
+      6. Return both the list of stocks and your analysis.
 
       User query: "${input.query}"`,
       tools: [getStockScreenerResults],
