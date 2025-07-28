@@ -67,14 +67,8 @@ const AnalyticsPage = () => {
             <Tabs defaultValue="reports" className="w-full flex flex-col">
                  <div className="border-b bg-background sticky top-0 z-10">
                     <TabsList className="w-full justify-start rounded-none bg-transparent p-0 px-4 overflow-x-auto no-scrollbar h-auto">
-                        <TabsTrigger value="profile" onClick={() => router.push('/profile')} className="py-3 px-4 rounded-none flex-shrink-0 data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:shadow-none">Profile</TabsTrigger>
                         <TabsTrigger value="reports" className="py-3 px-4 rounded-none flex-shrink-0 data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:shadow-none">Reports</TabsTrigger>
                         <TabsTrigger value="actions" className="py-3 px-4 rounded-none flex-shrink-0 data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:shadow-none">Actions</TabsTrigger>
-                        <TabsTrigger value="rewards" className="py-3 px-4 rounded-none flex-shrink-0 data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:shadow-none">Rewards</TabsTrigger>
-                        <TabsTrigger value="apps" className="py-3 px-4 rounded-none flex-shrink-0 data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:shadow-none">Apps</TabsTrigger>
-                        <TabsTrigger value="help" className="py-3 px-4 ml-auto rounded-none flex-shrink-0">
-                           <HelpCircle className="w-5 h-5" />
-                        </TabsTrigger>
                     </TabsList>
                 </div>
                 <div>
@@ -87,12 +81,6 @@ const AnalyticsPage = () => {
                     </TabsContent>
                     <TabsContent value="actions">
                         <div className="p-8 text-center text-muted-foreground">Actions content coming soon.</div>
-                    </TabsContent>
-                    <TabsContent value="rewards">
-                         <div className="p-8 text-center text-muted-foreground">Rewards content coming soon.</div>
-                    </TabsContent>
-                    <TabsContent value="apps">
-                         <div className="p-8 text-center text-muted-foreground">Apps content coming soon.</div>
                     </TabsContent>
                 </div>
             </Tabs>
