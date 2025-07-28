@@ -1,5 +1,4 @@
 
-
 "use client";
 
 import React, { useState, useMemo, useEffect } from 'react';
@@ -45,6 +44,13 @@ const marketSubItems = [
   'Earnings Calls',
 ];
 
+const alertSubItems = [
+    'Alpha Alerts',
+    'Superstar & Deals',
+    'Price Target Alert',
+    'Email Alerts',
+];
+
 const fiatScreenerItems = [
   {
     title: 'Markets',
@@ -73,7 +79,7 @@ const fiatScreenerItems = [
   {
     title: 'Alerts',
     icon: Bell,
-    content: 'Manage your price and news alerts.',
+    content: alertSubItems,
     hasDot: false,
   },
 ];
@@ -278,20 +284,6 @@ export function ScreenerPageContent({ onAssetClick }: { onAssetClick: (asset: St
                                     <AccordionContent className="px-4 pb-2 pt-0 text-muted-foreground">
                                         {item.title === 'Superstars' ? (
                                             <SuperstarsScreener />
-                                        ) : item.title === 'Markets' ? (
-                                            <ul className="space-y-1">
-                                                {Array.isArray(item.content) && item.content.map((subItem) => (
-                                                    <li key={subItem}>
-                                                    <Button
-                                                        variant="ghost"
-                                                        className="w-full justify-start p-2 h-auto font-normal text-muted-foreground hover:text-primary text-sm"
-                                                        onClick={() => handleMarketSubItemClick(subItem)}
-                                                    >
-                                                        {subItem}
-                                                    </Button>
-                                                    </li>
-                                                ))}
-                                            </ul>
                                         ) : Array.isArray(item.content) ? (
                                             <ul className="space-y-1">
                                                 {item.content.map((subItem) => (
@@ -300,7 +292,9 @@ export function ScreenerPageContent({ onAssetClick }: { onAssetClick: (asset: St
                                                         variant="ghost"
                                                         className="w-full justify-start p-2 h-auto font-normal text-muted-foreground hover:text-primary text-sm"
                                                         onClick={() => {
-                                                            if(item.title === 'Mutual Funds' || item.title === 'Bonds') {
+                                                            if(item.title === 'Markets') {
+                                                                handleMarketSubItemClick(subItem)
+                                                            } else if(item.title === 'Mutual Funds' || item.title === 'Bonds') {
                                                                 handleWealthSubItemClick(subItem)
                                                             } else {
                                                                 toast({
