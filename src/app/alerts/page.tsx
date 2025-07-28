@@ -4,27 +4,12 @@
 import React, { useState } from 'react';
 import { AppHeader } from '@/components/shared/AppHeader';
 import { ProtectedRoute } from '@/components/shared/ProtectedRoute';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Bell, User, Star, Mail, ChevronRight } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-
-const AlertSection = ({ title, description, children }: { title: string, description: string, children: React.ReactNode }) => (
-    <Card>
-        <CardHeader>
-            <CardTitle>{title}</CardTitle>
-            <CardDescription>{description}</CardDescription>
-        </CardHeader>
-        <CardContent>
-            <div className="space-y-4">
-                {children}
-            </div>
-        </CardContent>
-    </Card>
-);
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const AlertItem = ({ text }: { text: string }) => (
-     <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+     <div className="flex items-center justify-between p-4 bg-muted/50 rounded-lg hover:bg-muted transition-colors cursor-pointer">
         <p className="text-sm">{text}</p>
         <ChevronRight className="h-4 w-4 text-muted-foreground" />
     </div>
@@ -50,26 +35,39 @@ export default function AlertsPage() {
                 <p className="text-muted-foreground">Stay ahead of the market with custom alerts.</p>
             </div>
             
-            <AlertSection title="Alpha Alerts" description="Get notified on market-moving news and analysis.">
-                <AlertItem text="52 Week High/Low Breakouts" />
-                <AlertItem text="Unusual Volume Spikes" />
-                <AlertItem text="Block/Bulk Deal Notifications" />
-            </AlertSection>
-
-            <AlertSection title="Superstar & Deals" description="Track the big players and significant market events.">
-                <AlertItem text="Superstar Investor Portfolio Changes" />
-                <AlertItem text="Insider Trading Activity" />
-            </AlertSection>
-
-            <AlertSection title="Price Target Alerts" description="Set your own price targets for any stock or crypto.">
-                 <AlertItem text="RELIANCE hits ₹3000" />
-                 <AlertItem text="BTC crosses ₹60,00,000" />
-            </AlertSection>
-
-             <AlertSection title="Email Alerts" description="Manage your email notifications for all alert types.">
-                <AlertItem text="Daily Market Summary" />
-                <AlertItem text="Weekly Portfolio Recap" />
-            </AlertSection>
+            <Tabs defaultValue="alpha" className="w-full">
+                <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 h-auto">
+                    <TabsTrigger value="alpha" className="py-2">Alpha Alerts</TabsTrigger>
+                    <TabsTrigger value="superstar" className="py-2">Superstar & Deals</TabsTrigger>
+                    <TabsTrigger value="price" className="py-2">Price Target</TabsTrigger>
+                    <TabsTrigger value="email" className="py-2">Email</TabsTrigger>
+                </TabsList>
+                <TabsContent value="alpha" className="mt-4">
+                    <div className="space-y-3">
+                        <AlertItem text="52 Week High/Low Breakouts" />
+                        <AlertItem text="Unusual Volume Spikes" />
+                        <AlertItem text="Block/Bulk Deal Notifications" />
+                    </div>
+                </TabsContent>
+                <TabsContent value="superstar" className="mt-4">
+                    <div className="space-y-3">
+                        <AlertItem text="Superstar Investor Portfolio Changes" />
+                        <AlertItem text="Insider Trading Activity" />
+                    </div>
+                </TabsContent>
+                <TabsContent value="price" className="mt-4">
+                    <div className="space-y-3">
+                         <AlertItem text="RELIANCE hits ₹3000" />
+                         <AlertItem text="BTC crosses ₹60,00,000" />
+                    </div>
+                </TabsContent>
+                <TabsContent value="email" className="mt-4">
+                    <div className="space-y-3">
+                        <AlertItem text="Daily Market Summary" />
+                        <AlertItem text="Weekly Portfolio Recap" />
+                    </div>
+                </TabsContent>
+            </Tabs>
             
         </main>
       </div>
