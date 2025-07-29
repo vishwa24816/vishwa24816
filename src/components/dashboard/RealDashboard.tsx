@@ -183,7 +183,28 @@ export function RealDashboard({ activeMode, walletMode, setWalletMode, onAssetCl
             if (activeSecondaryItem === "Custom") return ( <div className="space-y-8"><CryptoOptionChain onAddLeg={(leg) => setStrategyLegs(prev => [...prev, leg])} />{strategyLegs.length > 0 && <StrategyBuilder legs={strategyLegs} setLegs={setStrategyLegs} />}<NewsSection articles={newsForView} /></div>);
             if (activeSecondaryItem === "Readymade") return ( <div className="space-y-8"><ReadymadeStrategiesSection onStrategySelect={(legs) => setStrategyLegs(legs)} />{strategyLegs.length > 0 && <StrategyBuilder legs={strategyLegs} setLegs={setStrategyLegs} />}<NewsSection articles={newsForView} /></div> );
             return null
-        }
+          }
+          if (activePrimaryItem === "Spot" && activeSecondaryItem.startsWith("Top watchlist")) {
+            return (
+                <div className="space-y-8">
+                    <MarketMovers stocks={mockCryptoAssets} displayMode="trending" category="Crypto" onAssetClick={onAssetClick} />
+                    <WatchlistSection title={"Top Crypto"} displayItems={itemsForWatchlist} isPredefinedList={true} onAssetClick={onAssetClick} />
+                    <MarketMovers stocks={mockCryptoAssets} displayMode="gainers-losers" onAssetClick={onAssetClick} />
+                    <NewsSection articles={newsForView} />
+                </div>
+            )
+          }
+          if (activePrimaryItem === "Futures" && activeSecondaryItem.startsWith("Top watchlist")) {
+            return (
+                <div className="space-y-8">
+                    <MarketMovers stocks={mockCryptoFuturesForWatchlist} displayMode="trending" category="Futures" onAssetClick={onAssetClick} />
+                    <WatchlistSection title={"Top Crypto Futures"} displayItems={itemsForWatchlist} isPredefinedList={true} onAssetClick={onAssetClick} />
+                    <MarketMovers stocks={mockCryptoFuturesForWatchlist} displayMode="gainers-losers" onAssetClick={onAssetClick} />
+                    <NewsSection articles={newsForView} />
+                </div>
+            )
+          }
+
           return <div className="space-y-8"><WatchlistSection title={categoryWatchlistTitle} displayItems={itemsForWatchlist} isPredefinedList={true} onAssetClick={onAssetClick} /><NewsSection articles={newsForView} /></div>
       }
       return null;
@@ -218,3 +239,5 @@ export function RealDashboard({ activeMode, walletMode, setWalletMode, onAssetCl
     </>
   );
 }
+
+    
