@@ -13,6 +13,7 @@ import { cn } from '@/lib/utils';
 import { NewsSection } from '@/components/dashboard/NewsSection';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { AnalysisTabContent } from '@/components/order-pages/shared/AnalysisComponents';
 
 // News relevance function - can be moved to a shared util
 function getRelevantNewsForCrypto(asset: Stock | null, allNews: NewsArticle[]): NewsArticle[] {
@@ -166,8 +167,8 @@ export default function CryptoMarketPage({ params, onBack }: CryptoMarketPagePro
                     <TabsContent value="news" className="p-4 mt-0">
                         <NewsSection articles={assetSpecificNews} title={`News related to ${asset.name}`} />
                     </TabsContent>
-                     <TabsContent value="analysis" className="p-4 mt-0 text-center text-muted-foreground">
-                        <p>Analysis tools and data will be available here soon.</p>
+                     <TabsContent value="analysis" className="p-0 mt-0">
+                        <AnalysisTabContent />
                     </TabsContent>
                      <TabsContent value="study" className="p-4 mt-0 text-center text-muted-foreground">
                         <p>Educational content and studies will be available here soon.</p>

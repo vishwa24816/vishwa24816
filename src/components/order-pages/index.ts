@@ -7,3 +7,4 @@ export * from "./MutualFundOrderPageContent";
 export * from "./CryptoFutureOrderPageContent";
 export * from "./CryptoMutualFundOrderPageContent";
 export * from "./BondOrderPageContent";
+export * from "./shared/AnalysisComponents";
