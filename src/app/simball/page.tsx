@@ -51,7 +51,7 @@ const FireCard = ({
         {tradeType}
       </p>
       <p className="text-2xl font-bold mt-1">{stockSymbol}</p>
-      <p className="text-lg opacity-90">{quantity} Shares</p>
+      <p className="text-lg opacity-90">{quantity} Quantity</p>
     </div>
     <div className="relative z-10">
         <div className="text-sm opacity-90 mb-2">
@@ -145,36 +145,36 @@ export default function SimballPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     <FireCard 
                         tradeType="BUY"
-                        stockSymbol="RELIANCE"
-                        quantity={50}
+                        stockSymbol="BTC"
+                        quantity={0.5}
                         time="3 days ago"
                         gradientFrom="from-green-500"
                         gradientTo="to-emerald-600"
-                        brokerage={20}
+                        brokerage={50}
                         isPlayed={false}
-                        onClick={() => handlePlayGame(20)}
+                        onClick={() => handlePlayGame(50)}
                     />
                      <FireCard 
                         tradeType="SELL"
-                        stockSymbol="TATAMOTORS"
-                        quantity={100}
+                        stockSymbol="ETH"
+                        quantity={5}
                         time="2 days ago"
                         gradientFrom="from-red-500"
                         gradientTo="to-rose-600"
-                        brokerage={40}
+                        brokerage={80}
                         isPlayed={false}
-                        onClick={() => handlePlayGame(40)}
+                        onClick={() => handlePlayGame(80)}
                     />
                     <FireCard 
                         tradeType="BUY"
-                        stockSymbol="INFY"
-                        quantity={75}
+                        stockSymbol="SOL"
+                        quantity={10}
                         time="1 day ago"
                         gradientFrom="from-blue-500"
                         gradientTo="to-cyan-600"
-                        brokerage={30}
+                        brokerage={40}
                         isPlayed={false}
-                        onClick={() => handlePlayGame(30)}
+                        onClick={() => handlePlayGame(40)}
                     />
                 </div>
             </div>
@@ -184,22 +184,22 @@ export default function SimballPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     <FireCard 
                         tradeType="BUY"
-                        stockSymbol="BTC"
-                        quantity={0.5}
+                        stockSymbol="DOGE"
+                        quantity={1000}
                         time="8 hours ago"
                         gradientFrom="from-gray-500"
                         gradientTo="to-gray-600"
-                        brokerage={50}
+                        brokerage={25}
                         isPlayed={true}
                     />
                     <FireCard 
                         tradeType="SELL"
-                        stockSymbol="ETH"
-                        quantity={5}
+                        stockSymbol="SHIB"
+                        quantity={500000}
                         time="2 hours ago"
                         gradientFrom="from-gray-500"
                         gradientTo="to-gray-600"
-                        brokerage={80}
+                        brokerage={35}
                         isPlayed={true}
                     />
                 </div>
