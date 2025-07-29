@@ -99,15 +99,18 @@ export function CryptoMarketPage({ params, onBack }: CryptoMarketPageProps) {
 
                     <TabsContent value="market" className="p-4 space-y-6">
                         <div className="flex justify-between items-start">
-                          <div>
+                          <div className="flex-1">
                             <p className="text-sm text-muted-foreground">{asset.name} / U.S. Dollar</p>
                             <p className="text-3xl font-bold">${(asset.price / 83).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: (asset.price / 83) < 1 ? 6 : 2})}</p>
-                            <p className={cn("text-sm flex items-center", isPositiveChange ? 'text-green-500' : 'text-red-500')}>
-                              {isPositiveChange ? <TrendingUp className="h-4 w-4 mr-1" /> : <TrendingDown className="h-4 w-4 mr-1" />}
-                              {(asset.change / 83).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: (asset.price / 83) < 1 ? 6 : 2, signDisplay: 'always'})} 
-                              <span className="ml-1">({asset.changePercent.toFixed(2)}%)</span>
-                              <span className="ml-2 text-muted-foreground text-xs">Past month</span>
-                            </p>
+                            <div className="flex items-center text-sm">
+                                <span className={cn(isPositiveChange ? 'text-green-500' : 'text-red-500')}>
+                                    {(asset.change / 83).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: (asset.price / 83) < 1 ? 6 : 2, signDisplay: 'always'})}
+                                </span>
+                                <span className={cn("ml-2", isPositiveChange ? 'text-green-500' : 'text-red-500')}>
+                                    ({asset.changePercent.toFixed(2)}%)
+                                </span>
+                                <span className="ml-2 text-muted-foreground text-xs">Past month</span>
+                            </div>
                           </div>
                            <Avatar className="h-10 w-10">
                             <AvatarFallback>{asset.symbol.charAt(0)}</AvatarFallback>
