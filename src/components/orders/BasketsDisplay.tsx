@@ -123,8 +123,10 @@ const BasketItem: React.FC<BasketItemProps> = ({ basket }) => {
   );
 };
 
-export function BasketsDisplay() {
-  const baskets = mockFoBaskets;
+export function BasketsDisplay({ isRealMode = false }: { isRealMode?: boolean }) {
+  const baskets = isRealMode 
+    ? mockFoBaskets.filter(b => b.category === 'Crypto') // Simple filter for real mode
+    : mockFoBaskets;
 
   if (baskets.length === 0) {
     return (

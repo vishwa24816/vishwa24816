@@ -96,10 +96,10 @@ export function OrdersPageContent({ activeMode, onAssetClick }: { activeMode: 'P
                 <HodlOrdersDisplay />
               </TabsContent>
               <TabsContent value="baskets" className="flex-grow flex flex-col mt-0 data-[state=inactive]:hidden">
-                <BasketsDisplay />
+                <BasketsDisplay isRealMode={isRealMode} />
               </TabsContent>
               <TabsContent value="sips" className="flex-grow flex flex-col mt-0 data-[state=inactive]:hidden">
-                <SipsDisplay />
+                <SipsDisplay isRealMode={isRealMode} />
               </TabsContent>
               <TabsContent value="alerts" className="flex-grow flex flex-col mt-0 data-[state=inactive]:hidden">
                 <AlertsDisplay />

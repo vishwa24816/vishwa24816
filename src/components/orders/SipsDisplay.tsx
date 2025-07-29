@@ -60,8 +60,10 @@ const SipItem: React.FC<SipItemProps> = ({ sip }) => {
   );
 };
 
-export function SipsDisplay() {
-  const sips = mockSips;
+export function SipsDisplay({ isRealMode = false }: { isRealMode?: boolean }) {
+  const sips = isRealMode 
+    ? mockSips.filter(s => s.assetType === 'Crypto') // Simple filter for real mode
+    : mockSips;
 
   if (sips.length === 0) {
     return (
