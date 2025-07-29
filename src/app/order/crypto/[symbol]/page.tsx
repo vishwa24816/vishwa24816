@@ -72,7 +72,7 @@ export default function CryptoOrderPage() {
   
   return (
     <ProtectedRoute>
-      <CryptoOrderPageContent asset={asset} assetSpecificNews={assetSpecificNews} />
+      <CryptoOrderPageContent asset={asset} assetSpecificNews={assetSpecificNews} onBack={() => router.back()} />
     </ProtectedRoute>
   );
 }

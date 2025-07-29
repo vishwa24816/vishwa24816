@@ -40,7 +40,7 @@ export const CryptoListItem: React.FC<CryptoListItemProps> = ({ asset, rank, cur
     const displayVolume = currency === 'inr' ? volumeValue : volumeValue / USD_TO_INR_RATE;
 
     const handleItemClick = () => {
-        router.push(`/order/crypto/${asset.symbol}`);
+        router.push(`/markets/crypto/${asset.symbol}`);
     };
 
     return (
