@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect } from 'react';
@@ -162,16 +163,6 @@ export function SideMenu() {
             >
               <History className="mr-3 h-5 w-5 text-primary" />
               Backtester
-            </Button>
-          </SheetClose>
-          <SheetClose asChild>
-            <Button
-              variant="ghost"
-              className="justify-start text-base p-3 hover:bg-accent/10"
-              onClick={() => alert('Challenge feature coming soon!')}
-            >
-              <Trophy className="mr-3 h-5 w-5 text-primary" />
-              Challenge
             </Button>
           </SheetClose>
           <SheetClose asChild>
