@@ -11,8 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, TrendingUp, TrendingDown, Info, Maximize2, BarChart2, Bell, Star, Briefcase, ExternalLink, Copy } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { NewsSection } from '@/components/dashboard/NewsSection';
-import { CollapsibleSection, PerformanceBar } from '@/components/order-pages/shared/OrderPageComponents';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
   Select,
   SelectContent,
@@ -29,8 +28,8 @@ function getRelevantNewsForCrypto(asset: Stock | null, allNews: NewsArticle[]): 
     return allNews.filter(news => keywords.some(keyword => news.headline.toLowerCase().includes(keyword)));
 }
 
-const FundamentalRow: React.FC<{ label: string; value: string | number; isPositive?: boolean, isNegative?: boolean }> = ({ label, value, isPositive, isNegative }) => (
-    <div className="flex justify-between items-center py-2.5 px-3 even:bg-muted/30">
+const FundamentalRow: React.FC<{ label: string; value: string | number; isPositive?: boolean, isNegative?: boolean, className?: string }> = ({ label, value, isPositive, isNegative, className }) => (
+    <div className={cn("flex justify-between items-center py-2.5 px-3 even:bg-muted/30", className)}>
         <span className="text-sm text-muted-foreground">{label}</span>
         <span className={cn("text-sm font-semibold text-foreground", isPositive && "text-green-600", isNegative && "text-red-600")}>
             {value}
@@ -102,9 +101,12 @@ export function CryptoMarketPage({ params, onBack }: CryptoMarketPageProps) {
                         <div className="flex justify-between items-start">
                           <div>
                             <p className="text-sm text-muted-foreground">{asset.name} / U.S. Dollar</p>
-                            <p className={`text-3xl font-bold`}>${(asset.price / 83).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
-                            <p className={`text-sm ${isPositiveChange ? 'text-green-500' : 'text-red-500'} flex items-center`}>
-                              {isPositiveChange ? '+' : ''}{(asset.change / 83).toLocaleString('en-US', {minimumFractionDigits: 2})} ({isPositiveChange ? '+' : ''}{asset.changePercent.toFixed(2)}%) Past month
+                            <p className="text-3xl font-bold">${(asset.price / 83).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: (asset.price / 83) < 1 ? 6 : 2})}</p>
+                            <p className={cn("text-sm flex items-center", isPositiveChange ? 'text-green-500' : 'text-red-500')}>
+                              {isPositiveChange ? <TrendingUp className="h-4 w-4 mr-1" /> : <TrendingDown className="h-4 w-4 mr-1" />}
+                              {(asset.change / 83).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: (asset.price / 83) < 1 ? 6 : 2, signDisplay: 'always'})} 
+                              <span className="ml-1">({asset.changePercent.toFixed(2)}%)</span>
+                              <span className="ml-2 text-muted-foreground text-xs">Past month</span>
                             </p>
                           </div>
                            <Avatar className="h-10 w-10">
@@ -142,8 +144,8 @@ export function CryptoMarketPage({ params, onBack }: CryptoMarketPageProps) {
                                <FundamentalRow label="Market Cap" value={`$${(parseFloat(asset.marketCap?.replace('₹', '').replace('T', ''))*1e12 / 83 / 1e9).toFixed(2)} B`} />
                                <FundamentalRow label="Total Supply" value="120.71 M" />
                                <FundamentalRow label="Circulating Supply" value="120.71 M" />
-                               <FundamentalRow label="High (24h)" value={`$${((asset.todayHigh || 0) / 83).toLocaleString()}`} />
-                               <FundamentalRow label="Low (24h)" value={`$${((asset.todayLow || 0) / 83).toLocaleString()}`} />
+                               <FundamentalRow label="High (24h)" value={`$${((asset.todayHigh || 0) / 83).toLocaleString('en-US', {minimumFractionDigits: 2})}`} />
+                               <FundamentalRow label="Low (24h)" value={`$${((asset.todayLow || 0) / 83).toLocaleString('en-US', {minimumFractionDigits: 2})}`} />
                                <FundamentalRow label="Max Supply" value="No data" />
                                <FundamentalRow label="Change (1h)" value="1.26%" isPositive />
                                <FundamentalRow label="Change (24h)" value="-0.37%" isNegative />
