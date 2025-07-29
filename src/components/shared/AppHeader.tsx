@@ -136,7 +136,7 @@ export function AppHeader({ activeMode, onModeChange, isRealMode, walletMode }: 
             <div className="flex items-center justify-center pb-2">
                 <div className="flex items-center rounded-md bg-primary-foreground/10 p-1 space-x-1 w-full">
                     {availableModes.map(mode => {
-                        const isDisabled = (mode === 'Portfolio' && isPortfolioDisabled);
+                        const isDisabled = (mode === 'Portfolio' && isPortfolioDisabled && !isRealMode);
 
                         return (
                             <Button
