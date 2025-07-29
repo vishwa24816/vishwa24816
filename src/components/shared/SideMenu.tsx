@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useEffect } from 'react';
@@ -159,7 +158,7 @@ export function SideMenu() {
             <Button
               variant="ghost"
               className="justify-start text-base p-3 hover:bg-accent/10"
-              onClick={() => alert('Backtester feature coming soon!')}
+              onClick={() => router.push('/backtester')}
             >
               <History className="mr-3 h-5 w-5 text-primary" />
               Backtester
