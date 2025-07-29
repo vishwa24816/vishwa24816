@@ -71,7 +71,7 @@ export function FiiDiiActivity() {
     const summaryData = {
         last30Days: { fii: 8483.7, dii: 1916.6 },
         last2Weeks: { fii: 9572.5, dii: 2512.6 },
-        last1Week: { fii: -7184.1, dii: 7001.4 },
+        last1Week: { fii: -7184.1, diiTotal: 7001.4 },
     };
 
     return (
@@ -83,6 +83,7 @@ export function FiiDiiActivity() {
                 </CardHeader>
                 <CardContent>
                     <Chart.Container config={chartConfig} className="w-full h-[150px]">
+                      <Chart.ResponsiveContainer>
                         <Chart.BarChart data={chartData} margin={{ top: 0, right: 10, left: -20, bottom: -10 }}>
                              <Chart.CartesianGrid vertical={false} />
                              <Chart.XAxis dataKey="date" tickLine={false} axisLine={false} tickMargin={8} tickFormatter={(value) => new Date(value).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })} className="text-xs" />
@@ -90,6 +91,7 @@ export function FiiDiiActivity() {
                             <Chart.Bar dataKey="fiiTotal" fill="var(--color-fii)" radius={2} />
                             <Chart.Bar dataKey="diiTotal" fill="var(--color-dii)" radius={2} />
                         </Chart.BarChart>
+                      </Chart.ResponsiveContainer>
                     </Chart.Container>
 
                      <div className="mt-4 space-y-2 text-sm">
@@ -133,7 +135,7 @@ export function FiiDiiActivity() {
                         <tbody>
                             <SummaryRow label="Last 30 Days" fiiTotal={summaryData.last30Days.fii} diiTotal={summaryData.last30Days.dii} />
                             <SummaryRow label="Last 2 Weeks" fiiTotal={summaryData.last2Weeks.fii} diiTotal={summaryData.last2Weeks.dii} />
-                            <SummaryRow label="Last 1 Week" fiiTotal={summaryData.last1Week.fii} diiTotal={summaryData.last1Week.dii} />
+                            <SummaryRow label="Last 1 Week" fiiTotal={summaryData.last1Week.fii} diiTotal={summaryData.last1Week.diiTotal} />
                             {mockFiiDiiData.map(item => <ActivityRow key={item.date} item={item} />)}
                         </tbody>
                     </table>
@@ -156,4 +158,3 @@ const ChevronDown = (props: React.SVGProps<SVGSVGElement>) => (
     <path d="m6 9 6 6 6-6"/>
   </svg>
 );
-

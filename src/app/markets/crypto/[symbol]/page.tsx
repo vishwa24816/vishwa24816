@@ -322,12 +322,14 @@ export default function CryptoMarketPage({ params, onBack }: CryptoMarketPagePro
                         </div>
 
                          <div className="h-64 bg-muted rounded-md flex items-center justify-center my-4 relative overflow-hidden" data-ai-hint="crypto chart graph">
-                          <svg width="100%" height="100%" viewBox="0 0 300 150" preserveAspectRatio="none">
-                            <path d="M0 130 C 20 120, 40 100, 60 110 S 100 140, 120 120 S 160 80, 180 90 S 220 110, 240 70, 280 40, 300 50" 
-                                  fill="none" 
-                                  stroke={isPositiveChange ? "hsl(var(--positive))" : "hsl(var(--destructive))"} 
-                                  strokeWidth="2"/>
-                          </svg>
+                          <ResponsiveContainer width="100%" height="100%">
+                              <svg width="100%" height="100%" viewBox="0 0 300 150" preserveAspectRatio="none">
+                                <path d="M0 130 C 20 120, 40 100, 60 110 S 100 140, 120 120 S 160 80, 180 90 S 220 110, 240 70, 280 40, 300 50" 
+                                      fill="none" 
+                                      stroke={isPositiveChange ? "hsl(var(--positive))" : "hsl(var(--destructive))"} 
+                                      strokeWidth="2"/>
+                              </svg>
+                          </ResponsiveContainer>
                         </div>
           
                         <div className="flex space-x-1 overflow-x-auto no-scrollbar py-2">

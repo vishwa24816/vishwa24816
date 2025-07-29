@@ -2,7 +2,7 @@
 "use client";
 
 import React, { useState, useMemo } from 'react';
-import type { PortfolioHolding } from '@/types';
+import type { PortfolioHolding, Stock } from '@/types';
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from '@/lib/utils';
@@ -13,6 +13,7 @@ interface HoldingCardProps {
     holding: PortfolioHolding;
     onPledgeClick: (holding: PortfolioHolding, mode: 'pledge' | 'payback') => void;
     isPledged?: boolean;
+    onAssetClick: (asset: Stock) => void;
 }
 
 const PledgedDetails: React.FC<{ holding: PortfolioHolding, onPledgeClick: (holding: PortfolioHolding, mode: 'pledge' | 'payback') => void }> = ({ holding, onPledgeClick }) => {
@@ -61,7 +62,7 @@ const PledgedDetails: React.FC<{ holding: PortfolioHolding, onPledgeClick: (hold
     );
 };
 
-export const HoldingCard: React.FC<HoldingCardProps> = ({ holding, onPledgeClick, isPledged = false }) => {
+export const HoldingCard: React.FC<HoldingCardProps> = ({ holding, onPledgeClick, isPledged = false, onAssetClick }) => {
     const [isExpanded, setIsExpanded] = useState(false);
     const router = useRouter();
     const { toast } = useToast();
@@ -81,17 +82,7 @@ export const HoldingCard: React.FC<HoldingCardProps> = ({ holding, onPledgeClick
     const isDayProfit = (holding.dayChangeAbsolute ?? 0) >= 0;
 
     const handleAdjustPosition = () => {
-      let path = `/order/stock/${holding.symbol}`;
-      if (holding.exchange === 'NASDAQ' || holding.exchange === 'NYSE') {
-        path = `/order/stock/${holding.symbol}`;
-      } else if (holding.type === 'Crypto') {
-        path = `/order/crypto/${holding.symbol}`;
-      } else if (holding.type === 'Mutual Fund') {
-        path = `/order/mutual-fund/${holding.symbol}`;
-      } else if (holding.type === 'Bond') {
-        path = `/order/bond/${holding.symbol}`;
-      }
-      router.push(path);
+        onAssetClick(holding as Stock);
     };
 
     const handleExitPosition = () => {

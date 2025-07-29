@@ -148,20 +148,22 @@ export function CryptoFuturesSection({ positions, cashBalance }: CryptoFuturesSe
         return (
           <div className="w-full h-[300px] mt-4">
              <Chart.Container config={chartConfig} className="h-full w-full">
-              <Chart.BarChart data={chartData} layout="vertical" margin={{ left: 10, right: 10 }}>
-                <Chart.XAxis type="number" dataKey="value" stroke="hsl(var(--muted-foreground))" fontSize={12} tickFormatter={(val) => `₹${val/1000}k`} />
-                <Chart.YAxis type="category" dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
-                <Chart.Tooltip
-                  cursor={false}
-                  contentStyle={{
-                    backgroundColor: 'hsl(var(--background))',
-                    borderColor: 'hsl(var(--border))'
-                  }}
-                  formatter={(value) => `Margin: ${formatCurrency(value as number)}`}
-                />
-                <Chart.Legend content={<Chart.LegendContent />} />
-                <Chart.Bar dataKey="value" radius={4} />
-              </Chart.BarChart>
+              <Chart.ResponsiveContainer>
+                  <Chart.BarChart data={chartData} layout="vertical" margin={{ left: 10, right: 10 }}>
+                    <Chart.XAxis type="number" dataKey="value" stroke="hsl(var(--muted-foreground))" fontSize={12} tickFormatter={(val) => `₹${val/1000}k`} />
+                    <Chart.YAxis type="category" dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
+                    <Chart.Tooltip
+                      cursor={false}
+                      contentStyle={{
+                        backgroundColor: 'hsl(var(--background))',
+                        borderColor: 'hsl(var(--border))'
+                      }}
+                      formatter={(value) => `Margin: ${formatCurrency(value as number)}`}
+                    />
+                    <Chart.Legend content={<Chart.LegendContent />} />
+                    <Chart.Bar dataKey="value" radius={4} />
+                  </Chart.BarChart>
+              </Chart.ResponsiveContainer>
             </Chart.Container>
           </div>
         );
@@ -175,6 +177,7 @@ export function CryptoFuturesSection({ positions, cashBalance }: CryptoFuturesSe
         return (
           <div className="w-full h-[300px] mt-4 flex items-center justify-center">
             <Chart.Container config={chartConfig} className="h-full w-full">
+              <Chart.ResponsiveContainer>
                 <Chart.PieChart>
                     <Chart.Tooltip 
                       content={<Chart.TooltipContent hideLabel nameKey="name" />}
@@ -183,6 +186,7 @@ export function CryptoFuturesSection({ positions, cashBalance }: CryptoFuturesSe
                     <Chart.Pie data={chartData} dataKey="value" nameKey="name" />
                     <Chart.LegendContent />
                 </Chart.PieChart>
+              </Chart.ResponsiveContainer>
             </Chart.Container>
           </div>
         );

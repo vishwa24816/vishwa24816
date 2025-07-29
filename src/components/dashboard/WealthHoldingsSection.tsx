@@ -2,7 +2,7 @@
 "use client";
 
 import React, { useState, useMemo } from 'react';
-import type { PortfolioHolding } from '@/types';
+import type { PortfolioHolding, Stock } from '@/types';
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator"; 
 import { cn } from '@/lib/utils';
@@ -20,9 +20,10 @@ type ViewMode = 'list' | 'bar' | 'heatmap' | 'pie';
 interface WealthHoldingsSectionProps {
   holdings: PortfolioHolding[];
   isPledged?: boolean;
+  onAssetClick: (asset: Stock) => void;
 }
 
-export function WealthHoldingsSection({ holdings, isPledged = false }: WealthHoldingsSectionProps) {
+export function WealthHoldingsSection({ holdings, isPledged = false, onAssetClick }: WealthHoldingsSectionProps) {
   const [viewMode, setViewMode] = useState<ViewMode>('list');
   const [pledgeDialogOpen, setPledgeDialogOpen] = useState(false);
   const [selectedHoldingForPledge, setSelectedHoldingForPledge] = useState<PortfolioHolding | null>(null);
@@ -112,6 +113,7 @@ export function WealthHoldingsSection({ holdings, isPledged = false }: WealthHol
                   holding={holding} 
                   onPledgeClick={handlePledgeClick}
                   isPledged={isPledged}
+                  onAssetClick={onAssetClick}
               />
             ))}
           </div>
@@ -120,20 +122,22 @@ export function WealthHoldingsSection({ holdings, isPledged = false }: WealthHol
         return (
           <div className="w-full h-[300px] mt-4">
              <Chart.Container config={chartConfig} className="h-full w-full">
-              <Chart.BarChart data={chartData} layout="vertical" margin={{ left: 10, right: 10 }}>
-                <Chart.XAxis type="number" dataKey="value" stroke="hsl(var(--muted-foreground))" fontSize={12} tickFormatter={(val) => `₹${val/1000}k`} />
-                <Chart.YAxis type="category" dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={12} width={80} tickLine={false} axisLine={false} />
-                <Chart.Tooltip
-                  cursor={false}
-                  contentStyle={{
-                    backgroundColor: 'hsl(var(--background))',
-                    borderColor: 'hsl(var(--border))'
-                  }}
-                  formatter={(value) => formatCurrency(value as number)}
-                />
-                <Chart.Legend content={<Chart.LegendContent />} />
-                <Chart.Bar dataKey="value" radius={4} />
-              </Chart.BarChart>
+              <Chart.ResponsiveContainer>
+                <Chart.BarChart data={chartData} layout="vertical" margin={{ left: 10, right: 10 }}>
+                  <Chart.XAxis type="number" dataKey="value" stroke="hsl(var(--muted-foreground))" fontSize={12} tickFormatter={(val) => `₹${val/1000}k`} />
+                  <Chart.YAxis type="category" dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={12} width={80} tickLine={false} axisLine={false} />
+                  <Chart.Tooltip
+                    cursor={false}
+                    contentStyle={{
+                      backgroundColor: 'hsl(var(--background))',
+                      borderColor: 'hsl(var(--border))'
+                    }}
+                    formatter={(value) => formatCurrency(value as number)}
+                  />
+                  <Chart.Legend content={<Chart.LegendContent />} />
+                  <Chart.Bar dataKey="value" radius={4} />
+                </Chart.BarChart>
+              </Chart.ResponsiveContainer>
             </Chart.Container>
           </div>
         );
@@ -147,14 +151,16 @@ export function WealthHoldingsSection({ holdings, isPledged = false }: WealthHol
         return (
           <div className="w-full h-[300px] mt-4 flex items-center justify-center">
             <Chart.Container config={chartConfig} className="h-full w-full">
-                <Chart.PieChart>
-                    <Chart.Tooltip 
-                      content={<Chart.TooltipContent hideLabel nameKey="name" />}
-                      formatter={(value, name) => `${name}: ${formatCurrency(value as number)}`}
-                    />
-                    <Chart.Pie data={chartData} dataKey="value" nameKey="name" />
-                    <Chart.LegendContent />
-                </Chart.PieChart>
+                <Chart.ResponsiveContainer>
+                  <Chart.PieChart>
+                      <Chart.Tooltip 
+                        content={<Chart.TooltipContent hideLabel nameKey="name" />}
+                        formatter={(value, name) => `${name}: ${formatCurrency(value as number)}`}
+                      />
+                      <Chart.Pie data={chartData} dataKey="value" nameKey="name" />
+                      <Chart.LegendContent />
+                  </Chart.PieChart>
+                </Chart.ResponsiveContainer>
             </Chart.Container>
           </div>
         );

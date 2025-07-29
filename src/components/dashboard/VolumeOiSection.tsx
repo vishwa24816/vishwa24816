@@ -9,9 +9,10 @@ import type { Stock } from '@/types';
 
 interface VolumeOiSectionProps {
   optionsData: Stock[];
+  onAssetClick: (asset: Stock) => void;
 }
 
-export const VolumeOiSection: React.FC<VolumeOiSectionProps> = ({ optionsData }) => {
+export const VolumeOiSection: React.FC<VolumeOiSectionProps> = ({ optionsData, onAssetClick }) => {
   const { topVolume, topOi } = useMemo(() => {
     const sortedByVolume = [...optionsData].sort((a, b) => (b.volume || 0) - (a.volume || 0)).slice(0, 5);
     const sortedByOi = [...optionsData].sort((a, b) => (b.openInterest || 0) - (a.openInterest || 0)).slice(0, 5);
@@ -34,12 +35,12 @@ export const VolumeOiSection: React.FC<VolumeOiSectionProps> = ({ optionsData })
         </TabsList>
         <TabsContent value="volume" className="p-2">
           <div className="space-y-1">
-            {topVolume.map(stock => <MoverItem key={stock.id} stock={stock} />)}
+            {topVolume.map(stock => <MoverItem key={stock.id} stock={stock} onAssetClick={onAssetClick} />)}
           </div>
         </TabsContent>
         <TabsContent value="oi" className="p-2">
           <div className="space-y-1">
-            {topOi.map(stock => <MoverItem key={stock.id} stock={stock} />)}
+            {topOi.map(stock => <MoverItem key={stock.id} stock={stock} onAssetClick={onAssetClick} />)}
           </div>
         </TabsContent>
       </Tabs>

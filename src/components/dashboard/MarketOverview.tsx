@@ -22,14 +22,14 @@ const IndexCard: React.FC<IndexCardProps> = ({ itemData }) => {
   const isPositive = change >= 0;
 
   return (
-    <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300 w-48 h-24 flex flex-col shrink-0">
+    <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300 w-48 h-auto flex flex-col shrink-0">
       <CardHeader className="p-1.5 pb-0 flex flex-row items-start justify-between space-y-0">
         <CardTitle className="text-xs font-medium font-headline">{name}</CardTitle>
         <Activity className="h-2.5 w-2.5 text-muted-foreground" />
       </CardHeader>
       <CardContent className="p-1.5 pt-0 flex flex-col flex-grow justify-between">
         <div className="flex-grow flex items-center justify-center my-0.5" data-ai-hint="stock chart graph">
-          <svg viewBox="0 0 100 35" className="w-full h-auto max-h-[20px]">
+           <svg viewBox="0 0 100 35" className="w-full h-auto max-h-[20px]">
             <polyline
               fill="none"
               stroke={isPositive ? 'hsl(var(--positive))' : 'hsl(var(--destructive))'}
