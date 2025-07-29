@@ -98,23 +98,23 @@ export function CryptoMarketPage({ params, onBack }: CryptoMarketPageProps) {
                     </TabsList>
 
                     <TabsContent value="market" className="p-4 space-y-6">
-                        <div className="flex justify-between items-start">
-                          <div className="flex-1">
-                            <p className="text-sm text-muted-foreground">{asset.name} / U.S. Dollar</p>
-                            <p className="text-3xl font-bold">${(asset.price / 83).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: (asset.price / 83) < 1 ? 6 : 2})}</p>
-                            <div className="flex items-center text-sm">
-                                <span className={cn(isPositiveChange ? 'text-green-500' : 'text-red-500')}>
-                                    {(asset.change / 83).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: (asset.price / 83) < 1 ? 6 : 2, signDisplay: 'always'})}
-                                </span>
-                                <span className={cn("ml-2", isPositiveChange ? 'text-green-500' : 'text-red-500')}>
-                                    ({asset.changePercent.toFixed(2)}%)
-                                </span>
-                                <span className="ml-2 text-muted-foreground text-xs">Past month</span>
+                         <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                                <p className="text-sm text-muted-foreground">{asset.name} / U.S. Dollar</p>
+                                <p className="text-3xl font-bold">${(asset.price / 83).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: (asset.price / 83) < 1 ? 6 : 2})}</p>
+                                <div className="flex items-center text-sm">
+                                    <span className={cn(isPositiveChange ? 'text-green-500' : 'text-red-500')}>
+                                        {(asset.change / 83).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: (asset.price / 83) < 1 ? 6 : 2, signDisplay: 'always'})}
+                                    </span>
+                                    <span className={cn("ml-2", isPositiveChange ? 'text-green-500' : 'text-red-500')}>
+                                        ({asset.changePercent.toFixed(2)}%)
+                                    </span>
+                                    <span className="ml-2 text-muted-foreground text-xs">Past month</span>
+                                </div>
                             </div>
-                          </div>
-                           <Avatar className="h-10 w-10">
-                            <AvatarFallback>{asset.symbol.charAt(0)}</AvatarFallback>
-                          </Avatar>
+                            <Avatar className="h-10 w-10">
+                                <AvatarFallback>{asset.symbol.charAt(0)}</AvatarFallback>
+                            </Avatar>
                         </div>
 
                          <div className="h-64 bg-muted rounded-md flex items-center justify-center my-4 relative overflow-hidden" data-ai-hint="crypto chart graph">
