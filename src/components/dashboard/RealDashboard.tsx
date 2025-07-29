@@ -11,6 +11,7 @@ import { CryptoOptionChain } from '@/components/dashboard/CryptoOptionChain';
 import { StrategyBuilder } from '@/components/dashboard/StrategyBuilder';
 import { ReadymadeStrategiesSection } from '@/components/dashboard/ReadymadeStrategiesSection';
 import { MarketMovers } from './MarketMovers';
+import { ShieldCheck } from 'lucide-react';
 
 import React, { useState, useMemo, useEffect } from 'react';
 import type { PortfolioHolding, NewsArticle, CryptoFuturePosition, Stock, SelectedOptionLeg } from '@/types';
@@ -178,6 +179,15 @@ export function RealDashboard({ activeMode, walletMode, setWalletMode, onAssetCl
   
   const renderMarketContent = () => {
       if(activeMode === 'Crypto') {
+          if (walletMode === 'cold' && activePrimaryItem === 'Spot') {
+            return (
+                <div className="flex flex-col items-center justify-center text-center py-12 text-muted-foreground">
+                    <ShieldCheck className="h-16 w-16 mb-4 text-blue-500" />
+                    <h2 className="text-2xl font-semibold mb-2 text-foreground">Spot Trading Disabled in Cold Wallet</h2>
+                    <p className="max-w-md">For security, live spot trading is unavailable when your Cold Wallet is active. Please switch to your Hot Wallet to trade spot assets.</p>
+                </div>
+            );
+          }
           if (activePrimaryItem === "Options") {
             if (activeSecondaryItem === 'Dashboard') return <div className="space-y-8"><MarketMovers stocks={mockCryptoOptionsForWatchlist} displayMode="full" category="Crypto Options" onAssetClick={onAssetClick} /><NewsSection articles={newsForView} /></div>;
             if (activeSecondaryItem === "Custom") return ( <div className="space-y-8"><CryptoOptionChain onAddLeg={(leg) => setStrategyLegs(prev => [...prev, leg])} />{strategyLegs.length > 0 && <StrategyBuilder legs={strategyLegs} setLegs={setStrategyLegs} />}<NewsSection articles={newsForView} /></div>);
