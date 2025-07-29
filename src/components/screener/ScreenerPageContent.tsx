@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Loader2, Zap, TrendingUp, Rocket, Star, PiggyBank, CandlestickChart, Bell, ArrowUpDown, FileText, InfoIcon, LandPlot, AreaChart, Newspaper } from 'lucide-react';
+import { Loader2, Zap, TrendingUp, Rocket, Star, PiggyBank, CandlestickChart, Bell, ArrowUpDown, FileText, InfoIcon, LandPlot, AreaChart, Newspaper, Repeat } from 'lucide-react';
 import { runScreenerAction } from '@/app/actions';
 import type { Stock } from '@/types';
 import { useToast } from '@/hooks/use-toast';
@@ -52,7 +52,7 @@ const alertSubItems = [
     'Email Alerts',
 ];
 
-const fiatScreenerItems = [
+const screenerItems = [
   {
     title: 'Markets',
     icon: TrendingUp,
@@ -77,39 +77,18 @@ const fiatScreenerItems = [
     content: ['Government Bonds', 'Corporate Bonds'],
     hasDot: false,
   },
+   {
+    title: 'Crypto',
+    icon: Repeat,
+    content: ['Market', 'Analysis', 'News', 'Study'],
+    hasDot: false,
+  },
   {
     title: 'Alerts',
     icon: Bell,
     content: alertSubItems,
     hasDot: false,
   },
-];
-
-const cryptoScreenerItems = [
-    {
-        title: 'Markets',
-        icon: TrendingUp,
-        content: ['Spot', 'Futures', 'Options'],
-        hasDot: false,
-    },
-    {
-        title: 'Analysis',
-        icon: CandlestickChart,
-        content: ['On-Chain Analysis', 'Derivatives Data', 'Technical Indicators'],
-        hasDot: false,
-    },
-     {
-        title: 'News',
-        icon: Newspaper,
-        content: ['Latest News', 'Funding Rounds', 'Protocol Updates'],
-        hasDot: false,
-    },
-     {
-        title: 'Study',
-        icon: InfoIcon,
-        content: ['What is Bitcoin?', 'Understanding DeFi', 'Web3 Explained'],
-        hasDot: false,
-    },
 ];
 
 
@@ -286,8 +265,6 @@ export function ScreenerPageContent({ onAssetClick }: { onAssetClick: (asset: St
         router.push(`/?mode=Wealth&primary=${primaryTab}&secondary=Top watchlist`);
     }
 
-    const screenerCategories = activeMode === 'Fiat' ? fiatScreenerItems : cryptoScreenerItems;
-
     return (
         <main className="flex-grow p-4 sm:p-6 lg:p-8 space-y-6 overflow-y-auto">
             <div className="flex items-center gap-1 rounded-md bg-muted p-1">
@@ -450,7 +427,7 @@ export function ScreenerPageContent({ onAssetClick }: { onAssetClick: (asset: St
             <Card>
                 <CardContent className="p-2">
                     <Accordion type="single" collapsible className="w-full">
-                        {screenerCategories.map((item, index) => (
+                        {screenerItems.map((item, index) => (
                             <AccordionItem value={`item-${index}`} key={item.title}>
                                 <AccordionTrigger className="text-base font-medium hover:no-underline px-2">
                                     <div className="flex items-center gap-4">
@@ -460,7 +437,7 @@ export function ScreenerPageContent({ onAssetClick }: { onAssetClick: (asset: St
                                     </div>
                                 </AccordionTrigger>
                                 <AccordionContent className="px-4 pb-2 pt-0 text-muted-foreground">
-                                    {item.title === 'Superstars' && activeMode === 'Fiat' ? (
+                                    {item.title === 'Superstars' ? (
                                         <SuperstarsScreener />
                                     ) : Array.isArray(item.content) ? (
                                         <ul className="space-y-1">
@@ -470,11 +447,11 @@ export function ScreenerPageContent({ onAssetClick }: { onAssetClick: (asset: St
                                                     variant="ghost"
                                                     className="w-full justify-start p-2 h-auto font-normal text-muted-foreground hover:text-primary text-sm"
                                                     onClick={() => {
-                                                        if(item.title === 'Markets' && activeMode === 'Fiat') {
+                                                        if(item.title === 'Markets') {
                                                             handleMarketSubItemClick(subItem)
-                                                        } else if((item.title === 'Mutual Funds' || item.title === 'Bonds') && activeMode === 'Fiat') {
+                                                        } else if(item.title === 'Mutual Funds' || item.title === 'Bonds') {
                                                             handleWealthSubItemClick(subItem)
-                                                        } else if (item.title === 'Alerts' && activeMode === 'Fiat') {
+                                                        } else if (item.title === 'Alerts') {
                                                             handleAlertsSubItemClick()
                                                         } else {
                                                             toast({
@@ -501,4 +478,3 @@ export function ScreenerPageContent({ onAssetClick }: { onAssetClick: (asset: St
         </main>
     );
 }
-
