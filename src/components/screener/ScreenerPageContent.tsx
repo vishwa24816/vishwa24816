@@ -52,14 +52,11 @@ const alertSubItems = [
     'Email Alerts',
 ];
 
-const cryptoSubItems = ['Market', 'Analysis', 'News', 'Study'];
-
 const screenerItems = [
   { title: 'Markets', icon: TrendingUp, content: marketSubItems, hasDot: false },
   { title: 'Superstars', icon: Star, content: 'Superstars screener content', hasDot: false },
   { title: 'Mutual Funds', icon: PiggyBank, content: ['Index Fund', 'Large Cap', 'Mid Cap', 'Small Cap', 'Flexi Cap', 'ELSS', 'Sectoral', 'Thematic'], hasDot: true },
   { title: 'Bonds', icon: LandPlot, content: ['Government Bonds', 'Corporate Bonds'], hasDot: false },
-  { title: 'Crypto', icon: Repeat, content: cryptoSubItems, hasDot: false },
   { title: 'Alerts', icon: Bell, content: alertSubItems, hasDot: false },
 ];
 
@@ -234,7 +231,7 @@ export function ScreenerPageContent({ onAssetClick }: { onAssetClick: (asset: St
         router.push(`/?mode=Wealth&primary=${primaryTab}&secondary=Top watchlist`);
     }
 
-    const handleCryptoSubItemClick = (subItem: string) => {
+    const handleCryptoSubItemClick = () => {
         router.push('/markets/crypto');
     };
 
@@ -421,8 +418,6 @@ export function ScreenerPageContent({ onAssetClick }: { onAssetClick: (asset: St
                                                             handleWealthSubItemClick(subItem)
                                                         } else if (item.title === 'Alerts') {
                                                             handleAlertsSubItemClick()
-                                                        } else if (item.title === 'Crypto') {
-                                                            handleCryptoSubItemClick(subItem)
                                                         } else {
                                                             toast({
                                                                 title: `${subItem}`,
@@ -443,6 +438,14 @@ export function ScreenerPageContent({ onAssetClick }: { onAssetClick: (asset: St
                             </AccordionItem>
                         ))}
                     </Accordion>
+                     <Button
+                        variant="ghost"
+                        className="flex w-full items-center justify-start gap-4 p-4 text-base font-medium hover:bg-muted/50 rounded-lg mt-2"
+                        onClick={handleCryptoSubItemClick}
+                    >
+                        <Repeat className="h-6 w-6 text-primary" />
+                        <span>Crypto</span>
+                    </Button>
                 </CardContent>
             </Card>
         </main>
