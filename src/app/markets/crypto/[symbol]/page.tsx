@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { mockCryptoAssets, mockNewsArticles } from '@/lib/mockData';
 import type { Stock, NewsArticle } from '@/types';
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, TrendingUp, TrendingDown, Info, Maximize2, BarChart2, Bell, Star, Briefcase, ExternalLink, Copy } from 'lucide-react';
+import { ArrowLeft, TrendingUp, TrendingDown, Info, Maximize2, BarChart2, Bell, Star, Briefcase } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { NewsSection } from '@/components/dashboard/NewsSection';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -35,7 +35,7 @@ interface CryptoMarketPageProps {
   onBack: () => void;
 }
 
-export function CryptoMarketPage({ params, onBack }: CryptoMarketPageProps) {
+export default function CryptoMarketPage({ params, onBack }: CryptoMarketPageProps) {
     const { toast } = useToast();
     const symbol = typeof params.symbol === 'string' ? decodeURIComponent(params.symbol) : undefined;
     
@@ -51,7 +51,7 @@ export function CryptoMarketPage({ params, onBack }: CryptoMarketPageProps) {
                 setAssetSpecificNews(getRelevantNewsForCrypto(foundAsset, mockNewsArticles));
             } else {
                 toast({ title: "Error", description: `Asset with symbol ${symbol} not found.`, variant: "destructive" });
-                onBack();
+                if (onBack) onBack();
             }
         }
     }, [symbol, toast, onBack]);
@@ -69,7 +69,7 @@ export function CryptoMarketPage({ params, onBack }: CryptoMarketPageProps) {
     
     return (
         <div className="flex flex-col min-h-screen bg-background text-foreground">
-             <header className="px-4 py-3 sticky top-16 z-20 bg-background border-b border-border flex justify-between items-center">
+            <header className="px-4 py-3 sticky top-16 z-20 bg-background border-b border-border flex justify-between items-center">
                 <Button variant="ghost" size="icon" onClick={onBack} className="text-foreground hover:bg-muted">
                     <ArrowLeft className="h-5 w-5" />
                 </Button>
