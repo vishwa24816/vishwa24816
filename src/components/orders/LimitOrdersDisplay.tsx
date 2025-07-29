@@ -1,10 +1,11 @@
+
 "use client";
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import type { GttOrder } from '@/types';
-import { mockGttOrders } from '@/lib/mockData';
+import { mockGttOrders, mockRealGttOrders } from '@/lib/mockData';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { Target, Edit3, XCircle } from 'lucide-react';
@@ -47,8 +48,8 @@ const LimitOrderItem: React.FC<LimitOrderItemProps> = ({ order }) => {
   );
 };
 
-export function LimitOrdersDisplay() {
-  const orders = mockGttOrders;
+export function LimitOrdersDisplay({ isRealMode = false }: { isRealMode?: boolean }) {
+  const orders = isRealMode ? mockRealGttOrders : mockGttOrders;
 
   if (orders.length === 0) {
     return (

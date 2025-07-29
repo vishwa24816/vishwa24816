@@ -41,3 +41,31 @@ export const mockGttOrders: GttOrder[] = [
     productType: 'MIS',
   },
 ];
+
+export const mockRealGttOrders: GttOrder[] = [
+    {
+      id: 'gtt-real-1',
+      instrumentName: 'Bitcoin',
+      symbol: 'BTC',
+      orderType: 'BUY',
+      triggerPrice: 5100000.00,
+      quantity: 0.005,
+      limitPrice: 5100500.00,
+      status: 'Active',
+      createdDate: '2024-07-20',
+      exchange: 'Crypto',
+      productType: 'DELIVERY',
+    },
+    {
+      id: 'gtt-real-2',
+      instrumentName: 'Ethereum',
+      symbol: 'ETH',
+      orderType: 'SELL',
+      triggerPrice: 290000.00,
+      quantity: 0.1,
+      status: 'Active',
+      createdDate: '2024-07-18',
+      exchange: 'Crypto',
+      productType: 'DELIVERY',
+    },
+];

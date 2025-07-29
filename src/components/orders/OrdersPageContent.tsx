@@ -20,14 +20,11 @@ import {
     mockIntradayPositions,
     mockFoPositions,
     mockCryptoFutures,
-    mockWeb3Holdings,
-    mockCryptoAssets,
-    mockStocks,
-    mockMutualFunds,
-    mockBonds
+    mockWeb3Holdings
 } from '@/lib/mockData';
 
 const demoOrderTabs = [
+  { value: "positions", label: "Positions" },
   { value: "limit", label: "Limit" },
   { value: "bids", label: "Bids" },
   { value: "hodl", label: "HODL" },
@@ -37,6 +34,8 @@ const demoOrderTabs = [
 ];
 
 const realOrderTabs = [
+  { value: "positions", label: "Positions" },
+  { value: "limit", label: "Limit" },
   { value: "hodl", label: "HODL" },
   { value: "baskets", label: "Baskets" },
   { value: "sips", label: "SIPs" },
@@ -53,7 +52,10 @@ export function OrdersPageContent({ activeMode, onAssetClick }: { activeMode: 'P
   
   const fiatHoldings = mockPortfolioHoldings.filter(h => h.type === 'Stock' || h.type === 'ETF');
   const wealthHoldings = mockPortfolioHoldings.filter(h => h.type === 'Mutual Fund' || h.type === 'Bond');
-  const cryptoHoldings = mockPortfolioHoldings.filter(h => h.type === 'Crypto');
+  const cryptoHoldings = [
+    ...mockPortfolioHoldings.filter(h => h.type === 'Crypto'),
+    ...mockWeb3Holdings
+  ];
 
   return (
       <div className="flex flex-col h-full">
@@ -86,8 +88,19 @@ export function OrdersPageContent({ activeMode, onAssetClick }: { activeMode: 'P
             </div>
 
             <div className="w-full px-0 sm:px-2 md:px-4 py-4 flex-grow flex flex-col">
+              <TabsContent value="positions" className="flex-grow flex flex-col mt-0 data-[state=inactive]:hidden">
+                 <OpenPositionsDisplay 
+                    fiatHoldings={fiatHoldings}
+                    wealthHoldings={wealthHoldings}
+                    cryptoHoldings={cryptoHoldings}
+                    intradayPositions={mockIntradayPositions}
+                    foPositions={mockFoPositions}
+                    cryptoFutures={mockCryptoFutures}
+                    onAssetClick={onAssetClick}
+                 />
+              </TabsContent>
               <TabsContent value="limit" className="flex-grow flex flex-col mt-0 data-[state=inactive]:hidden">
-                <LimitOrdersDisplay />
+                <LimitOrdersDisplay isRealMode={isRealMode} />
               </TabsContent>
               <TabsContent value="bids" className="flex-grow flex flex-col mt-0 data-[state=inactive]:hidden">
                 <BondBidsDisplay />
