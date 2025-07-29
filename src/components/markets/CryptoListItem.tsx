@@ -28,8 +28,6 @@ const formatCurrency = (value: number, currency: 'usd' | 'inr', compact: boolean
 
 export const CryptoListItem: React.FC<CryptoListItemProps> = ({ asset, rank, currency, onClick }) => {
     const isPositive = asset.changePercent >= 0;
-
-    // A simple mock conversion. In a real app, you'd fetch this.
     const USD_TO_INR_RATE = 83;
     
     const displayPrice = currency === 'inr' ? asset.price : asset.price / USD_TO_INR_RATE;
