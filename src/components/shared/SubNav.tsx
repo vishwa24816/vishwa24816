@@ -76,7 +76,7 @@ export function SubNav({
         <div className="border-b border-border mt-1">
           <div className="flex items-center space-x-0 overflow-x-auto whitespace-nowrap pb-0 no-scrollbar">
             {currentSecondaryNavItems.map((item) => {
-              const isSpotDisabled = activeMode === 'Crypto' && item === 'Spot' && walletMode === 'cold';
+              const isSpotDisabled = activeMode === 'Crypto' && activePrimaryItem === 'Spot' && walletMode === 'cold';
               return (
               <Button
                 key={item}
