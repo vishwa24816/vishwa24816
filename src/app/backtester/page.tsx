@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState } from 'react';
@@ -21,7 +22,7 @@ export default function BacktesterPage() {
     const { user } = useAuth();
     const isRealMode = user?.id === 'REAL456';
     const [activeMode, setActiveMode] = useState<'Fiat' | 'Crypto'>(isRealMode ? 'Crypto' : 'Fiat');
-    const [strategy, setStrategy] = useState("WHEN SMA(50) crosses above SMA(200)\nBUY 100 shares of NIFTYBEES\n\nWHEN SMA(50) crosses below SMA(200)\nSELL ALL");
+    const [strategy, setStrategy] = useState("WHEN SMA(50) crosses above SMA(200)\nBUY 1 BTC\n\nWHEN SMA(50) crosses below SMA(200)\nSELL ALL");
     const [isBacktesting, setIsBacktesting] = useState(false);
     const [backtestResult, setBacktestResult] = useState<any>(null);
 
@@ -31,15 +32,15 @@ export default function BacktesterPage() {
         // Simulate API call
         setTimeout(() => {
             setBacktestResult({
-                pnl: 52340.50,
+                pnl: 152340.50,
                 winRate: 65.2,
                 maxDrawdown: 12.5,
                 sharpeRatio: 1.2,
                 trades: [
-                    { id: 1, type: 'BUY', symbol: 'NIFTYBEES', qty: 100, price: 210.50, date: '2023-01-15' },
-                    { id: 2, type: 'SELL', symbol: 'NIFTYBEES', qty: 100, price: 235.00, date: '2023-03-20' },
-                    { id: 3, type: 'BUY', symbol: 'NIFTYBEES', qty: 100, price: 225.80, date: '2023-05-10' },
-                    { id: 4, type: 'SELL', symbol: 'NIFTYBEES', qty: 100, price: 260.20, date: '2023-08-01' },
+                    { id: 1, type: 'BUY', symbol: 'BTC', qty: 1, price: 5210050.50, date: '2023-01-15' },
+                    { id: 2, type: 'SELL', symbol: 'BTC', qty: 1, price: 5435000.00, date: '2023-03-20' },
+                    { id: 3, type: 'BUY', symbol: 'BTC', qty: 1, price: 5525080.80, date: '2023-05-10' },
+                    { id: 4, type: 'SELL', symbol: 'BTC', qty: 1, price: 5860020.20, date: '2023-08-01' },
                 ]
             });
             setIsBacktesting(false);
@@ -73,7 +74,7 @@ export default function BacktesterPage() {
                                     value={strategy}
                                     onChange={(e) => setStrategy(e.target.value)}
                                     rows={6}
-                                    placeholder="e.g., WHEN SMA(50) > SMA(200) BUY 100 shares..."
+                                    placeholder="e.g., WHEN SMA(50) > SMA(200) BUY 1 BTC..."
                                     className="font-mono text-sm"
                                 />
                                 <Button onClick={handleRunBacktest} disabled={isBacktesting} className="mt-4 w-full sm:w-auto">
