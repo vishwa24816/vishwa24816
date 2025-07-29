@@ -81,18 +81,18 @@ export default function CryptoMarketPage({ params, onBack }: CryptoMarketPagePro
                 </div>
             </header>
             
-            <main className="flex-grow overflow-y-auto">
-                <Tabs defaultValue="market" className="w-full">
-                     <div className="sticky top-32 z-10 bg-background border-b">
-                        <TabsList className="w-full justify-start rounded-none bg-transparent p-0 px-4">
-                            <TabsTrigger value="market">Market</TabsTrigger>
-                            <TabsTrigger value="news">News</TabsTrigger>
-                            <TabsTrigger value="analysis">Analysis</TabsTrigger>
-                            <TabsTrigger value="study">Study</TabsTrigger>
-                        </TabsList>
-                    </div>
+            <Tabs defaultValue="market" className="flex-grow flex flex-col">
+                 <div className="sticky top-32 z-10 bg-background border-b">
+                    <TabsList className="w-full justify-start rounded-none bg-transparent p-0 px-4">
+                        <TabsTrigger value="market">Market</TabsTrigger>
+                        <TabsTrigger value="news">News</TabsTrigger>
+                        <TabsTrigger value="analysis">Analysis</TabsTrigger>
+                        <TabsTrigger value="study">Study</TabsTrigger>
+                    </TabsList>
+                </div>
 
-                    <TabsContent value="market" className="p-4 space-y-6">
+                <main className="flex-grow overflow-y-auto">
+                    <TabsContent value="market" className="p-4 space-y-6 mt-0">
                          <div className="flex items-start justify-between">
                             <div className="flex-1">
                                 <p className="text-sm text-muted-foreground">{asset.name} / U.S. Dollar</p>
@@ -163,17 +163,17 @@ export default function CryptoMarketPage({ params, onBack }: CryptoMarketPagePro
                             </Card>
                         )}
                     </TabsContent>
-                    <TabsContent value="news" className="p-4">
+                    <TabsContent value="news" className="p-4 mt-0">
                         <NewsSection articles={assetSpecificNews} title={`News related to ${asset.name}`} />
                     </TabsContent>
-                     <TabsContent value="analysis" className="p-4 text-center text-muted-foreground">
+                     <TabsContent value="analysis" className="p-4 mt-0 text-center text-muted-foreground">
                         <p>Analysis tools and data will be available here soon.</p>
                     </TabsContent>
-                     <TabsContent value="study" className="p-4 text-center text-muted-foreground">
+                     <TabsContent value="study" className="p-4 mt-0 text-center text-muted-foreground">
                         <p>Educational content and studies will be available here soon.</p>
                     </TabsContent>
-                </Tabs>
-            </main>
+                </main>
+            </Tabs>
         </div>
     );
 }
