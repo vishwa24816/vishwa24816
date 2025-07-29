@@ -13,7 +13,16 @@ const baseCryptoAssets: Stock[] = [
     id: 'btc', symbol: 'BTC', name: 'Bitcoin', price: 65000.00 * USD_TO_INR, change: 1200.50 * USD_TO_INR, changePercent: 1.88, exchange: 'Crypto', 
     todayLow: 64500.00 * USD_TO_INR, todayHigh: 66000.00 * USD_TO_INR, fiftyTwoWeekLow: 25000.00 * USD_TO_INR, fiftyTwoWeekHigh: 73000.00 * USD_TO_INR,
     openPrice: 64800.00 * USD_TO_INR, prevClosePrice: 63799.50 * USD_TO_INR, volume: 30000, marketCap: '₹102.4T',
-    aboutCompany: 'Bitcoin is a decentralized digital currency, without a central bank or single administrator, that can be sent from user to user on the peer-to-peer bitcoin network without the need for intermediaries.'
+    aboutCompany: 'Bitcoin is a decentralized digital currency, without a central bank or single administrator, that can be sent from user to user on the peer-to-peer bitcoin network without the need for intermediaries.',
+    fundamentals: {
+        marketCap: '₹102.4T',
+        technology: 'Utilizes Proof-of-Work (PoW) consensus',
+        introductionYear: 2009,
+        techScoreIndicator: 88.2,
+        safetyScore: 90.0,
+        marketRank: 1,
+        sixMonthReturn: 47.81,
+    }
   },
   { 
     id: 'eth', symbol: 'ETH', name: 'Ethereum', price: 3400.00 * USD_TO_INR, change: -50.20 * USD_TO_INR, changePercent: -1.45, exchange: 'Crypto',

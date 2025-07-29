@@ -4,6 +4,7 @@
 
 
 
+
 export interface Stock {
   id: string;
   symbol: string;
@@ -38,6 +39,12 @@ export interface Stock {
     divYield?: number;
     bookValue?: number;
     faceValue?: number;
+    technology?: string;
+    introductionYear?: number;
+    techScoreIndicator?: number;
+    safetyScore?: number;
+    marketRank?: number;
+    sixMonthReturn?: number;
   };
   financials?: {
     revenue: Array<{ period: string; value: number }>;

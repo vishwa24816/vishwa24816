@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { mockCryptoAssets, mockNewsArticles } from '@/lib/mockData';
 import type { Stock, NewsArticle } from '@/types';
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, TrendingUp, TrendingDown, Info, Maximize2, BarChart2, Bell, Star, Briefcase, Plus, Shuffle } from 'lucide-react';
+import { ArrowLeft, TrendingUp, TrendingDown, Info, Maximize2, BarChart2, Bell, Star, Briefcase, Plus, Shuffle, Zap, Target } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { NewsSection } from '@/components/dashboard/NewsSection';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -19,7 +19,6 @@ import {
   Area,
   Bar,
   BarChart,
-  DonutChart,
   Line,
   LineChart,
   Pie,
@@ -209,6 +208,37 @@ const CompareCoin = () => (
     </Card>
 );
 
+const MarketStatsCard: React.FC<{ asset: Stock }> = ({ asset }) => {
+    const stats = [
+        { label: 'Coin Price', value: `$${(asset.price / 83).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 6})}` },
+        { label: 'Market Capital', value: `$${(parseFloat(asset.marketCap?.replace('₹', '').replace('T', ''))*1e12 / 83 / 1e12).toFixed(2)}T` },
+        { label: 'Technology', value: asset.fundamentals?.technology || 'N/A' },
+        { label: 'Introduction Year', value: asset.fundamentals?.introductionYear || 'N/A' },
+        { label: 'Tech Score Indicator', value: asset.fundamentals?.techScoreIndicator || 'N/A' },
+        { label: 'Safety Score', value: asset.fundamentals?.safetyScore || 'N/A' },
+        { label: 'Market Rank', value: asset.fundamentals?.marketRank || 'N/A' },
+        { label: '6 Month Return', value: `${asset.fundamentals?.sixMonthReturn || 0}%`, isPositive: (asset.fundamentals?.sixMonthReturn || 0) > 0 },
+    ];
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle className="text-lg">Market Stats</CardTitle>
+            </CardHeader>
+            <CardContent>
+                <div className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-3 text-sm">
+                    {stats.map(stat => (
+                        <React.Fragment key={stat.label}>
+                            <div className="font-medium text-muted-foreground">{stat.label}</div>
+                            <div className={cn("font-semibold text-right", stat.isPositive && "text-green-600")}>{stat.value}</div>
+                        </React.Fragment>
+                    ))}
+                </div>
+            </CardContent>
+        </Card>
+    )
+};
+
+
 interface CryptoMarketPageProps {
   params: { symbol: string };
   onBack: () => void;
@@ -318,7 +348,7 @@ export default function CryptoMarketPage({ params, onBack }: CryptoMarketPagePro
                             <CardHeader><CardTitle>Fundamental</CardTitle></CardHeader>
                             <CardContent className="divide-y p-0">
                                <FundamentalRow label="Total Volume" value={`$${((asset.volume || 0) / 83 / 1e9).toFixed(2)} B`} />
-                               <FundamentalRow label="Market Cap" value={`$${(parseFloat(asset.marketCap?.replace('₹', '').replace('T', ''))*1e12 / 83 / 1e9).toFixed(2)} B`} />
+                               <FundamentalRow label="Market Cap" value={`$${(parseFloat(asset.marketCap?.replace('₹', '').replace('T', ''))*1e12 / 83 / 1e12).toFixed(2)}T`} />
                                <FundamentalRow label="Total Supply" value="120.71 M" />
                                <FundamentalRow label="Circulating Supply" value="120.71 M" />
                                <FundamentalRow label="High (24h)" value={`$${((asset.todayHigh || 0) / 83).toLocaleString('en-US', {minimumFractionDigits: 2})}`} />
@@ -357,6 +387,7 @@ export default function CryptoMarketPage({ params, onBack }: CryptoMarketPagePro
                         </div>
                         <BitcoinJourneyChart />
                         <CompareCoin />
+                        <MarketStatsCard asset={asset} />
                     </TabsContent>
                 </main>
             </Tabs>
