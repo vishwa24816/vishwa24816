@@ -39,7 +39,7 @@ export const DXBallGame: React.FC<DXBallGameProps> = ({ brickCount, onGameEnd })
     canvas.height = window.innerHeight;
 
     const paddleHeight = 15;
-    const paddleWidth = 120;
+    const paddleWidth = 150;
     const ballRadius = 10;
 
     const game = gameInstance.current;
