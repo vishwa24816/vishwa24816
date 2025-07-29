@@ -124,9 +124,6 @@ export function ScreenerPageContent({ onAssetClick }: { onAssetClick: (asset: St
     const [error, setError] = useState('');
     const [expandedStockId, setExpandedStockId] = useState<string | null>(null);
     const [suggestedResults, setSuggestedResults] = useState<{ title: string; stocks: Stock[] } | null>(null);
-
-    const isRealMode = user?.id === 'REAL456';
-    const [activeMode, setActiveMode] = useState<'Fiat' | 'Crypto'>(isRealMode ? 'Crypto' : 'Fiat');
     
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -243,16 +240,11 @@ export function ScreenerPageContent({ onAssetClick }: { onAssetClick: (asset: St
 
     return (
         <main className="flex-grow p-4 sm:p-6 lg:p-8 space-y-6 overflow-y-auto">
-            <div className="flex items-center gap-1 rounded-md bg-muted p-1">
-                <Button variant={activeMode === 'Fiat' ? 'secondary' : 'ghost'} className="flex-1" onClick={() => setActiveMode('Fiat')}>Fiat Screener</Button>
-                <Button variant={activeMode === 'Crypto' ? 'secondary' : 'ghost'} className="flex-1" onClick={() => setActiveMode('Crypto')}>Crypto Screener</Button>
-            </div>
-            
             <Card>
                 <CardHeader>
                     <CardTitle className="text-2xl font-bold flex items-center">
                         <Zap className="mr-2 h-6 w-6 text-primary" />
-                        AI {activeMode} Screener
+                        AI Screener
                     </CardTitle>
                     <CardDescription>
                         Describe the assets you're looking for in plain English, or use a preset filter below.
