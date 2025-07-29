@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { AppHeader } from '@/components/shared/AppHeader';
 import { ProtectedRoute } from '@/components/shared/ProtectedRoute';
 import { Button } from '@/components/ui/button';
@@ -10,6 +10,8 @@ import { ChevronDown, MoreVertical } from 'lucide-react';
 import { mockCryptoAssets } from '@/lib/mockData';
 import { CryptoListItem } from '@/components/markets/CryptoListItem';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { CryptoMarketPage } from './[symbol]/page';
+import type { Stock } from '@/types';
 
 type CryptoFilter = 'all' | 'trending' | 'gainers' | 'losers';
 
@@ -17,6 +19,7 @@ export default function CryptoMarketsPage() {
     const [activeTab, setActiveTab] = useState<CryptoFilter>('all');
     const [currency, setCurrency] = useState('usd');
     const [timeframe, setTimeframe] = useState('24h');
+    const [selectedAsset, setSelectedAsset] = useState<Stock | null>(null);
 
     const filteredAssets = useMemo(() => {
         let assets = [...mockCryptoAssets];
@@ -32,6 +35,24 @@ export default function CryptoMarketsPage() {
                 return assets;
         }
     }, [activeTab]);
+    
+    const handleAssetClick = (asset: Stock) => {
+        setSelectedAsset(asset);
+    }
+    
+    if (selectedAsset) {
+        return (
+            <ProtectedRoute>
+                 <div className="flex flex-col min-h-screen">
+                    <AppHeader 
+                        isRealMode={false} 
+                        activeMode={'Crypto'}
+                    />
+                    <CryptoMarketPage params={{ symbol: selectedAsset.symbol }} onBack={() => setSelectedAsset(null)} />
+                </div>
+            </ProtectedRoute>
+        )
+    }
 
     return (
         <ProtectedRoute>
@@ -81,7 +102,7 @@ export default function CryptoMarketsPage() {
                     <ScrollArea className="flex-grow">
                         <div className="divide-y divide-border">
                             {filteredAssets.map((asset, index) => (
-                                <CryptoListItem key={asset.id} asset={asset} rank={index + 1} currency={currency} />
+                                <CryptoListItem key={asset.id} asset={asset} rank={index + 1} currency={currency} onClick={() => handleAssetClick(asset)} />
                             ))}
                         </div>
                     </ScrollArea>

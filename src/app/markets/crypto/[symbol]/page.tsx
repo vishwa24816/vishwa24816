@@ -2,7 +2,6 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -39,9 +38,12 @@ const FundamentalRow: React.FC<{ label: string; value: string | number; isPositi
     </div>
 );
 
-export default function CryptoMarketPage() {
-    const params = useParams();
-    const router = useRouter();
+interface CryptoMarketPageProps {
+  params: { symbol: string };
+  onBack: () => void;
+}
+
+export function CryptoMarketPage({ params, onBack }: CryptoMarketPageProps) {
     const { toast } = useToast();
     const symbol = typeof params.symbol === 'string' ? decodeURIComponent(params.symbol) : undefined;
     
@@ -57,10 +59,10 @@ export default function CryptoMarketPage() {
                 setAssetSpecificNews(getRelevantNewsForCrypto(foundAsset, mockNewsArticles));
             } else {
                 toast({ title: "Error", description: `Asset with symbol ${symbol} not found.`, variant: "destructive" });
-                router.push('/markets/crypto');
+                onBack();
             }
         }
-    }, [symbol, router, toast]);
+    }, [symbol, toast, onBack]);
 
     if (!asset) {
         return (
@@ -75,8 +77,8 @@ export default function CryptoMarketPage() {
     
     return (
         <div className="flex flex-col min-h-screen bg-background text-foreground">
-            <header className="px-4 py-3 sticky top-0 z-10 bg-background border-b border-border flex justify-between items-center">
-                <Button variant="ghost" size="icon" onClick={() => router.back()} className="text-foreground hover:bg-muted">
+            <header className="px-4 py-3 sticky top-16 z-10 bg-background border-b border-border flex justify-between items-center">
+                <Button variant="ghost" size="icon" onClick={onBack} className="text-foreground hover:bg-muted">
                     <ArrowLeft className="h-5 w-5" />
                 </Button>
                 <h1 className="text-lg font-semibold">{asset.name}</h1>
@@ -175,4 +177,3 @@ export default function CryptoMarketPage() {
         </div>
     );
 }
-

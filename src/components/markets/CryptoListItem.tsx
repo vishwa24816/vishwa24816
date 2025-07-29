@@ -7,12 +7,12 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { MoreVertical, TrendingUp, TrendingDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useRouter } from 'next/navigation';
 
 interface CryptoListItemProps {
   asset: Stock;
   rank: number;
   currency: 'usd' | 'inr';
+  onClick: () => void;
 }
 
 const formatCurrency = (value: number, currency: 'usd' | 'inr', compact: boolean = false) => {
@@ -26,8 +26,7 @@ const formatCurrency = (value: number, currency: 'usd' | 'inr', compact: boolean
     return formatter.format(value);
 };
 
-export const CryptoListItem: React.FC<CryptoListItemProps> = ({ asset, rank, currency }) => {
-    const router = useRouter();
+export const CryptoListItem: React.FC<CryptoListItemProps> = ({ asset, rank, currency, onClick }) => {
     const isPositive = asset.changePercent >= 0;
 
     // A simple mock conversion. In a real app, you'd fetch this.
@@ -39,12 +38,8 @@ export const CryptoListItem: React.FC<CryptoListItemProps> = ({ asset, rank, cur
     const volumeValue = asset.volume || 0;
     const displayVolume = currency === 'inr' ? volumeValue : volumeValue / USD_TO_INR_RATE;
 
-    const handleItemClick = () => {
-        router.push(`/markets/crypto/${asset.symbol}`);
-    };
-
     return (
-        <div className="px-4 py-3 hover:bg-muted/50 cursor-pointer" onClick={handleItemClick}>
+        <div className="px-4 py-3 hover:bg-muted/50 cursor-pointer" onClick={onClick}>
             <div className="flex items-center gap-3">
                 <span className="text-sm text-muted-foreground w-6 text-center">{rank}</span>
                 <Avatar className="h-8 w-8 text-xs">
