@@ -77,7 +77,7 @@ export function CryptoMarketPage({ params, onBack }: CryptoMarketPageProps) {
     
     return (
         <div className="flex flex-col min-h-screen bg-background text-foreground">
-            <header className="px-4 py-3 sticky top-16 z-10 bg-background border-b border-border flex justify-between items-center">
+            <header className="px-4 py-3 sticky top-16 z-20 bg-background border-b border-border flex justify-between items-center">
                 <Button variant="ghost" size="icon" onClick={onBack} className="text-foreground hover:bg-muted">
                     <ArrowLeft className="h-5 w-5" />
                 </Button>
@@ -91,7 +91,7 @@ export function CryptoMarketPage({ params, onBack }: CryptoMarketPageProps) {
             
             <main className="flex-grow overflow-y-auto">
                 <Tabs defaultValue="market" className="w-full">
-                    <TabsList className="w-full justify-start rounded-none bg-background p-0 px-4 sticky top-16 z-10 border-b overflow-x-auto no-scrollbar">
+                    <TabsList className="w-full justify-start rounded-none bg-background p-0 px-4 sticky top-32 z-10 border-b overflow-x-auto no-scrollbar">
                         <TabsTrigger value="market">Market</TabsTrigger>
                         <TabsTrigger value="news">News</TabsTrigger>
                         <TabsTrigger value="analysis">Analysis</TabsTrigger>
@@ -102,12 +102,12 @@ export function CryptoMarketPage({ params, onBack }: CryptoMarketPageProps) {
                         <div className="flex justify-between items-start">
                           <div>
                             <p className="text-sm text-muted-foreground">{asset.name} / U.S. Dollar</p>
-                            <p className={`text-3xl font-bold`}>${(asset.price / 80).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
+                            <p className={`text-3xl font-bold`}>${(asset.price / 83).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
                             <p className={`text-sm ${isPositiveChange ? 'text-green-500' : 'text-red-500'} flex items-center`}>
-                              {isPositiveChange ? '+' : ''}{(asset.change / 80).toLocaleString('en-US', {minimumFractionDigits: 2})} ({isPositiveChange ? '+' : ''}{asset.changePercent.toFixed(2)}%) Past month
+                              {isPositiveChange ? '+' : ''}{(asset.change / 83).toLocaleString('en-US', {minimumFractionDigits: 2})} ({isPositiveChange ? '+' : ''}{asset.changePercent.toFixed(2)}%) Past month
                             </p>
                           </div>
-                          <Avatar>
+                           <Avatar className="h-10 w-10">
                             <AvatarFallback>{asset.symbol.charAt(0)}</AvatarFallback>
                           </Avatar>
                         </div>
@@ -138,12 +138,12 @@ export function CryptoMarketPage({ params, onBack }: CryptoMarketPageProps) {
                         <Card>
                             <CardHeader><CardTitle>Fundamental</CardTitle></CardHeader>
                             <CardContent className="divide-y p-0">
-                               <FundamentalRow label="Total Volume" value={`$${((asset.volume || 0) / 1e9).toFixed(2)} B`} />
-                               <FundamentalRow label="Market Cap" value={`$${(parseFloat(asset.marketCap?.replace('₹', '').replace('T', ''))*1e12 / 80 / 1e9).toFixed(2)} B`} />
+                               <FundamentalRow label="Total Volume" value={`$${((asset.volume || 0) / 83 / 1e9).toFixed(2)} B`} />
+                               <FundamentalRow label="Market Cap" value={`$${(parseFloat(asset.marketCap?.replace('₹', '').replace('T', ''))*1e12 / 83 / 1e9).toFixed(2)} B`} />
                                <FundamentalRow label="Total Supply" value="120.71 M" />
                                <FundamentalRow label="Circulating Supply" value="120.71 M" />
-                               <FundamentalRow label="High (24h)" value={(asset.todayHigh || 0).toLocaleString()} />
-                               <FundamentalRow label="Low (24h)" value={(asset.todayLow || 0).toLocaleString()} />
+                               <FundamentalRow label="High (24h)" value={`$${((asset.todayHigh || 0) / 83).toLocaleString()}`} />
+                               <FundamentalRow label="Low (24h)" value={`$${((asset.todayLow || 0) / 83).toLocaleString()}`} />
                                <FundamentalRow label="Max Supply" value="No data" />
                                <FundamentalRow label="Change (1h)" value="1.26%" isPositive />
                                <FundamentalRow label="Change (24h)" value="-0.37%" isNegative />
