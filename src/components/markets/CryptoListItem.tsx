@@ -45,7 +45,7 @@ export const CryptoListItem: React.FC<CryptoListItemProps> = ({ asset, rank, cur
                 <Avatar className="h-8 w-8 text-xs">
                     <AvatarFallback>{asset.symbol.substring(0, 2)}</AvatarFallback>
                 </Avatar>
-                <div className="flex-1">
+                <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                          <p className="font-semibold text-foreground text-sm">{asset.symbol}</p>
                          <p className="text-xs text-muted-foreground">{asset.name}</p>
@@ -54,7 +54,7 @@ export const CryptoListItem: React.FC<CryptoListItemProps> = ({ asset, rank, cur
                         Mkt Cap: {formatCurrency(displayMarketCap, currency, true)}
                     </p>
                 </div>
-                 <div className="text-right">
+                 <div className="text-right shrink-0">
                     <p className="font-semibold text-foreground text-sm">{formatCurrency(displayPrice, currency)}</p>
                     <p className={cn("text-xs flex items-center justify-end", isPositive ? 'text-green-600' : 'text-red-500')}>
                         {isPositive ? <TrendingUp className="h-3 w-3 mr-1" /> : <TrendingDown className="h-3 w-3 mr-1" />}
