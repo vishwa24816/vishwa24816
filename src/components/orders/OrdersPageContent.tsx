@@ -24,7 +24,6 @@ import {
 } from '@/lib/mockData';
 
 const demoOrderTabs = [
-  { value: "positions", label: "Positions" },
   { value: "limit", label: "Limit" },
   { value: "bids", label: "Bids" },
   { value: "hodl", label: "HODL" },
@@ -34,7 +33,6 @@ const demoOrderTabs = [
 ];
 
 const realOrderTabs = [
-  { value: "positions", label: "Positions" },
   { value: "limit", label: "Limit" },
   { value: "hodl", label: "HODL" },
   { value: "baskets", label: "Baskets" },
@@ -88,17 +86,6 @@ export function OrdersPageContent({ activeMode, onAssetClick }: { activeMode: 'P
             </div>
 
             <div className="w-full px-0 sm:px-2 md:px-4 py-4 flex-grow flex flex-col">
-              <TabsContent value="positions" className="flex-grow flex flex-col mt-0 data-[state=inactive]:hidden">
-                 <OpenPositionsDisplay 
-                    fiatHoldings={fiatHoldings}
-                    wealthHoldings={wealthHoldings}
-                    cryptoHoldings={cryptoHoldings}
-                    intradayPositions={mockIntradayPositions}
-                    foPositions={mockFoPositions}
-                    cryptoFutures={mockCryptoFutures}
-                    onAssetClick={onAssetClick}
-                 />
-              </TabsContent>
               <TabsContent value="limit" className="flex-grow flex flex-col mt-0 data-[state=inactive]:hidden">
                 <LimitOrdersDisplay isRealMode={isRealMode} />
               </TabsContent>
