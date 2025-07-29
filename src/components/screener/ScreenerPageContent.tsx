@@ -52,43 +52,15 @@ const alertSubItems = [
     'Email Alerts',
 ];
 
+const cryptoSubItems = ['Market', 'Analysis', 'News', 'Study'];
+
 const screenerItems = [
-  {
-    title: 'Markets',
-    icon: TrendingUp,
-    content: marketSubItems,
-    hasDot: false,
-  },
-  {
-    title: 'Superstars',
-    icon: Star,
-    content: 'Superstars screener content',
-    hasDot: false,
-  },
-  {
-    title: 'Mutual Funds',
-    icon: PiggyBank,
-    content: ['Index Fund', 'Large Cap', 'Mid Cap', 'Small Cap', 'Flexi Cap', 'ELSS', 'Sectoral', 'Thematic'],
-    hasDot: true,
-  },
-  {
-    title: 'Bonds',
-    icon: LandPlot,
-    content: ['Government Bonds', 'Corporate Bonds'],
-    hasDot: false,
-  },
-   {
-    title: 'Crypto',
-    icon: Repeat,
-    content: ['Market', 'Analysis', 'News', 'Study'],
-    hasDot: false,
-  },
-  {
-    title: 'Alerts',
-    icon: Bell,
-    content: alertSubItems,
-    hasDot: false,
-  },
+  { title: 'Markets', icon: TrendingUp, content: marketSubItems, hasDot: false },
+  { title: 'Superstars', icon: Star, content: 'Superstars screener content', hasDot: false },
+  { title: 'Mutual Funds', icon: PiggyBank, content: ['Index Fund', 'Large Cap', 'Mid Cap', 'Small Cap', 'Flexi Cap', 'ELSS', 'Sectoral', 'Thematic'], hasDot: true },
+  { title: 'Bonds', icon: LandPlot, content: ['Government Bonds', 'Corporate Bonds'], hasDot: false },
+  { title: 'Crypto', icon: Repeat, content: cryptoSubItems, hasDot: false },
+  { title: 'Alerts', icon: Bell, content: alertSubItems, hasDot: false },
 ];
 
 
@@ -264,6 +236,10 @@ export function ScreenerPageContent({ onAssetClick }: { onAssetClick: (asset: St
         const primaryTab = subItem.includes('Bond') ? 'Bonds' : 'Mutual Funds';
         router.push(`/?mode=Wealth&primary=${primaryTab}&secondary=Top watchlist`);
     }
+
+    const handleCryptoSubItemClick = (subItem: string) => {
+        router.push('/markets/crypto');
+    };
 
     return (
         <main className="flex-grow p-4 sm:p-6 lg:p-8 space-y-6 overflow-y-auto">
@@ -453,6 +429,8 @@ export function ScreenerPageContent({ onAssetClick }: { onAssetClick: (asset: St
                                                             handleWealthSubItemClick(subItem)
                                                         } else if (item.title === 'Alerts') {
                                                             handleAlertsSubItemClick()
+                                                        } else if (item.title === 'Crypto') {
+                                                            handleCryptoSubItemClick(subItem)
                                                         } else {
                                                             toast({
                                                                 title: `${subItem}`,
