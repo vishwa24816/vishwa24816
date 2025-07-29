@@ -32,16 +32,18 @@ export default function DashboardRouterPage() {
 
   const [activeMainView, setActiveMainView] = useState<MainView>('home');
   const [previousMainView, setPreviousMainView] = useState<MainView>('home');
-  const [activeMode, setActiveMode] = useState<'Portfolio' | 'Fiat' | 'Wealth' | 'Crypto' | 'Web3'>(isRealMode ? 'Crypto' : 'Portfolio');
+  const [activeMode, setActiveMode] = useState<'Portfolio' | 'Fiat' | 'Wealth' | 'Crypto' | 'Web3'>(isRealMode ? 'Portfolio' : 'Portfolio');
   const [walletMode, setWalletMode] = useState<WalletMode>('hot');
   const [selectedAsset, setSelectedAsset] = useState<Stock | null>(null);
   const [initialOrderDetails, setInitialOrderDetails] = useState<InitialOrderDetails | null>(null);
   
-  useEffect(() => {
-    if (isRealMode && (activeMode === 'Fiat' || activeMode === 'Portfolio')) {
-      setActiveMode('Crypto');
-    }
-  }, [isRealMode, activeMode]);
+  const handleModeChange = (mode: 'Portfolio' | 'Fiat' | 'Wealth' | 'Crypto' | 'Web3') => {
+      if (isRealMode && mode === 'Fiat') {
+          setActiveMode('Portfolio'); // Default to portfolio in real mode if Fiat is clicked
+      } else {
+          setActiveMode(mode);
+      }
+  };
 
   const handleNavigate = (view: MainView) => {
     if (view !== 'asset_order') {
@@ -65,7 +67,7 @@ export default function DashboardRouterPage() {
      return (
         <ProtectedRoute>
             <div className="flex flex-col min-h-screen">
-                <AppHeader activeMode={activeMode} onModeChange={setActiveMode} isRealMode={false} />
+                <AppHeader activeMode={activeMode} onModeChange={handleModeChange} isRealMode={false} />
                 <main className="flex-grow container mx-auto p-4 sm:p-6 lg:p-8 space-y-8">
                     <Skeleton className="h-24 w-full" />
                     <Skeleton className="h-12 w-full" />
@@ -85,7 +87,7 @@ export default function DashboardRouterPage() {
         return isRealMode ? (
           <RealDashboard activeMode={activeMode} walletMode={walletMode} setWalletMode={setWalletMode} onAssetClick={handleAssetClick} />
         ) : (
-          <DemoDashboard activeMode={activeMode} onModeChange={setActiveMode} walletMode={walletMode} setWalletMode={setWalletMode} onAssetClick={handleAssetClick}/>
+          <DemoDashboard activeMode={activeMode} onModeChange={handleModeChange} walletMode={walletMode} setWalletMode={setWalletMode} onAssetClick={handleAssetClick}/>
         );
       case 'orders':
         return <OrdersPageContent onAssetClick={handleAssetClick} activeMode={activeMode} />;
@@ -100,7 +102,7 @@ export default function DashboardRouterPage() {
           return <OrderPageDispatcher asset={selectedAsset} onBack={() => handleNavigate(previousMainView)} initialDetails={initialOrderDetails} />;
         }
         // Fallback to home if no asset is selected
-        return isRealMode ? <RealDashboard activeMode={activeMode} walletMode={walletMode} setWalletMode={setWalletMode} onAssetClick={handleAssetClick} /> : <DemoDashboard activeMode={activeMode} onModeChange={setActiveMode} walletMode={walletMode} setWalletMode={setWalletMode} onAssetClick={handleAssetClick}/>;
+        return isRealMode ? <RealDashboard activeMode={activeMode} walletMode={walletMode} setWalletMode={setWalletMode} onAssetClick={handleAssetClick} /> : <DemoDashboard activeMode={activeMode} onModeChange={handleModeChange} walletMode={walletMode} setWalletMode={setWalletMode} onAssetClick={handleAssetClick}/>;
       default:
         return null;
     }
@@ -111,7 +113,7 @@ export default function DashboardRouterPage() {
       <div className="flex flex-col min-h-screen pb-16">
         <AppHeader 
           activeMode={activeMode}
-          onModeChange={setActiveMode}
+          onModeChange={handleModeChange}
           isRealMode={isRealMode}
           walletMode={walletMode}
         />

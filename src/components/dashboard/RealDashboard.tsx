@@ -1,8 +1,7 @@
 
-
 "use client";
 
-import { SubNav } from '@/components/dashboard/SubNav';
+import { SubNav } from '@/components/shared/SubNav';
 import { NewsSection } from '@/components/dashboard/NewsSection';
 import { WatchlistSection } from '@/components/dashboard/WatchlistSection';
 import { CryptoHoldingsSection } from '@/components/dashboard/CryptoHoldingsSection';
@@ -11,11 +10,10 @@ import { CryptoBasketSection } from './CryptoBasketSection';
 import { CryptoOptionChain } from '@/components/dashboard/CryptoOptionChain';
 import { StrategyBuilder } from '@/components/dashboard/StrategyBuilder';
 import { ReadymadeStrategiesSection } from '@/components/dashboard/ReadymadeStrategiesSection';
-import { MarketOverview } from './MarketOverview';
 import { MarketMovers } from './MarketMovers';
 
-import React, { useState, useMemo } from 'react';
-import type { PortfolioHolding, NewsArticle, IntradayPosition, FoPosition, CryptoFuturePosition, Stock, SelectedOptionLeg } from '@/types';
+import React, { useState, useMemo, useEffect } from 'react';
+import type { PortfolioHolding, NewsArticle, CryptoFuturePosition, Stock, SelectedOptionLeg } from '@/types';
 import { 
   mockNewsArticles, 
   mockCryptoAssets,
@@ -26,14 +24,15 @@ import {
   mockRealCryptoFutures,
 } from '@/lib/mockData';
 import { mockCryptoOptionsForWatchlist } from '@/lib/mockData/cryptoOptionsWatchlist';
-import { mockCryptoIndices } from '@/lib/mockData/cryptoIndices';
 import type { WalletMode } from './CryptoHoldingsSection';
+import { FundTransferDialog } from '../shared/FundTransferDialog';
+import { useToast } from '@/hooks/use-toast';
 
 // Helper functions (could be moved to a utils file)
 function getRelevantNewsForHoldings(holdings: PortfolioHolding[], allNews: NewsArticle[]): NewsArticle[] {
   if (!holdings.length || !allNews.length) return [];
   const keywords = new Set(holdings.flatMap(h => [h.name.toLowerCase(), h.symbol?.toLowerCase()]).filter(Boolean));
-  return allNews.filter(news => Array.from(keywords).some(keyword => news.headline.toLowerCase().includes(keyword as string)));
+  return allNews.filter(news => Array.from(keywords).some(keyword => (keyword as string) && news.headline.toLowerCase().includes(keyword as string)));
 }
 
 function getRelevantNewsForPositions(
@@ -45,13 +44,13 @@ function getRelevantNewsForPositions(
   cryptoFutures.forEach(p => {
     keywords.add(p.symbol.replace(/USDT|INR/g, "").toLowerCase());
   });
-  return allNews.filter(news => Array.from(keywords).some(keyword => news.headline.toLowerCase().includes(keyword as string)));
+  return allNews.filter(news => Array.from(keywords).some(keyword => (keyword as string) && news.headline.toLowerCase().includes(keyword as string)));
 }
 
 function getRelevantNewsForWatchlistItems(items: Stock[] | undefined, allNews: NewsArticle[]): NewsArticle[] {
   if (!items || !items.length || !allNews.length) return [];
   const keywords = new Set(items.flatMap(i => [i.name.toLowerCase(), i.symbol?.toLowerCase()]).filter(Boolean));
-  return allNews.filter(news => Array.from(keywords).some(keyword => news.headline.toLowerCase().includes(keyword as string)));
+  return allNews.filter(news => Array.from(keywords).some(keyword => (keyword as string) && news.headline.toLowerCase().includes(keyword as string)));
 }
 
 interface RealDashboardProps {
@@ -62,13 +61,13 @@ interface RealDashboardProps {
 }
 
 export function RealDashboard({ activeMode, walletMode, setWalletMode, onAssetClick }: RealDashboardProps) {
-  const { primaryNavItems, secondaryNavTriggerCategories } = useMemo(() => {
+   const { toast } = useToast();
+   const { primaryNavItems, secondaryNavTriggerCategories } = useMemo(() => {
     if (activeMode === 'Portfolio') {
        return {
-            primaryNavItems: ["Crypto", "Web3"],
+            primaryNavItems: ["Crypto"],
             secondaryNavTriggerCategories: {
                 Crypto: ["Holdings", "Positions", "Portfolio Watchlist"],
-                Web3: ["Holdings", "Portfolio Watchlist"],
             }
         }
     }
@@ -95,9 +94,10 @@ export function RealDashboard({ activeMode, walletMode, setWalletMode, onAssetCl
   const [mainPortfolioCashBalance, setMainPortfolioCashBalance] = useState(50000.00); 
   const [cryptoCashBalance, setCryptoCashBalance] = useState(15000.00);
   const [strategyLegs, setStrategyLegs] = useState<SelectedOptionLeg[]>([]);
+  const [isFundTransferDialogOpen, setIsFundTransferDialogOpen] = useState(false);
+  const [transferDirection, setTransferDirection] = useState<'toCrypto' | 'fromCrypto'>('toCrypto');
 
-
-  React.useEffect(() => {
+  useEffect(() => {
     const firstPrimary = primaryNavItems[0] || "";
     setActivePrimaryItem(firstPrimary);
     const newSecondaryItems = secondaryNavTriggerCategories[firstPrimary] || [];
@@ -108,6 +108,27 @@ export function RealDashboard({ activeMode, walletMode, setWalletMode, onAssetCl
     setActivePrimaryItem(item);
     const newSecondaryItems = secondaryNavTriggerCategories[item] || [];
     setActiveSecondaryItem(newSecondaryItems[0] || "");
+  };
+
+  const handleOpenFundTransferDialog = (direction: 'toCrypto' | 'fromCrypto') => {
+    setTransferDirection(direction);
+    setIsFundTransferDialogOpen(true);
+  };
+  
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
+  };
+
+  const handleTransferConfirm = (amount: number, direction: 'toCrypto' | 'fromCrypto') => {
+    if (direction === 'toCrypto') {
+      setMainPortfolioCashBalance((prev: number) => prev - amount);
+      setCryptoCashBalance((prev: number) => prev + amount);
+      toast({ title: "Transfer Successful", description: `${formatCurrency(amount)} transferred to Crypto Wallet.` });
+    } else { // fromCrypto
+      setMainPortfolioCashBalance((prev: number) => prev + amount);
+      setCryptoCashBalance((prev: number) => prev - amount);
+      toast({ title: "Transfer Successful", description: `${formatCurrency(amount)} transferred to Main Portfolio.` });
+    }
   };
   
   const cryptoHoldings = useMemo(() => mockRealPortfolioHoldings, []);
@@ -158,7 +179,7 @@ export function RealDashboard({ activeMode, walletMode, setWalletMode, onAssetCl
   const renderMarketContent = () => {
       if(activeMode === 'Crypto') {
           if (activePrimaryItem === "Options") {
-            if (activeSecondaryItem === 'Dashboard') return <div className="space-y-8"><MarketOverview title="Top Cryptocurrencies" items={mockCryptoAssets.slice(0,5)} /><MarketMovers futuresData={mockCryptoFuturesForWatchlist} optionsData={mockCryptoOptionsForWatchlist} onAssetClick={onAssetClick} /><NewsSection articles={newsForView} /></div>;
+            if (activeSecondaryItem === 'Dashboard') return <div className="space-y-8"><MarketMovers stocks={mockCryptoOptionsForWatchlist} displayMode="full" category="Crypto Options" onAssetClick={onAssetClick} /><NewsSection articles={newsForView} /></div>;
             if (activeSecondaryItem === "Custom") return ( <div className="space-y-8"><CryptoOptionChain onAddLeg={(leg) => setStrategyLegs(prev => [...prev, leg])} />{strategyLegs.length > 0 && <StrategyBuilder legs={strategyLegs} setLegs={setStrategyLegs} />}<NewsSection articles={newsForView} /></div>);
             if (activeSecondaryItem === "Readymade") return ( <div className="space-y-8"><ReadymadeStrategiesSection onStrategySelect={(legs) => setStrategyLegs(legs)} />{strategyLegs.length > 0 && <StrategyBuilder legs={strategyLegs} setLegs={setStrategyLegs} />}<NewsSection articles={newsForView} /></div> );
             return null
@@ -169,6 +190,7 @@ export function RealDashboard({ activeMode, walletMode, setWalletMode, onAssetCl
   }
 
   return (
+    <>
     <main className="flex-grow p-4 sm:p-6 lg:p-8 space-y-8">
       <SubNav
         primaryNavItems={primaryNavItems}
@@ -184,5 +206,15 @@ export function RealDashboard({ activeMode, walletMode, setWalletMode, onAssetCl
        {activeMode === 'Portfolio' ? renderPortfolioContent() : renderMarketContent()}
 
     </main>
+     <FundTransferDialog
+        isOpen={isFundTransferDialogOpen}
+        onOpenChange={setIsFundTransferDialogOpen}
+        transferDirection={transferDirection}
+        mainPortfolioCashBalance={mainPortfolioCashBalance}
+        cryptoCashBalance={cryptoCashBalance}
+        onTransferConfirm={handleTransferConfirm}
+        currencyMode={'INR'}
+      />
+    </>
   );
 }
