@@ -84,8 +84,8 @@ export function AppHeader({ activeMode, onModeChange, isRealMode, walletMode }: 
     };
   }, [activeMode, isRealMode]);
   
-  const availableModes: ('Portfolio' | 'Fiat' | 'Wealth' | 'Crypto' | 'Web3')[] = isRealMode 
-    ? ['Portfolio', 'Crypto', 'Web3'] 
+  const availableModes: ('Portfolio' | 'Fiat' | 'Crypto' | 'Web3' | 'Wealth')[] = isRealMode 
+    ? ['Portfolio', 'Crypto'] 
     : ['Portfolio', 'Fiat', 'Wealth', 'Crypto', 'Web3'];
 
 
