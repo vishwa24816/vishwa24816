@@ -136,7 +136,7 @@ export const DXBallGame: React.FC<DXBallGameProps> = ({ brickCount, onGameEnd })
               game.ballDY = -game.ballDY;
               b.status -= 1;
               
-              const speedMultiplier = 1 + (Math.random() * 0.10 + 0.15);
+              const speedMultiplier = 1.10;
               game.ballDX *= speedMultiplier;
               game.ballDY *= speedMultiplier;
               
