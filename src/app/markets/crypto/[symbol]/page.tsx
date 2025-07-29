@@ -12,13 +12,6 @@ import { ArrowLeft, TrendingUp, TrendingDown, Info, Maximize2, BarChart2, Bell, 
 import { cn } from '@/lib/utils';
 import { NewsSection } from '@/components/dashboard/NewsSection';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 // News relevance function - can be moved to a shared util
@@ -76,7 +69,7 @@ export function CryptoMarketPage({ params, onBack }: CryptoMarketPageProps) {
     
     return (
         <div className="flex flex-col min-h-screen bg-background text-foreground">
-            <header className="px-4 py-3 sticky top-16 z-20 bg-background border-b border-border flex justify-between items-center">
+             <header className="px-4 py-3 sticky top-16 z-20 bg-background border-b border-border flex justify-between items-center">
                 <Button variant="ghost" size="icon" onClick={onBack} className="text-foreground hover:bg-muted">
                     <ArrowLeft className="h-5 w-5" />
                 </Button>
@@ -90,12 +83,14 @@ export function CryptoMarketPage({ params, onBack }: CryptoMarketPageProps) {
             
             <main className="flex-grow overflow-y-auto">
                 <Tabs defaultValue="market" className="w-full">
-                    <TabsList className="w-full justify-start rounded-none bg-background p-0 px-4 sticky top-32 z-10 border-b overflow-x-auto no-scrollbar">
-                        <TabsTrigger value="market">Market</TabsTrigger>
-                        <TabsTrigger value="news">News</TabsTrigger>
-                        <TabsTrigger value="analysis">Analysis</TabsTrigger>
-                        <TabsTrigger value="study">Study</TabsTrigger>
-                    </TabsList>
+                     <div className="sticky top-32 z-10 bg-background border-b">
+                        <TabsList className="w-full justify-start rounded-none bg-transparent p-0 px-4">
+                            <TabsTrigger value="market">Market</TabsTrigger>
+                            <TabsTrigger value="news">News</TabsTrigger>
+                            <TabsTrigger value="analysis">Analysis</TabsTrigger>
+                            <TabsTrigger value="study">Study</TabsTrigger>
+                        </TabsList>
+                    </div>
 
                     <TabsContent value="market" className="p-4 space-y-6">
                          <div className="flex items-start justify-between">
