@@ -8,12 +8,28 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { mockCryptoAssets, mockNewsArticles } from '@/lib/mockData';
 import type { Stock, NewsArticle } from '@/types';
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, TrendingUp, TrendingDown, Info, Maximize2, BarChart2, Bell, Star, Briefcase } from 'lucide-react';
+import { ArrowLeft, TrendingUp, TrendingDown, Info, Maximize2, BarChart2, Bell, Star, Briefcase, Plus, Shuffle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { NewsSection } from '@/components/dashboard/NewsSection';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AnalysisTabContent } from '@/components/order-pages/shared/AnalysisComponents';
+import {
+  AreaChart,
+  Area,
+  Bar,
+  BarChart,
+  DonutChart,
+  Line,
+  LineChart,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  XAxis,
+  YAxis,
+  Tooltip,
+  Legend,
+} from 'recharts';
 
 // News relevance function - can be moved to a shared util
 function getRelevantNewsForCrypto(asset: Stock | null, allNews: NewsArticle[]): NewsArticle[] {
@@ -29,6 +45,168 @@ const FundamentalRow: React.FC<{ label: string; value: string | number; isPositi
             {value}
         </span>
     </div>
+);
+
+const AboutCoinCard = () => (
+    <Card>
+        <CardHeader>
+            <CardTitle className="text-lg">About Coin</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4 text-sm">
+             <div className="border-l-2 border-primary pl-4 space-y-3">
+                <div>
+                    <h4 className="font-semibold">Launch</h4>
+                    <p className="text-muted-foreground">January 2009 by Satoshi Nakamoto</p>
+                </div>
+                <div>
+                    <h4 className="font-semibold">Founded</h4>
+                    <p className="text-muted-foreground">2008</p>
+                </div>
+                 <div>
+                    <h4 className="font-semibold">Purpose</h4>
+                    <p className="text-muted-foreground">To create a decentralized digital currency that enables peer-to-peer transactions without the need for intermediaries</p>
+                </div>
+            </div>
+            <Button variant="outline" className="w-full">Show More</Button>
+        </CardContent>
+    </Card>
+);
+
+const marketCapData = [
+  { month: 'Jan', value: 1.8 }, { month: 'Feb', value: 1.9 },
+  { month: 'Mar', value: 1.7 }, { month: 'Apr', value: 2.0 },
+  { month: 'May', value: 2.2 }, { month: 'Jun', value: 2.35 },
+];
+
+const MarketCapitalCard = () => (
+  <Card className="h-full">
+    <CardHeader className="pb-2">
+      <CardTitle className="text-base">Market Capital</CardTitle>
+    </CardHeader>
+    <CardContent>
+      <p className="text-2xl font-bold">$ 2.35T</p>
+      <div className="h-20 -mx-6 -mb-6">
+        <ResponsiveContainer width="100%" height="100%">
+          <AreaChart data={marketCapData} margin={{ top: 5, right: 0, left: 0, bottom: 0 }}>
+            <defs>
+              <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="hsl(var(--positive))" stopOpacity={0.4}/>
+                <stop offset="95%" stopColor="hsl(var(--positive))" stopOpacity={0}/>
+              </linearGradient>
+            </defs>
+            <Area type="monotone" dataKey="value" stroke="hsl(var(--positive))" strokeWidth={2} fill="url(#colorValue)" />
+          </AreaChart>
+        </ResponsiveContainer>
+      </div>
+    </CardContent>
+  </Card>
+);
+
+const marketShareData = [{ name: 'Bitcoin', value: 54.44, fill: 'hsl(var(--primary))' }, { name: 'Others', value: 45.56, fill: 'hsl(var(--muted))' }];
+
+const MarketShareCard = () => (
+  <Card className="h-full">
+    <CardHeader className="pb-2">
+      <CardTitle className="text-base">Market Share</CardTitle>
+    </CardHeader>
+    <CardContent className="flex items-center gap-4">
+      <div className="h-24 w-24">
+        <ResponsiveContainer width="100%" height="100%">
+          <PieChart>
+            <Pie data={marketShareData} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={25} outerRadius={40} paddingAngle={2} />
+          </PieChart>
+        </ResponsiveContainer>
+      </div>
+      <div className="text-xs space-y-2">
+        {marketShareData.map(entry => (
+          <div key={entry.name} className="flex items-center">
+            <div className="w-2 h-2 rounded-full mr-2" style={{ backgroundColor: entry.fill }} />
+            <div>
+              <p className="text-muted-foreground">{entry.name}</p>
+              <p className="font-semibold">{entry.value}%</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </CardContent>
+  </Card>
+);
+
+const marketSupplyData = [{ name: 'Bitcoin', supply: 19.7, maxSupply: 21 }];
+const MarketSupplyCard = () => (
+    <Card className="h-full">
+        <CardHeader className="pb-2">
+            <CardTitle className="text-base">Market Supply</CardTitle>
+        </CardHeader>
+        <CardContent className="h-24 flex items-end gap-4">
+            {marketSupplyData.map(entry => (
+                <div key={entry.name} className="w-1/2">
+                    <div className="h-full bg-primary/20 rounded-t-md relative">
+                         <div className="h-full bg-primary rounded-t-md" style={{ height: `${(entry.supply / entry.maxSupply) * 100}%` }}></div>
+                    </div>
+                </div>
+            ))}
+        </CardContent>
+    </Card>
+);
+
+
+const journeyData = [
+  { year: '2009', price: 0 }, { year: '2010', price: 0.08 },
+  { year: '2011', price: 5.27 }, { year: '2012', price: 13.45 },
+  { year: '2013', price: 770 }, { year: '2014', price: 314 },
+  { year: '2015', price: 430 }, { year: '2016', price: 963 },
+  { year: '2017', price: 13880 }, { year: '2018', price: 3742 },
+  { year: '2019', price: 7193 }, { year: '2020', price: 29374 },
+  { year: '2021', price: 47686 }, { year: '2022', price: 16602 },
+  { year: '2023', price: 42281 }, { year: '2024', price: 65000 },
+];
+
+const BitcoinJourneyChart = () => (
+  <Card className="bg-foreground text-background">
+    <CardHeader>
+      <CardTitle className="text-lg text-background flex justify-between items-center">
+        The Journey of Bitcoin
+        <Maximize2 className="h-5 w-5 text-muted-foreground" />
+      </CardTitle>
+    </CardHeader>
+    <CardContent>
+      <div className="h-48">
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart data={journeyData}>
+             <XAxis dataKey="year" stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
+             <YAxis hide={true} domain={['dataMin', 'dataMax']} />
+             <Line type="monotone" dataKey="price" stroke="hsl(var(--positive))" strokeWidth={2} dot={{ r: 4, fill: 'hsl(var(--positive))' }} />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+    </CardContent>
+  </Card>
+);
+
+const CompareCoin = () => (
+    <Card>
+        <CardHeader>
+            <CardTitle className="text-lg">Compare Coin</CardTitle>
+        </CardHeader>
+        <CardContent className="flex items-center justify-around">
+            <div className="flex flex-col items-center gap-1">
+                <Avatar><AvatarFallback>B</AvatarFallback></Avatar>
+                <p className="text-xs font-semibold">BTC</p>
+                <p className="text-xs text-muted-foreground">Bitc...</p>
+            </div>
+            <Shuffle className="h-5 w-5 text-muted-foreground" />
+            <Button variant="outline" className="flex flex-col items-center h-auto p-2 gap-1 rounded-lg">
+                <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center"><Plus className="h-5 w-5"/></div>
+                <p className="text-xs">Add Coin</p>
+            </Button>
+             <Shuffle className="h-5 w-5 text-muted-foreground" />
+            <Button variant="outline" className="flex flex-col items-center h-auto p-2 gap-1 rounded-lg">
+                <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center"><Plus className="h-5 w-5"/></div>
+                <p className="text-xs">Add Coin</p>
+            </Button>
+        </CardContent>
+    </Card>
 );
 
 interface CryptoMarketPageProps {
@@ -170,8 +348,15 @@ export default function CryptoMarketPage({ params, onBack }: CryptoMarketPagePro
                      <TabsContent value="analysis" className="p-0 mt-0">
                         <AnalysisTabContent />
                     </TabsContent>
-                     <TabsContent value="study" className="p-4 mt-0 text-center text-muted-foreground">
-                        <p>Educational content and studies will be available here soon.</p>
+                     <TabsContent value="study" className="p-4 mt-0 space-y-6">
+                        <AboutCoinCard />
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <MarketCapitalCard />
+                            <MarketShareCard />
+                            <MarketSupplyCard />
+                        </div>
+                        <BitcoinJourneyChart />
+                        <CompareCoin />
                     </TabsContent>
                 </main>
             </Tabs>
