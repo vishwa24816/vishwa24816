@@ -10,7 +10,7 @@ import { ChevronDown, MoreVertical } from 'lucide-react';
 import { mockCryptoAssets } from '@/lib/mockData';
 import { CryptoListItem } from '@/components/markets/CryptoListItem';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { CryptoMarketPage } from './[symbol]/page';
+import CryptoMarketPage from './[symbol]/page';
 import type { Stock } from '@/types';
 
 type CryptoFilter = 'all' | 'trending' | 'gainers' | 'losers';
