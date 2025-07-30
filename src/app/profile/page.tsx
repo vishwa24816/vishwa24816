@@ -139,13 +139,13 @@ export default function ProfilePage() {
       icon: Star,
       title: "Feedback",
       description: "Share your feedback and suggestions with us",
-      onClick: () => alert('Navigate to Feedback Page'),
+      onClick: () => router.push('/profile/feedback'),
     },
     {
       icon: Gift,
       title: "Refer and Earn",
       description: "Refer your friends and earn rewards",
-      onClick: () => alert('Navigate to Refer and Earn Page'),
+      onClick: () => router.push('/profile/refer-and-earn'),
     },
     {
       icon: Info,
