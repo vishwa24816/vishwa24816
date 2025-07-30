@@ -27,6 +27,7 @@ import {
 import { mockCryptoOptionsForWatchlist } from '@/lib/mockData/cryptoOptionsWatchlist';
 import type { WalletMode } from './CryptoHoldingsSection';
 import { FundTransferDialog } from '../shared/FundTransferDialog';
+import { AddFundsDialog } from '../shared/AddFundsDialog';
 import { useToast } from '@/hooks/use-toast';
 
 // Helper functions (could be moved to a utils file)
@@ -53,6 +54,31 @@ function getRelevantNewsForWatchlistItems(items: Stock[] | undefined, allNews: N
   const keywords = new Set(items.flatMap(i => [i.name.toLowerCase(), i.symbol?.toLowerCase()]).filter(Boolean));
   return allNews.filter(news => Array.from(keywords).some(keyword => (keyword as string) && news.headline.toLowerCase().includes(keyword as string)));
 }
+
+const usePersistentState = (key: string, defaultValue: number): [number, React.Dispatch<React.SetStateAction<number>>] => {
+    const [state, setState] = useState(() => {
+        if (typeof window === 'undefined') {
+            return defaultValue;
+        }
+        try {
+            const storedValue = window.localStorage.getItem(key);
+            return storedValue ? JSON.parse(storedValue) : defaultValue;
+        } catch (error) {
+            console.error(error);
+            return defaultValue;
+        }
+    });
+
+    useEffect(() => {
+        try {
+            window.localStorage.setItem(key, JSON.stringify(state));
+        } catch (error) {
+            console.error(error);
+        }
+    }, [key, state]);
+
+    return [state, setState];
+};
 
 interface RealDashboardProps {
   activeMode: 'Portfolio' | 'Fiat' | 'Crypto' | 'Web3';
@@ -92,10 +118,11 @@ export function RealDashboard({ activeMode, walletMode, setWalletMode, onAssetCl
       secondaryNavTriggerCategories[primaryNavItems[0]]?.[0] || ""
   );
   
-  const [mainPortfolioCashBalance, setMainPortfolioCashBalance] = useState(50000.00); 
-  const [cryptoCashBalance, setCryptoCashBalance] = useState(15000.00);
+  const [mainPortfolioCashBalance, setMainPortfolioCashBalance] = usePersistentState('mainPortfolioCashBalance', 50000.00); 
+  const [cryptoCashBalance, setCryptoCashBalance] = usePersistentState('cryptoCashBalance', 15000.00);
   const [strategyLegs, setStrategyLegs] = useState<SelectedOptionLeg[]>([]);
   const [isFundTransferDialogOpen, setIsFundTransferDialogOpen] = useState(false);
+  const [isAddFundsDialogOpen, setIsAddFundsDialogOpen] = useState(false);
   const [transferDirection, setTransferDirection] = useState<'toCrypto' | 'fromCrypto'>('toCrypto');
 
   useEffect(() => {
@@ -109,11 +136,6 @@ export function RealDashboard({ activeMode, walletMode, setWalletMode, onAssetCl
     setActivePrimaryItem(item);
     const newSecondaryItems = secondaryNavTriggerCategories[item] || [];
     setActiveSecondaryItem(newSecondaryItems[0] || "");
-  };
-
-  const handleOpenFundTransferDialog = (direction: 'toCrypto' | 'fromCrypto') => {
-    setTransferDirection(direction);
-    setIsFundTransferDialogOpen(true);
   };
   
   const formatCurrency = (value: number) => {
@@ -130,6 +152,16 @@ export function RealDashboard({ activeMode, walletMode, setWalletMode, onAssetCl
       setCryptoCashBalance((prev: number) => prev - amount);
       toast({ title: "Transfer Successful", description: `${formatCurrency(amount)} transferred to Main Portfolio.` });
     }
+  };
+  
+   const handleAddWithdrawConfirm = (amount: number, type: 'add' | 'withdraw') => {
+      if (type === 'add') {
+        setCryptoCashBalance((prev: number) => prev + amount);
+        toast({ title: "Funds Added", description: `${formatCurrency(amount)} added to your crypto portfolio.` });
+      } else {
+        setCryptoCashBalance((prev: number) => prev - amount);
+        toast({ title: "Withdrawal Successful", description: `${formatCurrency(amount)} withdrawn from your crypto portfolio.` });
+      }
   };
   
   const cryptoHoldings = useMemo(() => mockRealPortfolioHoldings, []);
@@ -170,7 +202,7 @@ export function RealDashboard({ activeMode, walletMode, setWalletMode, onAssetCl
     const isWatchlistView = activeSecondaryItem === "Portfolio Watchlist";
 
     if (activePrimaryItem === 'Crypto') {
-      if (isHoldingsView) return <><CryptoHoldingsSection title="Crypto Wallet & Holdings" holdings={cryptoHoldings} cashBalance={cryptoCashBalance} setCashBalance={setCryptoCashBalance} mainPortfolioCashBalance={mainPortfolioCashBalance} setMainPortfolioCashBalance={setMainPortfolioCashBalance} isRealMode={true} walletMode={walletMode} setWalletMode={setWalletMode} onAssetClick={onAssetClick} /><NewsSection articles={newsForView} /></>;
+      if (isHoldingsView) return <><CryptoHoldingsSection title="Crypto Wallet & Holdings" holdings={cryptoHoldings} cashBalance={cryptoCashBalance} setCashBalance={setCryptoCashBalance} mainPortfolioCashBalance={mainPortfolioCashBalance} setMainPortfolioCashBalance={setMainPortfolioCashBalance} isRealMode={true} walletMode={walletMode} setWalletMode={setWalletMode} onAssetClick={onAssetClick} onAddFunds={() => setIsAddFundsDialogOpen(true)}/><NewsSection articles={newsForView} /></>;
       if (isPositionsView) return <div className="space-y-8"><CryptoFuturesSection positions={mockRealCryptoFutures} cashBalance={cryptoCashBalance} /><CryptoBasketSection /><NewsSection articles={newsForView} /></div>;
       if (isWatchlistView) return <div className="space-y-8"><WatchlistSection title="My Crypto Watchlist" defaultInitialItems={itemsForWatchlist} localStorageKeyOverride={'simCryptoWatchlist_real'} onAssetClick={onAssetClick}/><NewsSection articles={newsForView} /></div>;
     }
@@ -237,17 +269,12 @@ export function RealDashboard({ activeMode, walletMode, setWalletMode, onAssetCl
        {activeMode === 'Portfolio' ? renderPortfolioContent() : renderMarketContent()}
 
     </main>
-     <FundTransferDialog
-        isOpen={isFundTransferDialogOpen}
-        onOpenChange={setIsFundTransferDialogOpen}
-        transferDirection={transferDirection}
-        mainPortfolioCashBalance={mainPortfolioCashBalance}
-        cryptoCashBalance={cryptoCashBalance}
-        onTransferConfirm={handleTransferConfirm}
-        currencyMode={'INR'}
+     <AddFundsDialog
+        isOpen={isAddFundsDialogOpen}
+        onOpenChange={setIsAddFundsDialogOpen}
+        currentBalance={cryptoCashBalance}
+        onConfirm={handleAddWithdrawConfirm}
       />
     </>
   );
 }
-
-    
