@@ -42,9 +42,8 @@ export default function FeeStructurePage() {
 
         <main className="flex-grow p-4 sm:p-6 lg:p-8">
           <Tabs defaultValue="trading-fee">
-            <TabsList className="grid w-full grid-cols-2">
+            <TabsList className="grid w-full grid-cols-1">
               <TabsTrigger value="trading-fee">Trading Fee</TabsTrigger>
-              <TabsTrigger value="withdrawal-fee">Withdrawal Fee</TabsTrigger>
             </TabsList>
             <TabsContent value="trading-fee" className="mt-6 space-y-6">
                 <p className="text-sm text-muted-foreground">
@@ -150,11 +149,7 @@ export default function FeeStructurePage() {
                             <li>SIM will at all times, act as per the law. This also includes any applicable provisions of law w.r.t the collection of TDS and its due reporting on all the transactions carried on by the user on our platform.</li>
                         </ul>
                     </div>
-
                 </div>
-            </TabsContent>
-            <TabsContent value="withdrawal-fee">
-                <p className="text-center py-10 text-muted-foreground">Withdrawal fee information will be displayed here.</p>
             </TabsContent>
           </Tabs>
         </main>
