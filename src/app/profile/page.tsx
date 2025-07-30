@@ -7,10 +7,13 @@ import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Mail, ChevronRight, User, ShieldCheck, Banknote, Users, UserX, Lock, Wallet, LifeBuoy, FileText, Star, Gift, Info, Briefcase } from 'lucide-react';
+import { Mail, ChevronRight, User, ShieldCheck, Banknote, Users, UserX, Lock, Wallet, LifeBuoy, FileText, Star, Gift, Info, Briefcase, ChevronDown } from 'lucide-react';
 import React, { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { useRouter } from 'next/navigation';
+import { cn } from '@/lib/utils';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Label } from '@/components/ui/label';
 
 interface ProfileItemProps {
   icon: React.ElementType;
@@ -34,6 +37,27 @@ const ProfileItem: React.FC<ProfileItemProps> = ({ icon: Icon, title, descriptio
   </button>
 );
 
+const ExpandableProfileItem: React.FC<ProfileItemProps & {children: React.ReactNode}> = ({ icon: Icon, title, description, children }) => {
+    const [isExpanded, setIsExpanded] = useState(false);
+    return (
+        <div>
+            <button onClick={() => setIsExpanded(!isExpanded)} className="w-full text-left p-4 hover:bg-muted/50 transition-colors flex items-center">
+                <Icon className="h-6 w-6 mr-4 text-primary" />
+                <div className="flex-grow">
+                <p className="font-semibold text-foreground">{title}</p>
+                <p className="text-sm text-muted-foreground">{description}</p>
+                </div>
+                <ChevronDown className={cn("h-5 w-5 text-muted-foreground transition-transform duration-200", isExpanded && "rotate-180")} />
+            </button>
+            {isExpanded && (
+                <div className="bg-muted/30 px-4 py-3 animate-accordion-down">
+                    {children}
+                </div>
+            )}
+        </div>
+    )
+}
+
 
 export default function ProfilePage() {
   const { user, logout } = useAuth();
@@ -41,8 +65,9 @@ export default function ProfilePage() {
   const isRealMode = user?.id === 'REAL456';
   
   const [activeMode, setActiveMode] = useState<'Fiat' | 'Crypto'>(isRealMode ? 'Crypto' : 'Fiat');
+  const [platformCurrency, setPlatformCurrency] = useState('INR');
   
-  const profileItems: ProfileItemProps[] = [
+  const profileItems: (ProfileItemProps & {component?: React.ReactNode})[] = [
     {
       icon: User,
       title: "Profile",
@@ -83,7 +108,20 @@ export default function ProfilePage() {
       icon: Wallet,
       title: "Portfolio Based Currency",
       description: "Select your preferred currency for portfolio view",
-      onClick: () => alert('Navigate to Currency Settings Page'),
+      component: (
+         <ExpandableProfileItem icon={Wallet} title="Portfolio Based Currency" description="Select your preferred currency for portfolio view">
+            <RadioGroup value={platformCurrency} onValueChange={setPlatformCurrency} className="space-y-2">
+                 <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="INR" id="currency-inr" />
+                    <Label htmlFor="currency-inr" className="font-normal">INR</Label>
+                </div>
+                 <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="USDT" id="currency-usdt" />
+                    <Label htmlFor="currency-usdt" className="font-normal">USDT</Label>
+                </div>
+            </RadioGroup>
+        </ExpandableProfileItem>
+      )
     },
     {
       icon: LifeBuoy,
@@ -154,7 +192,7 @@ export default function ProfilePage() {
               <div className="border-t">
                 {profileItems.map((item, index) => (
                    <React.Fragment key={item.title}>
-                    <ProfileItem {...item} />
+                     {item.component ? item.component : <ProfileItem {...item} />}
                     {index < profileItems.length - 1 && <div className="border-b mx-4"></div>}
                   </React.Fragment>
                 ))}
@@ -171,3 +209,4 @@ export default function ProfilePage() {
     </ProtectedRoute>
   );
 }
+
