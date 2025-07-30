@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Mail, ChevronRight, User, ShieldCheck, Banknote, Users, UserX } from 'lucide-react';
+import { Mail, ChevronRight, User, ShieldCheck, Banknote, Users, UserX, Lock, Wallet, LifeBuoy, FileText, Star, Gift, Info, Briefcase } from 'lucide-react';
 import React, { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 
@@ -70,6 +70,54 @@ export default function ProfilePage() {
       title: "Account Management",
       description: "Delete or disable your account",
       onClick: () => alert('Navigate to Account Management Page'),
+    },
+    {
+      icon: Lock,
+      title: "Security and Privacy",
+      description: "Manage your account security and data privacy settings",
+      onClick: () => alert('Navigate to Security and Privacy Page'),
+    },
+    {
+      icon: Wallet,
+      title: "Portfolio Based Currency",
+      description: "Select your preferred currency for portfolio view",
+      onClick: () => alert('Navigate to Currency Settings Page'),
+    },
+    {
+      icon: LifeBuoy,
+      title: "Support",
+      description: "Get help and support from our team",
+      onClick: () => alert('Navigate to Support Page'),
+    },
+    {
+      icon: FileText,
+      title: "Fee Structure",
+      description: "View the fee structure for all services",
+      onClick: () => alert('Navigate to Fee Structure Page'),
+    },
+    {
+      icon: Star,
+      title: "Feedback",
+      description: "Share your feedback and suggestions with us",
+      onClick: () => alert('Navigate to Feedback Page'),
+    },
+    {
+      icon: Gift,
+      title: "Refer and Earn",
+      description: "Refer your friends and earn rewards",
+      onClick: () => alert('Navigate to Refer and Earn Page'),
+    },
+    {
+      icon: Info,
+      title: "About SIM",
+      description: "Know more about our company and mission",
+      onClick: () => alert('Navigate to About Us Page'),
+    },
+    {
+      icon: Briefcase,
+      title: "Join Us",
+      description: "Explore career opportunities with us",
+      onClick: () => alert('Navigate to Careers Page'),
     },
   ];
 
