@@ -127,7 +127,7 @@ export default function ProfilePage() {
       icon: LifeBuoy,
       title: "Support",
       description: "Get help and support from our team",
-      onClick: () => alert('Navigate to Support Page'),
+      onClick: () => router.push('/support'),
     },
     {
       icon: FileText,
@@ -209,4 +209,3 @@ export default function ProfilePage() {
     </ProtectedRoute>
   );
 }
-
