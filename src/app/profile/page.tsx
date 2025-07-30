@@ -133,7 +133,7 @@ export default function ProfilePage() {
       icon: FileText,
       title: "Fee Structure",
       description: "View the fee structure for all services",
-      onClick: () => alert('Navigate to Fee Structure Page'),
+      onClick: () => router.push('/profile/fee-structure'),
     },
     {
       icon: Star,
