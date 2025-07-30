@@ -59,7 +59,7 @@ export default function ProfilePage() {
       icon: Banknote,
       title: "Account Details",
       description: "Add or Change your bank account details",
-      onClick: () => alert('Navigate to Account Details Page'),
+      onClick: () => router.push('/profile/account-details'),
     },
     {
       icon: Users,
