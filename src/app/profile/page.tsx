@@ -65,7 +65,7 @@ export default function ProfilePage() {
       icon: Users,
       title: "Nominee Details",
       description: "Add recipients of your funds in case of your demise",
-      onClick: () => alert('Navigate to Nominee Details Page'),
+      onClick: () => router.push('/profile/nominee-details'),
     },
     {
       icon: UserX,
