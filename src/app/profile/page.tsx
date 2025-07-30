@@ -77,7 +77,7 @@ export default function ProfilePage() {
       icon: Lock,
       title: "Security and Privacy",
       description: "Manage your account security and data privacy settings",
-      onClick: () => alert('Navigate to Security and Privacy Page'),
+      onClick: () => router.push('/profile/security'),
     },
     {
       icon: Wallet,
