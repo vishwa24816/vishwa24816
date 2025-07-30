@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Mail, ChevronRight, User, ShieldCheck, Banknote, Users, UserX, Lock, Wallet, LifeBuoy, FileText, Star, Gift, Info, Briefcase } from 'lucide-react';
 import React, { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
+import { useRouter } from 'next/navigation';
 
 interface ProfileItemProps {
   icon: React.ElementType;
@@ -36,6 +37,7 @@ const ProfileItem: React.FC<ProfileItemProps> = ({ icon: Icon, title, descriptio
 
 export default function ProfilePage() {
   const { user, logout } = useAuth();
+  const router = useRouter();
   const isRealMode = user?.id === 'REAL456';
   
   const [activeMode, setActiveMode] = useState<'Fiat' | 'Crypto'>(isRealMode ? 'Crypto' : 'Fiat');
@@ -45,7 +47,7 @@ export default function ProfilePage() {
       icon: User,
       title: "Profile",
       description: "Add or change information about you",
-      onClick: () => alert('Navigate to Edit Profile Page'),
+      onClick: () => router.push('/profile/details'),
     },
     {
       icon: ShieldCheck,
