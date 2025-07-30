@@ -4,12 +4,35 @@
 import { AppHeader } from '@/components/shared/AppHeader';
 import { ProtectedRoute } from '@/components/shared/ProtectedRoute';
 import { Button } from '@/components/ui/button';
-import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Mail, Edit3, Shield, LogOut } from 'lucide-react';
+import { Mail, ChevronRight, User, ShieldCheck, Banknote, Users, UserX } from 'lucide-react';
 import React, { useState } from 'react';
+import { Badge } from '@/components/ui/badge';
+
+interface ProfileItemProps {
+  icon: React.ElementType;
+  title: string;
+  description: string;
+  badge?: string;
+  onClick?: () => void;
+}
+
+const ProfileItem: React.FC<ProfileItemProps> = ({ icon: Icon, title, description, badge, onClick }) => (
+  <button onClick={onClick} className="w-full text-left p-4 hover:bg-muted/50 transition-colors flex items-center">
+    <Icon className="h-6 w-6 mr-4 text-primary" />
+    <div className="flex-grow">
+      <div className="flex items-center gap-2">
+        <p className="font-semibold text-foreground">{title}</p>
+        {badge && <Badge variant="default" className="bg-green-500 hover:bg-green-600">{badge}</Badge>}
+      </div>
+      <p className="text-sm text-muted-foreground">{description}</p>
+    </div>
+    <ChevronRight className="h-5 w-5 text-muted-foreground" />
+  </button>
+);
+
 
 export default function ProfilePage() {
   const { user, logout } = useAuth();
@@ -17,48 +40,80 @@ export default function ProfilePage() {
   
   const [activeMode, setActiveMode] = useState<'Fiat' | 'Crypto'>(isRealMode ? 'Crypto' : 'Fiat');
   
+  const profileItems: ProfileItemProps[] = [
+    {
+      icon: User,
+      title: "Profile",
+      description: "Add or change information about you",
+      onClick: () => alert('Navigate to Edit Profile Page'),
+    },
+    {
+      icon: ShieldCheck,
+      title: "KYC Verification",
+      description: "Your KYC has been successfully verified",
+      badge: "ACTIVE",
+    },
+    {
+      icon: Banknote,
+      title: "Account Details",
+      description: "Add or Change your bank account details",
+      onClick: () => alert('Navigate to Account Details Page'),
+    },
+    {
+      icon: Users,
+      title: "Nominee Details",
+      description: "Add recipients of your funds in case of your demise",
+      onClick: () => alert('Navigate to Nominee Details Page'),
+    },
+    {
+      icon: UserX,
+      title: "Account Management",
+      description: "Delete or disable your account",
+      onClick: () => alert('Navigate to Account Management Page'),
+    },
+  ];
+
   return (
     <ProtectedRoute>
-      <div className="flex flex-col min-h-screen">
+      <div className="flex flex-col min-h-screen bg-background">
         <AppHeader 
             isRealMode={isRealMode} 
             activeMode={activeMode} 
             onModeChange={setActiveMode} 
         />
-        <main className="flex-grow container mx-auto p-4 sm:p-6 lg:p-8 flex items-center justify-center">
-          <Card className="w-full max-w-lg shadow-xl">
-            <CardHeader className="items-center text-center">
-              <Avatar className="h-28 w-28 mb-4 border-2 border-primary p-1">
+        <main className="flex-grow container mx-auto p-4 sm:p-6 lg:p-8">
+          <Card className="w-full max-w-2xl mx-auto shadow-lg">
+            <CardHeader className="items-center text-center pb-4">
+              <Avatar className="h-24 w-24 mb-3 border-2 border-primary p-1">
                 <AvatarImage 
                   src={`https://placehold.co/112x112.png?text=${user?.email?.[0].toUpperCase()}`} 
                   alt={user?.email || "User avatar"}
                   data-ai-hint="profile avatar" 
                 />
-                <AvatarFallback className="text-4xl">
+                <AvatarFallback className="text-3xl">
                   {user?.email?.[0].toUpperCase() || "U"}
                 </AvatarFallback>
               </Avatar>
-              <CardTitle className="text-3xl font-headline">{user?.name || "Your Name"}</CardTitle>
+              <CardTitle className="text-2xl font-headline">{user?.name || "Your Name"}</CardTitle>
               <CardDescription className="flex items-center text-muted-foreground">
                 <Mail className="h-4 w-4 mr-2" />
                 {user?.email || "your.email@example.com"}
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <Button variant="outline" className="w-full justify-start">
-                <Edit3 className="mr-2 h-5 w-5 text-primary" /> Edit Profile
-              </Button>
-              <Button variant="outline" className="w-full justify-start">
-                <Shield className="mr-2 h-5 w-5 text-primary" /> Account Security
-              </Button>
-              <Button onClick={logout} variant="destructive" className="w-full justify-start">
-                <LogOut className="mr-2 h-5 w-5" /> Logout
-              </Button>
+            <CardContent className="p-0">
+              <div className="border-t">
+                {profileItems.map((item, index) => (
+                   <React.Fragment key={item.title}>
+                    <ProfileItem {...item} />
+                    {index < profileItems.length - 1 && <div className="border-b mx-4"></div>}
+                  </React.Fragment>
+                ))}
+              </div>
             </CardContent>
-            <CardFooter>
-              <Link href="/" className="w-full">
-                <Button variant="ghost" className="w-full text-primary">Back to Home</Button>
-              </Link>
+            <CardFooter className="p-4 border-t">
+              <Button onClick={logout} variant="outline" className="w-full">
+                Logout
+              </Button>
             </CardFooter>
           </Card>
         </main>
@@ -66,5 +121,3 @@ export default function ProfilePage() {
     </ProtectedRoute>
   );
 }
-
-    
