@@ -16,27 +16,26 @@ const SentimentGauge = () => {
     return (
         <Card className="w-full max-w-sm mx-auto shadow-lg overflow-hidden">
             <CardContent className="p-6 relative">
-                <div className="relative h-40 w-full flex items-center justify-center">
-                    <div className="absolute top-0 w-full h-40 overflow-hidden">
-                        <div className="absolute w-[200%] left-[-50%] top-0 h-[200%] rounded-full bg-gradient-to-r from-red-500 via-yellow-500 to-green-500"
-                             style={{ clipPath: 'polygon(50% 0%, 100% 100%, 0% 100%)', transform: 'rotate(180deg)' }}>
-                        </div>
+                <div className="relative h-20 w-40 mx-auto">
+                    <div className="absolute inset-0 w-full h-full overflow-hidden rounded-t-full">
+                        <div className="absolute w-full h-[200%] top-0 left-0 bg-gradient-to-r from-red-500 via-yellow-500 to-green-500"></div>
                     </div>
-                     <div className="absolute w-full h-full flex items-end justify-center">
+                     <div className="absolute inset-0 w-full h-full flex items-end justify-center">
                         <div
-                            className="w-1 h-20 bg-black rounded-t-full origin-bottom transition-transform duration-500"
+                            className="w-0.5 h-16 bg-black rounded-t-full origin-bottom transition-transform duration-500"
                             style={{ transform: `rotate(${rotation}deg)` }}
                         ></div>
                     </div>
-                    <div className="absolute w-3 h-3 bg-black rounded-full"></div>
-                    <div className="absolute inset-x-0 bottom-14 flex justify-between text-xs font-medium text-muted-foreground px-2">
-                        <span>VERY BEARISH</span>
-                        <span>NEUTRAL</span>
-                        <span>VERY BULLISH</span>
-                    </div>
+                     <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-32 h-16 bg-background rounded-t-full"></div>
+                     <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-4 h-4 bg-black rounded-full transform -translate-y-1/2"></div>
+                </div>
+                 <div className="flex justify-between text-xs font-medium text-muted-foreground px-2 -mt-4">
+                    <span>Bearish</span>
+                    <span>Neutral</span>
+                    <span>Bullish</span>
                 </div>
 
-                <div className="text-center mt-2">
+                <div className="text-center mt-4">
                     <p className="text-lg font-bold text-green-600">SLIGHTLY BULLISH</p>
                 </div>
                  <div className="flex justify-center gap-2 mt-4">
