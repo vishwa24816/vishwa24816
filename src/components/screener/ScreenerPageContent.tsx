@@ -55,7 +55,7 @@ const alertSubItems = [
 const screenerItems = [
   { title: 'Markets', icon: TrendingUp, content: marketSubItems, hasDot: false },
   { title: 'Superstars', icon: Star, content: 'Superstars screener content', hasDot: false },
-  { title: 'Mutual Funds', icon: PiggyBank, content: ['Index Fund', 'Large Cap', 'Mid Cap', 'Small Cap', 'Flexi Cap', 'ELSS', 'Sectoral', 'Thematic'], hasDot: true },
+  { title: 'Mutual Funds', icon: PiggyBank, content: ['Index Fund', 'Large Cap', 'Mid Cap', 'Small Cap', 'Flexi Cap', 'ELSS', 'Sectoral', 'Thematic'], hasDot: false },
   { title: 'Bonds', icon: LandPlot, content: ['Government Bonds', 'Corporate Bonds'], hasDot: false },
   { title: 'Alerts', icon: Bell, content: alertSubItems, hasDot: false },
 ];
