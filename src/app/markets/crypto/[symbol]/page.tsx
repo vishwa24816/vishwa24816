@@ -8,19 +8,20 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { mockCryptoAssets, mockNewsArticles } from '@/lib/mockData';
 import type { Stock, NewsArticle } from '@/types';
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, TrendingUp, TrendingDown, Info, Maximize2, BarChart2, Bell, Star, Briefcase, Plus, Shuffle, Zap, Target } from 'lucide-react';
+import { ArrowLeft, TrendingUp, TrendingDown, Info, Maximize2, BarChart2, Bell, Star, Briefcase, Plus, Shuffle, Zap, Target, SearchIcon, LineChart } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { NewsSection } from '@/components/dashboard/NewsSection';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AnalysisTabContent } from '@/components/order-pages/shared/AnalysisComponents';
+import { CollapsibleSection, PerformanceBar } from '@/components/order-pages/shared/OrderPageComponents';
 import {
   AreaChart,
   Area,
   Bar,
   BarChart,
   Line,
-  LineChart,
+  LineChart as RechartsLineChart,
   Pie,
   PieChart,
   ResponsiveContainer,
@@ -172,11 +173,11 @@ const BitcoinJourneyChart = () => (
     <CardContent>
       <div className="h-48">
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={journeyData}>
+          <RechartsLineChart data={journeyData}>
              <XAxis dataKey="year" stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
              <YAxis hide={true} domain={['dataMin', 'dataMax']} />
-             <Line type="monotone" dataKey="price" stroke="hsl(var(--positive))" strokeWidth={2} dot={{ r: 4, fill: 'hsl(var(--positive))' }} />
-          </LineChart>
+             <RechartsLineChart type="monotone" dataKey="price" stroke="hsl(var(--positive))" strokeWidth={2} dot={{ r: 4, fill: 'hsl(var(--positive))' }} />
+          </RechartsLineChart>
         </ResponsiveContainer>
       </div>
     </CardContent>
@@ -296,6 +297,7 @@ export default function CryptoMarketPage({ params, onBack }: CryptoMarketPagePro
                         <TabsTrigger value="market">Market</TabsTrigger>
                         <TabsTrigger value="news">News</TabsTrigger>
                         <TabsTrigger value="analysis">Analysis</TabsTrigger>
+                        <TabsTrigger value="fundamentals">Fundamentals</TabsTrigger>
                         <TabsTrigger value="study">Study</TabsTrigger>
                     </TabsList>
                 </div>
@@ -346,22 +348,6 @@ export default function CryptoMarketPage({ params, onBack }: CryptoMarketPagePro
                           ))}
                         </div>
 
-                        <Card>
-                            <CardHeader><CardTitle>Fundamental</CardTitle></CardHeader>
-                            <CardContent className="divide-y p-0">
-                               <FundamentalRow label="Total Volume" value={`$${((asset.volume || 0) / 83 / 1e9).toFixed(2)} B`} />
-                               <FundamentalRow label="Market Cap" value={`$${(parseFloat(asset.marketCap?.replace('₹', '').replace('T', ''))*1e12 / 83 / 1e12).toFixed(2)}T`} />
-                               <FundamentalRow label="Total Supply" value="120.71 M" />
-                               <FundamentalRow label="Circulating Supply" value="120.71 M" />
-                               <FundamentalRow label="High (24h)" value={`$${((asset.todayHigh || 0) / 83).toLocaleString('en-US', {minimumFractionDigits: 2})}`} />
-                               <FundamentalRow label="Low (24h)" value={`$${((asset.todayLow || 0) / 83).toLocaleString('en-US', {minimumFractionDigits: 2})}`} />
-                               <FundamentalRow label="Max Supply" value="No data" />
-                               <FundamentalRow label="Change (1h)" value="1.26%" isPositive />
-                               <FundamentalRow label="Change (24h)" value="-0.37%" isNegative />
-                               <FundamentalRow label="Change (7d)" value="5.04%" isPositive />
-                            </CardContent>
-                        </Card>
-
                         {asset.aboutCompany && (
                             <Card>
                                 <CardHeader><CardTitle>About Coin</CardTitle></CardHeader>
@@ -380,6 +366,36 @@ export default function CryptoMarketPage({ params, onBack }: CryptoMarketPagePro
                      <TabsContent value="analysis" className="p-0 mt-0">
                         <AnalysisTabContent />
                     </TabsContent>
+                     <TabsContent value="fundamentals" className="mt-4 space-y-6">
+                        {asset.fundamentals && (
+                            <CollapsibleSection title="Fundamentals" icon={SearchIcon} defaultOpen>
+                                <div className="grid grid-cols-2 gap-x-6 gap-y-3 text-sm">
+                                    <div><span className="text-muted-foreground">Mkt Cap</span><p className="font-semibold text-foreground">{asset.fundamentals.marketCap || 'N/A'}</p></div>
+                                    <div><span className="text-muted-foreground">Technology</span><p className="font-semibold text-foreground">{asset.fundamentals.technology || 'N/A'}</p></div>
+                                    <div><span className="text-muted-foreground">Intro. Year</span><p className="font-semibold text-foreground">{asset.fundamentals.introductionYear || 'N/A'}</p></div>
+                                    <div><span className="text-muted-foreground">Market Rank</span><p className="font-semibold text-foreground">#{asset.fundamentals.marketRank || 'N/A'}</p></div>
+                                </div>
+                            </CollapsibleSection>
+                        )}
+                        <CollapsibleSection title="Performance" icon={LineChart} defaultOpen>
+                             <div className="mb-6">
+                                {asset.todayLow && asset.todayHigh && (
+                                    <PerformanceBar low={asset.todayLow / 83} high={asset.todayHigh / 83} current={asset.price / 83} labelLow="Today's Low" labelHigh="Today's High" />
+                                )}
+                                {asset.fiftyTwoWeekLow && asset.fiftyTwoWeekHigh && (
+                                    <div className="mt-3">
+                                    <PerformanceBar low={asset.fiftyTwoWeekLow / 83} high={asset.fiftyTwoWeekHigh / 83} current={asset.price / 83} labelLow="52 Week Low" labelHigh="52 Week High" />
+                                    </div>
+                                )}
+                            </div>
+                            <div className="grid grid-cols-2 gap-4 text-sm pt-2 mb-6">
+                                <div><p className="text-xs text-muted-foreground">Open Price</p><p className="font-semibold text-foreground">${asset.openPrice ? (asset.openPrice / 83).toFixed(2) : 'N/A'}</p></div>
+                                <div><p className="text-xs text-muted-foreground">Prev. Close</p><p className="font-semibold text-foreground">${asset.prevClosePrice ? (asset.prevClosePrice / 83).toFixed(2) : 'N/A'}</p></div>
+                                <div><p className="text-xs text-muted-foreground">Volume (24H)</p><p className="font-semibold text-foreground">{asset.volume?.toLocaleString() || 'N/A'}</p></div>
+                                <div><p className="text-xs text-muted-foreground">Market Cap</p><p className="font-semibold text-foreground">{asset.marketCap || 'N/A'}</p></div>
+                            </div>
+                        </CollapsibleSection>
+                    </TabsContent>
                      <TabsContent value="study" className="p-4 mt-0 space-y-6">
                         <AboutCoinCard />
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -396,3 +412,5 @@ export default function CryptoMarketPage({ params, onBack }: CryptoMarketPagePro
         </div>
     );
 }
+
+
