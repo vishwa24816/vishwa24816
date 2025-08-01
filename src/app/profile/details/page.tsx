@@ -35,6 +35,7 @@ export default function ProfileDetailsPage() {
       occupation: "Professional",
       annualIncome: "Upto 10 Lakhs",
       natureOfBusiness: "Broking Services / Financial Services",
+      researchAnalystTag: "Not Provided",
   };
 
   return (
@@ -78,6 +79,7 @@ export default function ProfileDetailsPage() {
                 <InfoRow label="Occupation" value={mockUser.occupation} />
                 <InfoRow label="Annual Income" value={mockUser.annualIncome} />
                 <InfoRow label="Nature of business" value={mockUser.natureOfBusiness} />
+                <InfoRow label="SEBI Research Analyst Tag" value={mockUser.researchAnalystTag} />
               </CardContent>
             </Card>
           </section>
