@@ -26,7 +26,6 @@ import {
 } from '@/lib/mockData';
 import { mockCryptoOptionsForWatchlist } from '@/lib/mockData/cryptoOptionsWatchlist';
 import type { WalletMode } from './CryptoHoldingsSection';
-import { FundTransferDialog } from '../shared/FundTransferDialog';
 import { AddFundsDialog } from '../shared/AddFundsDialog';
 import { useToast } from '@/hooks/use-toast';
 
@@ -121,9 +120,7 @@ export function RealDashboard({ activeMode, walletMode, setWalletMode, onAssetCl
   const [mainPortfolioCashBalance, setMainPortfolioCashBalance] = usePersistentState('mainPortfolioCashBalance', 50000.00); 
   const [cryptoCashBalance, setCryptoCashBalance] = usePersistentState('cryptoCashBalance', 15000.00);
   const [strategyLegs, setStrategyLegs] = useState<SelectedOptionLeg[]>([]);
-  const [isFundTransferDialogOpen, setIsFundTransferDialogOpen] = useState(false);
   const [isAddFundsDialogOpen, setIsAddFundsDialogOpen] = useState(false);
-  const [transferDirection, setTransferDirection] = useState<'toCrypto' | 'fromCrypto'>('toCrypto');
 
   useEffect(() => {
     const firstPrimary = primaryNavItems[0] || "";
@@ -140,18 +137,6 @@ export function RealDashboard({ activeMode, walletMode, setWalletMode, onAssetCl
   
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
-  };
-
-  const handleTransferConfirm = (amount: number, direction: 'toCrypto' | 'fromCrypto') => {
-    if (direction === 'toCrypto') {
-      setMainPortfolioCashBalance((prev: number) => prev - amount);
-      setCryptoCashBalance((prev: number) => prev + amount);
-      toast({ title: "Transfer Successful", description: `${formatCurrency(amount)} transferred to Crypto Wallet.` });
-    } else { // fromCrypto
-      setMainPortfolioCashBalance((prev: number) => prev + amount);
-      setCryptoCashBalance((prev: number) => prev - amount);
-      toast({ title: "Transfer Successful", description: `${formatCurrency(amount)} transferred to Main Portfolio.` });
-    }
   };
   
    const handleAddWithdrawConfirm = (amount: number, type: 'add' | 'withdraw') => {
@@ -222,13 +207,14 @@ export function RealDashboard({ activeMode, walletMode, setWalletMode, onAssetCl
           }
           if (activePrimaryItem === "Options") {
             if (activeSecondaryItem === 'Dashboard') return <div className="space-y-8"><MarketMovers stocks={mockCryptoOptionsForWatchlist} displayMode="full" category="Crypto Options" onAssetClick={onAssetClick} /><NewsSection articles={newsForView} /></div>;
-            if (activeSecondaryItem === "Custom") return ( <div className="space-y-8"><CryptoOptionChain onAddLeg={(leg) => setStrategyLegs(prev => [...prev, leg])} />{strategyLegs.length > 0 && <StrategyBuilder legs={strategyLegs} setLegs={setStrategyLegs} />}<NewsSection articles={newsForView} /></div>);
-            if (activeSecondaryItem === "Readymade") return ( <div className="space-y-8"><ReadymadeStrategiesSection onStrategySelect={(legs) => setStrategyLegs(legs)} />{strategyLegs.length > 0 && <StrategyBuilder legs={strategyLegs} setLegs={setStrategyLegs} />}<NewsSection articles={newsForView} /></div> );
+            if (activeSecondaryItem === "Custom") return ( <div className="space-y-8"><CryptoOptionChain onAddLeg={(leg) => setStrategyLegs(prev => [...prev, leg])} />{strategyLegs.length > 0 && <StrategyBuilder legs={strategyLegs} setLegs={setLegs} />}<NewsSection articles={newsForView} /></div>);
+            if (activeSecondaryItem === "Readymade") return ( <div className="space-y-8"><ReadymadeStrategiesSection onStrategySelect={(legs) => setStrategyLegs(legs)} />{strategyLegs.length > 0 && <StrategyBuilder legs={strategyLegs} setLegs={setLegs} />}<NewsSection articles={newsForView} /></div> );
             return null
           }
           if (activePrimaryItem === "Spot" && activeSecondaryItem.startsWith("Top watchlist")) {
             return (
                 <div className="space-y-8">
+                    <CryptoHoldingsSection title="Crypto Wallet & Holdings" holdings={cryptoHoldings} cashBalance={cryptoCashBalance} setCashBalance={setCryptoCashBalance} mainPortfolioCashBalance={mainPortfolioCashBalance} setMainPortfolioCashBalance={setMainPortfolioCashBalance} isRealMode={true} walletMode={walletMode} setWalletMode={setWalletMode} onAssetClick={onAssetClick} onAddFunds={() => setIsAddFundsDialogOpen(true)}/>
                     <MarketMovers stocks={mockCryptoAssets} displayMode="trending" category="Crypto" onAssetClick={onAssetClick} />
                     <WatchlistSection title={"Top Crypto"} displayItems={itemsForWatchlist} isPredefinedList={true} onAssetClick={onAssetClick} />
                     <MarketMovers stocks={mockCryptoAssets} displayMode="gainers-losers" onAssetClick={onAssetClick} />
