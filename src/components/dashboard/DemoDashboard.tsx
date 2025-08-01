@@ -654,7 +654,7 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
         if (activePrimaryItem === "Spot" && activeSecondaryItem.startsWith("Top watchlist")) {
              return (
                 <div className="space-y-8">
-                    <CryptoHoldingsSection title="Crypto & Web3 Wallet" holdings={cryptoAndWeb3Holdings} cashBalance={cryptoCashBalance} setCashBalance={setCryptoCashBalance} mainPortfolioCashBalance={mainPortfolioCashBalance} setMainPortfolioCashBalance={setMainPortfolioCashBalance} isRealMode={false} walletMode={walletMode} setWalletMode={setWalletMode} onAssetClick={onAssetClick} />
+                    <CryptoHoldingsSection title="Crypto & Web3 Wallet" holdings={cryptoAndWeb3Holdings} cashBalance={cryptoCashBalance} setCashBalance={setCryptoCashBalance} mainPortfolioCashBalance={mainPortfolioCashBalance} setMainPortfolioCashBalance={setMainPortfolioCashBalance} isRealMode={false} walletMode={walletMode} setWalletMode={setWalletMode} onAssetClick={onAssetClick} onAddFunds={() => setIsAddFundsDialogOpen(true)} />
                     <MarketMovers stocks={mockCryptoAssets} displayMode="trending" category="Crypto" onAssetClick={onAssetClick} />
                     <WatchlistSection title={"Top Crypto"} displayItems={mockCryptoAssets} isPredefinedList={true} onAssetClick={onAssetClick} />
                     <MarketMovers stocks={mockCryptoAssets} displayMode="gainers-losers" onAssetClick={onAssetClick} />
