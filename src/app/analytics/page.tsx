@@ -15,6 +15,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
 } from "@/components/ui/dropdown-menu";
 import {
   FileText,
@@ -138,11 +140,9 @@ const AnalyticsPage = () => {
     const router = useRouter();
     const isRealMode = user?.id === 'REAL456';
     const [activeMode, setActiveMode] = useState<'Fiat' | 'Crypto'>(isRealMode ? 'Crypto' : 'Fiat');
+    const [selectedStatementType, setSelectedStatementType] = useState('trading');
 
     const reports = [
-        { icon: ListOrdered, title: 'VDA Report', description: 'A detailed report of all your crypto disposals, gains, and losses formatted for the Schedule VDA section of the ITR.'},
-        { icon: Scaling, title: 'VDA Derivatives Report', description: 'A detailed report of gains and losses from crypto derivatives such as futures, formatted for the Schedule VDA section of the ITR.'},
-        { icon: FileText, title: 'Dividend Reports', description: 'Get your Dividend report.' },
         { icon: FileText, title: 'Bill', description: 'Check the brokerage and transaction charges on your trades.' },
         { icon: FileText, title: 'Miscellaneous', description: 'Find reports like contract notes, margin report, retention report, etc.' },
         { icon: FileText, title: 'Mutual Funds', description: 'See all of your mutual funds\' details here like ELSS and Capital Gains.' },
@@ -184,7 +184,25 @@ const AnalyticsPage = () => {
                         </div>
                     </TabsContent>
                      <TabsContent value="ledger" className="mt-0 h-full">
-                        <div className="p-4 border-b">
+                        <div className="p-4 border-b space-y-4">
+                             <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="outline" className="w-full justify-between">
+                                        <span>Select Statement Type</span>
+                                        <ChevronDown className="h-4 w-4" />
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent className="w-[--radix-dropdown-menu-trigger-width]">
+                                    <DropdownMenuRadioGroup value={selectedStatementType} onValueChange={setSelectedStatementType}>
+                                        <DropdownMenuRadioItem value="trading">Fiat Trading Statement</DropdownMenuRadioItem>
+                                        <DropdownMenuRadioItem value="pnl">Profit and Loss Statement</DropdownMenuRadioItem>
+                                        <DropdownMenuRadioItem value="dividend">Dividend Report</DropdownMenuRadioItem>
+                                        <DropdownMenuRadioItem value="vda">VDA Report</DropdownMenuRadioItem>
+                                        <DropdownMenuRadioItem value="vda_derivatives">VDA Derivatives Report</DropdownMenuRadioItem>
+                                    </DropdownMenuRadioGroup>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                     <Button variant="outline" className="w-full justify-between">
@@ -192,7 +210,7 @@ const AnalyticsPage = () => {
                                         <Download className="h-4 w-4" />
                                     </Button>
                                 </DropdownMenuTrigger>
-                                <DropdownMenuContent className="w-56">
+                                <DropdownMenuContent className="w-[--radix-dropdown-menu-trigger-width]">
                                     <DropdownMenuLabel>Select Period</DropdownMenuLabel>
                                     <DropdownMenuSeparator />
                                     <DropdownMenuItem>Last 1 Month</DropdownMenuItem>
@@ -205,7 +223,7 @@ const AnalyticsPage = () => {
                                 </DropdownMenuContent>
                             </DropdownMenu>
                         </div>
-                        <ScrollArea className="h-[calc(100vh-220px)]">
+                        <ScrollArea className="h-[calc(100vh-280px)]">
                             <div className="divide-y">
                                 {mockTransactions.map(txn => (
                                     <TransactionItem key={txn.id} transaction={txn} />
@@ -230,5 +248,3 @@ const AnalyticsPage = () => {
 
 export default AnalyticsPage;
 
-    
-    
