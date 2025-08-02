@@ -32,9 +32,9 @@ const SupportPage = () => {
     const faqItems = [
         { icon: Compass, text: 'Getting Started' },
         { icon: User, text: 'My Account' },
-        { icon: LineChart, text: 'Stocks, F&O, IPO & MTF' },
+        { icon: LineChart, text: 'How to use simbot' },
         { icon: Wallet, text: 'Payments & Withdrawals' },
-        { icon: PieChart, text: 'Mutual Funds' },
+        { icon: PieChart, text: 'Others' },
     ];
 
   return (
