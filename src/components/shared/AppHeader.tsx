@@ -38,16 +38,6 @@ export function AppHeader({ activeMode, onModeChange, isRealMode, walletMode }: 
     setIsMounted(true);
   }, []);
   
-   useEffect(() => {
-    if (activeMode) {
-      document.documentElement.setAttribute('data-theme', activeMode.toLowerCase());
-    } else {
-      // Default to portfolio theme if no mode is active or on pages without mode switching
-      document.documentElement.setAttribute('data-theme', 'portfolio');
-    }
-  }, [activeMode]);
-
-
   const isPortfolioDisabled = pathname === '/orders' || pathname === '/screener' || pathname === '/community';
 
   const handleSearchSubmit = (e: React.FormEvent) => {

@@ -337,7 +337,7 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
     setActiveSecondaryItem(item);
   };
   
-  const handleCategoryClick = (category: 'Fiat' | 'Crypto' | 'Wealth' | 'Pledged') => {
+  const handleCategoryClick = (category: 'Fiat' | 'Crypto' | 'Wealth') => {
       onModeChange('Portfolio');
       if (category === 'Fiat') {
           setActivePrimaryItem('Fiat');
@@ -348,9 +348,6 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
       } else if (category === 'Crypto') {
           setActivePrimaryItem('Crypto');
           setActiveSecondaryItem('Holdings');
-      } else if (category === 'Pledged') {
-          setActivePrimaryItem('Pledged Holdings');
-          setActiveSecondaryItem('');
       }
   };
 

@@ -60,26 +60,14 @@ const ExpandableProfileItem: React.FC<ProfileItemProps & {children: React.ReactN
 
 
 export default function ProfilePage() {
-  const { user, logout } = useAuth();
+  const { user, logout, theme, setTheme } = useAuth();
   const router = useRouter();
   const isRealMode = user?.id === 'REAL456';
   
   const [activeMode, setActiveMode] = useState<'Fiat' | 'Crypto'>(isRealMode ? 'Crypto' : 'Fiat');
   const [platformCurrency, setPlatformCurrency] = useState('INR');
   const [platformLanguage, setPlatformLanguage] = useState('english');
-  const [platformColor, setPlatformColor] = useState('blue');
-
-  useEffect(() => {
-    const savedTheme = localStorage.getItem('sim-theme') || 'blue';
-    setPlatformColor(savedTheme);
-  }, []);
-
-  const handleThemeChange = (theme: string) => {
-      setPlatformColor(theme);
-      document.documentElement.setAttribute('data-theme', theme);
-      localStorage.setItem('sim-theme', theme);
-  };
-
+  
   const themeOptions = [
       { value: 'blue', label: 'Blue' },
       { value: 'cyan', label: 'Cyan' },
@@ -194,11 +182,11 @@ export default function ProfilePage() {
         description: "Choose your preferred color theme",
         component: (
             <ExpandableProfileItem icon={Palette} title="Platform Colour" description="Choose your preferred color theme">
-                <RadioGroup value={platformColor} onValueChange={handleThemeChange} className="grid grid-cols-2 gap-2">
-                     {themeOptions.map((theme) => (
-                        <div key={theme.value} className="flex items-center space-x-2">
-                            <RadioGroupItem value={theme.value} id={`color-${theme.value}`} />
-                            <Label htmlFor={`color-${theme.value}`} className="font-normal">{theme.label}</Label>
+                <RadioGroup value={theme} onValueChange={setTheme} className="grid grid-cols-2 gap-2">
+                     {themeOptions.map((themeOption) => (
+                        <div key={themeOption.value} className="flex items-center space-x-2">
+                            <RadioGroupItem value={themeOption.value} id={`color-${themeOption.value}`} />
+                            <Label htmlFor={`color-${themeOption.value}`} className="font-normal">{themeOption.label}</Label>
                         </div>
                     ))}
                 </RadioGroup>

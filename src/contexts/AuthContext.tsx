@@ -13,6 +13,8 @@ interface AuthContextType {
   login: (userData: User) => void;
   logout: () => void;
   loading: boolean;
+  theme: string;
+  setTheme: (theme: string) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -20,6 +22,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [theme, setThemeState] = useState('blue');
 
   useEffect(() => {
     // Check localStorage for a persisted user session
@@ -28,9 +31,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (storedUser) {
         setUser(JSON.parse(storedUser));
       }
+      const storedTheme = localStorage.getItem('sim-theme') || 'blue';
+      setThemeState(storedTheme);
+      document.documentElement.setAttribute('data-theme', storedTheme);
+      
     } catch (error) {
-      console.error("Failed to parse user from localStorage", error);
+      console.error("Failed to parse from localStorage", error);
       localStorage.removeItem('simUser');
+      localStorage.removeItem('sim-theme');
     }
     setLoading(false);
   }, []);
@@ -45,8 +53,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     localStorage.removeItem('simUser');
   };
 
+  const setTheme = (newTheme: string) => {
+    setThemeState(newTheme);
+    localStorage.setItem('sim-theme', newTheme);
+    document.documentElement.setAttribute('data-theme', newTheme);
+  };
+
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated: !!user, login, logout, loading }}>
+    <AuthContext.Provider value={{ user, isAuthenticated: !!user, login, logout, loading, theme, setTheme }}>
         {children}
         <Toaster />
     </AuthContext.Provider>

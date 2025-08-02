@@ -17,11 +17,6 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
 
-  useEffect(() => {
-    const savedTheme = localStorage.getItem('sim-theme') || 'blue';
-    document.documentElement.setAttribute('data-theme', savedTheme);
-  }, []);
-
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
