@@ -19,9 +19,13 @@ import {
   ArrowRightLeft,
   ListOrdered,
   Scaling,
+  ArrowUpRight,
+  ArrowDownLeft
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
+import { cn } from '@/lib/utils';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 const ReportItem = ({ icon: Icon, title, description, onClick }: { icon: React.ElementType, title: string, description: string, onClick?: () => void }) => (
     <React.Fragment>
@@ -41,6 +45,37 @@ const ReportItem = ({ icon: Icon, title, description, onClick }: { icon: React.E
     </React.Fragment>
 );
 
+const mockTransactions = [
+  { id: 'txn1', date: '2024-07-26', description: 'Bought 10 RELIANCE @ 2950.50', amount: -29505.00, type: 'DEBIT' },
+  { id: 'txn2', date: '2024-07-26', description: 'Funds added via UPI', amount: 50000.00, type: 'CREDIT' },
+  { id: 'txn3', date: '2024-07-25', description: 'Sold 5 INFY @ 1650.00', amount: 8250.00, type: 'CREDIT' },
+  { id: 'txn4', date: '2024-07-24', description: 'Withdrawal to bank account', amount: -10000.00, type: 'DEBIT' },
+  { id: 'txn5', date: '2024-07-22', description: 'Bought 0.01 BTC @ 5200000.00', amount: -52000.00, type: 'DEBIT' },
+  { id: 'txn6', date: '2024-07-20', description: 'Brokerage charges for July', amount: -350.00, type: 'DEBIT' },
+  { id: 'txn7', date: '2024-07-18', description: 'Dividend from HUL', amount: 450.00, type: 'CREDIT' },
+  { id: 'txn8', date: '2024-07-15', description: 'SIP Investment - Axis Bluechip', amount: -5000.00, type: 'DEBIT' },
+  { id: 'txn9', date: '2024-07-12', description: 'Interest on uninvested funds', amount: 125.50, type: 'CREDIT' },
+  { id: 'txn10', date: '2024-07-10', description: 'Sold 2 NIFTYBEES @ 230.50', amount: 461.00, type: 'CREDIT' },
+];
+
+const TransactionItem = ({ transaction }: { transaction: typeof mockTransactions[0] }) => {
+    const isCredit = transaction.type === 'CREDIT';
+    return (
+        <div className="flex items-center p-4 border-b">
+            <div className={cn("p-2 rounded-full mr-4", isCredit ? "bg-green-100 dark:bg-green-900/30" : "bg-red-100 dark:bg-red-900/30")}>
+                {isCredit ? <ArrowDownLeft className="h-5 w-5 text-green-600" /> : <ArrowUpRight className="h-5 w-5 text-red-600" />}
+            </div>
+            <div className="flex-grow">
+                <p className="font-medium text-foreground">{transaction.description}</p>
+                <p className="text-sm text-muted-foreground">{transaction.date}</p>
+            </div>
+            <div className={cn("text-right font-semibold", isCredit ? "text-green-600" : "text-red-600")}>
+                {isCredit ? '+' : ''}₹{Math.abs(transaction.amount).toLocaleString('en-IN')}
+            </div>
+        </div>
+    );
+};
+
 
 const AnalyticsPage = () => {
     const { user } = useAuth();
@@ -49,7 +84,6 @@ const AnalyticsPage = () => {
     const [activeMode, setActiveMode] = useState<'Fiat' | 'Crypto'>(isRealMode ? 'Crypto' : 'Fiat');
 
     const reports = [
-        { icon: FileText, title: 'Ledger', description: 'See all your transactions along with the billing details.', onClick: () => router.push('/analytics/ledger') },
         { icon: FileText, title: 'Profit & Loss', description: 'Get your profit and loss report.' },
         { icon: ListOrdered, title: 'VDA Report', description: 'A detailed report of all your crypto disposals, gains, and losses formatted for the Schedule VDA section of the ITR.'},
         { icon: Scaling, title: 'VDA Derivatives Report', description: 'A detailed report of gains and losses from crypto derivatives such as futures, formatted for the Schedule VDA section of the ITR.'},
@@ -79,20 +113,30 @@ const AnalyticsPage = () => {
             isRealMode={isRealMode}
         />
         <main className="flex-grow flex flex-col">
-            <Tabs defaultValue="reports" className="w-full flex flex-col">
+            <Tabs defaultValue="reports" className="w-full flex flex-col flex-grow">
                  <div className="border-b bg-background sticky top-0 z-10">
                     <TabsList className="w-full justify-start rounded-none bg-transparent p-0 px-4 overflow-x-auto no-scrollbar h-auto">
                         <TabsTrigger value="reports" className="py-3 px-4 rounded-none flex-shrink-0 data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:shadow-none">Reports</TabsTrigger>
+                        <TabsTrigger value="ledger" className="py-3 px-4 rounded-none flex-shrink-0 data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:shadow-none">Ledger</TabsTrigger>
                         <TabsTrigger value="actions" className="py-3 px-4 rounded-none flex-shrink-0 data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:shadow-none">Actions</TabsTrigger>
                     </TabsList>
                 </div>
-                <div>
+                <div className="flex-grow">
                     <TabsContent value="reports" className="mt-0">
                         <div className="bg-background">
                             {reports.map((report, index) => (
                                 <ReportItem key={index} {...report} />
                             ))}
                         </div>
+                    </TabsContent>
+                     <TabsContent value="ledger" className="mt-0 h-full">
+                        <ScrollArea className="h-[calc(100vh-160px)]">
+                            <div className="divide-y">
+                                {mockTransactions.map(txn => (
+                                    <TransactionItem key={txn.id} transaction={txn} />
+                                ))}
+                            </div>
+                        </ScrollArea>
                     </TabsContent>
                     <TabsContent value="actions" className="mt-0">
                        <div className="bg-background">
