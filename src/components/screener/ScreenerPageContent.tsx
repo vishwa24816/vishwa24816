@@ -27,14 +27,14 @@ import { SuperstarsScreener } from './SuperstarsScreener';
 import { mockStocks, mockCryptoAssets, mockMutualFunds } from '@/lib/mockData';
 
 const suggestionQueries = [
-    { label: "IT stocks with P/E greater than 30", key: 'it' },
-    { label: "Banking stocks with ROE greater than 15%", key: 'banking' },
-    { label: "Large cap stocks over 5,00,000Cr market cap", key: 'large_cap' },
-    { label: "FMCG stocks with low debt", key: 'fmcg' },
-    { label: "High Volume Crypto", key: 'crypto_high_volume' },
-    { label: "New Crypto Projects", key: 'new_crypto' },
-    { label: "High Return ELSS Funds", key: 'elss_high_return' },
-    { label: "Top Small Cap Mutual Funds", key: 'small_cap_mf' },
+    { label: "IT stocks with P/E greater than 30", key: 'it', type: 'stock' as const },
+    { label: "Banking stocks with ROE greater than 15%", key: 'banking', type: 'stock' as const },
+    { label: "Large cap stocks over 5,00,000Cr market cap", key: 'large_cap', type: 'stock' as const },
+    { label: "FMCG stocks with low debt", key: 'fmcg', type: 'stock' as const },
+    { label: "High Volume Crypto", key: 'crypto_high_volume', type: 'crypto' as const },
+    { label: "New Crypto Projects", key: 'new_crypto', type: 'crypto' as const },
+    { label: "High Return ELSS Funds", key: 'elss_high_return', type: 'mutual_fund' as const },
+    { label: "Top Small Cap Mutual Funds", key: 'small_cap_mf', type: 'mutual_fund' as const },
 ];
 
 const marketSubItems = [
@@ -65,7 +65,7 @@ const screenerItems = [
 ];
 
 
-const ExpandedScreenerRow = ({ stock, onAction, onNav }: { stock: Stock, onAction: (type: 'buy' | 'sell', qty: number) => void, onNav: () => void }) => {
+const ExpandedScreenerRow = ({ stock, assetType, onAction, onNav }: { stock: Stock, assetType: 'stock' | 'crypto' | 'mutual_fund', onAction: (type: 'buy' | 'sell', qty: number) => void, onNav: () => void }) => {
     const { toast } = useToast();
     const [quantity, setQuantity] = useState('1');
     const [orderType, setOrderType] = useState('Limit');
@@ -78,8 +78,10 @@ const ExpandedScreenerRow = ({ stock, onAction, onNav }: { stock: Stock, onActio
         onAction('sell', parseInt(quantity, 10));
     };
 
+    const colSpan = assetType === 'stock' ? 5 : 4;
+    
     return (
-      <TableCell colSpan={5} className="p-0">
+      <TableCell colSpan={colSpan}>
         <div className="bg-muted/50 p-3 grid grid-cols-1 sm:grid-cols-3 gap-4 items-center">
             <div className="flex items-center gap-2">
                 <Label htmlFor={`qty-${stock.id}`} className="shrink-0">Qty:</Label>
@@ -124,7 +126,8 @@ export function ScreenerPageContent({ onAssetClick }: { onAssetClick: (asset: St
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
     const [expandedStockId, setExpandedStockId] = useState<string | null>(null);
-    const [suggestedResults, setSuggestedResults] = useState<{ title: string; stocks: Stock[] } | null>(null);
+    
+    const [suggestedResults, setSuggestedResults] = useState<{ title: string; stocks: Stock[], type: 'stock' | 'crypto' | 'mutual_fund' } | null>(null);
     
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -160,9 +163,9 @@ export function ScreenerPageContent({ onAssetClick }: { onAssetClick: (asset: St
         }
     };
     
-    const handleSuggestionClick = (suggestionKey: string, suggestionLabel: string) => {
+    const handleSuggestionClick = (suggestion: typeof suggestionQueries[0]) => {
         let stocksToShow: Stock[] = [];
-        switch (suggestionKey) {
+        switch (suggestion.key) {
             case 'it':
                 stocksToShow = mockStocks.filter(s => s.sector === 'IT Services' && s.fundamentals?.peRatioTTM && s.fundamentals.peRatioTTM > 30);
                 break;
@@ -194,7 +197,7 @@ export function ScreenerPageContent({ onAssetClick }: { onAssetClick: (asset: St
             default:
                 stocksToShow = [];
         }
-        setSuggestedResults({ title: `Results`, stocks: stocksToShow });
+        setSuggestedResults({ title: `Results`, stocks: stocksToShow, type: suggestion.type });
         // Clear AI results
         setResults([]);
         setAnalysis('');
@@ -279,7 +282,7 @@ export function ScreenerPageContent({ onAssetClick }: { onAssetClick: (asset: St
                                     type="button"
                                     variant="outline"
                                     size="sm"
-                                    onClick={() => handleSuggestionClick(suggestion.key, suggestion.label)}
+                                    onClick={() => handleSuggestionClick(suggestion)}
                                     disabled={isLoading}
                                 >
                                     {suggestion.label}
@@ -294,7 +297,7 @@ export function ScreenerPageContent({ onAssetClick }: { onAssetClick: (asset: St
                 </CardContent>
             </Card>
 
-            {(suggestedResults) && !isLoading && (
+            {suggestedResults && !isLoading && (
                  <Card>
                     <CardHeader>
                         <CardTitle>
@@ -304,28 +307,69 @@ export function ScreenerPageContent({ onAssetClick }: { onAssetClick: (asset: St
                     <CardContent>
                         <Table>
                             <TableHeader>
-                                <TableRow>
-                                    <TableHead>Symbol</TableHead>
-                                    <TableHead>Price (₹)</TableHead>
-                                    <TableHead>P/E</TableHead>
-                                    <TableHead>ROE (%)</TableHead>
-                                    <TableHead>Mkt Cap</TableHead>
+                                 <TableRow>
+                                    {suggestedResults.type === 'stock' && (
+                                        <>
+                                            <TableHead>Symbol</TableHead>
+                                            <TableHead>Price (₹)</TableHead>
+                                            <TableHead>P/E</TableHead>
+                                            <TableHead>ROE (%)</TableHead>
+                                            <TableHead>Mkt Cap</TableHead>
+                                        </>
+                                    )}
+                                    {suggestedResults.type === 'crypto' && (
+                                        <>
+                                            <TableHead>Symbol</TableHead>
+                                            <TableHead>Price (₹)</TableHead>
+                                            <TableHead>Volume (24h)</TableHead>
+                                            <TableHead>Market Cap</TableHead>
+                                        </>
+                                    )}
+                                    {suggestedResults.type === 'mutual_fund' && (
+                                        <>
+                                            <TableHead>Scheme Name</TableHead>
+                                            <TableHead>NAV (₹)</TableHead>
+                                            <TableHead>1Y Return (%)</TableHead>
+                                            <TableHead>Risk Level</TableHead>
+                                        </>
+                                    )}
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
                                 {suggestedResults.stocks.map((stock) => (
                                     <React.Fragment key={stock.id}>
                                         <TableRow onClick={() => handleRowClick(stock.id)} className="cursor-pointer">
-                                            <TableCell className="font-semibold">{stock.symbol}</TableCell>
-                                            <TableCell>{stock.price.toFixed(2)}</TableCell>
-                                            <TableCell>{stock.fundamentals?.peRatioTTM?.toFixed(2) ?? 'N/A'}</TableCell>
-                                            <TableCell>{stock.fundamentals?.roe?.toFixed(2) ?? 'N/A'}</TableCell>
-                                            <TableCell>{stock.marketCap ?? stock.fundamentals?.marketCap ?? 'N/A'}</TableCell>
+                                            {suggestedResults.type === 'stock' && (
+                                                <>
+                                                    <TableCell className="font-semibold">{stock.symbol}</TableCell>
+                                                    <TableCell>{stock.price.toFixed(2)}</TableCell>
+                                                    <TableCell>{stock.fundamentals?.peRatioTTM?.toFixed(2) ?? 'N/A'}</TableCell>
+                                                    <TableCell>{stock.fundamentals?.roe?.toFixed(2) ?? 'N/A'}</TableCell>
+                                                    <TableCell>{stock.marketCap ?? stock.fundamentals?.marketCap ?? 'N/A'}</TableCell>
+                                                </>
+                                            )}
+                                             {suggestedResults.type === 'crypto' && (
+                                                <>
+                                                    <TableCell className="font-semibold">{stock.symbol}</TableCell>
+                                                    <TableCell>{stock.price.toFixed(2)}</TableCell>
+                                                    <TableCell>{stock.volume?.toLocaleString() ?? 'N/A'}</TableCell>
+                                                    <TableCell>{stock.marketCap ?? 'N/A'}</TableCell>
+                                                </>
+                                            )}
+                                            {suggestedResults.type === 'mutual_fund' && (
+                                                 <>
+                                                    <TableCell className="font-semibold truncate max-w-xs">{stock.name}</TableCell>
+                                                    <TableCell>{stock.price.toFixed(2)}</TableCell>
+                                                    <TableCell>{stock.annualisedReturn?.toFixed(2) ?? 'N/A'}%</TableCell>
+                                                    <TableCell>{stock.riskLevel ?? 'N/A'}</TableCell>
+                                                </>
+                                            )}
                                         </TableRow>
                                         {expandedStockId === stock.id && (
                                             <TableRow>
                                                 <ExpandedScreenerRow
                                                     stock={stock}
+                                                    assetType={suggestedResults.type}
                                                     onAction={(type, qty) => handleAction(stock, type, qty)}
                                                     onNav={() => onAssetClick(stock)}
                                                 />
@@ -392,6 +436,7 @@ export function ScreenerPageContent({ onAssetClick }: { onAssetClick: (asset: St
                                             <TableRow>
                                                 <ExpandedScreenerRow
                                                     stock={stock}
+                                                    assetType="stock"
                                                     onAction={(type, qty) => handleAction(stock, type, qty)}
                                                     onNav={() => onAssetClick(stock)}
                                                 />
