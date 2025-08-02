@@ -6,6 +6,7 @@ import type { Stock } from '@/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { TrendingUp, TrendingDown } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 export type MoverCategory = 'gainers' | 'losers' | '52w-high' | '52w-low' | 'volume-shockers' | 'high-vol-gain' | 'high-vol-loss';
 
@@ -16,9 +17,15 @@ interface MarketMoversCardProps {
 }
 
 const StockItem = ({ stock }: { stock: Stock }) => {
+    const router = useRouter();
     const isPositive = (stock.changePercent || 0) >= 0;
+
+    const handleClick = () => {
+        router.push(`/order/stock/${stock.symbol}`);
+    };
+
     return (
-        <div className="flex items-center justify-between p-2 rounded-md hover:bg-muted/50 cursor-pointer">
+        <div className="flex items-center justify-between p-2 rounded-md hover:bg-muted/50 cursor-pointer" onClick={handleClick}>
             <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium truncate">{stock.name}</p>
                 <p className="text-xs text-muted-foreground">{stock.sector}</p>

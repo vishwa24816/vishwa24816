@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { AppHeader } from '@/components/shared/AppHeader';
 import { ProtectedRoute } from '@/components/shared/ProtectedRoute';
@@ -18,6 +18,7 @@ import { InsiderDealsDisplay } from '@/components/markets/InsiderDealsDisplay';
 import { BulkBlockDealsDisplay } from '@/components/markets/BulkBlockDealsDisplay';
 import { EarningsCallsDisplay } from '@/components/markets/EarningsCallsDisplay';
 import { InsightsDisplay } from '@/components/markets/InsightsDisplay';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const marketMoversCategories: MoverCategory[] = [
     { title: "Top Gainers", type: 'gainers' },
@@ -29,7 +30,7 @@ const marketMoversCategories: MoverCategory[] = [
     { title: "High Volume, Top Losers", type: 'high-vol-loss' },
 ];
 
-export default function MarketsPage() {
+function MarketsPageContent() {
     const searchParams = useSearchParams();
     const initialTab = searchParams.get('tab') || 'indian_stocks';
     
@@ -131,4 +132,27 @@ export default function MarketsPage() {
             </div>
         </ProtectedRoute>
     );
+}
+
+
+function MarketsPageFallback() {
+    return (
+        <div className="flex flex-col min-h-screen">
+            <AppHeader isRealMode={false} />
+            <main className="flex-grow p-4 space-y-4">
+                <Skeleton className="h-12 w-full" />
+                <Skeleton className="h-20 w-full" />
+                <Skeleton className="h-64 w-full" />
+                <Skeleton className="h-64 w-full" />
+            </main>
+        </div>
+    );
+}
+
+export default function MarketsPage() {
+    return (
+        <Suspense fallback={<MarketsPageFallback />}>
+            <MarketsPageContent />
+        </Suspense>
+    )
 }
