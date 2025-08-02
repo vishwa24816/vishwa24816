@@ -8,7 +8,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Mail, ChevronRight, User, ShieldCheck, Banknote, Users, UserX, Lock, Wallet, LifeBuoy, FileText, Star, Gift, Info, Briefcase, ChevronDown, Palette, Languages } from 'lucide-react';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
@@ -66,8 +66,36 @@ export default function ProfilePage() {
   
   const [activeMode, setActiveMode] = useState<'Fiat' | 'Crypto'>(isRealMode ? 'Crypto' : 'Fiat');
   const [platformCurrency, setPlatformCurrency] = useState('INR');
-  const [platformColor, setPlatformColor] = useState('blue');
   const [platformLanguage, setPlatformLanguage] = useState('english');
+  const [platformColor, setPlatformColor] = useState('blue');
+
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('sim-theme') || 'blue';
+    setPlatformColor(savedTheme);
+    document.documentElement.setAttribute('data-theme', savedTheme);
+  }, []);
+
+  const handleThemeChange = (theme: string) => {
+      setPlatformColor(theme);
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('sim-theme', theme);
+  };
+
+  const themeOptions = [
+      { value: 'blue', label: 'Blue' },
+      { value: 'cyan', label: 'Cyan' },
+      { value: 'light-green', label: 'Light Green' },
+      { value: 'dark-green', label: 'Dark Green' },
+      { value: 'pink', label: 'Pink' },
+      { value: 'red', label: 'Red' },
+      { value: 'orange', label: 'Orange' },
+      { value: 'yellow', label: 'Yellow' },
+      { value: 'gold', label: 'Gold' },
+      { value: 'brown', label: 'Brown' },
+      { value: 'violet', label: 'Violet' },
+      { value: 'purple', label: 'Purple' },
+      { value: 'skin', label: 'Skin' },
+  ];
   
   const profileItems: (ProfileItemProps & {component?: React.ReactNode})[] = [
     {
@@ -167,10 +195,13 @@ export default function ProfilePage() {
         description: "Choose your preferred color theme",
         component: (
             <ExpandableProfileItem icon={Palette} title="Platform Colour" description="Choose your preferred color theme">
-                <RadioGroup value={platformColor} onValueChange={setPlatformColor} className="space-y-2">
-                    <div className="flex items-center space-x-2"><RadioGroupItem value="blue" id="color-blue" /><Label htmlFor="color-blue" className="font-normal">Blue (Default)</Label></div>
-                    <div className="flex items-center space-x-2"><RadioGroupItem value="green" id="color-green" /><Label htmlFor="color-green" className="font-normal">Green</Label></div>
-                    <div className="flex items-center space-x-2"><RadioGroupItem value="orange" id="color-orange" /><Label htmlFor="color-orange" className="font-normal">Orange</Label></div>
+                <RadioGroup value={platformColor} onValueChange={handleThemeChange} className="grid grid-cols-2 gap-2">
+                     {themeOptions.map((theme) => (
+                        <div key={theme.value} className="flex items-center space-x-2">
+                            <RadioGroupItem value={theme.value} id={`color-${theme.value}`} />
+                            <Label htmlFor={`color-${theme.value}`} className="font-normal">{theme.label}</Label>
+                        </div>
+                    ))}
                 </RadioGroup>
             </ExpandableProfileItem>
         )

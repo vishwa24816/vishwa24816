@@ -325,47 +325,6 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
     const newSecondaryItems = secondaryNavTriggerCategories[firstPrimary] || [];
     setActiveSecondaryItem(newSecondaryItems[0] || '');
   }, [activeMode, primaryNavItems, secondaryNavTriggerCategories]);
-  
-   useEffect(() => {
-    let theme = 'portfolio'; // Default theme
-    if (activeMode === 'Fiat') {
-        const themeMapping: { [key: string]: string } = {
-            'Indian Stocks': 'orange',
-            'US Stocks': 'brown', // This is now red
-            'Futures': 'caramel', // This is now brown
-            'Options': 'yellow',
-            'IPO': 'red'
-        };
-        theme = themeMapping[activePrimaryItem] || 'fiat';
-    } else if (activeMode === 'Wealth') {
-        const themeMapping: { [key: string]: string } = {
-            'Mutual Funds': 'mutual_funds',
-            'Bonds': 'bonds',
-            'Insurance': 'insurance', // This is now caramel
-        };
-        theme = themeMapping[activePrimaryItem] || 'wealth';
-    } else if (activeMode === 'Crypto') {
-        const themeMapping: { [key: string]: string } = {
-            'Spot': 'spot',
-            'Futures': 'crypto_futures',
-            'Options': 'crypto_options',
-            'Mutual Fund': 'crypto_mutual_fund',
-        };
-        theme = themeMapping[activePrimaryItem] || 'crypto';
-    } else if (activeMode === 'Web3') {
-        const themeMapping: { [key: string]: string } = {
-            'Trending': 'web3',
-            'AI': 'ai',
-            'DeFi': 'defi',
-            'Memes': 'memes',
-            'NFT': 'nft',
-        };
-        theme = themeMapping[activePrimaryItem.split(' ')[0]] || 'web3';
-    } else {
-      theme = activeMode.toLowerCase();
-    }
-    document.documentElement.setAttribute('data-theme', theme);
-  }, [activeMode, activePrimaryItem]);
 
 
   const handlePrimaryNavClick = (item: string) => {
