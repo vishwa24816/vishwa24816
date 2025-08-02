@@ -35,11 +35,19 @@ export function GenericOrderPageContent({ asset, assetSpecificNews, onBack }: Ge
     toast({ title: "Sell Action (Mock)", description: `Initiating SELL for ${asset?.symbol} with product type: ${productTypeForOrder}` });
   };
 
-  const isPositiveChange = asset.change >= 0;
+  const isPositiveChange = asset && typeof asset.change === 'number' && asset.change >= 0;
   const timescaleButtons = ['NSE', '1D', '1W', '1M', '1Y', '5Y', 'ALL'];
   
   const currentFinancialsData = asset.financials?.[activeFinancialsCategory] || [];
   const maxFinancialValue = Math.max(...currentFinancialsData.map(d => d.value), 0);
+
+  if (!asset) {
+    return (
+        <div className="flex flex-col min-h-screen bg-background text-foreground items-center justify-center">
+            <p>Loading asset details...</p>
+        </div>
+    );
+  }
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
@@ -55,11 +63,11 @@ export function GenericOrderPageContent({ asset, assetSpecificNews, onBack }: Ge
             <div>
               <h1 className="text-xl font-semibold">{asset.name}</h1>
               <p className={`text-3xl font-bold ${isPositiveChange ? 'text-green-500' : 'text-red-500'}`}>
-                ₹{asset.price.toFixed(2)}
+                ₹{typeof asset.price === 'number' ? asset.price.toFixed(2) : 'N/A'}
               </p>
               <p className={`text-sm ${isPositiveChange ? 'text-green-500' : 'text-red-500'} flex items-center`}>
                 {isPositiveChange ? <TrendingUp className="h-4 w-4 mr-1" /> : <TrendingDown className="h-4 w-4 mr-1" />}
-                {asset.change.toFixed(2)} ({asset.changePercent.toFixed(2)}%) 1D
+                {typeof asset.change === 'number' ? asset.change.toFixed(2) : ''} ({typeof asset.changePercent === 'number' ? asset.changePercent.toFixed(2) : ''}%) 1D
               </p>
             </div>
             {asset.sector && (
@@ -155,14 +163,14 @@ export function GenericOrderPageContent({ asset, assetSpecificNews, onBack }: Ge
                 )}
               </div>
               
-              <div className="grid grid-cols-2 gap-4 text-sm pt-2">
+              <div className="grid grid-cols-2 gap-4 text-sm pt-2 mb-6">
                 <div>
                   <p className="text-xs text-muted-foreground">Open</p>
-                  <p className="font-semibold text-foreground">{asset.openPrice?.toFixed(2) || 'N/A'}</p>
+                  <p className="font-semibold text-foreground">₹{asset.openPrice?.toFixed(2) || 'N/A'}</p>
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground">Prev. Close</p>
-                  <p className="font-semibold text-foreground">{asset.prevClosePrice?.toFixed(2) || 'N/A'}</p>
+                  <p className="font-semibold text-foreground">₹{asset.prevClosePrice?.toFixed(2) || 'N/A'}</p>
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground">Volume</p>
