@@ -63,7 +63,7 @@ const mockTransactions = [
   { id: 'txn5', date: '2024-07-22', description: 'Bought 0.01 BTC @ 5200000.00', amount: -52000.00, type: 'DEBIT', details: { cryptoPlatform: 'SIM', brokerage: 52.00, brokerageEarnedBack: 10.00 } },
   { id: 'txn6', date: '2024-07-20', description: 'Brokerage charges for July', amount: -350.00, type: 'DEBIT' },
   { id: 'txn7', date: '2024-07-18', description: 'Dividend from HUL', amount: 450.00, type: 'CREDIT' },
-  { id: 'txn8', date: '2024-07-15', description: 'SIP Investment - Axis Bluechip', amount: -5000.00, type: 'DEBIT' },
+  { id: 'txn8', date: '2024-07-15', description: 'SIP Investment - Axis Bluechip', amount: -5000.00, type: 'DEBIT', details: { sipFrequency: 'Monthly', installment: '7 of 36', nav: 52.30, unitsAllotted: 95.60 } },
   { id: 'txn9', date: '2024-07-12', description: 'Interest on uninvested funds', amount: 125.50, type: 'CREDIT' },
   { id: 'txn10', date: '2024-07-10', description: 'Sold 2 NIFTYBEES @ 230.50', amount: 461.00, type: 'CREDIT', details: { soldMargin: 461.00, profit: 21.00, brokerage: 5.00 } },
   { id: 'txn11', date: '2024-07-08', description: 'Pledged 5 RELIANCE for margin', amount: 0, type: 'NEUTRAL', details: { pledgeDetails: 'Pledged 5 RELIANCE' } },
@@ -120,6 +120,10 @@ const TransactionItem = ({ transaction }: { transaction: (typeof mockTransaction
                         {transaction.details?.pledgeDetails && <TransactionDetailRow label="Pledge Details" value={transaction.details.pledgeDetails} />}
                         {transaction.details?.giftDetails && <TransactionDetailRow label="Gift Details" value={transaction.details.giftDetails} />}
                         {transaction.details?.cryptoPlatform && <TransactionDetailRow label="Crypto Platform" value={transaction.details.cryptoPlatform} />}
+                        {transaction.details?.sipFrequency && <TransactionDetailRow label="Frequency" value={transaction.details.sipFrequency} />}
+                        {transaction.details?.installment && <TransactionDetailRow label="Installment" value={transaction.details.installment} />}
+                        {transaction.details?.nav && <TransactionDetailRow label="NAV" value={transaction.details.nav} />}
+                        {transaction.details?.unitsAllotted && <TransactionDetailRow label="Units Allotted" value={transaction.details.unitsAllotted.toFixed(4)} />}
                          {!transaction.details && <p className="text-xs text-muted-foreground">No further details for this transaction.</p>}
                     </div>
                 </div>
