@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Mail, ChevronRight, User, ShieldCheck, Banknote, Users, UserX, Lock, Wallet, LifeBuoy, FileText, Star, Gift, Info, Briefcase, ChevronDown } from 'lucide-react';
+import { Mail, ChevronRight, User, ShieldCheck, Banknote, Users, UserX, Lock, Wallet, LifeBuoy, FileText, Star, Gift, Info, Briefcase, ChevronDown, Palette, Languages } from 'lucide-react';
 import React, { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { useRouter } from 'next/navigation';
@@ -66,6 +66,8 @@ export default function ProfilePage() {
   
   const [activeMode, setActiveMode] = useState<'Fiat' | 'Crypto'>(isRealMode ? 'Crypto' : 'Fiat');
   const [platformCurrency, setPlatformCurrency] = useState('INR');
+  const [platformColor, setPlatformColor] = useState('blue');
+  const [platformLanguage, setPlatformLanguage] = useState('english');
   
   const profileItems: (ProfileItemProps & {component?: React.ReactNode})[] = [
     {
@@ -159,6 +161,34 @@ export default function ProfilePage() {
       description: "Explore career opportunities with us",
       onClick: () => alert('Navigate to Careers Page'),
     },
+    {
+        icon: Palette,
+        title: "Platform Colour",
+        description: "Choose your preferred color theme",
+        component: (
+            <ExpandableProfileItem icon={Palette} title="Platform Colour" description="Choose your preferred color theme">
+                <RadioGroup value={platformColor} onValueChange={setPlatformColor} className="space-y-2">
+                    <div className="flex items-center space-x-2"><RadioGroupItem value="blue" id="color-blue" /><Label htmlFor="color-blue" className="font-normal">Blue (Default)</Label></div>
+                    <div className="flex items-center space-x-2"><RadioGroupItem value="green" id="color-green" /><Label htmlFor="color-green" className="font-normal">Green</Label></div>
+                    <div className="flex items-center space-x-2"><RadioGroupItem value="orange" id="color-orange" /><Label htmlFor="color-orange" className="font-normal">Orange</Label></div>
+                </RadioGroup>
+            </ExpandableProfileItem>
+        )
+    },
+    {
+        icon: Languages,
+        title: "Platform Language",
+        description: "Select your display language",
+        component: (
+            <ExpandableProfileItem icon={Languages} title="Platform Language" description="Select your display language">
+                <RadioGroup value={platformLanguage} onValueChange={setPlatformLanguage} className="space-y-2">
+                    <div className="flex items-center space-x-2"><RadioGroupItem value="english" id="lang-en" /><Label htmlFor="lang-en" className="font-normal">English</Label></div>
+                    <div className="flex items-center space-x-2"><RadioGroupItem value="hindi" id="lang-hi" /><Label htmlFor="lang-hi" className="font-normal">Hindi</Label></div>
+                    <div className="flex items-center space-x-2"><RadioGroupItem value="kannada" id="lang-kn" /><Label htmlFor="lang-kn" className="font-normal">Kannada</Label></div>
+                </RadioGroup>
+            </ExpandableProfileItem>
+        )
+    }
   ];
 
   return (
