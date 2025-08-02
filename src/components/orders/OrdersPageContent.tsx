@@ -22,6 +22,7 @@ import {
     mockCryptoFutures,
     mockWeb3Holdings
 } from '@/lib/mockData';
+import { useRouter } from 'next/navigation';
 
 const demoOrderTabs = [
   { value: "limit", label: "Limit" },
@@ -43,6 +44,7 @@ const realOrderTabs = [
 
 export function OrdersPageContent({ activeMode, onAssetClick }: { activeMode: 'Portfolio' | 'Fiat' | 'Wealth' | 'Crypto' | 'Web3', onAssetClick: (asset: Stock) => void; }) {
   const { user } = useAuth();
+  const router = useRouter();
   const isRealMode = user?.id === 'REAL456';
 
   const orderTabs = isRealMode ? realOrderTabs : demoOrderTabs;
@@ -78,7 +80,7 @@ export function OrdersPageContent({ activeMode, onAssetClick }: { activeMode: 'P
                     <div className="flex items-center space-x-4">
                         <Search className="h-5 w-5 text-muted-foreground cursor-pointer hover:text-primary" />
                     </div>
-                    <Button variant="link" className="text-primary text-sm font-medium flex items-center p-0 h-auto hover:no-underline">
+                    <Button variant="link" className="text-primary text-sm font-medium flex items-center p-0 h-auto hover:no-underline" onClick={() => router.push('/analytics')}>
                         <TrendingUp className="mr-1.5 h-4 w-4" />
                         Analytics
                     </Button>
