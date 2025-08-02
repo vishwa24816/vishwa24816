@@ -72,7 +72,6 @@ export default function ProfilePage() {
   useEffect(() => {
     const savedTheme = localStorage.getItem('sim-theme') || 'blue';
     setPlatformColor(savedTheme);
-    document.documentElement.setAttribute('data-theme', savedTheme);
   }, []);
 
   const handleThemeChange = (theme: string) => {
