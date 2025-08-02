@@ -84,14 +84,16 @@ export function OverallPortfolioSummary({
           </div>
         </div>
         
-        <div className="pt-3 grid grid-cols-2 gap-2">
-            <Button variant="outline" size="sm" className="h-11" onClick={onAddFunds}>
-                <Coins className="mr-2 h-4 w-4" /> Add Funds
-            </Button>
-            <Button variant="outline" size="sm" className="h-11" onClick={onWithdrawFunds}>
-                <Landmark className="mr-2 h-4 w-4" /> Withdraw
-            </Button>
-        </div>
+        {title !== "Pledge Overview" && (
+            <div className="pt-3 grid grid-cols-2 gap-2">
+                <Button variant="outline" size="sm" className="h-11" onClick={onAddFunds}>
+                    <Coins className="mr-2 h-4 w-4" /> Add Funds
+                </Button>
+                <Button variant="outline" size="sm" className="h-11" onClick={onWithdrawFunds}>
+                    <Landmark className="mr-2 h-4 w-4" /> Withdraw
+                </Button>
+            </div>
+        )}
       </CardContent>
     </Card>
   );
