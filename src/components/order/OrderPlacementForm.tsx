@@ -104,7 +104,7 @@ const MarketDepth = ({ asset, onPriceClick }: { asset: Stock; onPriceClick: (pri
 const StockOrderForm = ({ asset, assetType, productType, onProductTypeChange, initialDetails }: any) => {
     const { toast } = useToast();
     const [quantity, setQuantity] = useState<number | string>(initialDetails?.quantity || 1);
-    const [price, setPrice] = useState<number | string>(asset.price.toFixed(2));
+    const [price, setPrice] = useState<number | string>(asset?.price?.toFixed(2) || '');
     const isUsStock = asset.exchange === 'NASDAQ' || asset.exchange === 'NYSE';
     const [selectedExchange, setSelectedExchange] = useState<'BSE' | 'NSE' | 'NASDAQ' | 'NYSE'>(isUsStock ? (asset.exchange || 'NASDAQ') : 'NSE');
     const [orderMode, setOrderMode] = useState('Regular');
@@ -211,7 +211,7 @@ const StockOrderForm = ({ asset, assetType, productType, onProductTypeChange, in
                      </div>
                      <div className="mt-4 pt-4 border-t"><p className="text-sm text-muted-foreground">Margin required: <span className="font-semibold text-foreground">₹{displayedMargin.toLocaleString('en-IN')}</span></p></div>
                 </TabsContent>
-                <TabsContent value="SP" className="p-0 mt-0"><SipForm asset={asset} assetType="stock" /></TabsContent>
+                <TabsContent value="SP" className="p-0 mt-0"><SipForm asset={asset} assetType="stock" initialDetails={initialDetails} /></TabsContent>
             </Tabs>
             <MarketDepth asset={asset} onPriceClick={handleMarketDepthPriceClick} />
             <div className="p-4 border-t flex flex-col sm:flex-row gap-2">
@@ -223,9 +223,9 @@ const StockOrderForm = ({ asset, assetType, productType, onProductTypeChange, in
     );
 };
 
-const CryptoOrderForm = ({ asset, assetType, productType, onProductTypeChange }: any) => {
+const CryptoOrderForm = ({ asset, assetType, productType, onProductTypeChange, initialDetails }: any) => {
     const [quantity, setQuantity] = useState<number | string>('1');
-    const [price, setPrice] = useState<number | string>(asset.price.toFixed(2));
+    const [price, setPrice] = useState<number | string>(asset?.price?.toFixed(2) || '');
     const [orderMode, setOrderMode] = useState('Regular');
     const [orderType, setOrderType] = useState('Limit');
     const [displayedMargin, setDisplayedMargin] = useState(0);
@@ -279,7 +279,7 @@ const CryptoOrderForm = ({ asset, assetType, productType, onProductTypeChange }:
                     </div>
                     <div className="mt-4 pt-4 border-t"><p className="text-sm text-muted-foreground">Margin required: <span className="font-semibold text-foreground">₹{displayedMargin.toLocaleString('en-IN')}</span></p></div>
                 </TabsContent>
-                <TabsContent value="SP" className="p-0 mt-0"><SipForm asset={asset} assetType="crypto" /></TabsContent>
+                <TabsContent value="SP" className="p-0 mt-0"><SipForm asset={asset} assetType="crypto" initialDetails={initialDetails} /></TabsContent>
             </Tabs>
             <MarketDepth asset={asset} onPriceClick={handleMarketDepthPriceClick} />
              <div className="p-4 border-t flex flex-col sm:flex-row gap-2">
@@ -291,10 +291,10 @@ const CryptoOrderForm = ({ asset, assetType, productType, onProductTypeChange }:
     );
 };
 
-const FutureOrderForm = ({ asset, assetType, productType, onProductTypeChange }: any) => {
+const FutureOrderForm = ({ asset, assetType, productType, onProductTypeChange, initialDetails }: any) => {
     const { toast } = useToast();
     const [quantity, setQuantity] = useState<number | string>(1);
-    const [price, setPrice] = useState<number | string>(asset.price.toFixed(2));
+    const [price, setPrice] = useState<number | string>(asset?.price?.toFixed(2) || '');
     const [orderType, setOrderType] = useState('Limit');
     const [selectedExpiryDate, setSelectedExpiryDate] = useState<string>('');
     const [displayedMargin, setDisplayedMargin] = useState(0);
@@ -356,10 +356,10 @@ const FutureOrderForm = ({ asset, assetType, productType, onProductTypeChange }:
     );
 };
 
-const CryptoFutureOrderForm = ({ asset, assetType, productType, onProductTypeChange }: any) => {
+const CryptoFutureOrderForm = ({ asset, assetType, productType, onProductTypeChange, initialDetails }: any) => {
     const { toast } = useToast();
     const [quantity, setQuantity] = useState<number | string>('1');
-    const [price, setPrice] = useState<number | string>(asset.price.toFixed(2));
+    const [price, setPrice] = useState<number | string>(asset?.price?.toFixed(2) || '');
     const [orderMode, setOrderMode] = useState('MTF');
     const [orderType, setOrderType] = useState('Limit');
     const [mtfLeverage, setMtfLeverage] = useState('1x');
@@ -406,7 +406,7 @@ const CryptoFutureOrderForm = ({ asset, assetType, productType, onProductTypeCha
                     </div>
                      <div className="mt-4 pt-4 border-t"><p className="text-sm text-muted-foreground">Margin required: <span className="font-semibold text-foreground">₹{displayedMargin.toLocaleString('en-IN')}</span></p></div>
                  </TabsContent>
-                 <TabsContent value="SP" className="p-0 mt-0"><SipForm asset={asset} assetType="crypto-future" /></TabsContent>
+                 <TabsContent value="SP" className="p-0 mt-0"><SipForm asset={asset} assetType="crypto-future" initialDetails={initialDetails} /></TabsContent>
             </Tabs>
             <MarketDepth asset={asset} onPriceClick={handleMarketDepthPriceClick} />
              <div className="p-4 border-t flex flex-col sm:flex-row gap-2">
