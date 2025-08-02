@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState } from 'react';
@@ -54,7 +53,6 @@ const AnalyticsPage = () => {
         { icon: ListOrdered, title: 'VDA Report', description: 'A detailed report of all your crypto disposals, gains, and losses formatted for the Schedule VDA section of the ITR.'},
         { icon: Scaling, title: 'VDA Derivatives Report', description: 'A detailed report of gains and losses from crypto derivatives such as futures, formatted for the Schedule VDA section of the ITR.'},
         { icon: FileText, title: 'Dividend Reports', description: 'Get your Dividend report.' },
-        { icon: FileText, title: 'Holdings', description: 'See all your equity and mutual funds.' },
         { icon: FileText, title: 'Trade', description: 'Get an overview of all your trades (sell/buy orders).' },
         { icon: FileText, title: 'Bill', description: 'Check the brokerage and transaction charges on your trades.' },
         { icon: FileText, title: 'Miscellaneous', description: 'Find reports like contract notes, margin report, retention report, etc.' },
