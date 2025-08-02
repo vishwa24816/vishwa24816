@@ -2,7 +2,7 @@
 "use client";
 
 import React, { useState, useEffect, useMemo } from 'react';
-import type { Stock } from '@/types';
+import type { Stock, PortfolioHolding } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -223,27 +223,41 @@ const StockOrderForm = ({ asset, assetType, productType, onProductTypeChange, in
     );
 };
 
-const CryptoOrderForm = ({ asset, assetType, productType, onProductTypeChange, initialDetails }: any) => {
+const CryptoOrderForm = ({ asset, assetType, productType, onProductTypeChange, initialDetails, userHoldings }: any) => {
     const [quantity, setQuantity] = useState<number | string>('1');
     const [price, setPrice] = useState<number | string>(asset?.price?.toFixed(2) || '');
     const [orderMode, setOrderMode] = useState('Regular');
     const [orderType, setOrderType] = useState('Limit');
-    const [displayedMargin, setDisplayedMargin] = useState(0);
     const [isAddToBasketDialogOpen, setIsAddToBasketDialogOpen] = useState(false);
     const [lockInYears, setLockInYears] = useState('');
     const [lockInMonths, setLockInMonths] = useState('');
+    const [baseCurrency, setBaseCurrency] = useState('INR');
 
-
-    useEffect(() => {
+    const displayedMargin = useMemo(() => {
         const numQty = parseFloat(String(quantity)) || 0;
         const numPrice = parseFloat(String(price)) || 0;
-        setDisplayedMargin(numQty * numPrice);
-    }, [quantity, price]);
+        
+        if (baseCurrency === 'INR') {
+            return `₹${(numQty * numPrice).toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+        }
+        
+        const baseAsset = userHoldings.find((h: PortfolioHolding) => h.symbol === baseCurrency);
+        if (baseAsset) {
+            const totalCostInQuote = numQty * numPrice;
+            const margin = totalCostInQuote / baseAsset.ltp;
+            return `${margin.toFixed(8)} ${baseCurrency}`;
+        }
+
+        return '₹0.00';
+
+    }, [quantity, price, baseCurrency, userHoldings, asset.price]);
 
     const handleMarketDepthPriceClick = (clickedPrice: number) => {
         setPrice(clickedPrice.toFixed(2));
         setOrderType('Limit');
     };
+    
+    const availableCurrencies = ['INR', ...userHoldings.map((h: PortfolioHolding) => h.symbol)];
 
     return (
         <div className="bg-card shadow-md rounded-lg mt-4">
@@ -263,6 +277,15 @@ const CryptoOrderForm = ({ asset, assetType, productType, onProductTypeChange, i
                             <div><Label htmlFor="qty-crypto">Qty.</Label><Input id="qty-crypto" type="text" value={quantity} onChange={(e) => setQuantity(e.target.value)} /></div>
                             <div><Label htmlFor="price-crypto">Price</Label><Input id="price-crypto" type="text" value={price} onChange={(e) => setPrice(e.target.value)} disabled={orderType === 'Market'} /></div>
                         </div>
+                         <div className="space-y-2">
+                            <Label htmlFor="base-currency">Pay with</Label>
+                            <Select value={baseCurrency} onValueChange={setBaseCurrency}>
+                                <SelectTrigger id="base-currency"><SelectValue placeholder="Select currency" /></SelectTrigger>
+                                <SelectContent>
+                                    {availableCurrencies.map((c) => c && <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                                </SelectContent>
+                            </Select>
+                        </div>
                         {productType === 'HODL' && (
                             <div className="space-y-2 pt-2 animate-accordion-down">
                                 <Label>Lock-in Period</Label>
@@ -277,7 +300,7 @@ const CryptoOrderForm = ({ asset, assetType, productType, onProductTypeChange, i
                            <div className="flex items-center space-x-2"><RadioGroupItem value="Limit" id="orderType-limit-crypto" /><Label htmlFor="orderType-limit-crypto" className="font-normal">Limit</Label></div>
                         </RadioGroup>
                     </div>
-                    <div className="mt-4 pt-4 border-t"><p className="text-sm text-muted-foreground">Margin required: <span className="font-semibold text-foreground">₹{displayedMargin.toLocaleString('en-IN')}</span></p></div>
+                    <div className="mt-4 pt-4 border-t"><p className="text-sm text-muted-foreground">Margin required: <span className="font-semibold text-foreground">{displayedMargin}</span></p></div>
                 </TabsContent>
                 <TabsContent value="SP" className="p-0 mt-0"><SipForm asset={asset} assetType="crypto" initialDetails={initialDetails} /></TabsContent>
             </Tabs>
@@ -427,6 +450,7 @@ interface OrderPlacementFormProps {
   productType: string;
   onProductTypeChange: (value: string) => void;
   initialDetails?: InitialOrderDetails | null;
+  userHoldings?: PortfolioHolding[];
 }
 
 export function OrderPlacementForm({ assetType, ...props }: OrderPlacementFormProps) {

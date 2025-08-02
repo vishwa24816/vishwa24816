@@ -5,7 +5,7 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import type { Stock, NewsArticle } from '@/types';
+import type { Stock, NewsArticle, PortfolioHolding } from '@/types';
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, TrendingUp, TrendingDown, Info, Maximize2, BarChart2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -13,6 +13,7 @@ import { NewsSection } from '@/components/dashboard/NewsSection';
 import { OrderPlacementForm } from '@/components/order/OrderPlacementForm';
 import { PerformanceBar, CollapsibleSection } from './shared/OrderPageComponents';
 import { AnalysisTabContent } from './shared/AnalysisComponents';
+import { mockPortfolioHoldings } from '@/lib/mockData';
 
 interface CryptoOrderPageContentProps {
   asset: Stock;
@@ -26,6 +27,8 @@ export function CryptoOrderPageContent({ asset, assetSpecificNews, onBack }: Cry
   const [activeTimescale, setActiveTimescale] = useState('24H');
   // For crypto, productType is always Delivery/spot in this context, but we keep state for consistency
   const [productTypeForOrder, setProductTypeForOrder] = useState('Delivery');
+  
+  const cryptoHoldings: PortfolioHolding[] = mockPortfolioHoldings.filter(h => h.type === 'Crypto');
 
   const handleBuyAction = () => {
     toast({ title: "Buy Action (Mock)", description: `Initiating BUY for ${asset?.symbol}.` });
@@ -93,7 +96,7 @@ export function CryptoOrderPageContent({ asset, assetSpecificNews, onBack }: Cry
               ))}
             </div>
             
-            <OrderPlacementForm asset={asset} productType={productTypeForOrder} onProductTypeChange={setProductTypeForOrder} assetType="crypto"/>
+            <OrderPlacementForm asset={asset} productType={productTypeForOrder} onProductTypeChange={setProductTypeForOrder} assetType="crypto" userHoldings={cryptoHoldings}/>
 
             <Tabs defaultValue="overview" className="w-full">
                 <TabsList className="w-full bg-muted/30 flex overflow-x-auto whitespace-nowrap no-scrollbar rounded-none p-0 h-auto border-b mb-1">

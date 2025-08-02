@@ -30,7 +30,10 @@ const generateHoldingFromStock = (stock: any, type: PortfolioHolding['type']): P
 export const mockPortfolioHoldings: PortfolioHolding[] = [
   ...mockStocks.slice(0, 5).map(stock => generateHoldingFromStock(stock, 'Stock')),
   ...mockUsStocks.slice(0, 3).map(stock => generateHoldingFromStock(stock, 'Stock')),
-  ...mockCryptoAssets.slice(0, 4).map(crypto => generateHoldingFromStock(crypto, 'Crypto')),
+  ...mockCryptoAssets.slice(0, 4).map(crypto => ({
+      ...generateHoldingFromStock(crypto, 'Crypto'),
+      symbol: crypto.symbol,
+  })),
   ...mockMutualFunds.slice(0, 2).map(mf => generateHoldingFromStock(mf, 'Mutual Fund')),
   ...mockBonds.slice(0, 1).map(bond => generateHoldingFromStock(bond, 'Bond')),
 ];

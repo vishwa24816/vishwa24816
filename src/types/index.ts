@@ -5,6 +5,7 @@
 
 
 
+
 export interface Stock {
   id: string;
   symbol: string;
@@ -125,7 +126,7 @@ export interface User {
 export interface PortfolioHolding {
   id: string;
   name: string;
-  symbol?: string;
+  symbol: string;
   type: 'Stock' | 'Mutual Fund' | 'Crypto' | 'Bond' | 'ETF';
   quantity: number;
   avgCostPrice: number;
