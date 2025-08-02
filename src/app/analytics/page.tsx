@@ -20,7 +20,8 @@ import {
   ListOrdered,
   Scaling,
   ArrowUpRight,
-  ArrowDownLeft
+  ArrowDownLeft,
+  ChevronDown
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
@@ -46,32 +47,74 @@ const ReportItem = ({ icon: Icon, title, description, onClick }: { icon: React.E
 );
 
 const mockTransactions = [
-  { id: 'txn1', date: '2024-07-26', description: 'Bought 10 RELIANCE @ 2950.50', amount: -29505.00, type: 'DEBIT' },
+  { id: 'txn1', date: '2024-07-26', description: 'Bought 10 RELIANCE @ 2950.50', amount: -29505.00, type: 'DEBIT', details: { boughtMargin: 29505.00, brokerage: 20.00 } },
   { id: 'txn2', date: '2024-07-26', description: 'Funds added via UPI', amount: 50000.00, type: 'CREDIT' },
-  { id: 'txn3', date: '2024-07-25', description: 'Sold 5 INFY @ 1650.00', amount: 8250.00, type: 'CREDIT' },
+  { id: 'txn3', date: '2024-07-25', description: 'Sold 5 INFY @ 1650.00', amount: 8250.00, type: 'CREDIT', details: { soldMargin: 8250.00, profit: 500.00, brokerage: 15.00 } },
   { id: 'txn4', date: '2024-07-24', description: 'Withdrawal to bank account', amount: -10000.00, type: 'DEBIT' },
-  { id: 'txn5', date: '2024-07-22', description: 'Bought 0.01 BTC @ 5200000.00', amount: -52000.00, type: 'DEBIT' },
+  { id: 'txn5', date: '2024-07-22', description: 'Bought 0.01 BTC @ 5200000.00', amount: -52000.00, type: 'DEBIT', details: { cryptoPlatform: 'SIM', brokerage: 52.00, brokerageEarnedBack: 10.00 } },
   { id: 'txn6', date: '2024-07-20', description: 'Brokerage charges for July', amount: -350.00, type: 'DEBIT' },
   { id: 'txn7', date: '2024-07-18', description: 'Dividend from HUL', amount: 450.00, type: 'CREDIT' },
   { id: 'txn8', date: '2024-07-15', description: 'SIP Investment - Axis Bluechip', amount: -5000.00, type: 'DEBIT' },
   { id: 'txn9', date: '2024-07-12', description: 'Interest on uninvested funds', amount: 125.50, type: 'CREDIT' },
-  { id: 'txn10', date: '2024-07-10', description: 'Sold 2 NIFTYBEES @ 230.50', amount: 461.00, type: 'CREDIT' },
+  { id: 'txn10', date: '2024-07-10', description: 'Sold 2 NIFTYBEES @ 230.50', amount: 461.00, type: 'CREDIT', details: { soldMargin: 461.00, profit: 21.00, brokerage: 5.00 } },
+  { id: 'txn11', date: '2024-07-08', description: 'Pledged 5 RELIANCE for margin', amount: 0, type: 'NEUTRAL', details: { pledgeDetails: 'Pledged 5 RELIANCE' } },
+  { id: 'txn12', date: '2024-07-05', description: 'Gifted 1 INFY to a friend', amount: 0, type: 'NEUTRAL', details: { giftDetails: 'Gifted 1 INFY to friend@example.com' } },
 ];
 
-const TransactionItem = ({ transaction }: { transaction: typeof mockTransactions[0] }) => {
+const TransactionDetailRow = ({ label, value }: { label: string, value: string | number }) => (
+    <div className="flex justify-between items-center text-xs py-1">
+        <p className="text-muted-foreground">{label}</p>
+        <p className="font-medium text-foreground">{typeof value === 'number' ? `₹${value.toLocaleString('en-IN')}` : value}</p>
+    </div>
+);
+
+const TransactionItem = ({ transaction }: { transaction: (typeof mockTransactions)[0] }) => {
+    const [isExpanded, setIsExpanded] = useState(false);
     const isCredit = transaction.type === 'CREDIT';
+    const isNeutral = transaction.type === 'NEUTRAL';
+    
     return (
-        <div className="flex items-center p-4 border-b">
-            <div className={cn("p-2 rounded-full mr-4", isCredit ? "bg-green-100 dark:bg-green-900/30" : "bg-red-100 dark:bg-red-900/30")}>
-                {isCredit ? <ArrowDownLeft className="h-5 w-5 text-green-600" /> : <ArrowUpRight className="h-5 w-5 text-red-600" />}
-            </div>
-            <div className="flex-grow">
-                <p className="font-medium text-foreground">{transaction.description}</p>
-                <p className="text-sm text-muted-foreground">{transaction.date}</p>
-            </div>
-            <div className={cn("text-right font-semibold", isCredit ? "text-green-600" : "text-red-600")}>
-                {isCredit ? '+' : ''}₹{Math.abs(transaction.amount).toLocaleString('en-IN')}
-            </div>
+        <div className="border-b">
+            <button className="w-full text-left p-4 hover:bg-muted/50 transition-colors" onClick={() => setIsExpanded(!isExpanded)}>
+                <div className="flex items-center">
+                    <div className={cn("p-2 rounded-full mr-4", 
+                        isCredit ? "bg-green-100 dark:bg-green-900/30" : 
+                        isNeutral ? "bg-gray-100 dark:bg-gray-700" :
+                        "bg-red-100 dark:bg-red-900/30")}>
+                        {isCredit ? <ArrowDownLeft className="h-5 w-5 text-green-600" /> : <ArrowUpRight className="h-5 w-5 text-red-600" />}
+                    </div>
+                    <div className="flex-grow">
+                        <p className="font-medium text-foreground">{transaction.description}</p>
+                        <p className="text-sm text-muted-foreground">{transaction.date}</p>
+                    </div>
+                    <div className="flex items-center">
+                         <div className={cn("text-right font-semibold", 
+                            isCredit ? "text-green-600" : 
+                            isNeutral ? "text-muted-foreground" :
+                            "text-red-600")}>
+                            {transaction.amount !== 0 && (
+                                <>{isCredit ? '+' : ''}₹{Math.abs(transaction.amount).toLocaleString('en-IN')}</>
+                            )}
+                        </div>
+                        <ChevronDown className={cn("h-5 w-5 text-muted-foreground ml-2 transition-transform", isExpanded && "rotate-180")} />
+                    </div>
+                </div>
+            </button>
+            {isExpanded && (
+                <div className="bg-muted/30 px-4 py-3 text-sm animate-accordion-down">
+                    <div className="space-y-2">
+                        {transaction.details?.boughtMargin && <TransactionDetailRow label="Bought Margin" value={transaction.details.boughtMargin} />}
+                        {transaction.details?.soldMargin && <TransactionDetailRow label="Sold Margin" value={transaction.details.soldMargin} />}
+                        {transaction.details?.profit && <TransactionDetailRow label="Profit/Loss" value={transaction.details.profit} />}
+                        {transaction.details?.brokerage && <TransactionDetailRow label="Brokerage" value={transaction.details.brokerage} />}
+                        {transaction.details?.brokerageEarnedBack && <TransactionDetailRow label="Brokerage Earned Back" value={transaction.details.brokerageEarnedBack} />}
+                        {transaction.details?.pledgeDetails && <TransactionDetailRow label="Pledge Details" value={transaction.details.pledgeDetails} />}
+                        {transaction.details?.giftDetails && <TransactionDetailRow label="Gift Details" value={transaction.details.giftDetails} />}
+                        {transaction.details?.cryptoPlatform && <TransactionDetailRow label="Crypto Platform" value={transaction.details.cryptoPlatform} />}
+                         {!transaction.details && <p className="text-xs text-muted-foreground">No further details for this transaction.</p>}
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
@@ -152,3 +195,5 @@ const AnalyticsPage = () => {
 };
 
 export default AnalyticsPage;
+
+    
