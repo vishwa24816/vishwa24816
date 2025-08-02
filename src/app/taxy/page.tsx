@@ -36,14 +36,11 @@ type ReportInfo = {
 
 const reportsData: ReportInfo[] = [
   { id: 'complete', title: 'Complete Tax Report', description: 'A detailed summary of all your crypto income, trades, and taxes. It includes every transaction required to compute your final tax liability.', icon: FileText, iconBgColor: 'bg-blue-500' },
-  { id: 'vda', title: 'Schedule VDA Report', description: 'A detailed report of all your crypto disposals, gains, and losses formatted for the Schedule VDA section of the ITR.', icon: ListOrdered, iconBgColor: 'bg-pink-500' },
-  { id: 'vda-derivatives', title: 'Schedule VDA Derivatives Report', description: 'A detailed report of gains and losses from crypto derivatives such as futures, formatted for the Schedule VDA section of the ITR.', icon: Scaling, iconBgColor: 'bg-purple-500' },
   { id: 'filing-data', title: 'Tax Filing Data Report', description: 'Summary of your total income, gains, and losses for the financial year for accurate tax filing.', icon: ClipboardCheck, iconBgColor: 'bg-orange-500' },
   { id: 'income-summary', title: 'Income Summary Report', description: 'A consolidated report of all your crypto income earned during the year, including staking rewards, interest, airdrops, and other earnings.', icon: PieChart, iconBgColor: 'bg-green-500' },
-  { id: 'buy-sell', title: 'Buy-Sell Report', description: 'A detailed report of all your crypto buy and sell transactions. This report helps you to track cost basis and realized gains or losses.', icon: ArrowRightLeft, iconBgColor: 'bg-cyan-500' },
-  { id: 'transaction-history', title: 'Transaction History Report', description: 'Chronological report of all your trades, transfers, deposits, and withdrawals across your integrations.', icon: History, iconBgColor: 'bg-rose-500' },
   { id: 'tds-summary', title: 'TDS Summary Report', description: 'A summary of all Tax Deducted at Source (TDS) on your crypto transactions for the financial year.', icon: FileText, iconBgColor: 'bg-indigo-500' },
   { id: 'tds-certificate', title: 'TDS Certificate', description: 'Download your TDS certificate (Form 16A) for the selected quarter to claim tax credits.', icon: FileText, iconBgColor: 'bg-teal-500' },
+  { id: 'brokerage-gst', title: 'Brokerage GST Report', description: 'A report detailing the GST paid on brokerage fees for all your transactions.', icon: FileText, iconBgColor: 'bg-slate-500' },
 ];
 
 const ReportCard = ({ report }: { report: ReportInfo; }) => {
