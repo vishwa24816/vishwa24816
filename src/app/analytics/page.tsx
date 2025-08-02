@@ -143,8 +143,6 @@ const AnalyticsPage = () => {
     const [selectedStatementType, setSelectedStatementType] = useState('trading');
 
     const reports = [
-        { icon: FileText, title: 'Bill', description: 'Check the brokerage and transaction charges on your trades.' },
-        { icon: FileText, title: 'Miscellaneous', description: 'Find reports like contract notes, margin report, retention report, etc.' },
         { icon: FileText, title: 'Mutual Funds', description: 'See all of your mutual funds\' details here like ELSS and Capital Gains.' },
         { icon: FileText, title: 'Interest Charged', description: 'Reports on interest & payment charges.' },
     ];
@@ -197,6 +195,7 @@ const AnalyticsPage = () => {
                                         <DropdownMenuRadioItem value="trading">Fiat Trading Statement</DropdownMenuRadioItem>
                                         <DropdownMenuRadioItem value="pnl">Profit and Loss Statement</DropdownMenuRadioItem>
                                         <DropdownMenuRadioItem value="dividend">Dividend Report</DropdownMenuRadioItem>
+                                        <DropdownMenuRadioItem value="brokerage">Brokerage Bill</DropdownMenuRadioItem>
                                         <DropdownMenuRadioItem value="vda">VDA Report</DropdownMenuRadioItem>
                                         <DropdownMenuRadioItem value="vda_derivatives">VDA Derivatives Report</DropdownMenuRadioItem>
                                     </DropdownMenuRadioGroup>
@@ -248,3 +247,4 @@ const AnalyticsPage = () => {
 
 export default AnalyticsPage;
 
+    
