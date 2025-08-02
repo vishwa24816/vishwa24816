@@ -24,13 +24,17 @@ import { Input } from '@/components/ui/input';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { SuperstarsScreener } from './SuperstarsScreener';
-import { mockStocks } from '@/lib/mockData';
+import { mockStocks, mockCryptoAssets, mockMutualFunds } from '@/lib/mockData';
 
 const suggestionQueries = [
     { label: "IT stocks with P/E greater than 30", key: 'it' },
     { label: "Banking stocks with ROE greater than 15%", key: 'banking' },
     { label: "Large cap stocks over 5,00,000Cr market cap", key: 'large_cap' },
     { label: "FMCG stocks with low debt", key: 'fmcg' },
+    { label: "High Volume Crypto", key: 'crypto_high_volume' },
+    { label: "New Crypto Projects", key: 'new_crypto' },
+    { label: "High Return ELSS Funds", key: 'elss_high_return' },
+    { label: "Top Small Cap Mutual Funds", key: 'small_cap_mf' },
 ];
 
 const marketSubItems = [
@@ -175,6 +179,18 @@ export function ScreenerPageContent({ onAssetClick }: { onAssetClick: (asset: St
             case 'fmcg':
                  stocksToShow = mockStocks.filter(s => (s.sector === 'FMCG' || s.sector === 'FMCG Conglomerate') && s.fundamentals?.debtToEquity && s.fundamentals.debtToEquity < 0.1);
                  break;
+            case 'crypto_high_volume':
+                stocksToShow = [...mockCryptoAssets].sort((a, b) => (b.volume || 0) - (a.volume || 0)).slice(0, 5);
+                break;
+            case 'new_crypto':
+                stocksToShow = mockCryptoAssets.filter(c => c.fundamentals?.introductionYear && c.fundamentals.introductionYear >= 2023);
+                break;
+            case 'elss_high_return':
+                stocksToShow = mockMutualFunds.filter(mf => mf.sector === 'ELSS' && mf.annualisedReturn && mf.annualisedReturn > 20);
+                break;
+            case 'small_cap_mf':
+                 stocksToShow = mockMutualFunds.filter(mf => mf.sector === 'Small Cap').sort((a,b) => (b.annualisedReturn || 0) - (a.annualisedReturn || 0)).slice(0,5);
+                 break;
             default:
                 stocksToShow = [];
         }
@@ -304,7 +320,7 @@ export function ScreenerPageContent({ onAssetClick }: { onAssetClick: (asset: St
                                             <TableCell>{stock.price.toFixed(2)}</TableCell>
                                             <TableCell>{stock.fundamentals?.peRatioTTM?.toFixed(2) ?? 'N/A'}</TableCell>
                                             <TableCell>{stock.fundamentals?.roe?.toFixed(2) ?? 'N/A'}</TableCell>
-                                            <TableCell>{stock.fundamentals?.marketCap ?? 'N/A'}</TableCell>
+                                            <TableCell>{stock.marketCap ?? stock.fundamentals?.marketCap ?? 'N/A'}</TableCell>
                                         </TableRow>
                                         {expandedStockId === stock.id && (
                                             <TableRow>
