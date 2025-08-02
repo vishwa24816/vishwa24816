@@ -6,7 +6,7 @@ import type { CommunityPost, Stock } from '@/types';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Heart, MessageCircle, Repeat, Share2, MoreHorizontal, TrendingUp, TrendingDown, MinusCircle, PlusCircle } from 'lucide-react';
+import { Heart, MessageCircle, Repeat, Share2, MoreHorizontal, TrendingUp, TrendingDown, MinusCircle, PlusCircle, CheckCircle } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -60,6 +60,12 @@ export function PostCard({ post, onAssetClick }: PostCardProps) {
             <div className="flex items-center space-x-1.5 text-sm flex-wrap">
               <span className="font-semibold text-foreground hover:underline cursor-pointer">{post.user.name}</span>
               <span className="text-muted-foreground">@{post.user.username}</span>
+              {isResearchPost && (
+                <span className="text-xs text-primary bg-primary/10 px-1.5 py-0.5 rounded-full flex items-center gap-1">
+                    <CheckCircle className="h-3 w-3" />
+                    Research Analyst
+                </span>
+              )}
               <span className="text-muted-foreground/80 hidden sm:inline">·</span>
               <span className="text-muted-foreground hover:underline cursor-pointer" title={new Date(post.timestamp).toLocaleString()}>{timeAgo}</span>
               {post.researchFirm && <span className="text-xs text-muted-foreground italic ml-1">via {post.researchFirm}</span>}
@@ -143,3 +149,4 @@ export function PostCard({ post, onAssetClick }: PostCardProps) {
     </div>
   );
 }
+
