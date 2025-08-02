@@ -139,7 +139,7 @@ export function SideMenu() {
             <Button
                 variant="ghost"
                 className="justify-start text-base p-3 hover:bg-accent/10"
-                onClick={() => alert('Family Account feature coming soon!')}
+                onClick={() => router.push('/family')}
             >
                 <Users className="mr-3 h-5 w-5 text-primary" />
                 Family Account
