@@ -142,11 +142,6 @@ const AnalyticsPage = () => {
     const [activeMode, setActiveMode] = useState<'Fiat' | 'Crypto'>(isRealMode ? 'Crypto' : 'Fiat');
     const [selectedStatementType, setSelectedStatementType] = useState('trading');
 
-    const reports = [
-        { icon: FileText, title: 'Mutual Funds', description: 'See all of your mutual funds\' details here like ELSS and Capital Gains.' },
-        { icon: FileText, title: 'Interest Charged', description: 'Reports on interest & payment charges.' },
-    ];
-
     const actions = [
         { icon: Gavel, title: 'Corporate Actions', description: 'View and place request for corporate actions' },
         { icon: Wallet, title: 'Margin Pledge', description: 'Pledge your existing holdings for extra margin' },
@@ -154,6 +149,8 @@ const AnalyticsPage = () => {
         { icon: ShieldAlert, title: 'Post-trade authorisation', description: 'Authorize your Post-trades for the day' },
         { icon: XCircle, title: 'Revoke authorised scrips', description: 'Cancel or revoke the scrips already authorised' },
         { icon: ArrowRightLeft, title: 'MTF: Convert to Delivery', description: 'Convert your MTF shares to delivery' },
+        { icon: FileText, title: 'Mutual Funds', description: 'See all of your mutual funds\' details here like ELSS and Capital Gains.' },
+        { icon: FileText, title: 'Interest Charged', description: 'Reports on interest & payment charges.' },
     ];
     
   return (
@@ -165,22 +162,14 @@ const AnalyticsPage = () => {
             isRealMode={isRealMode}
         />
         <main className="flex-grow flex flex-col">
-            <Tabs defaultValue="reports" className="w-full flex flex-col flex-grow">
+            <Tabs defaultValue="ledger" className="w-full flex flex-col flex-grow">
                  <div className="border-b bg-background sticky top-0 z-10">
                     <TabsList className="w-full justify-start rounded-none bg-transparent p-0 px-4 overflow-x-auto no-scrollbar h-auto">
-                        <TabsTrigger value="reports" className="py-3 px-4 rounded-none flex-shrink-0 data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:shadow-none">Reports</TabsTrigger>
                         <TabsTrigger value="ledger" className="py-3 px-4 rounded-none flex-shrink-0 data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:shadow-none">Ledger</TabsTrigger>
                         <TabsTrigger value="actions" className="py-3 px-4 rounded-none flex-shrink-0 data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:shadow-none">Actions</TabsTrigger>
                     </TabsList>
                 </div>
                 <div className="flex-grow">
-                    <TabsContent value="reports" className="mt-0">
-                        <div className="bg-background">
-                            {reports.map((report, index) => (
-                                <ReportItem key={index} {...report} />
-                            ))}
-                        </div>
-                    </TabsContent>
                      <TabsContent value="ledger" className="mt-0 h-full">
                         <div className="p-4 border-b space-y-4">
                              <DropdownMenu>
@@ -246,5 +235,3 @@ const AnalyticsPage = () => {
 };
 
 export default AnalyticsPage;
-
-    
