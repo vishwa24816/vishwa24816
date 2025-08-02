@@ -5,9 +5,17 @@ import React, { useState } from 'react';
 import { AppHeader } from '@/components/shared/AppHeader';
 import { ProtectedRoute } from '@/components/shared/ProtectedRoute';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   FileText,
   ChevronRight,
@@ -21,7 +29,8 @@ import {
   Scaling,
   ArrowUpRight,
   ArrowDownLeft,
-  ChevronDown
+  ChevronDown,
+  Download
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
@@ -171,7 +180,28 @@ const AnalyticsPage = () => {
                         </div>
                     </TabsContent>
                      <TabsContent value="ledger" className="mt-0 h-full">
-                        <ScrollArea className="h-[calc(100vh-160px)]">
+                        <div className="p-4 border-b">
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="outline" className="w-full justify-between">
+                                        <span>Download Statement</span>
+                                        <Download className="h-4 w-4" />
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent className="w-56">
+                                    <DropdownMenuLabel>Select Period</DropdownMenuLabel>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem>Last 1 Month</DropdownMenuItem>
+                                    <DropdownMenuItem>Last 3 Months</DropdownMenuItem>
+                                    <DropdownMenuItem>Last 6 Months</DropdownMenuItem>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuLabel>Financial Year</DropdownMenuLabel>
+                                    <DropdownMenuItem>FY 2024-25</DropdownMenuItem>
+                                    <DropdownMenuItem>FY 2023-24</DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        </div>
+                        <ScrollArea className="h-[calc(100vh-220px)]">
                             <div className="divide-y">
                                 {mockTransactions.map(txn => (
                                     <TransactionItem key={txn.id} transaction={txn} />
@@ -196,4 +226,5 @@ const AnalyticsPage = () => {
 
 export default AnalyticsPage;
 
+    
     
