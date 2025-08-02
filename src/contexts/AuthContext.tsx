@@ -15,6 +15,8 @@ interface AuthContextType {
   loading: boolean;
   theme: string;
   setTheme: (theme: string) => void;
+  language: string;
+  setLanguage: (language: string) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -23,6 +25,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [theme, setThemeState] = useState('blue');
+  const [language, setLanguageState] = useState('english');
 
   useEffect(() => {
     // Check localStorage for a persisted user session
@@ -35,10 +38,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setThemeState(storedTheme);
       document.documentElement.setAttribute('data-theme', storedTheme);
       
+      const storedLanguage = localStorage.getItem('sim-language') || 'english';
+      setLanguageState(storedLanguage);
+
     } catch (error) {
       console.error("Failed to parse from localStorage", error);
       localStorage.removeItem('simUser');
       localStorage.removeItem('sim-theme');
+      localStorage.removeItem('sim-language');
     }
     setLoading(false);
   }, []);
@@ -59,8 +66,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     document.documentElement.setAttribute('data-theme', newTheme);
   };
 
+  const setLanguage = (newLanguage: string) => {
+    setLanguageState(newLanguage);
+    localStorage.setItem('sim-language', newLanguage);
+  };
+
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated: !!user, login, logout, loading, theme, setTheme }}>
+    <AuthContext.Provider value={{ user, isAuthenticated: !!user, login, logout, loading, theme, setTheme, language, setLanguage }}>
         {children}
         <Toaster />
     </AuthContext.Provider>

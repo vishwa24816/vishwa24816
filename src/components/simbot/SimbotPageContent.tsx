@@ -17,7 +17,7 @@ import type { InitialOrderDetails } from '@/app/page';
 const allAssets = [...mockStocks, ...mockCryptoAssets, ...mockMutualFunds];
 
 export function SimbotPageContent({ onNavigateRequest }: { onNavigateRequest: (asset: Stock, details?: InitialOrderDetails) => void; }) {
-  const { user: authUser } = useAuth();
+  const { user: authUser, language } = useAuth();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -38,15 +38,16 @@ export function SimbotPageContent({ onNavigateRequest }: { onNavigateRequest: (a
 
   useEffect(() => {
     // Initial greeting from Simbot
+    const greeting = language === 'hindi' ? 'नमस्ते! "रिलायंस खरीदें" पूछकर एक कमांड आज़माएँ!' : 'Hello! Ask me to "buy RELIANCE" to try out a command!';
     setMessages([
       {
         id: 'initial-greeting',
-        text: 'Hello! Ask me to "buy RELIANCE" to try out a command!',
+        text: greeting,
         sender: 'bot',
         timestamp: new Date(),
       },
     ]);
-  }, []);
+  }, [language]);
 
   const handleSendMessage = async (messageText: string, assetToNavigate?: { asset: Stock, details?: InitialOrderDetails }) => {
     const trimmedInput = messageText.trim();

@@ -60,13 +60,12 @@ const ExpandableProfileItem: React.FC<ProfileItemProps & {children: React.ReactN
 
 
 export default function ProfilePage() {
-  const { user, logout, theme, setTheme } = useAuth();
+  const { user, logout, theme, setTheme, language, setLanguage } = useAuth();
   const router = useRouter();
   const isRealMode = user?.id === 'REAL456';
   
   const [activeMode, setActiveMode] = useState<'Fiat' | 'Crypto'>(isRealMode ? 'Crypto' : 'Fiat');
   const [platformCurrency, setPlatformCurrency] = useState('INR');
-  const [platformLanguage, setPlatformLanguage] = useState('english');
   
   const themeOptions = [
       { value: 'blue', label: 'Blue' },
@@ -82,6 +81,20 @@ export default function ProfilePage() {
       { value: 'violet', label: 'Violet' },
       { value: 'purple', label: 'Purple' },
       { value: 'skin', label: 'Skin' },
+  ];
+
+  const languageOptions = [
+      { value: 'english', label: 'English' },
+      { value: 'hindi', label: 'Hindi' },
+      { value: 'sanskrit', label: 'Sanskrit' },
+      { value: 'gujarati', label: 'Gujarati' },
+      { value: 'marathi', label: 'Marathi' },
+      { value: 'bengali', label: 'Bengali' },
+      { value: 'tamil', label: 'Tamil' },
+      { value: 'telugu', label: 'Telugu' },
+      { value: 'kannada', label: 'Kannada' },
+      { value: 'malayalam', label: 'Malayalam' },
+      { value: 'urdu', label: 'Urdu' },
   ];
   
   const profileItems: (ProfileItemProps & {component?: React.ReactNode})[] = [
@@ -199,10 +212,13 @@ export default function ProfilePage() {
         description: "Select your display language",
         component: (
             <ExpandableProfileItem icon={Languages} title="Platform Language" description="Select your display language">
-                <RadioGroup value={platformLanguage} onValueChange={setPlatformLanguage} className="space-y-2">
-                    <div className="flex items-center space-x-2"><RadioGroupItem value="english" id="lang-en" /><Label htmlFor="lang-en" className="font-normal">English</Label></div>
-                    <div className="flex items-center space-x-2"><RadioGroupItem value="hindi" id="lang-hi" /><Label htmlFor="lang-hi" className="font-normal">Hindi</Label></div>
-                    <div className="flex items-center space-x-2"><RadioGroupItem value="kannada" id="lang-kn" /><Label htmlFor="lang-kn" className="font-normal">Kannada</Label></div>
+                <RadioGroup value={language} onValueChange={setLanguage} className="grid grid-cols-2 gap-2">
+                    {languageOptions.map((langOption) => (
+                        <div key={langOption.value} className="flex items-center space-x-2">
+                            <RadioGroupItem value={langOption.value} id={`lang-${langOption.value}`} />
+                            <Label htmlFor={`lang-${langOption.value}`} className="font-normal">{langOption.label}</Label>
+                        </div>
+                    ))}
                 </RadioGroup>
             </ExpandableProfileItem>
         )
