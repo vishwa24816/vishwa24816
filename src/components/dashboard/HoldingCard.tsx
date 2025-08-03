@@ -67,12 +67,10 @@ export const HoldingCard: React.FC<HoldingCardProps> = ({ holding, onPledgeClick
     const router = useRouter();
     const { toast } = useToast();
 
-    const currency: 'INR' | 'USD' = (holding.exchange === 'NASDAQ' || holding.exchange === 'NYSE') ? 'USD' : 'INR';
-
-    const formatCurrency = (value: number, currencyToUse: 'INR' | 'USD' = currency) => {
-        return new Intl.NumberFormat(currencyToUse === 'INR' ? 'en-IN' : 'en-US', { 
+    const formatCurrency = (value: number) => {
+        return new Intl.NumberFormat('en-IN', { 
             style: 'currency', 
-            currency: currencyToUse, 
+            currency: 'INR', 
             minimumFractionDigits: 2, 
             maximumFractionDigits: 2 
         }).format(value);
@@ -120,7 +118,7 @@ export const HoldingCard: React.FC<HoldingCardProps> = ({ holding, onPledgeClick
                         <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-xs">
                             <div>
                                 <p className="text-muted-foreground">Quantity</p>
-                                <p className="font-medium text-foreground">{holding.quantity.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: (currency === 'USD' ? 8 : 0) })}</p>
+                                <p className="font-medium text-foreground">{holding.quantity.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: (holding.exchange === 'NASDAQ' || holding.exchange === 'NYSE' ? 8 : 0) })}</p>
                             </div>
                             <div className="text-right">
                                 <p className="text-muted-foreground">Avg. Cost</p>
