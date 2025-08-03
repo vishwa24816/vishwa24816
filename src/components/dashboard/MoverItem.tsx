@@ -19,8 +19,7 @@ export const MoverItem: React.FC<MoverItemProps> = ({ stock, onAssetClick }) => 
   };
     
   const isPositive = stock.changePercent >= 0;
-  const isUsStock = stock.exchange === 'NASDAQ' || stock.exchange === 'NYSE';
-  const currencySymbol = isUsStock ? '$' : '₹';
+  const currencySymbol = '₹';
   
   // Extract initials for the avatar
   const fallbackText = stock.symbol.substring(0, 2);
