@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Mail, ChevronRight, User, ShieldCheck, Banknote, Users, UserX, Lock, Wallet, LifeBuoy, FileText, Star, Gift, Info, Briefcase, ChevronDown, Palette, Languages } from 'lucide-react';
+import { Mail, ChevronRight, User, ShieldCheck, Banknote, Users, UserX, Lock, Wallet, LifeBuoy, FileText, Star, Gift, Info, Briefcase, ChevronDown, Palette, Languages, AudioLines } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { useRouter } from 'next/navigation';
@@ -66,6 +66,7 @@ export default function ProfilePage() {
   
   const [activeMode, setActiveMode] = useState<'Fiat' | 'Crypto'>(isRealMode ? 'Crypto' : 'Fiat');
   const [platformCurrency, setPlatformCurrency] = useState('INR');
+  const [simbotVoice, setSimbotVoice] = useState('indian_man');
   
   const themeOptions = [
       { value: 'blue', label: 'Blue' },
@@ -95,6 +96,20 @@ export default function ProfilePage() {
       { value: 'kannada', label: 'Kannada' },
       { value: 'malayalam', label: 'Malayalam' },
       { value: 'urdu', label: 'Urdu' },
+  ];
+
+  const simbotVoiceOptions = [
+    { value: 'indian_man', label: 'Indian Man' },
+    { value: 'indian_woman', label: 'Indian Woman' },
+    { value: 'american_man', label: 'American Man' },
+    { value: 'american_woman', label: 'American Woman' },
+    { value: 'africa_man', label: 'African Man' },
+    { value: 'africa_woman', label: 'African Woman' },
+    { value: 'east_asia_man', label: 'East Asian Man' },
+    { value: 'east_asian_woman', label: 'East Asian Woman' },
+    { value: 'dog', label: 'Dog' },
+    { value: 'cat', label: 'Cat' },
+    { value: 'baby', label: 'Baby' },
   ];
   
   const profileItems: (ProfileItemProps & {component?: React.ReactNode})[] = [
@@ -200,6 +215,23 @@ export default function ProfilePage() {
                         <div key={themeOption.value} className="flex items-center space-x-2">
                             <RadioGroupItem value={themeOption.value} id={`color-${themeOption.value}`} />
                             <Label htmlFor={`color-${themeOption.value}`} className="font-normal">{themeOption.label}</Label>
+                        </div>
+                    ))}
+                </RadioGroup>
+            </ExpandableProfileItem>
+        )
+    },
+    {
+        icon: AudioLines,
+        title: "SIMBOT Voice",
+        description: "Choose your preferred voice for the assistant",
+        component: (
+            <ExpandableProfileItem icon={AudioLines} title="SIMBOT Voice" description="Choose your preferred voice for the assistant">
+                <RadioGroup value={simbotVoice} onValueChange={setSimbotVoice} className="grid grid-cols-2 gap-2">
+                     {simbotVoiceOptions.map((voiceOption) => (
+                        <div key={voiceOption.value} className="flex items-center space-x-2">
+                            <RadioGroupItem value={voiceOption.value} id={`voice-${voiceOption.value}`} />
+                            <Label htmlFor={`voice-${voiceOption.value}`} className="font-normal">{voiceOption.label}</Label>
                         </div>
                     ))}
                 </RadioGroup>
