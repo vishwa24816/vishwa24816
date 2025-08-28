@@ -17,15 +17,17 @@ import { MarketOverview } from '@/components/dashboard/MarketOverview';
 import { mockMarketIndices, mockCryptoAssets } from '@/lib/mockData';
 import { SideMenu } from './SideMenu';
 import type { WalletMode } from '../dashboard/CryptoHoldingsSection';
+import type { MainView } from '@/app/page';
 
 interface AppHeaderProps {
   activeMode?: 'Portfolio' | 'Fiat' | 'Crypto' | 'Web3' | 'Wealth';
   onModeChange?: (mode: 'Portfolio' | 'Fiat' | 'Crypto' | 'Web3' | 'Wealth') => void;
   isRealMode?: boolean;
   walletMode?: WalletMode;
+  onNavigate?: (view: MainView) => void;
 }
 
-export function AppHeader({ activeMode, onModeChange, isRealMode, walletMode }: AppHeaderProps) {
+export function AppHeader({ activeMode, onModeChange, isRealMode, walletMode, onNavigate }: AppHeaderProps) {
   const { user } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
@@ -99,7 +101,7 @@ export function AppHeader({ activeMode, onModeChange, isRealMode, walletMode }: 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex h-20 items-center justify-between gap-4">
             <div className="flex items-center space-x-2 sm:space-x-4">
-                <SideMenu />
+                <SideMenu onNavigate={onNavigate} />
             </div>
             
             <form onSubmit={handleSearchSubmit} className="flex-1 items-center relative">
@@ -173,3 +175,5 @@ export function AppHeader({ activeMode, onModeChange, isRealMode, walletMode }: 
     </header>
   );
 }
+
+    

@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useEffect } from 'react';
@@ -13,11 +12,12 @@ import { OrdersPageContent } from '@/components/orders/OrdersPageContent';
 import { SimbotPageContent } from '@/components/simbot/SimbotPageContent';
 import { ScreenerPageContent } from '@/components/screener/ScreenerPageContent';
 import { CommunityPageContent } from '@/components/community/CommunityPageContent';
+import { AnalyticsPageContent } from '@/components/analytics/AnalyticsPageContent';
 import { AppFooter } from '@/components/shared/AppFooter';
 import type { Stock } from '@/types';
 import { OrderPageDispatcher } from '@/components/order/OrderPageDispatcher';
 
-export type MainView = 'home' | 'orders' | 'simbot' | 'screener' | 'community' | 'asset_order';
+export type MainView = 'home' | 'orders' | 'simbot' | 'screener' | 'community' | 'asset_order' | 'analytics';
 
 export interface InitialOrderDetails {
     quantity?: number;
@@ -67,7 +67,7 @@ export default function DashboardRouterPage() {
      return (
         <ProtectedRoute>
             <div className="flex flex-col min-h-screen">
-                <AppHeader activeMode={activeMode} onModeChange={handleModeChange} isRealMode={false} />
+                <AppHeader activeMode={activeMode} onModeChange={handleModeChange} isRealMode={false} onNavigate={handleNavigate} />
                 <main className="flex-grow container mx-auto p-4 sm:p-6 lg:p-8 space-y-8">
                     <Skeleton className="h-24 w-full" />
                     <Skeleton className="h-12 w-full" />
@@ -97,6 +97,8 @@ export default function DashboardRouterPage() {
         return <ScreenerPageContent onAssetClick={handleAssetClick} />;
       case 'community':
         return <CommunityPageContent onAssetClick={handleAssetClick} activeMode={activeMode} />;
+      case 'analytics':
+        return <AnalyticsPageContent />;
       case 'asset_order':
         if (selectedAsset) {
           return <OrderPageDispatcher asset={selectedAsset} onBack={() => handleNavigate(previousMainView)} initialDetails={initialOrderDetails} />;
@@ -116,6 +118,7 @@ export default function DashboardRouterPage() {
           onModeChange={handleModeChange}
           isRealMode={isRealMode}
           walletMode={walletMode}
+          onNavigate={handleNavigate}
         />
         {renderContent()}
       </div>
@@ -123,3 +126,5 @@ export default function DashboardRouterPage() {
     </ProtectedRoute>
   );
 }
+
+    

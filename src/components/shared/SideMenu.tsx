@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import React, { useState, useEffect } from 'react';
@@ -31,8 +32,9 @@ import {
   SheetTrigger,
   SheetClose,
 } from "@/components/ui/sheet";
+import type { MainView } from '@/app/page';
 
-export function SideMenu() {
+export function SideMenu({ onNavigate }: { onNavigate?: (view: MainView) => void }) {
   const { user, logout } = useAuth();
   const router = useRouter();
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
@@ -69,6 +71,14 @@ export function SideMenu() {
     router.push('/login');
   };
 
+  const handleAnalyticsClick = () => {
+    if (onNavigate) {
+      onNavigate('analytics');
+    } else {
+      router.push('/analytics');
+    }
+  };
+
   if (!isMounted) {
     return (
       <div className="h-9 w-9 bg-primary-foreground/10 rounded-md animate-pulse"></div>
@@ -99,7 +109,7 @@ export function SideMenu() {
             <Button
               variant="ghost"
               className="justify-start text-base p-3 hover:bg-accent/10"
-              onClick={() => router.push('/')}
+              onClick={() => onNavigate ? onNavigate('home') : router.push('/')}
             >
               <HomeIcon className="mr-3 h-5 w-5 text-primary" />
               Home
@@ -119,7 +129,7 @@ export function SideMenu() {
             <Button
               variant="ghost"
               className="justify-start text-base p-3 hover:bg-accent/10"
-              onClick={() => router.push('/analytics')}
+              onClick={handleAnalyticsClick}
             >
               <TrendingUp className="mr-3 h-5 w-5 text-primary" />
               Analytics
@@ -229,3 +239,5 @@ export function SideMenu() {
     </Sheet>
   );
 }
+
+    
