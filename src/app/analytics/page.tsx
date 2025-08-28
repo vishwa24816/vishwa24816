@@ -74,12 +74,15 @@ const mockTransactions = [
   { id: 'txn12', date: '2024-07-05', description: 'Gifted 1 INFY to a friend', amount: 0, type: 'NEUTRAL', details: { giftDetails: 'Gifted 1 INFY to friend@example.com' } },
 ];
 
-const TransactionDetailRow = ({ label, value }: { label: string, value: string | number }) => (
-    <div className="flex justify-between items-center text-xs py-1">
-        <p className="text-muted-foreground">{label}</p>
-        <p className="font-medium text-foreground">{typeof value === 'number' ? `₹${value.toLocaleString('en-IN')}` : value}</p>
-    </div>
-);
+const TransactionDetailRow = ({ label, value }: { label: string; value: string | number | undefined }) => {
+    if (value === undefined || value === null) return null;
+    return (
+        <div className="flex justify-between items-center text-xs py-1">
+            <p className="text-muted-foreground">{label}</p>
+            <p className="font-medium text-foreground">{typeof value === 'number' ? `₹${value.toLocaleString('en-IN')}` : value}</p>
+        </div>
+    );
+};
 
 const TransactionDetails = ({ transaction }: { transaction: (typeof mockTransactions)[0] }) => {
     const [verificationHash, setVerificationHash] = useState<string | null>(null);
@@ -156,7 +159,7 @@ const TransactionItem = ({ transaction }: { transaction: (typeof mockTransaction
 };
 
 
-const AnalyticsPage = () => {
+export default function AnalyticsPage() {
     const { user } = useAuth();
     const router = useRouter();
     const isRealMode = user?.id === 'REAL456';
@@ -253,6 +256,4 @@ const AnalyticsPage = () => {
       </div>
     </ProtectedRoute>
   );
-};
-
-export default AnalyticsPage;
+}
