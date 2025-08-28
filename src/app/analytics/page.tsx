@@ -33,7 +33,7 @@ import {
   ArrowDownLeft,
   ChevronDown,
   Download,
-  CheckBadge,
+  CheckCircle,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
@@ -128,7 +128,7 @@ const TransactionItem = ({ transaction }: { transaction: (typeof mockTransaction
                     <div className="space-y-2">
                         {verificationHash && (
                            <Badge variant="secondary" className="bg-green-100 text-green-800 border-green-200">
-                                <CheckBadge className="h-4 w-4 mr-1" />
+                                <CheckCircle className="h-4 w-4 mr-1" />
                                 Blockchain verified: #{verificationHash}
                            </Badge>
                         )}
