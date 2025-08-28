@@ -81,18 +81,45 @@ const TransactionDetailRow = ({ label, value }: { label: string, value: string |
     </div>
 );
 
-const TransactionItem = ({ transaction }: { transaction: (typeof mockTransactions)[0] }) => {
-    const [isExpanded, setIsExpanded] = useState(false);
+const TransactionDetails = ({ transaction }: { transaction: (typeof mockTransactions)[0] }) => {
     const [verificationHash, setVerificationHash] = useState<string | null>(null);
-    
+
     useEffect(() => {
         // Generate a random "hash" only on the client-side to avoid hydration mismatch
-        if (isExpanded && !verificationHash) {
-            const randomHash = Math.random().toString(36).substring(2, 10).toUpperCase();
-            setVerificationHash(randomHash);
-        }
-    }, [isExpanded, verificationHash]);
+        setVerificationHash(Math.random().toString(36).substring(2, 10).toUpperCase());
+    }, []);
 
+    return (
+        <div className="bg-muted/30 px-4 py-3 text-sm animate-accordion-down">
+            <div className="space-y-2">
+                {verificationHash && (
+                    <Badge variant="secondary" className="bg-green-100 text-green-800 border-green-200">
+                        <CheckCircle className="h-4 w-4 mr-1" />
+                        Blockchain verified: #{verificationHash}
+                    </Badge>
+                )}
+                {transaction.details?.boughtMargin && <TransactionDetailRow label="Bought Margin" value={transaction.details.boughtMargin} />}
+                {transaction.details?.soldMargin && <TransactionDetailRow label="Sold Margin" value={transaction.details.soldMargin} />}
+                {transaction.details?.profit && <TransactionDetailRow label="Profit/Loss" value={transaction.details.profit} />}
+                {transaction.details?.brokerage && <TransactionDetailRow label="Brokerage" value={transaction.details.brokerage} />}
+                {transaction.details?.brokerageEarnedBack && <TransactionDetailRow label="Brokerage Earned Back" value={transaction.details.brokerageEarnedBack} />}
+                {transaction.details?.pledgeDetails && <TransactionDetailRow label="Pledge Details" value={transaction.details.pledgeDetails} />}
+                {transaction.details?.giftDetails && <TransactionDetailRow label="Gift Details" value={transaction.details.giftDetails} />}
+                {transaction.details?.cryptoPlatform && <TransactionDetailRow label="Crypto Platform" value={transaction.details.cryptoPlatform} />}
+                {transaction.details?.sipFrequency && <TransactionDetailRow label="Frequency" value={transaction.details.sipFrequency} />}
+                {transaction.details?.installment && <TransactionDetailRow label="Installment" value={transaction.details.installment} />}
+                {transaction.details?.nav && <TransactionDetailRow label="NAV" value={transaction.details.nav} />}
+                {transaction.details?.unitsAllotted && <TransactionDetailRow label="Units Allotted" value={transaction.details.unitsAllotted.toFixed(4)} />}
+                {!transaction.details && <p className="text-xs text-muted-foreground">No further details for this transaction.</p>}
+            </div>
+        </div>
+    );
+};
+
+
+const TransactionItem = ({ transaction }: { transaction: (typeof mockTransactions)[0] }) => {
+    const [isExpanded, setIsExpanded] = useState(false);
+    
     const isCredit = transaction.type === 'CREDIT';
     const isNeutral = transaction.type === 'NEUTRAL';
     
@@ -123,31 +150,7 @@ const TransactionItem = ({ transaction }: { transaction: (typeof mockTransaction
                     </div>
                 </div>
             </button>
-            {isExpanded && (
-                <div className="bg-muted/30 px-4 py-3 text-sm animate-accordion-down">
-                    <div className="space-y-2">
-                        {verificationHash && (
-                           <Badge variant="secondary" className="bg-green-100 text-green-800 border-green-200">
-                                <CheckCircle className="h-4 w-4 mr-1" />
-                                Blockchain verified: #{verificationHash}
-                           </Badge>
-                        )}
-                        {transaction.details?.boughtMargin && <TransactionDetailRow label="Bought Margin" value={transaction.details.boughtMargin} />}
-                        {transaction.details?.soldMargin && <TransactionDetailRow label="Sold Margin" value={transaction.details.soldMargin} />}
-                        {transaction.details?.profit && <TransactionDetailRow label="Profit/Loss" value={transaction.details.profit} />}
-                        {transaction.details?.brokerage && <TransactionDetailRow label="Brokerage" value={transaction.details.brokerage} />}
-                        {transaction.details?.brokerageEarnedBack && <TransactionDetailRow label="Brokerage Earned Back" value={transaction.details.brokerageEarnedBack} />}
-                        {transaction.details?.pledgeDetails && <TransactionDetailRow label="Pledge Details" value={transaction.details.pledgeDetails} />}
-                        {transaction.details?.giftDetails && <TransactionDetailRow label="Gift Details" value={transaction.details.giftDetails} />}
-                        {transaction.details?.cryptoPlatform && <TransactionDetailRow label="Crypto Platform" value={transaction.details.cryptoPlatform} />}
-                        {transaction.details?.sipFrequency && <TransactionDetailRow label="Frequency" value={transaction.details.sipFrequency} />}
-                        {transaction.details?.installment && <TransactionDetailRow label="Installment" value={transaction.details.installment} />}
-                        {transaction.details?.nav && <TransactionDetailRow label="NAV" value={transaction.details.nav} />}
-                        {transaction.details?.unitsAllotted && <TransactionDetailRow label="Units Allotted" value={transaction.details.unitsAllotted.toFixed(4)} />}
-                         {!transaction.details && <p className="text-xs text-muted-foreground">No further details for this transaction.</p>}
-                    </div>
-                </div>
-            )}
+            {isExpanded && <TransactionDetails transaction={transaction} />}
         </div>
     );
 };
