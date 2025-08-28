@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AppHeader } from '@/components/shared/AppHeader';
 import { ProtectedRoute } from '@/components/shared/ProtectedRoute';
 import { Button } from '@/components/ui/button';
@@ -32,12 +32,14 @@ import {
   ArrowUpRight,
   ArrowDownLeft,
   ChevronDown,
-  Download
+  Download,
+  CheckBadge,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Badge } from '@/components/ui/badge';
 
 const ReportItem = ({ icon: Icon, title, description, onClick }: { icon: React.ElementType, title: string, description: string, onClick?: () => void }) => (
     <React.Fragment>
@@ -81,6 +83,16 @@ const TransactionDetailRow = ({ label, value }: { label: string, value: string |
 
 const TransactionItem = ({ transaction }: { transaction: (typeof mockTransactions)[0] }) => {
     const [isExpanded, setIsExpanded] = useState(false);
+    const [verificationHash, setVerificationHash] = useState<string | null>(null);
+    
+    useEffect(() => {
+        // Generate a random "hash" only on the client-side to avoid hydration mismatch
+        if (isExpanded && !verificationHash) {
+            const randomHash = Math.random().toString(36).substring(2, 10).toUpperCase();
+            setVerificationHash(randomHash);
+        }
+    }, [isExpanded, verificationHash]);
+
     const isCredit = transaction.type === 'CREDIT';
     const isNeutral = transaction.type === 'NEUTRAL';
     
@@ -114,6 +126,12 @@ const TransactionItem = ({ transaction }: { transaction: (typeof mockTransaction
             {isExpanded && (
                 <div className="bg-muted/30 px-4 py-3 text-sm animate-accordion-down">
                     <div className="space-y-2">
+                        {verificationHash && (
+                           <Badge variant="secondary" className="bg-green-100 text-green-800 border-green-200">
+                                <CheckBadge className="h-4 w-4 mr-1" />
+                                Blockchain verified: #{verificationHash}
+                           </Badge>
+                        )}
                         {transaction.details?.boughtMargin && <TransactionDetailRow label="Bought Margin" value={transaction.details.boughtMargin} />}
                         {transaction.details?.soldMargin && <TransactionDetailRow label="Sold Margin" value={transaction.details.soldMargin} />}
                         {transaction.details?.profit && <TransactionDetailRow label="Profit/Loss" value={transaction.details.profit} />}
@@ -235,3 +253,5 @@ const AnalyticsPage = () => {
 };
 
 export default AnalyticsPage;
+
+    
