@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { Stock, NewsArticle, PortfolioHolding } from '@/types';
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, TrendingUp, TrendingDown, Info, Maximize2, BarChart2 } from 'lucide-react';
+import { ArrowLeft, TrendingUp, TrendingDown, Info, Maximize2, BarChart2, Bot } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { NewsSection } from '@/components/dashboard/NewsSection';
 import { OrderPlacementForm } from '@/components/order/OrderPlacementForm';
@@ -15,6 +15,7 @@ import { PerformanceBar, CollapsibleSection } from './shared/OrderPageComponents
 import { AnalysisTabContent } from './shared/AnalysisComponents';
 import { mockPortfolioHoldings } from '@/lib/mockData';
 import { SimbotInputBar } from '../simbot/SimbotInputBar';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 
 interface CryptoOrderPageContentProps {
   asset: Stock;
@@ -113,7 +114,19 @@ export function CryptoOrderPageContent({ asset, assetSpecificNews, onBack }: Cry
                         <p className="text-sm text-foreground leading-relaxed">{asset.aboutCompany}</p>
                         </CollapsibleSection>
                     )}
-                    <div className="text-center py-4 text-muted-foreground">More overview details coming soon.</div>
+
+                    <CollapsibleSection title="Simbot Analysis" icon={Bot} defaultOpen>
+                        <div className="flex items-start space-x-2 mr-auto justify-start max-w-[85%] sm:max-w-[75%]">
+                             <Avatar className="h-8 w-8 self-start">
+                                <AvatarFallback>B</AvatarFallback>
+                            </Avatar>
+                            <div className="p-3 rounded-xl shadow bg-muted text-foreground rounded-bl-none">
+                                <p className="text-sm whitespace-pre-wrap">
+                                    Based on recent trends, {asset.name} ({asset.symbol}) is showing strong bullish momentum. Key indicators suggest a potential breakout above the ₹{asset.todayHigh ? (asset.todayHigh * 1.02).toFixed(2) : (asset.price * 1.05).toFixed(2)} level in the short term.
+                                </p>
+                            </div>
+                        </div>
+                    </CollapsibleSection>
                 </TabsContent>
 
                  <TabsContent value="analysis" className="p-0 mt-0">
