@@ -1,5 +1,15 @@
+
 // This file now acts as an index for the mockData directory.
 // It imports and re-exports all mock data arrays.
+
+import { mockStocks } from './mockData/stocks';
+import { mockUsStocks } from './mockData/usStocks';
+import { mockCryptoAssets } from './mockData/cryptoAssets';
+import { mockMutualFunds } from './mockData/mutualFunds';
+import { mockBonds } from './mockData/bonds';
+import { mockIndexFuturesForWatchlist, mockStockFuturesForWatchlist } from './mockData/futuresWatchlistData';
+import { mockOptionsForWatchlist } from './mockData/optionsWatchlistData';
+import { mockCryptoFuturesForWatchlist } from './mockData/cryptoFuturesWatchlist';
 
 export * from './mockData/marketIndices';
 export * from './mockData/stocks';
@@ -12,7 +22,7 @@ export * from './mockData/foPositions';
 export * from './mockData/cryptoFutures';
 export * from './mockData/mutualFunds';
 export * from './mockData/bonds';
-export * from './mockData/futuresWatchlistData'; // Exports mockIndexFuturesForWatchlist and mockStockFuturesForWatchlist
+export * from './mockData/futuresWatchlistData';
 export * from './mockData/optionsWatchlistData';
 export * from './mockData/optionChainData';
 export * from './mockData/cryptoFuturesWatchlist';
@@ -43,3 +53,15 @@ export * from './mockData/carInsurance';
 export * from './mockData/healthInsurance';
 export * from './mockData/lifeInsurance';
 export * from './mockData/otherInsurance';
+
+export const allAssets = [
+    ...mockStocks,
+    ...mockUsStocks,
+    ...mockCryptoAssets,
+    ...mockMutualFunds,
+    ...mockBonds,
+    ...mockIndexFuturesForWatchlist,
+    ...mockStockFuturesForWatchlist,
+    ...mockOptionsForWatchlist,
+    ...mockCryptoFuturesForWatchlist,
+];
