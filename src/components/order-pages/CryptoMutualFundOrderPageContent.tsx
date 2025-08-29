@@ -271,7 +271,7 @@ export function CryptoMutualFundOrderPageContent({ asset, assetSpecificNews, onB
 
         </div>
       </main>
-      <footer className="fixed bottom-16 left-0 right-0 bg-background border-t border-border p-3 shadow-md z-20">
+      <footer className="fixed bottom-16 left-0 right-0 bg-background border-t border-border p-2 shadow-md z-20">
          <SimbotInputBar onNavigateRequest={onBack as any} />
       </footer>
     </div>

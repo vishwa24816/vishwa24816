@@ -6,13 +6,13 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { Stock, NewsArticle } from '@/types';
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, TrendingUp, TrendingDown, Info, BarChart2, ShieldCheck, Scale, FileText, Bot } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { ArrowLeft, TrendingUp, TrendingDown, Info, ShieldCheck, Bot } from 'lucide-react';
 import { NewsSection } from '@/components/dashboard/NewsSection';
 import { BondOrderForm } from '@/components/order/BondOrderForm';
 import { CollapsibleSection } from './shared/OrderPageComponents';
 import { SimbotInputBar } from '../simbot/SimbotInputBar';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { cn } from '@/lib/utils';
 
 
 interface BondOrderPageContentProps {
@@ -123,7 +123,7 @@ export function BondOrderPageContent({ asset, assetSpecificNews, onBack }: BondO
 
         </div>
       </main>
-      <footer className="fixed bottom-16 left-0 right-0 bg-background border-t border-border p-3 shadow-md z-20">
+      <footer className="fixed bottom-16 left-0 right-0 bg-background border-t border-border p-2 shadow-md z-20">
          <SimbotInputBar onNavigateRequest={onBack as any} />
       </footer>
     </div>

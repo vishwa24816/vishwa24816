@@ -172,7 +172,7 @@ export function StockOrderPageContent({ asset, assetSpecificNews, onBack, initia
                         </Avatar>
                         <div className="p-3 rounded-xl shadow bg-muted text-foreground rounded-bl-none">
                             <p className="text-sm whitespace-pre-wrap">
-                                {asset.name} is looking strong on the charts. Key technical indicators suggest a bullish trend, with potential resistance near {currencySymbol}{(asset.fiftyTwoWeekHigh * 0.98).toFixed(2)}. Consider market sentiment before investing.
+                                {asset.name} is currently trading near its 52-week high, indicating strong momentum. However, its P/E ratio is slightly above the industry average, suggesting it might be fully valued.
                             </p>
                         </div>
                     </div>
@@ -302,26 +302,24 @@ export function StockOrderPageContent({ asset, assetSpecificNews, onBack, initia
           </div>
         </main>
         
-        <footer className="fixed bottom-16 left-0 right-0 bg-background border-t border-border p-3 shadow-md z-20">
-          <div className="w-full px-4 flex space-x-3">
+      <footer className="fixed bottom-16 left-0 right-0 bg-background border-t border-border p-2 shadow-md z-20">
+          <div className="w-full px-2 flex space-x-2">
             <Button 
               onClick={handleSellAction} 
               variant="destructive" 
-              className="flex-1 text-base py-3 bg-red-600 hover:bg-red-700 disabled:opacity-60 disabled:bg-red-800"
+              className="flex-1 text-sm py-2 h-auto bg-red-600 hover:bg-red-700 disabled:opacity-60 disabled:bg-red-800"
               disabled={productTypeForOrder === 'Delivery' || productTypeForOrder === 'HODL'}
             >
               Sell
             </Button>
             <Button 
               onClick={handleBuyAction} 
-              className="flex-1 text-base py-3 bg-green-600 hover:bg-green-700 text-white"
+              className="flex-1 text-sm py-2 h-auto bg-green-600 hover:bg-green-700 text-white"
             >
               Buy
             </Button>
           </div>
-           <div className="pt-2">
-               <SimbotInputBar onNavigateRequest={onBack as any} />
-            </div>
+          <SimbotInputBar onNavigateRequest={onBack as any} />
         </footer>
 
       </div>

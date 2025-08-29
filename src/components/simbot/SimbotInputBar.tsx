@@ -63,37 +63,37 @@ export function SimbotInputBar({ onNavigateRequest, showSuggestions = false }: S
     };
 
     return (
-        <div className="w-full px-4 py-3">
+        <div className="w-full pt-2">
              {showSuggestions && (
-                 <div className="flex items-center space-x-2 mb-2 overflow-x-auto no-scrollbar pb-1">
+                 <div className="flex items-center space-x-2 mb-2 overflow-x-auto no-scrollbar pb-1 px-4">
                     <Button variant="outline" size="sm" onClick={() => handleSuggestionClick('Buy Bitcoin', 'BTC')}>बिटकॉइन खरीदें</Button>
                     <Button variant="outline" size="sm" onClick={() => handleSuggestionClick('Buy reliance qty 123', 'RELIANCE', { quantity: 123 })}>Buy reliance qty 123</Button>
                     <Button variant="outline" size="sm" onClick={() => handleSuggestionClick('Do an SIP on Parag Parikh Flexi cap for 100rs weekly', 'PARAGPARIKH', { orderType: 'SIP', sipAmount: 100, sipFrequency: 'Weekly' })}>Do an SIP on Parag Parikh Flexi cap for 100rs weekly</Button>
                  </div>
             )}
-            <form onSubmit={handleFormSubmit} className="flex items-center space-x-2">
+            <form onSubmit={handleFormSubmit} className="flex items-center space-x-2 px-2">
             <Input
                 type="text"
-                placeholder="Ask Simbot about markets, stocks, or strategies..."
+                placeholder="Ask Simbot..."
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
-                className="flex-grow"
+                className="flex-grow h-9"
                 disabled={isLoading}
                 autoFocus={showSuggestions} // Only autofocus on main simbot page
             />
             <Button
                 type="button"
-                variant="default"
+                variant="ghost"
                 size="icon"
-                className="rounded-full shadow-sm"
+                className="rounded-full shadow-sm h-9 w-9 shrink-0"
                 disabled={isLoading}
                 onClick={() => alert("Voice input coming soon!")}
             >
-                <Mic className="h-5 w-5" />
+                <Mic className="h-4 w-4" />
                 <span className="sr-only">Use Microphone</span>
             </Button>
-            <Button type="submit" size="icon" disabled={isLoading || !inputValue.trim()}>
-                {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
+            <Button type="submit" size="icon" disabled={isLoading || !inputValue.trim()} className="h-9 w-9 shrink-0">
+                {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
                 <span className="sr-only">Send message</span>
             </Button>
             </form>
