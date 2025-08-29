@@ -14,6 +14,7 @@ import { cn } from '@/lib/utils';
 import { NewsSection } from '@/components/dashboard/NewsSection';
 import { OrderPlacementForm } from '@/components/order/OrderPlacementForm';
 import { PerformanceBar, FinancialBar, CollapsibleSection } from './shared/OrderPageComponents';
+import { SimbotInputBar } from '../simbot/SimbotInputBar';
 
 interface FutureOrderPageContentProps {
   asset: Stock;
@@ -240,7 +241,7 @@ export function FutureOrderPageContent({ asset, assetSpecificNews, onBack }: Fut
           </div>
         </main>
         
-        <div className="fixed bottom-16 left-0 right-0 bg-background border-t border-border p-3 shadow-md_ z-20">
+        <footer className="fixed bottom-16 left-0 right-0 bg-background border-t border-border p-3 shadow-md z-20">
           <div className="w-full px-4 flex space-x-3">
             <Button 
               onClick={handleSellAction} 
@@ -256,7 +257,10 @@ export function FutureOrderPageContent({ asset, assetSpecificNews, onBack }: Fut
               Buy
             </Button>
           </div>
-        </div>
+           <div className="pt-2">
+               <SimbotInputBar onNavigateRequest={onBack as any} />
+            </div>
+        </footer>
 
       </div>
   );

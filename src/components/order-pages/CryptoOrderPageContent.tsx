@@ -14,6 +14,7 @@ import { OrderPlacementForm } from '@/components/order/OrderPlacementForm';
 import { PerformanceBar, CollapsibleSection } from './shared/OrderPageComponents';
 import { AnalysisTabContent } from './shared/AnalysisComponents';
 import { mockPortfolioHoldings } from '@/lib/mockData';
+import { SimbotInputBar } from '../simbot/SimbotInputBar';
 
 interface CryptoOrderPageContentProps {
   asset: Stock;
@@ -167,7 +168,7 @@ export function CryptoOrderPageContent({ asset, assetSpecificNews, onBack }: Cry
           </div>
         </main>
         
-        <div className="fixed bottom-16 left-0 right-0 bg-background border-t border-border p-3 shadow-md_ z-20">
+        <footer className="fixed bottom-16 left-0 right-0 bg-background border-t border-border p-3 shadow-md z-20">
           <div className="w-full px-4 flex space-x-3">
             <Button 
               onClick={handleSellAction} 
@@ -183,7 +184,10 @@ export function CryptoOrderPageContent({ asset, assetSpecificNews, onBack }: Cry
               Buy
             </Button>
           </div>
-        </div>
+          <div className="pt-2">
+            <SimbotInputBar onNavigateRequest={onBack as any} />
+          </div>
+        </footer>
       </div>
   );
 }

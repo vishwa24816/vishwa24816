@@ -11,6 +11,7 @@ import { cn } from '@/lib/utils';
 import { NewsSection } from '@/components/dashboard/NewsSection';
 import { BondOrderForm } from '@/components/order/BondOrderForm';
 import { CollapsibleSection } from './shared/OrderPageComponents';
+import { SimbotInputBar } from '../simbot/SimbotInputBar';
 
 interface BondOrderPageContentProps {
   asset: Stock;
@@ -108,7 +109,9 @@ export function BondOrderPageContent({ asset, assetSpecificNews, onBack }: BondO
 
         </div>
       </main>
+      <footer className="fixed bottom-16 left-0 right-0 bg-background border-t border-border p-3 shadow-md z-20">
+         <SimbotInputBar onNavigateRequest={onBack as any} />
+      </footer>
     </div>
   );
 }
-

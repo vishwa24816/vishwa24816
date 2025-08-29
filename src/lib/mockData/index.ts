@@ -1,3 +1,4 @@
+
 // This file now acts as an index for the mockData directory.
 // It imports and re-exports all mock data arrays.
 
@@ -47,3 +48,24 @@ export * from './ipo';
 export * from './insights';
 export * from './etfs';
 export * from './superstars';
+
+import { mockStocks as stocks } from './stocks';
+import { mockUsStocks as usStocks } from './usStocks';
+import { mockCryptoAssets as crypto } from './cryptoAssets';
+import { mockMutualFunds as mf } from './mutualFunds';
+import { mockBonds as bonds } from './bonds';
+import { mockIndexFuturesForWatchlist, mockStockFuturesForWatchlist } from './futuresWatchlistData';
+import { mockOptionsForWatchlist } from './optionsWatchlistData';
+import { mockCryptoFuturesForWatchlist } from './cryptoFuturesWatchlist';
+
+export const allAssets = [
+    ...stocks,
+    ...usStocks,
+    ...crypto,
+    ...mf,
+    ...bonds,
+    ...mockIndexFuturesForWatchlist,
+    ...mockStockFuturesForWatchlist,
+    ...mockOptionsForWatchlist,
+    ...mockCryptoFuturesForWatchlist,
+];
