@@ -6,12 +6,14 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { Stock, NewsArticle } from '@/types';
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, TrendingUp, TrendingDown, Info, BarChart2, ShieldCheck, Scale, FileText } from 'lucide-react';
+import { ArrowLeft, TrendingUp, TrendingDown, Info, BarChart2, ShieldCheck, Scale, FileText, Bot } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { NewsSection } from '@/components/dashboard/NewsSection';
 import { BondOrderForm } from '@/components/order/BondOrderForm';
 import { CollapsibleSection } from './shared/OrderPageComponents';
 import { SimbotInputBar } from '../simbot/SimbotInputBar';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+
 
 interface BondOrderPageContentProps {
   asset: Stock;
@@ -100,6 +102,18 @@ export function BondOrderPageContent({ asset, assetSpecificNews, onBack }: BondO
                     <div><p className="text-muted-foreground">Face Value</p><p className="font-semibold text-foreground">₹100</p></div>
                     <div><p className="text-muted-foreground">Yield to Maturity (YTM)</p><p className="font-semibold text-foreground">7.15%</p></div>
                   </div>
+                </CollapsibleSection>
+                 <CollapsibleSection title="Simbot Analysis" icon={Bot} defaultOpen>
+                    <div className="flex items-start space-x-2 mr-auto justify-start max-w-[85%] sm:max-w-[75%]">
+                         <Avatar className="h-8 w-8 self-start">
+                            <AvatarFallback>B</AvatarFallback>
+                        </Avatar>
+                        <div className="p-3 rounded-xl shadow bg-muted text-foreground rounded-bl-none">
+                            <p className="text-sm whitespace-pre-wrap">
+                                This government bond offers a stable yield. It's a low-risk option suitable for capital preservation. The current yield is slightly lower than comparable new issues.
+                            </p>
+                        </div>
+                    </div>
                 </CollapsibleSection>
             </TabsContent>
             <TabsContent value="news" className="mt-4">

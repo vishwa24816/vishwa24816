@@ -6,12 +6,14 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { Stock, NewsArticle } from '@/types';
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, TrendingUp, ShoppingCart, Bookmark, Search, Info, CheckCircle2, XCircle, TrendingDown, Star, WalletCards, Briefcase } from 'lucide-react';
+import { ArrowLeft, TrendingUp, ShoppingCart, Bookmark, Search, Info, CheckCircle2, XCircle, TrendingDown, Star, WalletCards, Briefcase, Bot } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { MutualFundOrderForm } from '@/components/order/MutualFundOrderForm';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ReturnCalculator } from '@/components/order/ReturnCalculator';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { SimbotInputBar } from '../simbot/SimbotInputBar';
+import { CollapsibleSection } from './shared/OrderPageComponents';
 
 interface CryptoMutualFundOrderPageContentProps {
   asset: Stock;
@@ -97,7 +99,7 @@ export function CryptoMutualFundOrderPageContent({ asset, assetSpecificNews, onB
           </div>
 
           <div className="py-4">
-             <MutualFundOrderForm asset={asset} assetType="mutual-fund" />
+             <MutualFundOrderForm asset={asset} assetType="mutual-fund" initialDetails={null} />
           </div>
 
           <div className="grid grid-cols-2 gap-y-4 gap-x-2 text-sm py-4">
@@ -141,6 +143,18 @@ export function CryptoMutualFundOrderPageContent({ asset, assetSpecificNews, onB
                 ) : (
                     <div className="text-center text-muted-foreground py-4">No fund description available.</div>
                 )}
+                 <CollapsibleSection title="Simbot Analysis" icon={Bot} defaultOpen>
+                    <div className="flex items-start space-x-2 mr-auto justify-start max-w-[85%] sm:max-w-[75%]">
+                         <Avatar className="h-8 w-8 self-start">
+                            <AvatarFallback>B</AvatarFallback>
+                        </Avatar>
+                        <div className="p-3 rounded-xl shadow bg-muted text-foreground rounded-bl-none">
+                            <p className="text-sm whitespace-pre-wrap">
+                                This crypto mutual fund offers diversified exposure to the DeFi sector. While its 1-year return is impressive, be aware of the very high risk associated with this asset class.
+                            </p>
+                        </div>
+                    </div>
+                </CollapsibleSection>
                 {asset.fundManagement ? (
                     <Card>
                         <CardHeader>
@@ -257,6 +271,9 @@ export function CryptoMutualFundOrderPageContent({ asset, assetSpecificNews, onB
 
         </div>
       </main>
+      <footer className="fixed bottom-16 left-0 right-0 bg-background border-t border-border p-3 shadow-md z-20">
+         <SimbotInputBar onNavigateRequest={onBack as any} />
+      </footer>
     </div>
   );
 }

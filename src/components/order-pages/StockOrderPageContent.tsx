@@ -8,13 +8,15 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { Stock, NewsArticle } from '@/types';
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, TrendingUp, TrendingDown, Info, Maximize2, BarChart2, ChevronUp, ChevronDown, ChevronLeftIcon, ChevronRightIcon, Landmark, SearchIcon, LineChart, FileText, Star } from 'lucide-react';
+import { ArrowLeft, TrendingUp, TrendingDown, Info, Maximize2, BarChart2, ChevronUp, ChevronDown, ChevronLeftIcon, ChevronRightIcon, Landmark, SearchIcon, LineChart, FileText, Star, Bot } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { NewsSection } from '@/components/dashboard/NewsSection';
 import { OrderPlacementForm } from '@/components/order/OrderPlacementForm';
 import { PerformanceBar, FinancialBar, CollapsibleSection } from './shared/OrderPageComponents';
 import type { InitialOrderDetails } from '@/app/page';
 import { SimbotInputBar } from '@/components/simbot/SimbotInputBar';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+
 
 interface StockOrderPageContentProps {
   asset: Stock;
@@ -156,12 +158,25 @@ export function StockOrderPageContent({ asset, assetSpecificNews, onBack, initia
                     <p className="font-semibold text-foreground">{asset.volume?.toLocaleString() || 'N/A'}</p>
                   </div>
                 </div>
-
+                
                 {asset.aboutCompany && (
                   <CollapsibleSection title="About Company" icon={Info} defaultOpen>
                     <p className="text-sm text-foreground leading-relaxed">{asset.aboutCompany}</p>
                   </CollapsibleSection>
                 )}
+
+                 <CollapsibleSection title="Simbot Analysis" icon={Bot} defaultOpen>
+                    <div className="flex items-start space-x-2 mr-auto justify-start max-w-[85%] sm:max-w-[75%]">
+                         <Avatar className="h-8 w-8 self-start">
+                            <AvatarFallback>B</AvatarFallback>
+                        </Avatar>
+                        <div className="p-3 rounded-xl shadow bg-muted text-foreground rounded-bl-none">
+                            <p className="text-sm whitespace-pre-wrap">
+                                {asset.name} is looking strong on the charts. Key technical indicators suggest a bullish trend, with potential resistance near {currencySymbol}{(asset.fiftyTwoWeekHigh * 0.98).toFixed(2)}. Consider market sentiment before investing.
+                            </p>
+                        </div>
+                    </div>
+                </CollapsibleSection>
 
                 {asset.similarStocks && asset.similarStocks.length > 0 && (
                   <CollapsibleSection title="Similar Stocks" icon={Landmark} defaultOpen>

@@ -7,12 +7,14 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { Stock, NewsArticle } from '@/types';
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, TrendingUp, TrendingDown, Info, Maximize2, BarChart2 } from 'lucide-react';
+import { ArrowLeft, TrendingUp, TrendingDown, Info, Maximize2, BarChart2, Bot } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { NewsSection } from '@/components/dashboard/NewsSection';
 import { OrderPlacementForm } from '@/components/order/OrderPlacementForm';
 import { PerformanceBar, CollapsibleSection } from './shared/OrderPageComponents';
 import { SimbotInputBar } from '../simbot/SimbotInputBar';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+
 
 interface CryptoFutureOrderPageContentProps {
   asset: Stock;
@@ -110,6 +112,18 @@ export function CryptoFutureOrderPageContent({ asset, assetSpecificNews, onBack 
                   <p className="text-sm text-foreground leading-relaxed">{asset.aboutCompany}</p>
                 </CollapsibleSection>
               )}
+              <CollapsibleSection title="Simbot Analysis" icon={Bot} defaultOpen>
+                  <div className="flex items-start space-x-2 mr-auto justify-start max-w-[85%] sm:max-w-[75%]">
+                        <Avatar className="h-8 w-8 self-start">
+                          <AvatarFallback>B</AvatarFallback>
+                      </Avatar>
+                      <div className="p-3 rounded-xl shadow bg-muted text-foreground rounded-bl-none">
+                          <p className="text-sm whitespace-pre-wrap">
+                              High open interest in {asset.name} contracts indicates significant market activity. The funding rate is currently positive, suggesting bullish sentiment among traders.
+                          </p>
+                      </div>
+                  </div>
+              </CollapsibleSection>
               <div className="text-center py-4 text-muted-foreground">More overview details coming soon.</div>
             </TabsContent>
 

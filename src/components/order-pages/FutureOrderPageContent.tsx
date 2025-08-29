@@ -9,12 +9,14 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { Stock, NewsArticle } from '@/types';
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, TrendingUp, TrendingDown, Info, Maximize2, BarChart2, ChevronLeftIcon, ChevronRightIcon, SearchIcon, LineChart, FileText } from 'lucide-react';
+import { ArrowLeft, TrendingUp, TrendingDown, Info, Maximize2, BarChart2, ChevronLeftIcon, ChevronRightIcon, SearchIcon, LineChart, FileText, Bot } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { NewsSection } from '@/components/dashboard/NewsSection';
 import { OrderPlacementForm } from '@/components/order/OrderPlacementForm';
 import { PerformanceBar, FinancialBar, CollapsibleSection } from './shared/OrderPageComponents';
 import { SimbotInputBar } from '../simbot/SimbotInputBar';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+
 
 interface FutureOrderPageContentProps {
   asset: Stock;
@@ -112,6 +114,18 @@ export function FutureOrderPageContent({ asset, assetSpecificNews, onBack }: Fut
               </TabsList>
               
               <TabsContent value="underlying" className="mt-4 space-y-6">
+                <CollapsibleSection title="Simbot Analysis" icon={Bot} defaultOpen>
+                    <div className="flex items-start space-x-2 mr-auto justify-start max-w-[85%] sm:max-w-[75%]">
+                         <Avatar className="h-8 w-8 self-start">
+                            <AvatarFallback>B</AvatarFallback>
+                        </Avatar>
+                        <div className="p-3 rounded-xl shadow bg-muted text-foreground rounded-bl-none">
+                            <p className="text-sm whitespace-pre-wrap">
+                                The futures contract for {asset.name} shows significant open interest, suggesting active participation. The current price is trading slightly above its 5-day moving average.
+                            </p>
+                        </div>
+                    </div>
+                </CollapsibleSection>
                 <Card>
                   <CardHeader>
                     <CardTitle className="flex items-center"><FileText className="h-5 w-5 mr-2 text-primary" /> Option Chain for Underlying</CardTitle>

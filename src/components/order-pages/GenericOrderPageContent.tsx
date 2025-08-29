@@ -8,11 +8,13 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { Stock, NewsArticle } from '@/types';
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, TrendingUp, TrendingDown, Info, Maximize2, BarChart2, ChevronUp, ChevronDown, ChevronLeftIcon, ChevronRightIcon, Landmark, SearchIcon, LineChart, FileText } from 'lucide-react';
+import { ArrowLeft, TrendingUp, TrendingDown, Info, Maximize2, BarChart2, ChevronLeftIcon, ChevronRightIcon, Landmark, SearchIcon, LineChart, FileText, Star, Bot } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { NewsSection } from '@/components/dashboard/NewsSection';
 import { OrderPlacementForm } from '@/components/order/OrderPlacementForm';
 import { PerformanceBar, FinancialBar, CollapsibleSection } from './shared/OrderPageComponents';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+
 
 interface GenericOrderPageContentProps {
   asset: Stock;
@@ -123,13 +125,13 @@ export function GenericOrderPageContent({ asset, assetSpecificNews, onBack }: Ge
                     <div><span className="text-muted-foreground">Mkt Cap</span><p className="font-semibold text-foreground">{asset.fundamentals.marketCap || 'N/A'}</p></div>
                     <div><span className="text-muted-foreground">ROE</span><p className="font-semibold text-foreground">{asset.fundamentals.roe?.toFixed(2) || 'N/A'}%</p></div>
                     <div><span className="text-muted-foreground">P/E Ratio (TTM)</span><p className="font-semibold text-foreground">{asset.fundamentals.peRatioTTM?.toFixed(2) || 'N/A'}</p></div>
-                    <div><span className="text-muted-foreground">EPS (TTM)</span><p className="font-semibold text-foreground">{asset.fundamentals.epsTTM?.toFixed(2) || 'N/A'}</p></div>
+                    <div><span className="text-muted-foreground">EPS (TTM)</span><p className="font-semibold text-foreground">₹{asset.fundamentals.epsTTM?.toFixed(2) || 'N/A'}</p></div>
                     <div><span className="text-muted-foreground">P/B Ratio</span><p className="font-semibold text-foreground">{asset.fundamentals.pbRatio?.toFixed(2) || 'N/A'}</p></div>
                     <div><span className="text-muted-foreground">Div Yield</span><p className="font-semibold text-foreground">{asset.fundamentals.divYield?.toFixed(2) || 'N/A'}%</p></div>
                     <div><span className="text-muted-foreground">Industry P/E</span><p className="font-semibold text-foreground">{asset.fundamentals.industryPe?.toFixed(2) || 'N/A'}</p></div>
-                    <div><span className="text-muted-foreground">Book Value</span><p className="font-semibold text-foreground">{asset.fundamentals.bookValue?.toFixed(2) || 'N/A'}</p></div>
+                    <div><span className="text-muted-foreground">Book Value</span><p className="font-semibold text-foreground">₹{asset.fundamentals.bookValue?.toFixed(2) || 'N/A'}</p></div>
                     <div><span className="text-muted-foreground">Debt to Equity</span><p className="font-semibold text-foreground">{asset.fundamentals.debtToEquity?.toFixed(2) || 'N/A'}</p></div>
-                    <div><span className="text-muted-foreground">Face Value</span><p className="font-semibold text-foreground">{asset.fundamentals.faceValue?.toFixed(2) || 'N/A'}</p></div>
+                    <div><span className="text-muted-foreground">Face Value</span><p className="font-semibold text-foreground">₹{asset.fundamentals.faceValue?.toFixed(2) || 'N/A'}</p></div>
                   </div>
                 </CollapsibleSection>
               )}
@@ -178,31 +180,23 @@ export function GenericOrderPageContent({ asset, assetSpecificNews, onBack }: Ge
                 </div>
               </div>
               
-              {asset.similarStocks && asset.similarStocks.length > 0 && (
-                <CollapsibleSection title="Similar Stocks" icon={Landmark} defaultOpen>
-                   <div className="space-y-3">
-                    {asset.similarStocks.map(simStock => {
-                      const isSimPositive = simStock.changePercent >= 0;
-                      return (
-                        <Link href={`/order/stock/${simStock.symbol}`} key={simStock.id} className="block p-3 bg-muted/30 rounded-md hover:bg-muted/50 transition-colors">
-                          <div className="flex justify-between items-center">
-                            <div>
-                              <p className="font-semibold text-foreground text-sm">{simStock.name} <span className="text-xs text-muted-foreground">({simStock.symbol})</span></p>
-                              {simStock.marketCap && <p className="text-xs text-muted-foreground">Mkt Cap: {simStock.marketCap}</p>}
-                            </div>
-                            <div className="text-right">
-                              <p className={`font-medium ${isSimPositive ? 'text-green-500' : 'text-red-500'}`}>₹{simStock.price.toFixed(2)}</p>
-                              <p className={`text-xs ${isSimPositive ? 'text-green-500' : 'text-red-500'}`}>
-                                {isSimPositive ? '+' : ''}{simStock.changePercent.toFixed(2)}%
-                              </p>
-                            </div>
-                          </div>
-                        </Link>
-                      );
-                    })}
-                  </div>
+              {asset.aboutCompany && (
+                <CollapsibleSection title="About Company" icon={Info} defaultOpen>
+                  <p className="text-sm text-foreground leading-relaxed">{asset.aboutCompany}</p>
                 </CollapsibleSection>
               )}
+               <CollapsibleSection title="Simbot Analysis" icon={Bot} defaultOpen>
+                  <div className="flex items-start space-x-2 mr-auto justify-start max-w-[85%] sm:max-w-[75%]">
+                        <Avatar className="h-8 w-8 self-start">
+                          <AvatarFallback>B</AvatarFallback>
+                      </Avatar>
+                      <div className="p-3 rounded-xl shadow bg-muted text-foreground rounded-bl-none">
+                          <p className="text-sm whitespace-pre-wrap">
+                              {asset.name} is currently trading near its 52-week high, indicating strong momentum. However, its P/E ratio is slightly above the industry average, suggesting it might be fully valued.
+                          </p>
+                      </div>
+                  </div>
+              </CollapsibleSection>
             </TabsContent>
             
             <TabsContent value="financials" className="mt-4 space-y-6">
