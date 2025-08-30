@@ -25,7 +25,9 @@ export function OrderPageFooter({ asset, productType, onNavigateRequest }: Order
     toast({ title: "Sell Action (Mock)", description: `Initiating SELL for ${asset?.symbol} with product type: ${productType}` });
   };
 
-  const isSellDisabled = productType === 'Delivery' || productType === 'HODL';
+  const isFuturesOrOptions = asset?.exchange === 'NFO' || asset?.exchange?.toLowerCase().includes('future') || asset?.exchange?.toLowerCase().includes('option');
+  const isSellDisabled = !isFuturesOrOptions && (productType === 'Delivery' || productType === 'HODL');
+
 
   return (
     <footer className="fixed bottom-0 left-0 right-0 z-40 bg-card border-t border-border rounded-t-2xl shadow-lg">
