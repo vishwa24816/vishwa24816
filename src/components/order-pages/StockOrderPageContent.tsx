@@ -126,11 +126,11 @@ export function StockOrderPageContent({ asset, assetSpecificNews, onBack, initia
                     <div className="flex justify-between text-xs mt-4">
                       <div>
                         <p className="text-muted-foreground">Lower circuit</p>
-                        <p className="font-semibold text-foreground">{asset.lowerCircuit?.toFixed(2) || 'N/A'}</p>
+                        <p className="font-semibold text-foreground">{currencySymbol}{asset.lowerCircuit?.toFixed(2) || 'N/A'}</p>
                       </div>
                       <div className="text-right">
                         <p className="text-muted-foreground">Upper circuit</p>
-                        <p className="font-semibold text-foreground">{asset.upperCircuit?.toFixed(2) || 'N/A'}</p>
+                        <p className="font-semibold text-foreground">{currencySymbol}{asset.upperCircuit?.toFixed(2) || 'N/A'}</p>
                       </div>
                     </div>
                   )}

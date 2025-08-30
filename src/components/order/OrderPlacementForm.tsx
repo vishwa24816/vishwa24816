@@ -269,7 +269,6 @@ const CryptoOrderForm = ({ asset, assetType, productType, onProductTypeChange, i
                 <TabsContent value="Regular" className="p-4 mt-0">
                     <div className="space-y-4">
                         <RadioGroup value={productType} onValueChange={onProductTypeChange} className="flex flex-wrap gap-x-4 sm:gap-x-6 gap-y-2">
-                           <div className="flex items-center space-x-2"> <RadioGroupItem value="Intraday" id="intraday-crypto" /> <Label htmlFor="intraday-crypto" className="font-normal">Intraday</Label> </div>
                            <div className="flex items-center space-x-2"> <RadioGroupItem value="Delivery" id="delivery-crypto" /> <Label htmlFor="delivery-crypto" className="font-normal">Delivery</Label> </div>
                            <div className="flex items-center space-x-2"> <RadioGroupItem value="HODL" id="hodl-crypto" /> <Label htmlFor="hodl-crypto" className="font-normal">HODL</Label> </div>
                         </RadioGroup>
