@@ -14,7 +14,6 @@ import { NewsSection } from '@/components/dashboard/NewsSection';
 import { OrderPlacementForm } from '@/components/order/OrderPlacementForm';
 import { PerformanceBar, FinancialBar, CollapsibleSection } from './shared/OrderPageComponents';
 import type { InitialOrderDetails } from '@/app/page';
-import { SimbotInputBar } from '@/components/simbot/SimbotInputBar';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 
 
@@ -50,14 +49,14 @@ export function StockOrderPageContent({ asset, assetSpecificNews, onBack, initia
   const maxFinancialValue = Math.max(...currentFinancialsData.map(d => d.value), 0);
 
   return (
-    <div className="flex flex-col min-h-screen bg-background text-foreground">
-        <header className="px-4 py-3 sticky top-0 z-10 bg-background border-b border-border">
+    <div className="flex flex-col h-full bg-background text-foreground">
+        <header className="px-4 py-3 sticky top-0 z-10 bg-background border-b border-border shrink-0">
           <Button variant="ghost" size="icon" onClick={onBack} className="text-foreground hover:bg-muted">
             <ArrowLeft className="h-5 w-5" />
           </Button>
         </header>
 
-        <main className="flex-grow overflow-y-auto pb-32">
+        <main className="flex-grow overflow-y-auto">
           <div className="w-full px-4 py-4 space-y-4">
             <div className="flex justify-between items-start">
               <div>
@@ -197,8 +196,8 @@ export function StockOrderPageContent({ asset, assetSpecificNews, onBack, initia
                       <p className="text-muted-foreground">Technical Chart Placeholder</p>
                     </div>
                 </CollapsibleSection>
-                
-                <CollapsibleSection title="Simbot Analysis" icon={Bot} defaultOpen>
+
+                 <CollapsibleSection title="Simbot Analysis" icon={Bot} defaultOpen>
                     <div className="flex items-start space-x-2 mr-auto justify-start max-w-[85%] sm:max-w-[75%]">
                          <Avatar className="h-8 w-8 self-start">
                             <AvatarFallback>B</AvatarFallback>
@@ -300,27 +299,6 @@ export function StockOrderPageContent({ asset, assetSpecificNews, onBack, initia
             </Tabs>
           </div>
         </main>
-        
-      <footer className="fixed bottom-0 left-0 right-0 bg-background border-t border-border p-2 shadow-md z-20">
-        <div className="w-full px-2 flex space-x-2">
-          <Button 
-            onClick={handleSellAction} 
-            variant="destructive" 
-            className="flex-1 text-sm py-2 h-auto bg-red-600 hover:bg-red-700 disabled:opacity-60 disabled:bg-red-800"
-            disabled={productTypeForOrder === 'Delivery' || productTypeForOrder === 'HODL'}
-          >
-            Sell
-          </Button>
-          <Button 
-            onClick={handleBuyAction} 
-            className="flex-1 text-sm py-2 h-auto bg-green-600 hover:bg-green-700 text-white"
-          >
-            Buy
-          </Button>
-        </div>
-        <SimbotInputBar onNavigateRequest={onBack as any} />
-      </footer>
-
       </div>
   );
 }

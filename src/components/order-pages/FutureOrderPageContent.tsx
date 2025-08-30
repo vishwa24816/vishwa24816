@@ -14,7 +14,6 @@ import { cn } from '@/lib/utils';
 import { NewsSection } from '@/components/dashboard/NewsSection';
 import { OrderPlacementForm } from '@/components/order/OrderPlacementForm';
 import { PerformanceBar, FinancialBar, CollapsibleSection } from './shared/OrderPageComponents';
-import { SimbotInputBar } from '../simbot/SimbotInputBar';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 
 
@@ -47,14 +46,14 @@ export function FutureOrderPageContent({ asset, assetSpecificNews, onBack }: Fut
   const maxFinancialValue = Math.max(...currentFinancialsData.map(d => d.value), 0);
 
   return (
-    <div className="flex flex-col min-h-screen bg-background text-foreground">
-        <header className="px-4 py-3 sticky top-0 z-10 bg-background border-b border-border">
+    <div className="flex flex-col h-full bg-background text-foreground">
+        <header className="px-4 py-3 sticky top-0 z-10 bg-background border-b border-border shrink-0">
           <Button variant="ghost" size="icon" onClick={onBack} className="text-foreground hover:bg-muted">
             <ArrowLeft className="h-5 w-5" />
           </Button>
         </header>
 
-        <main className="flex-grow overflow-y-auto pb-32">
+        <main className="flex-grow overflow-y-auto">
           <div className="w-full px-4 py-4 space-y-4">
             <div className="flex justify-between items-start">
               <div>
@@ -254,26 +253,6 @@ export function FutureOrderPageContent({ asset, assetSpecificNews, onBack }: Fut
             </Tabs>
           </div>
         </main>
-        
-        <footer className="fixed bottom-0 left-0 right-0 bg-background border-t border-border p-2 shadow-md z-20">
-          <div className="w-full px-2 flex space-x-2">
-            <Button 
-              onClick={handleSellAction} 
-              variant="destructive" 
-              className="flex-1 text-sm py-2 h-auto bg-red-600 hover:bg-red-700"
-            >
-              Sell
-            </Button>
-            <Button 
-              onClick={handleBuyAction} 
-              className="flex-1 text-sm py-2 h-auto bg-green-600 hover:bg-green-700 text-white"
-            >
-              Buy
-            </Button>
-          </div>
-           <SimbotInputBar onNavigateRequest={onBack as any} />
-        </footer>
-
       </div>
   );
 }

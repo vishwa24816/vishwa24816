@@ -13,7 +13,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ReturnCalculator } from '@/components/order/ReturnCalculator';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import type { InitialOrderDetails } from '@/app/page';
-import { SimbotInputBar } from '../simbot/SimbotInputBar';
 import { CollapsibleSection } from './shared/OrderPageComponents';
 
 
@@ -33,25 +32,14 @@ export function MutualFundOrderPageContent({ asset, assetSpecificNews, onBack, i
   const timescaleButtons = ['1M', '6M', '1Y', '3Y', '5Y', 'ALL'];
   
   return (
-    <div className="flex flex-col min-h-screen bg-background text-foreground">
-      <header className="px-4 py-3 sticky top-0 z-10 bg-background border-b border-border flex justify-between items-center">
+    <div className="flex flex-col h-full bg-background text-foreground">
+      <header className="px-4 py-3 sticky top-0 z-10 bg-background border-b border-border shrink-0">
         <Button variant="ghost" size="icon" onClick={onBack} className="text-foreground hover:bg-muted">
           <ArrowLeft className="h-5 w-5" />
         </Button>
-        <div className="flex items-center space-x-1">
-            <Button variant="ghost" size="icon" className="text-foreground hover:bg-muted">
-                <ShoppingCart className="h-5 w-5" />
-            </Button>
-            <Button variant="ghost" size="icon" className="text-foreground hover:bg-muted">
-                <Bookmark className="h-5 w-5" />
-            </Button>
-            <Button variant="ghost" size="icon" className="text-foreground hover:bg-muted">
-                <Search className="h-5 w-5" />
-            </Button>
-        </div>
       </header>
 
-      <main className="flex-grow overflow-y-auto pb-16">
+      <main className="flex-grow overflow-y-auto">
         <div className="w-full px-4 py-4 space-y-4">
           <div className="flex items-center space-x-3 mb-2">
               <div className="w-12 h-12 bg-muted rounded-lg flex items-center justify-center">
@@ -268,9 +256,6 @@ export function MutualFundOrderPageContent({ asset, assetSpecificNews, onBack, i
 
         </div>
       </main>
-      <footer className="fixed bottom-0 left-0 right-0 bg-background border-t border-border p-2 shadow-md z-20">
-         <SimbotInputBar onNavigateRequest={onBack as any} />
-      </footer>
     </div>
   );
 }

@@ -81,6 +81,8 @@ export default function DashboardRouterPage() {
         </ProtectedRoute>
       );
   }
+  
+  const showModeSwitcher = !['orders', 'screener', 'simbot', 'analytics', 'asset_order'].includes(activeMainView);
 
   const renderContent = () => {
     switch (activeMainView) {
@@ -111,11 +113,9 @@ export default function DashboardRouterPage() {
     }
   }
 
-  const showModeSwitcher = activeMainView === 'home' || activeMainView === 'community';
-  
   return (
     <ProtectedRoute>
-      <div className="flex flex-col min-h-screen pb-14">
+      <div className="flex flex-col min-h-screen pb-28">
         <AppHeader 
           activeMode={activeMode}
           onModeChange={showModeSwitcher ? handleModeChange : undefined}
@@ -125,9 +125,7 @@ export default function DashboardRouterPage() {
         />
         {renderContent()}
       </div>
-      <AppFooter activeView={activeMainView} onNavigate={handleNavigate} />
+      <AppFooter activeView={activeMainView} onNavigate={handleNavigate} onNavigateRequest={handleAssetClick} />
     </ProtectedRoute>
   );
 }
-
-    

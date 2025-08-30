@@ -10,7 +10,6 @@ import { ArrowLeft, TrendingUp, TrendingDown, Info, ShieldCheck, Bot } from 'luc
 import { NewsSection } from '@/components/dashboard/NewsSection';
 import { BondOrderForm } from '@/components/order/BondOrderForm';
 import { CollapsibleSection } from './shared/OrderPageComponents';
-import { SimbotInputBar } from '../simbot/SimbotInputBar';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 
@@ -30,14 +29,14 @@ export function BondOrderPageContent({ asset, assetSpecificNews, onBack }: BondO
   const timescaleButtons = ['1M', '6M', '1Y', '3Y', '5Y', 'ALL'];
   
   return (
-    <div className="flex flex-col min-h-screen bg-background text-foreground">
-      <header className="px-4 py-3 sticky top-0 z-10 bg-background border-b border-border flex justify-between items-center">
+    <div className="flex flex-col h-full bg-background text-foreground">
+      <header className="px-4 py-3 sticky top-0 z-10 bg-background border-b border-border shrink-0">
         <Button variant="ghost" size="icon" onClick={onBack} className="text-foreground hover:bg-muted">
           <ArrowLeft className="h-5 w-5" />
         </Button>
       </header>
 
-      <main className="flex-grow overflow-y-auto pb-16">
+      <main className="flex-grow overflow-y-auto">
         <div className="w-full px-4 py-4 space-y-4">
           <div className="flex items-center space-x-3 mb-2">
               <div className="w-12 h-12 bg-muted rounded-lg flex items-center justify-center">
@@ -123,9 +122,6 @@ export function BondOrderPageContent({ asset, assetSpecificNews, onBack }: BondO
 
         </div>
       </main>
-      <footer className="fixed bottom-0 left-0 right-0 bg-background border-t border-border p-2 shadow-md z-20">
-         <SimbotInputBar onNavigateRequest={onBack as any} />
-      </footer>
     </div>
   );
 }
