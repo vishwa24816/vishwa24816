@@ -144,18 +144,6 @@ export function MutualFundOrderPageContent({ asset, assetSpecificNews, onBack, i
                         </CardContent>
                     </Card>
                 )}
-                <CollapsibleSection title="Simbot Analysis" icon={Bot} defaultOpen>
-                    <div className="flex items-start space-x-2 mr-auto justify-start max-w-[85%] sm:max-w-[75%]">
-                         <Avatar className="h-8 w-8 self-start">
-                            <AvatarFallback>B</AvatarFallback>
-                        </Avatar>
-                        <div className="p-3 rounded-xl shadow bg-muted text-foreground rounded-bl-none">
-                            <p className="text-sm whitespace-pre-wrap">
-                                {asset.name} has consistently outperformed its benchmark over the last 3 years. It's a solid choice for long-term growth, but be mindful of its expense ratio.
-                            </p>
-                        </div>
-                    </div>
-                </CollapsibleSection>
                 {asset.fundManagement && (
                     <Card>
                         <CardHeader>
@@ -204,6 +192,18 @@ export function MutualFundOrderPageContent({ asset, assetSpecificNews, onBack, i
                  {(!asset.aboutCompany && !asset.fundManagement && !asset.topHoldings) && (
                     <div className="text-center text-muted-foreground py-4">Fund information is not available.</div>
                 )}
+                <CollapsibleSection title="Simbot Analysis" icon={Bot} defaultOpen>
+                    <div className="flex items-start space-x-2 mr-auto justify-start max-w-[85%] sm:max-w-[75%]">
+                         <Avatar className="h-8 w-8 self-start">
+                            <AvatarFallback>B</AvatarFallback>
+                        </Avatar>
+                        <div className="p-3 rounded-xl shadow bg-muted text-foreground rounded-bl-none">
+                            <p className="text-sm whitespace-pre-wrap">
+                                {asset.name} has consistently outperformed its benchmark over the last 3 years. It's a solid choice for long-term growth, but be mindful of its expense ratio.
+                            </p>
+                        </div>
+                    </div>
+                </CollapsibleSection>
             </TabsContent>
             <TabsContent value="calculator" className="mt-4">
               {asset.annualisedReturn ? (
@@ -268,7 +268,7 @@ export function MutualFundOrderPageContent({ asset, assetSpecificNews, onBack, i
 
         </div>
       </main>
-      <footer className="fixed bottom-16 left-0 right-0 bg-background border-t border-border p-2 shadow-md z-20">
+      <footer className="fixed bottom-0 left-0 right-0 bg-background border-t border-border p-2 shadow-md z-20">
          <SimbotInputBar onNavigateRequest={onBack as any} />
       </footer>
     </div>

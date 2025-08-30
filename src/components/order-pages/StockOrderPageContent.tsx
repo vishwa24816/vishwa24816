@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { Stock, NewsArticle } from '@/types';
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, TrendingUp, TrendingDown, Info, Maximize2, BarChart2, ChevronUp, ChevronDown, ChevronLeftIcon, ChevronRightIcon, Landmark, SearchIcon, LineChart, FileText, Star, Bot } from 'lucide-react';
+import { ArrowLeft, TrendingUp, TrendingDown, Info, Maximize2, BarChart2, ChevronLeftIcon, ChevronRightIcon, Landmark, SearchIcon, LineChart, FileText, Star, Bot } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { NewsSection } from '@/components/dashboard/NewsSection';
 import { OrderPlacementForm } from '@/components/order/OrderPlacementForm';
@@ -165,19 +165,6 @@ export function StockOrderPageContent({ asset, assetSpecificNews, onBack, initia
                   </CollapsibleSection>
                 )}
 
-                 <CollapsibleSection title="Simbot Analysis" icon={Bot} defaultOpen>
-                    <div className="flex items-start space-x-2 mr-auto justify-start max-w-[85%] sm:max-w-[75%]">
-                         <Avatar className="h-8 w-8 self-start">
-                            <AvatarFallback>B</AvatarFallback>
-                        </Avatar>
-                        <div className="p-3 rounded-xl shadow bg-muted text-foreground rounded-bl-none">
-                            <p className="text-sm whitespace-pre-wrap">
-                                {asset.name} is currently trading near its 52-week high, indicating strong momentum. However, its P/E ratio is slightly above the industry average, suggesting it might be fully valued.
-                            </p>
-                        </div>
-                    </div>
-                </CollapsibleSection>
-
                 {asset.similarStocks && asset.similarStocks.length > 0 && (
                   <CollapsibleSection title="Similar Stocks" icon={Landmark} defaultOpen>
                      <div className="space-y-3">
@@ -210,7 +197,19 @@ export function StockOrderPageContent({ asset, assetSpecificNews, onBack, initia
                       <p className="text-muted-foreground">Technical Chart Placeholder</p>
                     </div>
                 </CollapsibleSection>
-
+                
+                <CollapsibleSection title="Simbot Analysis" icon={Bot} defaultOpen>
+                    <div className="flex items-start space-x-2 mr-auto justify-start max-w-[85%] sm:max-w-[75%]">
+                         <Avatar className="h-8 w-8 self-start">
+                            <AvatarFallback>B</AvatarFallback>
+                        </Avatar>
+                        <div className="p-3 rounded-xl shadow bg-muted text-foreground rounded-bl-none">
+                            <p className="text-sm whitespace-pre-wrap">
+                                {asset.name} is currently trading near its 52-week high, indicating strong momentum. However, its P/E ratio is slightly above the industry average, suggesting it might be fully valued.
+                            </p>
+                        </div>
+                    </div>
+                </CollapsibleSection>
               </TabsContent>
               
               <TabsContent value="fundamentals" className="mt-4 space-y-6">
@@ -302,25 +301,25 @@ export function StockOrderPageContent({ asset, assetSpecificNews, onBack, initia
           </div>
         </main>
         
-      <footer className="fixed bottom-16 left-0 right-0 bg-background border-t border-border p-2 shadow-md z-20">
-          <div className="w-full px-2 flex space-x-2">
-            <Button 
-              onClick={handleSellAction} 
-              variant="destructive" 
-              className="flex-1 text-sm py-2 h-auto bg-red-600 hover:bg-red-700 disabled:opacity-60 disabled:bg-red-800"
-              disabled={productTypeForOrder === 'Delivery' || productTypeForOrder === 'HODL'}
-            >
-              Sell
-            </Button>
-            <Button 
-              onClick={handleBuyAction} 
-              className="flex-1 text-sm py-2 h-auto bg-green-600 hover:bg-green-700 text-white"
-            >
-              Buy
-            </Button>
-          </div>
-          <SimbotInputBar onNavigateRequest={onBack as any} />
-        </footer>
+      <footer className="fixed bottom-0 left-0 right-0 bg-background border-t border-border p-2 shadow-md z-20">
+        <div className="w-full px-2 flex space-x-2">
+          <Button 
+            onClick={handleSellAction} 
+            variant="destructive" 
+            className="flex-1 text-sm py-2 h-auto bg-red-600 hover:bg-red-700 disabled:opacity-60 disabled:bg-red-800"
+            disabled={productTypeForOrder === 'Delivery' || productTypeForOrder === 'HODL'}
+          >
+            Sell
+          </Button>
+          <Button 
+            onClick={handleBuyAction} 
+            className="flex-1 text-sm py-2 h-auto bg-green-600 hover:bg-green-700 text-white"
+          >
+            Buy
+          </Button>
+        </div>
+        <SimbotInputBar onNavigateRequest={onBack as any} />
+      </footer>
 
       </div>
   );

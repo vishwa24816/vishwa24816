@@ -114,18 +114,6 @@ export function FutureOrderPageContent({ asset, assetSpecificNews, onBack }: Fut
               </TabsList>
               
               <TabsContent value="underlying" className="mt-4 space-y-6">
-                <CollapsibleSection title="Simbot Analysis" icon={Bot} defaultOpen>
-                    <div className="flex items-start space-x-2 mr-auto justify-start max-w-[85%] sm:max-w-[75%]">
-                         <Avatar className="h-8 w-8 self-start">
-                            <AvatarFallback>B</AvatarFallback>
-                        </Avatar>
-                        <div className="p-3 rounded-xl shadow bg-muted text-foreground rounded-bl-none">
-                            <p className="text-sm whitespace-pre-wrap">
-                                The futures contract for {asset.name} shows significant open interest, suggesting active participation. The current price is trading slightly above its 5-day moving average.
-                            </p>
-                        </div>
-                    </div>
-                </CollapsibleSection>
                 <Card>
                   <CardHeader>
                     <CardTitle className="flex items-center"><FileText className="h-5 w-5 mr-2 text-primary" /> Option Chain for Underlying</CardTitle>
@@ -137,6 +125,18 @@ export function FutureOrderPageContent({ asset, assetSpecificNews, onBack }: Fut
                     </div>
                   </CardContent>
                 </Card>
+                 <CollapsibleSection title="Simbot Analysis" icon={Bot} defaultOpen>
+                    <div className="flex items-start space-x-2 mr-auto justify-start max-w-[85%] sm:max-w-[75%]">
+                         <Avatar className="h-8 w-8 self-start">
+                            <AvatarFallback>B</AvatarFallback>
+                        </Avatar>
+                        <div className="p-3 rounded-xl shadow bg-muted text-foreground rounded-bl-none">
+                            <p className="text-sm whitespace-pre-wrap">
+                                The futures contract for {asset.name} shows significant open interest, suggesting active participation. The current price is trading slightly above its 5-day moving average.
+                            </p>
+                        </div>
+                    </div>
+                </CollapsibleSection>
               </TabsContent>
               
               <TabsContent value="technicals" className="mt-4 space-y-6">
@@ -255,7 +255,7 @@ export function FutureOrderPageContent({ asset, assetSpecificNews, onBack }: Fut
           </div>
         </main>
         
-        <footer className="fixed bottom-16 left-0 right-0 bg-background border-t border-border p-2 shadow-md z-20">
+        <footer className="fixed bottom-0 left-0 right-0 bg-background border-t border-border p-2 shadow-md z-20">
           <div className="w-full px-2 flex space-x-2">
             <Button 
               onClick={handleSellAction} 

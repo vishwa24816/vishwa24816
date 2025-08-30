@@ -114,7 +114,6 @@ export function CryptoOrderPageContent({ asset, assetSpecificNews, onBack }: Cry
                         <p className="text-sm text-foreground leading-relaxed">{asset.aboutCompany}</p>
                         </CollapsibleSection>
                     )}
-
                     <CollapsibleSection title="Simbot Analysis" icon={Bot} defaultOpen>
                         <div className="flex items-start space-x-2 mr-auto justify-start max-w-[85%] sm:max-w-[75%]">
                              <Avatar className="h-8 w-8 self-start">
@@ -181,7 +180,7 @@ export function CryptoOrderPageContent({ asset, assetSpecificNews, onBack }: Cry
           </div>
         </main>
         
-        <footer className="fixed bottom-16 left-0 right-0 bg-background border-t border-border p-2 shadow-md z-20">
+        <footer className="fixed bottom-0 left-0 right-0 bg-background border-t border-border p-2 shadow-md z-20">
           <div className="w-full px-2 flex space-x-2">
             <Button 
               onClick={handleSellAction} 

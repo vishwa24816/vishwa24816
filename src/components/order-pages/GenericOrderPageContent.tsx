@@ -243,19 +243,19 @@ export function GenericOrderPageContent({ asset, assetSpecificNews, onBack }: Ge
                   articles={assetSpecificNews}
                   title={`All News related to ${asset.name}`}
                   customDescription={`Browse all recent news articles for ${asset.symbol}.`}
-              />
+                />
             </TabsContent>
           </Tabs>
         </div>
       </main>
       
-      <div className="fixed bottom-16 left-0 right-0 bg-background border-t border-border p-3 shadow-md_ z-20"> {/* Sits above AppFooter (h-16) */}
+      <div className="fixed bottom-0 left-0 right-0 bg-background border-t border-border p-3 shadow-lg z-20">
         <div className="w-full px-4 flex space-x-3">
           <Button 
             onClick={handleSellAction} 
             variant="destructive" 
             className="flex-1 text-base py-3 bg-red-600 hover:bg-red-700 disabled:opacity-60 disabled:bg-red-800"
-            disabled={productTypeForOrder === 'Delivery' || productTypeForOrder === 'HODL'}
+            disabled={productTypeForOrder === 'Delivery'}
           >
             Sell
           </Button>
