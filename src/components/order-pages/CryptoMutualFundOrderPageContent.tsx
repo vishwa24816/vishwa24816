@@ -128,7 +128,7 @@ export function CryptoMutualFundOrderPageContent({ asset, assetSpecificNews, onB
                 <TabsTrigger value="rankings" className="flex-shrink-0 px-4 py-3 text-sm rounded-t-md rounded-b-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=inactive]:border-b-2 data-[state=inactive]:border-transparent data-[state=active]:shadow-none hover:text-primary">Rankings</TabsTrigger>
             </TabsList>
             <TabsContent value="about" className="mt-4 space-y-6">
-                 {asset.aboutCompany ? (
+                 {asset.aboutCompany && (
                     <Card>
                          <CardHeader>
                             <CardTitle className="flex items-center text-lg">
@@ -140,10 +140,8 @@ export function CryptoMutualFundOrderPageContent({ asset, assetSpecificNews, onB
                             <p className="text-sm text-foreground leading-relaxed">{asset.aboutCompany}</p>
                         </CardContent>
                     </Card>
-                ) : (
-                    <div className="text-center text-muted-foreground py-4">No fund description available.</div>
                 )}
-                {asset.fundManagement ? (
+                {asset.fundManagement && (
                     <Card>
                         <CardHeader>
                             <CardTitle className="flex items-center text-lg">
@@ -167,10 +165,8 @@ export function CryptoMutualFundOrderPageContent({ asset, assetSpecificNews, onB
                             </p>
                         </CardContent>
                     </Card>
-                ) : (
-                     <div className="text-center text-muted-foreground py-4">Fund management details not available.</div>
                 )}
-                {asset.topHoldings && asset.topHoldings.length > 0 ? (
+                {asset.topHoldings && asset.topHoldings.length > 0 && (
                     <Card>
                          <CardHeader>
                             <CardTitle className="flex items-center text-lg">
@@ -189,8 +185,6 @@ export function CryptoMutualFundOrderPageContent({ asset, assetSpecificNews, onB
                         </ul>
                         </CardContent>
                     </Card>
-                ) : (
-                    <div className="text-center text-muted-foreground py-4">Top holdings information is not available for this fund.</div>
                 )}
                  {(!asset.aboutCompany && !asset.fundManagement && !asset.topHoldings) && (
                     <div className="text-center text-muted-foreground py-4">Fund information is not available.</div>

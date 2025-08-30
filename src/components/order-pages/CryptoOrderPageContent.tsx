@@ -180,24 +180,24 @@ export function CryptoOrderPageContent({ asset, assetSpecificNews, onBack }: Cry
           </div>
         </main>
         
-        <footer className="fixed bottom-0 left-0 right-0 bg-background border-t border-border p-2 shadow-md z-20">
-          <div className="w-full px-2 flex space-x-2">
-            <Button 
-              onClick={handleSellAction} 
-              variant="destructive" 
-              className="flex-1 text-sm py-2 h-auto bg-red-600 hover:bg-red-700"
-            >
-              Sell
-            </Button>
-            <Button 
-              onClick={handleBuyAction} 
-              className="flex-1 text-sm py-2 h-auto bg-green-600 hover:bg-green-700 text-white"
-            >
-              Buy
-            </Button>
-          </div>
-          <SimbotInputBar onNavigateRequest={onBack as any} />
-        </footer>
+      <footer className="fixed bottom-0 left-0 right-0 bg-background border-t border-border p-2 shadow-md z-20">
+        <div className="w-full px-2 flex space-x-2">
+          <Button 
+            onClick={handleSellAction} 
+            variant="destructive" 
+            className="flex-1 text-sm py-2 h-auto bg-red-600 hover:bg-red-700"
+          >
+            Sell
+          </Button>
+          <Button 
+            onClick={handleBuyAction} 
+            className="flex-1 text-sm py-2 h-auto bg-green-600 hover:bg-green-700 text-white"
+          >
+            Buy
+          </Button>
+        </div>
+        <SimbotInputBar onNavigateRequest={onBack as any} />
+      </footer>
       </div>
   );
 }

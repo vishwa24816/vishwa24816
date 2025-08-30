@@ -207,7 +207,7 @@ export function MutualFundOrderPageContent({ asset, assetSpecificNews, onBack, i
             </TabsContent>
             <TabsContent value="calculator" className="mt-4">
               {asset.annualisedReturn ? (
-                  <ReturnCalculator defaultReturnRate={asset.annualisedReturn} />
+                  <ReturnCalculator defaultReturnRate={asset.annualisedReturn} currency="INR" />
               ) : (
                   <div className="text-center text-muted-foreground py-4">Return rate not available for this fund.</div>
               )}
