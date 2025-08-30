@@ -22,25 +22,18 @@ interface StockOrderPageContentProps {
   assetSpecificNews: NewsArticle[];
   onBack: () => void;
   initialDetails: InitialOrderDetails | null;
+  productType: string;
+  onProductTypeChange: (value: string) => void;
 }
 
-export function StockOrderPageContent({ asset, assetSpecificNews, onBack, initialDetails }: StockOrderPageContentProps) {
+export function StockOrderPageContent({ asset, assetSpecificNews, onBack, initialDetails, productType, onProductTypeChange }: StockOrderPageContentProps) {
   const { toast } = useToast();
   
   const [activeTimescale, setActiveTimescale] = useState('1D');
   const [activeFinancialsCategory, setActiveFinancialsCategory] = useState<'revenue' | 'profit' | 'netWorth'>('revenue');
-  const [productTypeForOrder, setProductTypeForOrder] = useState('Delivery');
   
   const isUsStock = asset.exchange === 'NASDAQ' || asset.exchange === 'NYSE';
   const currencySymbol = isUsStock ? '$' : '₹';
-
-  const handleBuyAction = () => {
-    toast({ title: "Buy Action (Mock)", description: `Initiating BUY for ${asset?.symbol} with product type: ${productTypeForOrder}` });
-  };
-
-  const handleSellAction = () => {
-    toast({ title: "Sell Action (Mock)", description: `Initiating SELL for ${asset?.symbol} with product type: ${productTypeForOrder}` });
-  };
 
   const isPositiveChange = asset.change >= 0;
   const timescaleButtons = [isUsStock ? 'NASDAQ' : 'NSE', '1D', '1W', '1M', '1Y', '5Y', 'ALL'];
@@ -105,10 +98,10 @@ export function StockOrderPageContent({ asset, assetSpecificNews, onBack, initia
               ))}
             </div>
             
-            <OrderPlacementForm asset={asset} productType={productTypeForOrder} onProductTypeChange={setProductTypeForOrder} assetType="stock" initialDetails={initialDetails}/>
+            <OrderPlacementForm asset={asset} productType={productType} onProductTypeChange={onProductTypeChange} assetType="stock" initialDetails={initialDetails}/>
 
             <Tabs defaultValue="overview" className="w-full">
-              <TabsList className="w-full bg-muted/30 flex overflow-x-auto whitespace-nowrap no-scrollbar rounded-none p-0 h-auto border-b mb-1">
+              <TabsList className="bg-muted/30 flex overflow-x-auto whitespace-nowrap no-scrollbar rounded-none p-0 h-auto border-b">
                 <TabsTrigger value="overview" className="flex-shrink-0 px-4 py-3 text-sm rounded-t-md rounded-b-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=inactive]:border-b-2 data-[state=inactive]:border-transparent data-[state=active]:shadow-none hover:text-primary">Overview</TabsTrigger>
                 <TabsTrigger value="fundamentals" className="flex-shrink-0 px-4 py-3 text-sm rounded-t-md rounded-b-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=inactive]:border-b-2 data-[state=inactive]:border-transparent data-[state=active]:shadow-none hover:text-primary">Fundamentals</TabsTrigger>
                 <TabsTrigger value="financials" className="flex-shrink-0 px-4 py-3 text-sm rounded-t-md rounded-b-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=inactive]:border-b-2 data-[state=inactive]:border-transparent data-[state=active]:shadow-none hover:text-primary">Financials</TabsTrigger>

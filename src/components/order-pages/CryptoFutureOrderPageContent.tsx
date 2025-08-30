@@ -28,14 +28,6 @@ export function CryptoFutureOrderPageContent({ asset, assetSpecificNews, onBack 
   // For crypto futures/options, productType is not applicable.
   const [productTypeForOrder, setProductTypeForOrder] = useState('');
 
-  const handleBuyAction = () => {
-    toast({ title: "Buy Action (Mock)", description: `Initiating BUY for ${asset?.symbol}.` });
-  };
-
-  const handleSellAction = () => {
-    toast({ title: "Sell Action (Mock)", description: `Initiating SELL for ${asset?.symbol}.` });
-  };
-
   const isPositiveChange = asset.change >= 0;
   const timescaleButtons = ['24H', '1D', '1W', '1M', '1Y', 'ALL'];
   

@@ -17,6 +17,10 @@ import { AnalyticsPageContent } from '@/components/analytics/AnalyticsPageConten
 import { AppFooter } from '@/components/shared/AppFooter';
 import type { Stock } from '@/types';
 import { OrderPageDispatcher } from '@/components/order/OrderPageDispatcher';
+import { SimbotInputBar } from '@/components/simbot/SimbotInputBar';
+import { OrderPageFooter } from '@/components/shared/OrderPageFooter';
+import { cn } from '@/lib/utils';
+
 
 export type MainView = 'home' | 'orders' | 'simbot' | 'screener' | 'community' | 'asset_order' | 'analytics';
 
@@ -37,7 +41,8 @@ export default function DashboardRouterPage() {
   const [walletMode, setWalletMode] = useState<WalletMode>('hot');
   const [selectedAsset, setSelectedAsset] = useState<Stock | null>(null);
   const [initialOrderDetails, setInitialOrderDetails] = useState<InitialOrderDetails | null>(null);
-  
+  const [productTypeForOrder, setProductTypeForOrder] = useState('Delivery');
+
   const handleModeChange = (mode: 'Portfolio' | 'Fiat' | 'Wealth' | 'Crypto' | 'Web3') => {
       if (isRealMode && mode === 'Fiat') {
           setActiveMode('Portfolio'); // Default to portfolio in real mode if Fiat is clicked
@@ -82,7 +87,13 @@ export default function DashboardRouterPage() {
       );
   }
   
-  const showModeSwitcher = !['orders', 'screener', 'simbot', 'analytics', 'asset_order'].includes(activeMainView);
+  const showModeSwitcher = !['orders', 'screener', 'simbot', 'analytics'].includes(activeMainView);
+
+  const getPaddingBottom = () => {
+    if (activeMainView === 'asset_order') return 'pb-[120px]'; // Space for OrderPageFooter
+    if (activeMainView !== 'simbot') return 'pb-[120px]'; // Space for AppFooter with Simbot
+    return 'pb-[60px]'; // Space for AppFooter without Simbot
+  }
 
   const renderContent = () => {
     switch (activeMainView) {
@@ -104,7 +115,7 @@ export default function DashboardRouterPage() {
         return <AnalyticsPageContent />;
       case 'asset_order':
         if (selectedAsset) {
-          return <OrderPageDispatcher asset={selectedAsset} onBack={() => handleNavigate(previousMainView)} initialDetails={initialOrderDetails} />;
+          return <OrderPageDispatcher asset={selectedAsset} onBack={() => handleNavigate(previousMainView)} initialDetails={initialOrderDetails} productType={productTypeForOrder} onProductTypeChange={setProductTypeForOrder} />;
         }
         // Fallback to home if no asset is selected
         return isRealMode ? <RealDashboard activeMode={activeMode} walletMode={walletMode} setWalletMode={setWalletMode} onAssetClick={handleAssetClick} /> : <DemoDashboard activeMode={activeMode} onModeChange={handleModeChange} walletMode={walletMode} setWalletMode={setWalletMode} onAssetClick={handleAssetClick}/>;
@@ -115,7 +126,7 @@ export default function DashboardRouterPage() {
 
   return (
     <ProtectedRoute>
-      <div className="flex flex-col min-h-screen pb-28">
+      <div className="flex flex-col h-screen">
         <AppHeader 
           activeMode={activeMode}
           onModeChange={showModeSwitcher ? handleModeChange : undefined}
@@ -123,9 +134,19 @@ export default function DashboardRouterPage() {
           walletMode={walletMode}
           onNavigate={handleNavigate}
         />
-        {renderContent()}
+        <div className={cn("flex-grow overflow-y-auto", getPaddingBottom())}>
+            {renderContent()}
+        </div>
       </div>
-      <AppFooter activeView={activeMainView} onNavigate={handleNavigate} onNavigateRequest={handleAssetClick} />
+      {activeMainView === 'asset_order' ? (
+        <OrderPageFooter 
+          asset={selectedAsset}
+          productType={productTypeForOrder}
+          onNavigateRequest={handleAssetClick}
+        />
+      ) : (
+         <AppFooter activeView={activeMainView} onNavigate={handleNavigate} />
+      )}
     </ProtectedRoute>
   );
 }

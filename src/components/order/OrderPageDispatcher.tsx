@@ -18,6 +18,8 @@ interface OrderPageDispatcherProps {
   asset: Stock;
   onBack: () => void;
   initialDetails: InitialOrderDetails | null;
+  productType: string;
+  onProductTypeChange: (value: string) => void;
 }
 
 // Helper to get relevant news. This could be moved to a shared utility.
@@ -43,7 +45,7 @@ function getRelevantNewsForAsset(stock: Stock | null, allNews: typeof mockNewsAr
 }
 
 
-export function OrderPageDispatcher({ asset, onBack, initialDetails }: OrderPageDispatcherProps) {
+export function OrderPageDispatcher({ asset, onBack, initialDetails, productType, onProductTypeChange }: OrderPageDispatcherProps) {
   const assetSpecificNews = getRelevantNewsForAsset(asset, mockNewsArticles);
 
   if (!asset.exchange) {
@@ -78,7 +80,7 @@ export function OrderPageDispatcher({ asset, onBack, initialDetails }: OrderPage
   }
 
   if (exchange === 'nse' || exchange === 'bse' || exchange === 'nasdaq' || exchange === 'nyse') {
-    return <StockOrderPageContent asset={asset} assetSpecificNews={assetSpecificNews} onBack={onBack} initialDetails={initialDetails} />;
+    return <StockOrderPageContent asset={asset} assetSpecificNews={assetSpecificNews} onBack={onBack} initialDetails={initialDetails} productType={productType} onProductTypeChange={onProductTypeChange}/>;
   }
   
   // Fallback for any other types
