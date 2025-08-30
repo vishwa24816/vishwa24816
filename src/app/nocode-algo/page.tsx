@@ -102,8 +102,6 @@ const NodePalette = ({ onNodeClick }: { onNodeClick: (type: NodeTypeKey) => void
 
 const NocodeAlgoEditor = () => {
     const { user } = useAuth();
-    const isRealMode = user?.id === 'REAL456';
-    const [activeMode, setActiveMode] = useState<'Fiat' | 'Crypto'>(isRealMode ? 'Crypto' : 'Fiat');
     const { toast } = useToast();
     
     const [nodes, setNodes] = useState<Node[]>(initialNodes);
@@ -183,7 +181,7 @@ const NocodeAlgoEditor = () => {
 
   return (
       <div className="flex flex-col h-screen bg-background text-foreground">
-        <AppHeader activeMode={activeMode} onModeChange={setActiveMode} isRealMode={isRealMode} />
+        <AppHeader />
         <main className="flex-grow flex flex-row overflow-hidden">
             <div className="flex-grow h-full relative" onDrop={onDrop} onDragOver={onDragOver}>
                 <ReactFlow

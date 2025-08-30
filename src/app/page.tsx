@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect } from 'react';
@@ -109,13 +110,15 @@ export default function DashboardRouterPage() {
         return null;
     }
   }
+
+  const showModeSwitcher = activeMainView === 'home' || activeMainView === 'community';
   
   return (
     <ProtectedRoute>
       <div className="flex flex-col min-h-screen pb-14">
         <AppHeader 
           activeMode={activeMode}
-          onModeChange={handleModeChange}
+          onModeChange={showModeSwitcher ? handleModeChange : undefined}
           isRealMode={isRealMode}
           walletMode={walletMode}
           onNavigate={handleNavigate}

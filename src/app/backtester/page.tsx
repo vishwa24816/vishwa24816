@@ -20,8 +20,6 @@ import {
 
 export default function BacktesterPage() {
     const { user } = useAuth();
-    const isRealMode = user?.id === 'REAL456';
-    const [activeMode, setActiveMode] = useState<'Fiat' | 'Crypto'>(isRealMode ? 'Crypto' : 'Fiat');
     const [strategy, setStrategy] = useState("WHEN SMA(50) crosses above SMA(200)\nBUY 1 BTC\n\nWHEN SMA(50) crosses below SMA(200)\nSELL ALL");
     const [isBacktesting, setIsBacktesting] = useState(false);
     const [backtestResult, setBacktestResult] = useState<any>(null);
@@ -50,11 +48,7 @@ export default function BacktesterPage() {
     return (
         <ProtectedRoute>
             <div className="flex flex-col min-h-screen bg-background text-foreground">
-                <AppHeader 
-                    isRealMode={isRealMode} 
-                    activeMode={activeMode} 
-                    onModeChange={setActiveMode} 
-                />
+                <AppHeader />
                 <main className="flex-grow container mx-auto p-4 sm:p-6 lg:p-8">
                     <div className="max-w-4xl mx-auto">
                         <h1 className="text-3xl font-bold mb-6">Strategy Backtester</h1>
