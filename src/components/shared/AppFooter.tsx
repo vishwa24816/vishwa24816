@@ -1,4 +1,3 @@
-
 "use client";
 
 import { Home, ClipboardList, Bot, Filter, Users } from 'lucide-react';
@@ -21,7 +20,7 @@ const NavItem: React.FC<NavItemProps> = ({ view, icon: Icon, label, isActive, on
       variant="ghost"
       onClick={() => onNavigate(view)}
       className={cn(
-        "flex flex-col items-center justify-center space-y-1 p-2 rounded-md transition-colors w-1/5 h-full",
+        "flex flex-col items-center justify-center space-y-1 p-2 rounded-md transition-colors w-full h-full",
         isActive ? "text-primary bg-primary/10" : "text-muted-foreground hover:text-primary hover:bg-primary/5"
       )}
       aria-current={isActive ? "page" : undefined}
@@ -34,12 +33,15 @@ const NavItem: React.FC<NavItemProps> = ({ view, icon: Icon, label, isActive, on
 
 const CenterNavItem: React.FC<NavItemProps> = ({ view, icon: Icon, label, isActive, onNavigate }) => {
     return (
-        <div className="relative flex justify-center">
+      // This outer div acts as a flex item to take up space in the main nav,
+      // while the inner button is absolutely positioned relative to it.
+      // This is a robust way to center the item without breaking the flex layout.
+        <div className="relative w-1/5 h-full flex justify-center">
             <Button
                 variant="default"
                 onClick={() => onNavigate(view)}
                 className={cn(
-                    "absolute -top-6 flex flex-col items-center justify-center space-y-1 h-16 w-16 rounded-full shadow-lg transition-transform hover:scale-105",
+                    "absolute -top-7 flex flex-col items-center justify-center space-y-1 h-16 w-16 rounded-full shadow-lg transition-transform hover:scale-105",
                     isActive ? "bg-primary text-primary-foreground" : "bg-primary/90 text-primary-foreground"
                 )}
                 aria-current={isActive ? "page" : undefined}
@@ -72,7 +74,9 @@ export function AppFooter({ activeView, onNavigate }: AppFooterProps) {
     <footer className="fixed bottom-0 left-0 right-0 z-40 bg-card border-t border-border rounded-t-2xl shadow-lg">
       <nav className="mx-auto flex h-14 items-stretch justify-around">
         {navItemsLeft.map((item) => (
-          <NavItem key={item.label} {...item} isActive={activeView === item.view} onNavigate={onNavigate} />
+          <div key={item.label} className="w-1/5">
+            <NavItem {...item} isActive={activeView === item.view} onNavigate={onNavigate} />
+          </div>
         ))}
          <CenterNavItem 
             view="simbot"
@@ -82,7 +86,9 @@ export function AppFooter({ activeView, onNavigate }: AppFooterProps) {
             onNavigate={onNavigate}
         />
         {navItemsRight.map((item) => (
-          <NavItem key={item.label} {...item} isActive={activeView === item.view} onNavigate={onNavigate} />
+           <div key={item.label} className="w-1/5">
+            <NavItem {...item} isActive={activeView === item.view} onNavigate={onNavigate} />
+          </div>
         ))}
       </nav>
     </footer>
