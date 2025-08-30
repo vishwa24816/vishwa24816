@@ -64,7 +64,6 @@ export default function ProfilePage() {
   const router = useRouter();
   const isRealMode = user?.id === 'REAL456';
   
-  const [activeMode, setActiveMode] = useState<'Fiat' | 'Crypto'>(isRealMode ? 'Crypto' : 'Fiat');
   const [platformCurrency, setPlatformCurrency] = useState('INR');
   const [simbotVoice, setSimbotVoice] = useState('indian_man');
   const [walletAutomation, setWalletAutomation] = useState('manual');
@@ -282,8 +281,6 @@ export default function ProfilePage() {
       <div className="flex flex-col min-h-screen bg-background">
         <AppHeader 
             isRealMode={isRealMode} 
-            activeMode={activeMode} 
-            onModeChange={setActiveMode} 
         />
         <main className="flex-grow container mx-auto p-4 sm:p-6 lg:p-8">
           <Card className="w-full max-w-2xl mx-auto shadow-lg">
