@@ -28,7 +28,7 @@ const NavItem: React.FC<NavItemProps> = ({ view, icon: Icon, label, isActive, on
       )}
       aria-current={isActive ? "page" : undefined}
     >
-      <Icon className="h-6 w-6" />
+      <Icon className="h-5 w-5" />
       <span className="text-xs font-medium">{label}</span>
     </Button>
   );
@@ -50,7 +50,7 @@ export function AppFooter({ activeView, onNavigate }: AppFooterProps) {
 
   return (
     <footer className="fixed bottom-0 left-0 right-0 z-40 bg-card border-t border-border rounded-t-2xl shadow-lg">
-      <nav className="mx-auto flex h-16 items-stretch justify-around">
+      <nav className="mx-auto flex h-14 items-stretch justify-around">
         {navItems.map((item) => (
           <NavItem key={item.label} {...item} isActive={activeView === item.view} onNavigate={onNavigate} />
         ))}

@@ -1,5 +1,4 @@
 
-
 "use client";
 
 import React, { useState, useEffect, useMemo } from 'react';
@@ -85,7 +84,7 @@ export function AppHeader({ activeMode, onModeChange, isRealMode, walletMode, on
     // Skeleton loader
     return (
       <header className="bg-primary text-primary-foreground shadow-md sticky top-0 z-50">
-        <div className="container mx-auto flex h-20 items-center justify-between px-4 sm:px-6 lg:px-8">
+        <div className="container mx-auto flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
           <div className="h-9 w-9 bg-primary-foreground/10 rounded-md animate-pulse"></div>
           <div className="flex-1 h-9 bg-primary-foreground/10 rounded-md animate-pulse ml-4"></div>
           <div className="flex items-center space-x-1 sm:space-x-2 ml-4">
@@ -99,7 +98,7 @@ export function AppHeader({ activeMode, onModeChange, isRealMode, walletMode, on
   return (
     <header className="bg-primary text-primary-foreground shadow-lg sticky top-0 z-50 rounded-b-2xl">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex h-20 items-center justify-between gap-4">
+        <div className="flex h-16 items-center justify-between gap-4">
             <div className="flex items-center space-x-2 sm:space-x-4">
                 <SideMenu onNavigate={onNavigate} />
             </div>
@@ -175,5 +174,3 @@ export function AppHeader({ activeMode, onModeChange, isRealMode, walletMode, on
     </header>
   );
 }
-
-    

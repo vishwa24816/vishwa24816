@@ -112,7 +112,7 @@ export default function DashboardRouterPage() {
   
   return (
     <ProtectedRoute>
-      <div className="flex flex-col min-h-screen pb-16">
+      <div className="flex flex-col min-h-screen pb-14">
         <AppHeader 
           activeMode={activeMode}
           onModeChange={handleModeChange}
