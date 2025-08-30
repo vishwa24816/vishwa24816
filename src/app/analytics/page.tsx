@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect } from 'react';
@@ -235,5 +236,16 @@ export function SideMenu({ onNavigate }: { onNavigate?: (view: MainView) => void
         </div>
       </SheetContent>
     </Sheet>
+  );
+}
+
+// Wrapping the SideMenu in a default-exported page component
+export default function AnalyticsPage() {
+  return (
+    <div>
+      <h1>Analytics Page</h1>
+      <p>This page exists, but its main functionality is integrated into the dashboard view.</p>
+      {/* You can add more placeholder content here if needed */}
+    </div>
   );
 }
