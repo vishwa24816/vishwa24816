@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Mail, ChevronRight, User, ShieldCheck, Banknote, Users, UserX, Lock, Wallet, LifeBuoy, FileText, Star, Gift, Info, Briefcase, ChevronDown, Palette, Languages, AudioLines } from 'lucide-react';
+import { Mail, ChevronRight, User, ShieldCheck, Banknote, Users, UserX, Lock, Wallet, LifeBuoy, FileText, Star, Gift, Info, Briefcase, ChevronDown, Palette, Languages, AudioLines, Repeat } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { useRouter } from 'next/navigation';
@@ -67,6 +67,7 @@ export default function ProfilePage() {
   const [activeMode, setActiveMode] = useState<'Fiat' | 'Crypto'>(isRealMode ? 'Crypto' : 'Fiat');
   const [platformCurrency, setPlatformCurrency] = useState('INR');
   const [simbotVoice, setSimbotVoice] = useState('indian_man');
+  const [walletAutomation, setWalletAutomation] = useState('manual');
   
   const themeOptions = [
       { value: 'blue', label: 'Blue' },
@@ -167,6 +168,25 @@ export default function ProfilePage() {
             </RadioGroup>
         </ExpandableProfileItem>
       )
+    },
+    {
+        icon: Repeat,
+        title: "Wallet Automation",
+        description: "Manage automatic wallet transfers and settings",
+        component: (
+            <ExpandableProfileItem icon={Repeat} title="Wallet Automation" description="Manage automatic wallet transfers and settings">
+                <RadioGroup value={walletAutomation} onValueChange={setWalletAutomation} className="space-y-2">
+                    <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="manual" id="automation-manual" />
+                        <Label htmlFor="automation-manual" className="font-normal">Manual</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="automatic" id="automation-automatic" />
+                        <Label htmlFor="automation-automatic" className="font-normal">Automatic</Label>
+                    </div>
+                </RadioGroup>
+            </ExpandableProfileItem>
+        )
     },
     {
       icon: LifeBuoy,
