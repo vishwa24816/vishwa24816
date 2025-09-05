@@ -46,6 +46,10 @@ import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
 import { CustomNode } from '@/components/nocode-algo/CustomNode';
+import { SimbotInputBar } from '@/components/simbot/SimbotInputBar';
+import type { Stock, InitialOrderDetails } from '@/types';
+import { useRouter } from 'next/navigation';
+
 
 const initialNodes: Node[] = [
   {
@@ -103,6 +107,7 @@ const NodePalette = ({ onNodeClick }: { onNodeClick: (type: NodeTypeKey) => void
 const NocodeAlgoEditor = () => {
     const { user } = useAuth();
     const { toast } = useToast();
+    const router = useRouter();
     
     const [nodes, setNodes] = useState<Node[]>(initialNodes);
     const [edges, setEdges] = useState<Edge[]>([]);
@@ -177,12 +182,16 @@ const NocodeAlgoEditor = () => {
             })
         );
     };
+    
+    const handleSimbotNavigation = (asset: Stock, details?: InitialOrderDetails) => {
+      router.push(`/order/stock/${asset.symbol}`);
+    };
 
 
   return (
       <div className="flex flex-col h-screen bg-background text-foreground">
         <AppHeader />
-        <main className="flex-grow flex flex-row overflow-hidden">
+        <main className="flex-grow flex flex-row overflow-hidden relative">
             <div className="flex-grow h-full relative" onDrop={onDrop} onDragOver={onDragOver}>
                 <ReactFlow
                     nodes={nodes}
@@ -228,6 +237,9 @@ const NocodeAlgoEditor = () => {
                     </Button>
                 </div>
             </div>
+             <footer className="absolute bottom-0 left-0 right-0 bg-background/80 backdrop-blur-sm border-t p-2">
+                <SimbotInputBar onNavigateRequest={handleSimbotNavigation} />
+            </footer>
         </main>
       </div>
   );
