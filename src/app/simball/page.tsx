@@ -76,7 +76,6 @@ const leaderboardData = [
 export default function SimballPage() {
     const { user } = useAuth();
     const isRealMode = user?.id === 'REAL456';
-    const [activeMode, setActiveMode] = useState<'Portfolio' | 'Fiat' | 'Crypto' | 'Web3'>(isRealMode ? 'Crypto' : 'Portfolio');
     const [activeGameBrokerage, setActiveGameBrokerage] = useState<number | null>(null);
 
     const handlePlayGame = (brokerage: number) => {
@@ -92,8 +91,6 @@ export default function SimballPage() {
     <ProtectedRoute>
       <div className="flex flex-col min-h-screen bg-background text-foreground">
         <AppHeader
-          activeMode={activeMode}
-          onModeChange={setActiveMode}
           isRealMode={isRealMode}
         />
         <main className="flex-grow container mx-auto p-4 sm:p-6 lg:p-8 space-y-8">

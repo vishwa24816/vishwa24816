@@ -65,16 +65,11 @@ const ReportCard = ({ report }: { report: ReportInfo; }) => {
 export default function TaxyPage() {
   const { user } = useAuth();
   const isRealMode = user?.id === 'REAL456';
-  const [activeMode, setActiveMode] = useState<'Fiat' | 'Crypto'>(isRealMode ? 'Crypto' : 'Fiat');
   
   return (
     <ProtectedRoute>
       <div className="flex flex-col min-h-screen bg-background text-foreground">
-        <AppHeader 
-            isRealMode={isRealMode} 
-            activeMode={activeMode} 
-            onModeChange={setActiveMode} 
-        />
+        <AppHeader isRealMode={isRealMode} />
         <main className="flex-grow container mx-auto p-4 sm:p-6 lg:p-8">
             <div className="flex flex-col sm:flex-row justify-between sm:items-center mb-6 gap-4">
                 <h1 className="text-3xl font-bold text-foreground">Tax Reports</h1>

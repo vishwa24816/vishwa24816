@@ -18,7 +18,6 @@ import {
 } from 'lucide-react';
 
 const SupportPage = () => {
-    const [activeMode, setActiveMode] = useState<'Portfolio' | 'Fiat' | 'Crypto' | 'Web3' | 'Wealth'>('Portfolio');
     
     const contactMethods = [
         {
@@ -40,11 +39,7 @@ const SupportPage = () => {
   return (
     <ProtectedRoute>
       <div className="flex flex-col min-h-screen bg-background text-foreground">
-        <AppHeader
-            activeMode={activeMode}
-            onModeChange={setActiveMode}
-            isRealMode={false}
-        />
+        <AppHeader isRealMode={false} />
         <main className="flex-grow p-4 sm:p-6 lg:p-8">
             <h1 className="text-2xl font-bold mb-6">Contact us 24x7</h1>
             
