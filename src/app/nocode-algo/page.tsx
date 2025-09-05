@@ -191,7 +191,7 @@ const NocodeAlgoEditor = () => {
   return (
       <div className="flex flex-col h-screen bg-background text-foreground">
         <AppHeader />
-        <main className="flex-grow flex flex-row overflow-hidden relative">
+        <main className="flex-grow flex flex-col overflow-hidden">
             <div className="flex-grow h-full relative" onDrop={onDrop} onDragOver={onDragOver}>
                 <ReactFlow
                     nodes={nodes}
@@ -237,7 +237,7 @@ const NocodeAlgoEditor = () => {
                     </Button>
                 </div>
             </div>
-             <footer className="absolute bottom-0 left-0 right-0 bg-background/80 backdrop-blur-sm border-t p-2">
+             <footer className="bg-background/80 backdrop-blur-sm border-t p-2">
                 <SimbotInputBar onNavigateRequest={handleSimbotNavigation} />
             </footer>
         </main>
