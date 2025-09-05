@@ -204,8 +204,8 @@ const NocodeAlgoEditor = () => {
                     onNodeClick={onNodeClick}
                 >
                     <Background />
-                    <Controls />
-                    <MiniMap />
+                    <Controls position="bottom-left"/>
+                    <MiniMap position="bottom-left" className="!bg-background !border-border !rounded-md" />
                 </ReactFlow>
 
                 <div className="absolute top-4 left-4">
