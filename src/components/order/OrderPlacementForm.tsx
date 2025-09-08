@@ -105,6 +105,7 @@ const StockOrderForm = ({ asset, assetType, productType, onProductTypeChange, in
     const { toast } = useToast();
     const [quantity, setQuantity] = useState<number | string>(initialDetails?.quantity || 1);
     const [price, setPrice] = useState<number | string>(asset?.price?.toFixed(2) || '');
+    const [triggerPrice, setTriggerPrice] = useState('');
     const isUsStock = asset.exchange === 'NASDAQ' || asset.exchange === 'NYSE';
     const [selectedExchange, setSelectedExchange] = useState<'BSE' | 'NSE' | 'NASDAQ' | 'NYSE'>(isUsStock ? (asset.exchange || 'NASDAQ') : 'NSE');
     const [orderMode, setOrderMode] = useState('Regular');
@@ -150,12 +151,23 @@ const StockOrderForm = ({ asset, assetType, productType, onProductTypeChange, in
                 <div className="flex items-center space-x-2"> <RadioGroupItem value="Intraday" id="intraday-stock" /> <Label htmlFor="intraday-stock" className="font-normal">Intraday</Label> </div>
                 <div className="flex items-center space-x-2"> <RadioGroupItem value="Delivery" id="delivery-stock" /> <Label htmlFor="delivery-stock" className="font-normal">Delivery</Label> </div>
                 <div className="flex items-center space-x-2"> <RadioGroupItem value="HODL" id="hodl-stock" /> <Label htmlFor="hodl-stock" className="font-normal">HODL</Label> </div>
+                <div className="flex items-center space-x-2"> <RadioGroupItem value="GTT" id="gtt-stock" /> <Label htmlFor="gtt-stock" className="font-normal">GTT</Label> </div>
             </RadioGroup>
 
             <div className="grid grid-cols-2 gap-4 items-end">
                 <div> <Label htmlFor="qty-stock">Qty.</Label> <Input id="qty-stock" type="number" value={quantity} onChange={(e) => setQuantity(e.target.value)} min="1" step="1"/> </div>
-                <div> <Label htmlFor="price-stock">Price</Label> <Input id="price-stock" type="text" value={price} onChange={(e) => setPrice(e.target.value)} disabled={orderType === 'Market'} /> </div>
+                 <div>
+                    <Label htmlFor="price-stock">Price</Label>
+                    <Input id="price-stock" type="text" value={price} onChange={(e) => setPrice(e.target.value)} disabled={orderType === 'Market'} />
+                </div>
             </div>
+            
+            {productType === 'GTT' && (
+                 <div className="space-y-2 animate-accordion-down">
+                    <Label htmlFor="trigger-price-stock">Trigger Price</Label>
+                    <Input id="trigger-price-stock" type="number" placeholder="e.g. 2400.00" value={triggerPrice} onChange={(e) => setTriggerPrice(e.target.value)} />
+                </div>
+            )}
 
             {productType === 'HODL' && (
                 <div className="space-y-2 pt-2 animate-accordion-down">
