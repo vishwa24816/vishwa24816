@@ -23,11 +23,13 @@ import {
     mockWeb3Holdings
 } from '@/lib/mockData';
 import { useRouter } from 'next/navigation';
+import { GttOrdersDisplay } from './GttOrdersDisplay';
 
 const demoOrderTabs = [
   { value: "limit", label: "Limit" },
   { value: "bids", label: "Bids" },
   { value: "hodl", label: "HODL" },
+  { value: "gtt", label: "GTT" },
   { value: "baskets", label: "Baskets" },
   { value: "sips", label: "SIPs" },
   { value: "alerts", label: "Alerts" },
@@ -36,6 +38,7 @@ const demoOrderTabs = [
 const realOrderTabs = [
   { value: "limit", label: "Limit" },
   { value: "hodl", label: "HODL" },
+  { value: "gtt", label: "GTT" },
   { value: "baskets", label: "Baskets" },
   { value: "sips", label: "SIPs" },
   { value: "alerts", label: "Alerts" },
@@ -96,6 +99,9 @@ export function OrdersPageContent({ activeMode, onAssetClick }: { activeMode: 'P
               </TabsContent>
               <TabsContent value="hodl" className="flex-grow flex flex-col mt-0 data-[state=inactive]:hidden">
                 <HodlOrdersDisplay />
+              </TabsContent>
+              <TabsContent value="gtt" className="flex-grow flex flex-col mt-0 data-[state=inactive]:hidden">
+                <GttOrdersDisplay isRealMode={isRealMode} />
               </TabsContent>
               <TabsContent value="baskets" className="flex-grow flex flex-col mt-0 data-[state=inactive]:hidden">
                 <BasketsDisplay isRealMode={isRealMode} />
