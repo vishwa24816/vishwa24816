@@ -94,8 +94,14 @@ export default function DashboardRouterPage() {
     selectedAsset?.exchange?.toLowerCase().includes('mf') === false &&
     selectedAsset?.exchange?.toLowerCase().includes('bond') === false;
 
+  const shouldShowSimbotOnlyFooter = 
+    activeMainView === 'asset_order' &&
+    (selectedAsset?.exchange?.toLowerCase().includes('mf') === true ||
+     selectedAsset?.exchange?.toLowerCase().includes('bond') === true);
+
   const getPaddingBottom = () => {
     if (shouldShowOrderFooter) return 'pb-[120px]'; // Space for OrderPageFooter
+    if (shouldShowSimbotOnlyFooter) return 'pb-[60px]'; // Space for Simbot only footer
     if (activeMainView !== 'simbot') return 'pb-[120px]'; // Space for AppFooter with Simbot
     return 'pb-[60px]'; // Space for AppFooter without Simbot
   }
@@ -149,7 +155,11 @@ export default function DashboardRouterPage() {
           productType={productTypeForOrder}
           onNavigateRequest={handleAssetClick}
         />
-      ) : activeMainView !== 'asset_order' ? ( // Don't show app footer on MF/Bond pages
+      ) : shouldShowSimbotOnlyFooter ? (
+        <footer className="fixed bottom-0 left-0 right-0 z-40 bg-card border-t border-border rounded-t-2xl shadow-lg p-2">
+            <SimbotInputBar onNavigateRequest={handleAssetClick} />
+        </footer>
+      ) : activeMainView !== 'asset_order' ? (
          <AppFooter activeView={activeMainView} onNavigate={handleNavigate} />
       ) : null}
     </ProtectedRoute>
