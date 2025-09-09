@@ -19,6 +19,10 @@ import { BulkBlockDealsDisplay } from '@/components/markets/BulkBlockDealsDispla
 import { EarningsCallsDisplay } from '@/components/markets/EarningsCallsDisplay';
 import { InsightsDisplay } from '@/components/markets/InsightsDisplay';
 import { Skeleton } from '@/components/ui/skeleton';
+import { OrderPageDispatcher } from '@/components/order/OrderPageDispatcher';
+import type { Stock } from '@/types';
+import type { InitialOrderDetails } from '@/app/page';
+
 
 const marketMoversCategories: MoverCategory[] = [
     { title: "Top Gainers", type: 'gainers' },
@@ -36,6 +40,9 @@ function MarketsPageContent() {
     
     const [activeMode, setActiveMode] = useState<'Fiat' | 'Crypto'>('Fiat');
     const [activeTab, setActiveTab] = useState(initialTab);
+    const [selectedAsset, setSelectedAsset] = useState<Stock | null>(null);
+    const [initialOrderDetails, setInitialOrderDetails] = useState<InitialOrderDetails | null>(null);
+    const [productTypeForOrder, setProductTypeForOrder] = useState('Delivery');
     
     useEffect(() => {
         const tab = searchParams.get('tab');
@@ -44,6 +51,36 @@ function MarketsPageContent() {
             setActiveTab(tab);
         }
     }, [searchParams]);
+
+    const handleAssetClick = (asset: Stock, details?: InitialOrderDetails) => {
+        setSelectedAsset(asset);
+        setInitialOrderDetails(details || null);
+    };
+    
+    const handleBack = () => {
+        setSelectedAsset(null);
+    }
+
+    if(selectedAsset) {
+        return (
+             <ProtectedRoute>
+                <div className="flex flex-col min-h-screen">
+                    <AppHeader 
+                        isRealMode={false} 
+                        activeMode={activeMode} 
+                        onModeChange={setActiveMode} 
+                    />
+                    <OrderPageDispatcher 
+                        asset={selectedAsset}
+                        onBack={handleBack}
+                        initialDetails={initialOrderDetails}
+                        productType={productTypeForOrder}
+                        onProductTypeChange={setProductTypeForOrder}
+                    />
+                </div>
+            </ProtectedRoute>
+        )
+    }
 
     return (
         <ProtectedRoute>
@@ -77,6 +114,7 @@ function MarketsPageContent() {
                                         title={category.title}
                                         category={category.type}
                                         stocks={mockStocks}
+                                        onAssetClick={handleAssetClick}
                                     />
                                 ))}
                                 <FiiDiiCard />
@@ -91,6 +129,7 @@ function MarketsPageContent() {
                                         title={category.title}
                                         category={category.type}
                                         stocks={mockUsStocks}
+                                        onAssetClick={handleAssetClick}
                                     />
                                 ))}
                             </div>

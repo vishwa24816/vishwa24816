@@ -14,14 +14,14 @@ interface MarketMoversCardProps {
   title: string;
   category: MoverCategory;
   stocks: Stock[];
+  onAssetClick: (asset: Stock) => void;
 }
 
-const StockItem = ({ stock }: { stock: Stock }) => {
-    const router = useRouter();
+const StockItem = ({ stock, onAssetClick }: { stock: Stock, onAssetClick: (asset: Stock) => void }) => {
     const isPositive = (stock.changePercent || 0) >= 0;
 
     const handleClick = () => {
-        router.push(`/order/stock/${stock.symbol}`);
+        onAssetClick(stock);
     };
 
     return (
@@ -42,7 +42,7 @@ const StockItem = ({ stock }: { stock: Stock }) => {
 };
 
 
-export const MarketMoversCard: React.FC<MarketMoversCardProps> = ({ title, category, stocks }) => {
+export const MarketMoversCard: React.FC<MarketMoversCardProps> = ({ title, category, stocks, onAssetClick }) => {
 
     const filteredStocks = useMemo(() => {
         let sortedStocks = [...stocks];
@@ -81,7 +81,7 @@ export const MarketMoversCard: React.FC<MarketMoversCardProps> = ({ title, categ
             </CardHeader>
             <CardContent>
                 <div className="space-y-1">
-                    {filteredStocks.map(stock => <StockItem key={stock.id} stock={stock} />)}
+                    {filteredStocks.map(stock => <StockItem key={stock.id} stock={stock} onAssetClick={onAssetClick} />)}
                 </div>
             </CardContent>
         </Card>
