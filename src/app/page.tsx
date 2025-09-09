@@ -115,7 +115,7 @@ export default function DashboardRouterPage() {
           <DemoDashboard activeMode={activeMode} onModeChange={handleModeChange} walletMode={walletMode} setWalletMode={setWalletMode} onAssetClick={handleAssetClick}/>
         );
       case 'orders':
-        return <OrdersPageContent onAssetClick={handleAssetClick} activeMode={activeMode} />;
+        return <OrdersPageContent onAssetClick={handleAssetClick} activeMode={activeMode} onNavigate={handleNavigate} />;
       case 'simbot':
         return <SimbotPageContent onNavigateRequest={handleAssetClick} />;
       case 'screener':
