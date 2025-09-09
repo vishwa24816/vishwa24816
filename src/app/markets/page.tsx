@@ -38,7 +38,6 @@ function MarketsPageContent() {
     const searchParams = useSearchParams();
     const initialTab = searchParams.get('tab') || 'indian_stocks';
     
-    const [activeMode, setActiveMode] = useState<'Fiat' | 'Crypto'>('Fiat');
     const [activeTab, setActiveTab] = useState(initialTab);
     const [selectedAsset, setSelectedAsset] = useState<Stock | null>(null);
     const [initialOrderDetails, setInitialOrderDetails] = useState<InitialOrderDetails | null>(null);
@@ -65,11 +64,7 @@ function MarketsPageContent() {
         return (
              <ProtectedRoute>
                 <div className="flex flex-col min-h-screen">
-                    <AppHeader 
-                        isRealMode={false} 
-                        activeMode={activeMode} 
-                        onModeChange={setActiveMode} 
-                    />
+                    <AppHeader isRealMode={false} />
                     <OrderPageDispatcher 
                         asset={selectedAsset}
                         onBack={handleBack}
@@ -85,11 +80,7 @@ function MarketsPageContent() {
     return (
         <ProtectedRoute>
             <div className="flex flex-col min-h-screen">
-                <AppHeader 
-                    isRealMode={false} 
-                    activeMode={activeMode} 
-                    onModeChange={setActiveMode} 
-                />
+                <AppHeader isRealMode={false} />
                 <main className="flex-grow">
                     <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                         <TabsList className="w-full justify-start rounded-none bg-background p-0 px-4 sticky top-16 z-30 border-b overflow-x-auto no-scrollbar">
