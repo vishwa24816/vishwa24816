@@ -1,5 +1,4 @@
 
-
 "use client";
 
 import React, { useState, useEffect } from 'react';
@@ -75,7 +74,7 @@ export function SideMenu({ onNavigate }: { onNavigate?: (view: MainView) => void
     if (onNavigate) {
       onNavigate('analytics');
     } else {
-      router.push('/analytics');
+      router.push('/'); // Navigate to home page which will then show the analytics view
     }
   };
 
@@ -239,5 +238,7 @@ export function SideMenu({ onNavigate }: { onNavigate?: (view: MainView) => void
     </Sheet>
   );
 }
+
+    
 
     
