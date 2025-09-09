@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Mail, ChevronRight, User, ShieldCheck, Banknote, Users, UserX, Lock, Wallet, LifeBuoy, FileText, Star, Gift, Info, Briefcase, ChevronDown, Palette, Languages, AudioLines, Repeat, Download } from 'lucide-react';
+import { Mail, ChevronRight, User, ShieldCheck, Banknote, Users, UserX, Lock, Wallet, LifeBuoy, FileText, Star, Gift, Info, Briefcase, ChevronDown, Palette, Languages, AudioLines, Repeat, Download, Award } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { useRouter } from 'next/navigation';
@@ -15,6 +15,7 @@ import { cn } from '@/lib/utils';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
+import { Input } from '@/components/ui/input';
 
 interface ProfileItemProps {
   icon: React.ElementType;
@@ -87,11 +88,14 @@ const WalletDownloadItem = () => {
 export default function ProfilePage() {
   const { user, logout, theme, setTheme, language, setLanguage } = useAuth();
   const router = useRouter();
+  const { toast } = useToast();
   const isRealMode = user?.id === 'REAL456';
   
   const [platformCurrency, setPlatformCurrency] = useState('INR');
   const [simbotVoice, setSimbotVoice] = useState('indian_man');
   const [walletAutomation, setWalletAutomation] = useState('manual');
+  const [professionalTag, setProfessionalTag] = useState('');
+  const [identificationNumber, setIdentificationNumber] = useState('');
   
   const themeOptions = [
       { value: 'blue', label: 'Blue' },
@@ -135,6 +139,14 @@ export default function ProfilePage() {
     { value: 'dog', label: 'Dog' },
     { value: 'cat', label: 'Cat' },
     { value: 'baby', label: 'Baby' },
+  ];
+
+  const professionalTagOptions = [
+      { value: 'research_analyst', label: 'Research Analyst' },
+      { value: 'investment_advisor', label: 'Investment Advisor' },
+      { value: 'retirement_advisor', label: 'Retirement Advisor' },
+      { value: 'portfolio_manager', label: 'Portfolio Manager' },
+      { value: 'fund_manager', label: 'Fund Manager' },
   ];
   
   const profileItems: (ProfileItemProps & {component?: React.ReactNode})[] = [
@@ -247,6 +259,43 @@ export default function ProfilePage() {
       title: "Join Us",
       description: "Explore career opportunities with us",
       onClick: () => alert('Navigate to Careers Page'),
+    },
+    {
+        icon: Award,
+        title: "Professional Tag",
+        description: "Identify yourself as a finance professional",
+        component: (
+            <ExpandableProfileItem icon={Award} title="Professional Tag" description="Identify yourself as a finance professional">
+                <RadioGroup value={professionalTag} onValueChange={setProfessionalTag} className="space-y-2">
+                    {professionalTagOptions.map((tagOption) => (
+                        <div key={tagOption.value} className="flex items-center space-x-2">
+                            <RadioGroupItem value={tagOption.value} id={`tag-${tagOption.value}`} />
+                            <Label htmlFor={`tag-${tagOption.value}`} className="font-normal">{tagOption.label}</Label>
+                        </div>
+                    ))}
+                </RadioGroup>
+                {professionalTag && (
+                    <div className="mt-4 space-y-2 pt-4 border-t">
+                        <Label htmlFor="id-number" className="font-semibold">SEBI Registration Number</Label>
+                        <Input 
+                            id="id-number" 
+                            value={identificationNumber} 
+                            onChange={(e) => setIdentificationNumber(e.target.value)} 
+                            placeholder="Enter your registration ID" 
+                        />
+                        <Button 
+                            size="sm" 
+                            className="mt-2" 
+                            onClick={() => {
+                                toast({ title: "Professional tag saved!" });
+                            }}
+                        >
+                            Save
+                        </Button>
+                    </div>
+                )}
+            </ExpandableProfileItem>
+        )
     },
     {
         icon: Download,
