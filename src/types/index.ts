@@ -6,6 +6,7 @@
 
 
 
+
 export interface Stock {
   id: string;
   symbol: string;
@@ -308,6 +309,20 @@ export interface CommunityPost {
   researchFirm?: string;
   analystName?: string;
   category?: 'Fiat' | 'Crypto' | 'Web3' | 'Wealth';
+}
+
+export interface Comment {
+  id: string;
+  postId: string;
+  user: {
+    name: string;
+    avatarUrl?: string;
+    username: string;
+  };
+  timestamp: string;
+  content: string;
+  likes: number;
+  replies?: Comment[];
 }
 
 export interface GttOrder {

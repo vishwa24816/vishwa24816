@@ -10,11 +10,13 @@ import { Heart, MessageCircle, Repeat, Share2, MoreHorizontal, TrendingUp, Trend
 import { formatDistanceToNow } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { useRouter } from 'next/navigation';
 
 
 interface PostCardProps {
   post: CommunityPost;
   onAssetClick: (asset: Partial<Stock>) => void;
+  isDetailPage?: boolean;
 }
 
 const getRecommendationBadgeVariant = (type?: CommunityPost['recommendationType']) => {
@@ -37,19 +39,33 @@ const RecommendationIcon = ({ type }: { type?: CommunityPost['recommendationType
   }
 };
 
-export function PostCard({ post, onAssetClick }: PostCardProps) {
+export function PostCard({ post, onAssetClick, isDetailPage = false }: PostCardProps) {
+  const router = useRouter();
   const timeAgo = formatDistanceToNow(new Date(post.timestamp), { addSuffix: true });
   const userInitial = post.user.name?.[0].toUpperCase() || post.user.username?.[0].toUpperCase() || 'U';
   const isResearchPost = post.researchFirm || post.recommendationType;
 
-  const handleStockClick = () => {
+  const handleStockClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
     if (post.stockSymbol) {
         onAssetClick({ symbol: post.stockSymbol, name: post.stockSymbol });
     }
   };
 
+  const handleNavigateToPost = () => {
+    if (!isDetailPage) {
+      router.push(`/community/post/${post.id}`);
+    }
+  };
+
   return (
-    <div className="bg-card border-b border-border p-3 sm:p-4 hover:bg-muted/50 transition-colors duration-150">
+    <div
+      className={cn(
+        "bg-card border-b border-border p-3 sm:p-4",
+        !isDetailPage && "hover:bg-muted/50 transition-colors duration-150 cursor-pointer"
+      )}
+      onClick={handleNavigateToPost}
+    >
       <div className="flex space-x-3">
         <Avatar className="h-10 w-10 mt-1">
           <AvatarImage src={post.user.avatarUrl} alt={post.user.name} data-ai-hint="user avatar" />
@@ -149,4 +165,3 @@ export function PostCard({ post, onAssetClick }: PostCardProps) {
     </div>
   );
 }
-
