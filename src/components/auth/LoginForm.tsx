@@ -36,7 +36,7 @@ export function LoginForm() {
       login({ id: demoUcc, email: `${demoUcc}@sim.app` });
       router.push('/');
     } else {
-      setDemoError('Invalid Demo UCC or MPIN.');
+      setDemoError('Invalid Simulation UCC or MPIN.');
     }
   };
 
@@ -62,12 +62,12 @@ export function LoginForm() {
           </svg>
         </div>
         <CardTitle className="text-3xl font-headline">Welcome to SIM</CardTitle>
-        <CardDescription>Sign in to access your stock information dashboard.</CardDescription>
+        <CardDescription>Sign in to access your stock simulation dashboard.</CardDescription>
       </CardHeader>
       <CardContent>
         <Tabs defaultValue="demo" className="w-full">
           <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="demo">Demo Account</TabsTrigger>
+            <TabsTrigger value="demo">Simulation Account</TabsTrigger>
             <TabsTrigger value="real">Real Account</TabsTrigger>
           </TabsList>
           
@@ -106,7 +106,7 @@ export function LoginForm() {
               </div>
               {demoError && <p className="text-sm text-destructive">{demoError}</p>}
               <Button type="submit" className="w-full text-lg py-6">
-                <LogIn className="mr-2 h-5 w-5" /> Sign In to Demo
+                <LogIn className="mr-2 h-5 w-5" /> Sign In to Simulation
               </Button>
             </form>
           </TabsContent>

@@ -23,8 +23,8 @@ const SupportPage = () => {
         {
             icon: Mail,
             title: "Email us",
-            details: "support@simulationexchange.com",
-             href: "mailto:support@simulationexchange.com"
+            details: "support@simulation.app",
+             href: "mailto:support@simulation.app"
         }
     ]
 
