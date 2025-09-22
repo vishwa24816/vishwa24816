@@ -5,6 +5,7 @@ import { SubNav } from '@/components/shared/SubNav';
 import { NewsSection } from '@/components/dashboard/NewsSection';
 import { WatchlistSection } from '@/components/dashboard/WatchlistSection';
 import { CryptoHoldingsSection } from '@/components/dashboard/CryptoHoldingsSection';
+import type { WalletMode } from '@/components/dashboard/CryptoHoldingsSection';
 import { FiatHoldingsSection } from '@/components/dashboard/FiatHoldingsSection';
 import { CryptoFuturesSection } from '@/components/dashboard/CryptoFuturesSection';
 import { PackageOpen, ShieldCheck } from 'lucide-react';
@@ -202,10 +203,12 @@ const usePersistentState = (key: string, defaultValue: number): [number, React.D
 interface DemoDashboardProps {
   activeMode: 'Portfolio' | 'Fiat' | 'Wealth' | 'Crypto' | 'Web3';
   onModeChange: (mode: 'Portfolio' | 'Fiat' | 'Wealth' | 'Crypto' | 'Web3') => void;
+  walletMode: WalletMode;
+  setWalletMode: (mode: WalletMode) => void;
   onAssetClick: (asset: Stock) => void;
 }
 
-export function DemoDashboard({ activeMode, onModeChange, onAssetClick }: DemoDashboardProps) {
+export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletMode, onAssetClick }: DemoDashboardProps) {
     const { toast } = useToast();
     const { primaryNavItems, secondaryNavTriggerCategories } = useMemo(() => {
     if (activeMode === 'Portfolio') {
@@ -488,7 +491,7 @@ export function DemoDashboard({ activeMode, onModeChange, onAssetClick }: DemoDa
                 />
                 <FiatHoldingsSection title="Pledged Fiat Holdings" holdings={pledgedFiatHoldings} intradayPositions={[]} foPositions={[]} isPledged={true} onAssetClick={onAssetClick} />
                 <WealthHoldingsSection holdings={pledgedWealthHoldings} isPledged={true} onAssetClick={onAssetClick} />
-                <CryptoHoldingsSection title="Pledged Crypto Holdings" holdings={pledgedCryptoHoldings} isRealMode={false} isPledged={true} onAssetClick={onAssetClick} />
+                <CryptoHoldingsSection title="Pledged Crypto Holdings" holdings={pledgedCryptoHoldings} isRealMode={false} isPledged={true} onAssetClick={onAssetClick} walletMode={walletMode} setWalletMode={setWalletMode} />
             </div>
         )
     }
@@ -501,7 +504,7 @@ export function DemoDashboard({ activeMode, onModeChange, onAssetClick }: DemoDa
             if (isWatchlistView) return <div className="space-y-8"><WatchlistSection title="My Fiat Watchlist" defaultInitialItems={itemsForWatchlist} localStorageKeyOverride="simFiatWatchlist" onAssetClick={onAssetClick}/><NewsSection articles={newsForView} /></div>;
             return null;
         case 'Crypto':
-            if (isCryptoHoldingsView) return <><CryptoHoldingsSection title="Crypto & Web3 Wallet" holdings={cryptoAndWeb3Holdings} isRealMode={false} onAssetClick={onAssetClick} /><NewsSection articles={newsForView} /></>;
+            if (isCryptoHoldingsView) return <><CryptoHoldingsSection title="Crypto & Web3 Wallet" holdings={cryptoAndWeb3Holdings} isRealMode={false} onAssetClick={onAssetClick} walletMode={walletMode} setWalletMode={setWalletMode} /><NewsSection articles={newsForView} /></>;
             if (isPositionsView) return <div className="space-y-8"><CryptoFuturesSection positions={mockCryptoFutures} cashBalance={0} /><CryptoBasketSection /><NewsSection articles={newsForView} /></div>;
             if (isWatchlistView) return <div className="space-y-8"><WatchlistSection title="My Crypto Watchlist" defaultInitialItems={itemsForWatchlist} localStorageKeyOverride={'simCryptoWatchlist'} onAssetClick={onAssetClick} /><NewsSection articles={newsForView} /></div>;
             return null;
@@ -687,6 +690,7 @@ export function DemoDashboard({ activeMode, onModeChange, onAssetClick }: DemoDa
         onSecondaryNavClick={handleSecondaryNavClick}
         secondaryNavTriggerCategories={secondaryNavTriggerCategories}
         activeMode={activeMode}
+        walletMode={walletMode}
       />
       
       {activeMode === 'Portfolio' ? renderPortfolioContent() : renderMarketContent()}
@@ -701,5 +705,3 @@ export function DemoDashboard({ activeMode, onModeChange, onAssetClick }: DemoDa
     </>
   );
 }
-
-    

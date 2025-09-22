@@ -16,7 +16,7 @@ import { PledgeDialog } from './PledgeDialog';
 import { HoldingCard } from './HoldingCard';
 
 
-export type WalletMode = 'hot' | 'cold';
+export type WalletMode = 'exchange' | 'personal';
 type ViewMode = 'list' | 'bar' | 'heatmap' | 'pie';
 
 interface CryptoHoldingsSectionProps {
@@ -25,6 +25,8 @@ interface CryptoHoldingsSectionProps {
   isRealMode?: boolean;
   isPledged?: boolean;
   onAssetClick: (asset: Stock) => void;
+  walletMode: WalletMode;
+  setWalletMode: (mode: WalletMode) => void;
 }
 
 export function CryptoHoldingsSection({
@@ -33,6 +35,8 @@ export function CryptoHoldingsSection({
   isRealMode = false,
   isPledged = false,
   onAssetClick,
+  walletMode,
+  setWalletMode,
 }: CryptoHoldingsSectionProps) {
   const { toast } = useToast();
   const [viewMode, setViewMode] = useState<ViewMode>('list');
@@ -251,6 +255,24 @@ export function CryptoHoldingsSection({
             <CardTitle className="text-xl font-semibold font-headline text-primary flex items-center">
               <Bitcoin className="h-6 w-6 mr-2" /> {walletCardTitle}
             </CardTitle>
+            <div className="flex items-center rounded-md bg-primary-foreground/10 p-1 space-x-1">
+              <Button
+                  onClick={() => setWalletMode('exchange')}
+                  variant={walletMode === 'exchange' ? 'secondary' : 'ghost'}
+                  size="sm"
+                  className="h-8 px-3 text-xs flex-1 rounded-sm"
+              >
+                  Exchange
+              </Button>
+              <Button
+                  onClick={() => setWalletMode('personal')}
+                  variant={walletMode === 'personal' ? 'secondary' : 'ghost'}
+                  size="sm"
+                  className="h-8 px-3 text-xs flex-1 rounded-sm"
+              >
+                  Personal
+              </Button>
+            </div>
           </CardHeader>
           <CardContent>
             <div className="space-y-3 pt-2 mb-4">
@@ -315,5 +337,3 @@ export function CryptoHoldingsSection({
     </>
   );
 }
-
-    

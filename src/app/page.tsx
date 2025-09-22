@@ -38,7 +38,7 @@ export default function DashboardRouterPage() {
   const [activeMainView, setActiveMainView] = useState<MainView>('home');
   const [previousMainView, setPreviousMainView] = useState<MainView>('home');
   const [activeMode, setActiveMode] = useState<'Portfolio' | 'Fiat' | 'Wealth' | 'Crypto' | 'Web3'>(isRealMode ? 'Portfolio' : 'Portfolio');
-  const [walletMode, setWalletMode] = useState<WalletMode>('hot');
+  const [walletMode, setWalletMode] = useState<WalletMode>('exchange');
   const [selectedAsset, setSelectedAsset] = useState<Stock | null>(null);
   const [initialOrderDetails, setInitialOrderDetails] = useState<InitialOrderDetails | null>(null);
   const [productTypeForOrder, setProductTypeForOrder] = useState('Delivery');
