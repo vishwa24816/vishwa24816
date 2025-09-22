@@ -49,6 +49,7 @@ export * from './ipo';
 export * from './insights';
 export * from './etfs';
 export * from './superstars';
+export * from './transactions';
 
 import { mockStocks as stocks } from './stocks';
 import { mockUsStocks as usStocks } from './usStocks';

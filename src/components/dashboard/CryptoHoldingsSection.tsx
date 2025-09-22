@@ -5,7 +5,7 @@ import React, { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator"; 
-import type { PortfolioHolding, Stock } from '@/types';
+import type { PortfolioHolding, Stock, Transaction } from '@/types';
 import { cn } from '@/lib/utils';
 import { Bitcoin, XCircle, Coins, Landmark, Settings2, ChevronDown, BarChart2, LayoutGrid, List, PieChart, Repeat, Send, History, ArrowDownToLine } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
@@ -14,7 +14,10 @@ import { PortfolioHeatmap, type HeatmapItem } from './PortfolioHeatmap';
 import { Chart } from "@/components/ui/chart";
 import { PledgeDialog } from './PledgeDialog';
 import { HoldingCard } from './HoldingCard';
-
+import { ReceiveDialog } from '@/components/modals/ReceiveDialog';
+import { SendDialog } from '@/components/modals/SendDialog';
+import { HistoryDialog } from '@/components/modals/HistoryDialog';
+import { mockTransactions } from '@/lib/mockData';
 
 export type WalletMode = 'exchange' | 'personal';
 type ViewMode = 'list' | 'bar' | 'heatmap' | 'pie';
@@ -43,6 +46,9 @@ export function CryptoHoldingsSection({
   const [pledgeDialogOpen, setPledgeDialogOpen] = useState(false);
   const [selectedHoldingForPledge, setSelectedHoldingForPledge] = useState<PortfolioHolding | null>(null);
   const [pledgeDialogMode, setPledgeDialogMode] = useState<'pledge' | 'payback'>('pledge');
+  const [isReceiveOpen, setIsReceiveOpen] = useState(false);
+  const [isSendOpen, setIsSendOpen] = useState(false);
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
@@ -61,6 +67,14 @@ export function CryptoHoldingsSection({
           description: `${actionText} ${quantity} units of ${holding.symbol}.`,
       });
       setPledgeDialogOpen(false);
+  };
+
+  const handleSendConfirm = (address: string, amount: string, assetSymbol: string) => {
+    toast({
+        title: "Transaction Sent (Mock)",
+        description: `Sent ${amount} ${assetSymbol} to ${address}.`,
+    });
+    setIsSendOpen(false);
   };
 
   const totalCurrentValue = holdings.reduce((acc, holding) => acc + holding.currentValue, 0);
@@ -295,13 +309,13 @@ export function CryptoHoldingsSection({
             </div>
              {walletMode === 'personal' && (
                 <div className="pt-4 border-t grid grid-cols-3 gap-2">
-                    <Button variant="outline" onClick={() => toast({title: "Send Action (WIP)"})}>
+                    <Button variant="outline" onClick={() => setIsSendOpen(true)}>
                         <Send className="mr-2 h-4 w-4" /> Send
                     </Button>
-                    <Button variant="outline" onClick={() => toast({title: "Receive Action (WIP)"})}>
+                    <Button variant="outline" onClick={() => setIsReceiveOpen(true)}>
                         <ArrowDownToLine className="mr-2 h-4 w-4" /> Receive
                     </Button>
-                    <Button variant="outline" onClick={() => toast({title: "History Action (WIP)"})}>
+                    <Button variant="outline" onClick={() => setIsHistoryOpen(true)}>
                         <History className="mr-2 h-4 w-4" /> History
                     </Button>
                 </div>
@@ -338,6 +352,23 @@ export function CryptoHoldingsSection({
             mode={pledgeDialogMode}
         />
       )}
+      <ReceiveDialog
+        isOpen={isReceiveOpen}
+        onOpenChange={setIsReceiveOpen}
+        asset={holdings[0]} // Mock: use first asset for demo
+        walletAddress="bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh"
+      />
+      <SendDialog
+        isOpen={isSendOpen}
+        onOpenChange={setIsSendOpen}
+        assets={holdings}
+        onConfirm={handleSendConfirm}
+      />
+      <HistoryDialog
+        isOpen={isHistoryOpen}
+        onOpenChange={setIsHistoryOpen}
+        transactions={mockTransactions}
+      />
     </>
   );
 }

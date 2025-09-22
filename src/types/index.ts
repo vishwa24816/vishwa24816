@@ -1,12 +1,4 @@
 
-
-
-
-
-
-
-
-
 export interface Stock {
   id: string;
   symbol: string;
@@ -484,4 +476,13 @@ export interface SuperstarInvestor {
   stocksCount: number;
   netWorth: number; // In Crores
   investorType: 'individual' | 'institutional' | 'fii';
+}
+
+export interface Transaction {
+    id: string;
+    date: string;
+    description: string;
+    amount: number;
+    type: 'CREDIT' | 'DEBIT' | 'NEUTRAL';
+    asset?: string;
 }
