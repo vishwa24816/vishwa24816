@@ -17,7 +17,7 @@ import { HoldingCard } from './HoldingCard';
 import { ReceiveDialog } from '@/components/modals/ReceiveDialog';
 import { SendDialog } from '@/components/modals/SendDialog';
 import { HistoryDialog } from '@/components/modals/HistoryDialog';
-import { mockTransactions } from '@/lib/mockData';
+import { mockTransactions } from '@/lib/mockData/transactions';
 
 export type WalletMode = 'exchange' | 'personal';
 type ViewMode = 'list' | 'bar' | 'heatmap' | 'pie';
