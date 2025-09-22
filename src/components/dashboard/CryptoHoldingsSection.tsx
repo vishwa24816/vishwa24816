@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator"; 
 import type { PortfolioHolding, Stock } from '@/types';
 import { cn } from '@/lib/utils';
-import { Bitcoin, XCircle, Coins, Landmark, Settings2, ChevronDown, BarChart2, LayoutGrid, List, PieChart, Repeat } from 'lucide-react';
+import { Bitcoin, XCircle, Coins, Landmark, Settings2, ChevronDown, BarChart2, LayoutGrid, List, PieChart, Repeat, Send, History, ArrowDownToLine } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PortfolioHeatmap, type HeatmapItem } from './PortfolioHeatmap';
@@ -293,6 +293,19 @@ export function CryptoHoldingsSection({
                 </div>
               </div>
             </div>
+             {walletMode === 'personal' && (
+                <div className="pt-4 border-t grid grid-cols-3 gap-2">
+                    <Button variant="outline" onClick={() => toast({title: "Send Action (WIP)"})}>
+                        <Send className="mr-2 h-4 w-4" /> Send
+                    </Button>
+                    <Button variant="outline" onClick={() => toast({title: "Receive Action (WIP)"})}>
+                        <ArrowDownToLine className="mr-2 h-4 w-4" /> Receive
+                    </Button>
+                    <Button variant="outline" onClick={() => toast({title: "History Action (WIP)"})}>
+                        <History className="mr-2 h-4 w-4" /> History
+                    </Button>
+                </div>
+            )}
           </CardContent>
         </Card>
 
@@ -328,5 +341,3 @@ export function CryptoHoldingsSection({
     </>
   );
 }
-
-    
