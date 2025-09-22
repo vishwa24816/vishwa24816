@@ -7,20 +7,166 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator"; 
 import type { PortfolioHolding, Stock, Transaction } from '@/types';
 import { cn } from '@/lib/utils';
-import { Bitcoin, XCircle, Coins, Landmark, Settings2, ChevronDown, BarChart2, LayoutGrid, List, PieChart, Repeat, Send, History, ArrowDownToLine } from 'lucide-react';
+import { Bitcoin, XCircle, Coins, Landmark, Settings2, ChevronDown, BarChart2, LayoutGrid, List, PieChart, Repeat, Send, History, ArrowDownToLine, QrCode, Copy } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PortfolioHeatmap, type HeatmapItem } from './PortfolioHeatmap';
 import { Chart } from "@/components/ui/chart";
 import { PledgeDialog } from './PledgeDialog';
 import { HoldingCard } from './HoldingCard';
-import { ReceiveDialog } from '@/components/modals/ReceiveDialog';
-import { SendDialog } from '@/components/modals/SendDialog';
-import { HistoryDialog } from '@/components/modals/HistoryDialog';
 import { mockTransactions } from '@/lib/mockData/transactions';
+import { Input } from '../ui/input';
+import { Label } from '../ui/label';
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '../ui/select';
+import { ScrollArea } from '../ui/scroll-area';
+import Image from 'next/image';
 
 export type WalletMode = 'exchange' | 'personal';
 type ViewMode = 'list' | 'bar' | 'heatmap' | 'pie';
+type ExpandedAction = 'send' | 'receive' | 'history' | null;
+
+// #region Inline Action Components
+
+const SendContent = ({ assets, onConfirm, onCancel }: { assets: PortfolioHolding[], onConfirm: (address: string, amount: string, assetSymbol: string) => void, onCancel: () => void }) => {
+  const [address, setAddress] = useState('');
+  const [amount, setAmount] = useState('');
+  const [selectedAsset, setSelectedAsset] = useState<string>(assets[0]?.symbol || '');
+  const [error, setError] = useState('');
+  const { toast } = useToast();
+
+  const handleSend = () => {
+    setError('');
+    if (!address || !amount || !selectedAsset) {
+      setError('Please fill in all fields.');
+      return;
+    }
+    const asset = assets.find(a => a.symbol === selectedAsset);
+    if (!asset || parseFloat(amount) > asset.quantity) {
+        setError(`Insufficient balance. You have ${asset?.quantity} ${asset?.symbol}.`);
+        return;
+    }
+    onConfirm(address, amount, selectedAsset);
+  };
+
+  const handleScan = () => {
+    toast({
+        title: "Scan QR (Mock)",
+        description: "In a real app, this would open the camera to scan a QR code.",
+    });
+    setTimeout(() => setAddress("0x1234567890abcdef1234567890abcdef12345678"), 1000);
+  }
+
+  return (
+    <div className="bg-muted/50 p-4 rounded-md border animate-accordion-down space-y-4">
+        <div className="space-y-2">
+            <Label htmlFor="asset-select">Asset</Label>
+            <Select value={selectedAsset} onValueChange={setSelectedAsset}>
+              <SelectTrigger id="asset-select"><SelectValue placeholder="Select asset" /></SelectTrigger>
+              <SelectContent>
+                {assets.map(asset => (
+                  <SelectItem key={asset.id} value={asset.symbol}>
+                    {asset.name} ({asset.symbol}) - Bal: {asset.quantity.toFixed(4)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+        </div>
+        <div className="space-y-2">
+            <Label htmlFor="recipient-address">Recipient's Address</Label>
+            <div className="flex items-center gap-2">
+                <Input id="recipient-address" value={address} onChange={(e) => setAddress(e.target.value)} placeholder="0x..." />
+                <Button variant="outline" size="icon" onClick={handleScan}><QrCode className="h-4 w-4"/></Button>
+            </div>
+        </div>
+        <div className="space-y-2">
+            <Label htmlFor="send-amount">Amount</Label>
+            <Input id="send-amount" type="number" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="0.00" />
+        </div>
+        {error && <p className="text-xs text-destructive">{error}</p>}
+         <div className="flex justify-end gap-2">
+            <Button variant="ghost" onClick={onCancel}>Cancel</Button>
+            <Button onClick={handleSend} disabled={!address || !amount || !selectedAsset}>
+                <Send className="mr-2 h-4 w-4" /> Send
+            </Button>
+        </div>
+    </div>
+  );
+};
+
+const ReceiveContent = ({ asset, walletAddress, onCancel }: { asset: PortfolioHolding, walletAddress: string, onCancel: () => void }) => {
+  const { toast } = useToast();
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(walletAddress);
+    toast({ title: 'Address Copied!', description: 'Your wallet address has been copied to the clipboard.' });
+  };
+  
+  return (
+    <div className="bg-muted/50 p-4 rounded-md border animate-accordion-down space-y-4">
+        <p className="text-sm text-center">Receive {asset.name} ({asset.symbol})</p>
+        <div className="p-2 bg-white rounded-lg border mx-auto w-fit">
+            <Image
+                src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${walletAddress}`}
+                alt="Wallet QR Code"
+                width={150}
+                height={150}
+                data-ai-hint="qr code"
+            />
+        </div>
+        <p className="text-xs text-muted-foreground text-center break-all">{walletAddress}</p>
+        <div className="flex justify-center gap-2">
+            <Button variant="ghost" onClick={onCancel}>Close</Button>
+            <Button onClick={handleCopy}><Copy className="mr-2 h-4 w-4" /> Copy Address</Button>
+        </div>
+    </div>
+  );
+};
+
+const HistoryContent = ({ transactions, onCancel }: { transactions: Transaction[], onCancel: () => void }) => {
+    const formatCurrency = (value: number) => {
+        return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
+    };
+
+    return (
+        <div className="bg-muted/50 p-4 rounded-md border animate-accordion-down space-y-2">
+            <ScrollArea className="max-h-60 pr-2">
+                <div className="space-y-4">
+                    {transactions.map(tx => {
+                        const isCredit = tx.type === 'CREDIT';
+                        const ArrowUpFromLine = () => (
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M5 12h14"/>
+                                <path d="m12 5 7 7-7 7"/>
+                                <path d="M19 12H5"/>
+                            </svg>
+                        )
+                        return (
+                            <div key={tx.id} className="flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                    <div className={cn("p-2 rounded-full", isCredit ? "bg-green-100 dark:bg-green-900/50" : "bg-red-100 dark:bg-red-900/50")}>
+                                        {isCredit ? <ArrowDownToLine className="h-4 w-4 text-green-600" /> : <ArrowUpFromLine />}
+                                    </div>
+                                    <div>
+                                        <p className="font-medium text-sm">{tx.description}</p>
+                                        <p className="text-xs text-muted-foreground">{new Date(tx.date).toLocaleString()}</p>
+                                    </div>
+                                </div>
+                                <div className={cn("text-sm font-semibold", isCredit ? 'text-green-600' : 'text-red-600')}>
+                                    {isCredit ? '+' : '-'} {formatCurrency(Math.abs(tx.amount))}
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
+            </ScrollArea>
+             <div className="flex justify-end pt-2">
+                <Button variant="ghost" onClick={onCancel}>Close</Button>
+            </div>
+        </div>
+    )
+}
+
+// #endregion
 
 interface CryptoHoldingsSectionProps {
   holdings: PortfolioHolding[];
@@ -46,9 +192,7 @@ export function CryptoHoldingsSection({
   const [pledgeDialogOpen, setPledgeDialogOpen] = useState(false);
   const [selectedHoldingForPledge, setSelectedHoldingForPledge] = useState<PortfolioHolding | null>(null);
   const [pledgeDialogMode, setPledgeDialogMode] = useState<'pledge' | 'payback'>('pledge');
-  const [isReceiveOpen, setIsReceiveOpen] = useState(false);
-  const [isSendOpen, setIsSendOpen] = useState(false);
-  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+  const [expandedAction, setExpandedAction] = useState<ExpandedAction>(null);
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
@@ -74,7 +218,11 @@ export function CryptoHoldingsSection({
         title: "Transaction Sent (Mock)",
         description: `Sent ${amount} ${assetSymbol} to ${address}.`,
     });
-    setIsSendOpen(false);
+    setExpandedAction(null);
+  };
+
+  const toggleAction = (action: ExpandedAction) => {
+    setExpandedAction(current => current === action ? null : action);
   };
 
   const totalCurrentValue = holdings.reduce((acc, holding) => acc + holding.currentValue, 0);
@@ -308,16 +456,31 @@ export function CryptoHoldingsSection({
               </div>
             </div>
              {walletMode === 'personal' && (
-                <div className="pt-4 border-t grid grid-cols-3 gap-2">
-                    <Button variant="outline" onClick={() => setIsSendOpen(true)}>
-                        <Send className="mr-2 h-4 w-4" /> Send
-                    </Button>
-                    <Button variant="outline" onClick={() => setIsReceiveOpen(true)}>
-                        <ArrowDownToLine className="mr-2 h-4 w-4" /> Receive
-                    </Button>
-                    <Button variant="outline" onClick={() => setIsHistoryOpen(true)}>
-                        <History className="mr-2 h-4 w-4" /> History
-                    </Button>
+                <div className="pt-4 border-t space-y-2">
+                    <div className="grid grid-cols-3 gap-2">
+                        <Button variant="outline" onClick={() => toggleAction('send')}>
+                            <Send className="mr-2 h-4 w-4" /> Send
+                        </Button>
+                        <Button variant="outline" onClick={() => toggleAction('receive')}>
+                            <ArrowDownToLine className="mr-2 h-4 w-4" /> Receive
+                        </Button>
+                        <Button variant="outline" onClick={() => toggleAction('history')}>
+                            <History className="mr-2 h-4 w-4" /> History
+                        </Button>
+                    </div>
+                     {expandedAction === 'send' && (
+                        <SendContent assets={holdings} onConfirm={handleSendConfirm} onCancel={() => setExpandedAction(null)} />
+                    )}
+                    {expandedAction === 'receive' && holdings.length > 0 && (
+                        <ReceiveContent
+                            asset={holdings[0]}
+                            walletAddress="bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh"
+                            onCancel={() => setExpandedAction(null)}
+                        />
+                    )}
+                    {expandedAction === 'history' && (
+                        <HistoryContent transactions={mockTransactions} onCancel={() => setExpandedAction(null)} />
+                    )}
                 </div>
             )}
           </CardContent>
@@ -352,23 +515,8 @@ export function CryptoHoldingsSection({
             mode={pledgeDialogMode}
         />
       )}
-      <ReceiveDialog
-        isOpen={isReceiveOpen}
-        onOpenChange={setIsReceiveOpen}
-        asset={holdings[0]} // Mock: use first asset for demo
-        walletAddress="bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh"
-      />
-      <SendDialog
-        isOpen={isSendOpen}
-        onOpenChange={setIsSendOpen}
-        assets={holdings}
-        onConfirm={handleSendConfirm}
-      />
-      <HistoryDialog
-        isOpen={isHistoryOpen}
-        onOpenChange={setIsHistoryOpen}
-        transactions={mockTransactions}
-      />
     </>
   );
 }
+
+    

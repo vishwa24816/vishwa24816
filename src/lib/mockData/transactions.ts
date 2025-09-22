@@ -6,7 +6,7 @@ export const mockTransactions: Transaction[] = [
     id: 'tx1',
     date: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(),
     description: 'Sent BTC',
-    amount: -0.05 * 5200000,
+    amount: 0.05 * 5200000,
     type: 'DEBIT',
     asset: 'BTC',
   },
@@ -43,3 +43,5 @@ export const mockTransactions: Transaction[] = [
     asset: 'BTC',
   },
 ];
+
+    
