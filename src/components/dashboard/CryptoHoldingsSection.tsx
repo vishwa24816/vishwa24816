@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator"; 
 import type { PortfolioHolding, Stock } from '@/types';
 import { cn } from '@/lib/utils';
-import { Bitcoin, XCircle, Coins, Landmark, Settings2, ChevronDown, BarChart2, LayoutGrid, List, PieChart } from 'lucide-react';
+import { Bitcoin, XCircle, Coins, Landmark, Settings2, ChevronDown, BarChart2, LayoutGrid, List, PieChart, Repeat } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PortfolioHeatmap, type HeatmapItem } from './PortfolioHeatmap';
@@ -255,24 +255,15 @@ export function CryptoHoldingsSection({
             <CardTitle className="text-xl font-semibold font-headline text-primary flex items-center">
               <Bitcoin className="h-6 w-6 mr-2" /> {walletCardTitle}
             </CardTitle>
-            <div className="flex items-center rounded-md bg-primary-foreground/10 p-1 space-x-1">
-              <Button
-                  onClick={() => setWalletMode('exchange')}
-                  variant={walletMode === 'exchange' ? 'secondary' : 'ghost'}
-                  size="sm"
-                  className="h-8 px-3 text-xs flex-1 rounded-sm"
-              >
-                  Exchange
-              </Button>
-              <Button
-                  onClick={() => setWalletMode('personal')}
-                  variant={walletMode === 'personal' ? 'secondary' : 'ghost'}
-                  size="sm"
-                  className="h-8 px-3 text-xs flex-1 rounded-sm"
-              >
-                  Personal
-              </Button>
-            </div>
+            <Button
+              onClick={() => setWalletMode(walletMode === 'exchange' ? 'personal' : 'exchange')}
+              variant="outline"
+              size="sm"
+              className="h-8 px-3 text-xs capitalize flex items-center gap-2"
+            >
+              <Repeat className="h-4 w-4" />
+              {walletMode}
+            </Button>
           </CardHeader>
           <CardContent>
             <div className="space-y-3 pt-2 mb-4">
@@ -337,3 +328,5 @@ export function CryptoHoldingsSection({
     </>
   );
 }
+
+    
