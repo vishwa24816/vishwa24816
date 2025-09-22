@@ -33,7 +33,6 @@ interface FiatHoldingsSectionProps {
   setCryptoCashBalance: React.Dispatch<React.SetStateAction<number>>;
   isPledged?: boolean;
   onAssetClick: (asset: Stock) => void;
-  onAddFunds: () => void;
 }
 
 export function FiatHoldingsSection({ 
@@ -47,7 +46,6 @@ export function FiatHoldingsSection({
     setCryptoCashBalance,
     isPledged = false,
     onAssetClick,
-    onAddFunds,
 }: FiatHoldingsSectionProps) {
   const [activeFilter, setActiveFilter] = useState<HoldingFilterType>('All');
   const [viewMode, setViewMode] = useState<ViewMode>('list');
@@ -216,16 +214,16 @@ export function FiatHoldingsSection({
         return (
           <div className="w-full h-[300px] mt-4 flex items-center justify-center">
             <Chart.Container config={chartConfig} className="h-full w-full">
-              <Chart.ResponsiveContainer>
-                <Chart.PieChart>
-                    <Chart.Tooltip 
-                      content={<Chart.TooltipContent hideLabel nameKey="name" />}
-                      formatter={(value, name) => `${name}: ${formatCurrency(value as number)}`}
-                    />
-                    <Chart.Pie data={chartData} dataKey="value" nameKey="name" />
-                    <Chart.LegendContent />
-                </Chart.PieChart>
-              </Chart.ResponsiveContainer>
+                <Chart.ResponsiveContainer>
+                  <Chart.PieChart>
+                      <Chart.Tooltip 
+                        content={<Chart.TooltipContent hideLabel nameKey="name" />}
+                        formatter={(value, name) => `${name}: ${formatCurrency(value as number)}`}
+                      />
+                      <Chart.Pie data={chartData} dataKey="value" nameKey="name" />
+                      <Chart.LegendContent />
+                  </Chart.PieChart>
+                </Chart.ResponsiveContainer>
             </Chart.Container>
           </div>
         );
@@ -283,14 +281,6 @@ export function FiatHoldingsSection({
                             <div className="flex justify-between items-center text-sm">
                             <p className="text-muted-foreground">Cash Balance</p>
                             <p className="font-medium text-foreground">{formatCurrency(mainPortfolioCashBalance, 'INR')}</p>
-                            </div>
-                            <div className="pt-3 grid grid-cols-2 gap-2">
-                                <Button variant="outline" size="sm" className="h-11" onClick={onAddFunds}>
-                                    <Coins className="mr-2 h-4 w-4" /> Add Funds
-                                </Button>
-                                <Button variant="outline" size="sm" className="h-11" onClick={onAddFunds}>
-                                    <Landmark className="mr-2 h-4 w-4" /> Withdraw
-                                </Button>
                             </div>
                         </>
                     )}

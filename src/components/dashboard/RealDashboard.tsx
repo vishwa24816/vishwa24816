@@ -81,12 +81,10 @@ const usePersistentState = (key: string, defaultValue: number): [number, React.D
 
 interface RealDashboardProps {
   activeMode: 'Portfolio' | 'Fiat' | 'Crypto' | 'Web3';
-  walletMode: WalletMode;
-  setWalletMode: (mode: WalletMode) => void;
   onAssetClick: (asset: Stock) => void;
 }
 
-export function RealDashboard({ activeMode, walletMode, setWalletMode, onAssetClick }: RealDashboardProps) {
+export function RealDashboard({ activeMode, onAssetClick }: RealDashboardProps) {
    const { toast } = useToast();
    const { primaryNavItems, secondaryNavTriggerCategories } = useMemo(() => {
     if (activeMode === 'Portfolio') {
@@ -187,7 +185,7 @@ export function RealDashboard({ activeMode, walletMode, setWalletMode, onAssetCl
     const isWatchlistView = activeSecondaryItem === "Portfolio Watchlist";
 
     if (activePrimaryItem === 'Crypto') {
-      if (isHoldingsView) return <><CryptoHoldingsSection title="Crypto Wallet & Holdings" holdings={cryptoHoldings} cashBalance={cryptoCashBalance} setCashBalance={setCryptoCashBalance} mainPortfolioCashBalance={mainPortfolioCashBalance} setMainPortfolioCashBalance={setMainPortfolioCashBalance} isRealMode={true} walletMode={walletMode} setWalletMode={setWalletMode} onAssetClick={onAssetClick} onAddFunds={() => setIsAddFundsDialogOpen(true)}/><NewsSection articles={newsForView} /></>;
+      if (isHoldingsView) return <><CryptoHoldingsSection title="Crypto Wallet & Holdings" holdings={cryptoHoldings} cashBalance={cryptoCashBalance} setCashBalance={setCryptoCashBalance} mainPortfolioCashBalance={mainPortfolioCashBalance} setMainPortfolioCashBalance={setMainPortfolioCashBalance} isRealMode={true} onAssetClick={onAssetClick} /><NewsSection articles={newsForView} /></>;
       if (isPositionsView) return <div className="space-y-8"><CryptoFuturesSection positions={mockRealCryptoFutures} cashBalance={cryptoCashBalance} /><CryptoBasketSection /><NewsSection articles={newsForView} /></div>;
       if (isWatchlistView) return <div className="space-y-8"><WatchlistSection title="My Crypto Watchlist" defaultInitialItems={itemsForWatchlist} localStorageKeyOverride={'simCryptoWatchlist_real'} onAssetClick={onAssetClick}/><NewsSection articles={newsForView} /></div>;
     }
@@ -196,15 +194,6 @@ export function RealDashboard({ activeMode, walletMode, setWalletMode, onAssetCl
   
   const renderMarketContent = () => {
       if(activeMode === 'Crypto') {
-          if (walletMode === 'cold' && activePrimaryItem === 'Spot') {
-            return (
-                <div className="flex flex-col items-center justify-center text-center py-12 text-muted-foreground">
-                    <ShieldCheck className="h-16 w-16 mb-4 text-blue-500" />
-                    <h2 className="text-2xl font-semibold mb-2 text-foreground">Spot Trading Disabled in Cold Wallet</h2>
-                    <p className="max-w-md">For security, live spot trading is unavailable when your Cold Wallet is active. Please switch to your Hot Wallet to trade spot assets.</p>
-                </div>
-            );
-          }
           if (activePrimaryItem === "Options") {
             if (activeSecondaryItem === 'Dashboard') return <div className="space-y-8"><MarketMovers stocks={mockCryptoOptionsForWatchlist} displayMode="full" category="Crypto Options" onAssetClick={onAssetClick} /><NewsSection articles={newsForView} /></div>;
             if (activeSecondaryItem === "Custom") return ( <div className="space-y-8"><CryptoOptionChain onAddLeg={(leg) => setStrategyLegs(prev => [...prev, leg])} />{strategyLegs.length > 0 && <StrategyBuilder legs={strategyLegs} setLegs={setStrategyLegs} />}<NewsSection articles={newsForView} /></div>);
@@ -214,7 +203,7 @@ export function RealDashboard({ activeMode, walletMode, setWalletMode, onAssetCl
           if (activePrimaryItem === "Spot" && activeSecondaryItem.startsWith("Top watchlist")) {
             return (
                 <div className="space-y-8">
-                    <CryptoHoldingsSection title="Crypto Wallet & Holdings" holdings={cryptoHoldings} cashBalance={cryptoCashBalance} setCashBalance={setCryptoCashBalance} mainPortfolioCashBalance={mainPortfolioCashBalance} setMainPortfolioCashBalance={setMainPortfolioCashBalance} isRealMode={true} walletMode={walletMode} setWalletMode={setWalletMode} onAssetClick={onAssetClick} onAddFunds={() => setIsAddFundsDialogOpen(true)}/>
+                    <CryptoHoldingsSection title="Crypto Wallet & Holdings" holdings={cryptoHoldings} cashBalance={cryptoCashBalance} setCashBalance={setCryptoCashBalance} mainPortfolioCashBalance={mainPortfolioCashBalance} setMainPortfolioCashBalance={setMainPortfolioCashBalance} isRealMode={true} onAssetClick={onAssetClick} />
                     <MarketMovers stocks={mockCryptoAssets} displayMode="trending" category="Crypto" onAssetClick={onAssetClick} />
                     <WatchlistSection title={"Top Crypto"} displayItems={itemsForWatchlist} isPredefinedList={true} onAssetClick={onAssetClick} />
                     <MarketMovers stocks={mockCryptoAssets} displayMode="gainers-losers" onAssetClick={onAssetClick} />
@@ -248,7 +237,6 @@ export function RealDashboard({ activeMode, walletMode, setWalletMode, onAssetCl
         onPrimaryNavClick={handlePrimaryNavClick}
         onSecondaryNavClick={setActiveSecondaryItem}
         secondaryNavTriggerCategories={secondaryNavTriggerCategories}
-        walletMode={walletMode}
         activeMode={activeMode}
       />
       

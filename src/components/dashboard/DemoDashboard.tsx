@@ -56,7 +56,6 @@ import { mockOtherInsurance } from '@/lib/mockData/otherInsurance';
 import { mockCryptoOptionsForWatchlist } from '@/lib/mockData/cryptoOptionsWatchlist';
 import { mockCryptoIndices } from '@/lib/mockData/cryptoIndices';
 import { mockUsStocks } from '@/lib/mockData/usStocks';
-import type { WalletMode } from '@/components/dashboard/CryptoHoldingsSection';
 import Image from 'next/image';
 import { FundTransferDialog } from '../shared/FundTransferDialog';
 import { useToast } from '@/hooks/use-toast';
@@ -204,12 +203,10 @@ const usePersistentState = (key: string, defaultValue: number): [number, React.D
 interface DemoDashboardProps {
   activeMode: 'Portfolio' | 'Fiat' | 'Wealth' | 'Crypto' | 'Web3';
   onModeChange: (mode: 'Portfolio' | 'Fiat' | 'Wealth' | 'Crypto' | 'Web3') => void;
-  walletMode: WalletMode;
-  setWalletMode: React.Dispatch<React.SetStateAction<WalletMode>>;
   onAssetClick: (asset: Stock) => void;
 }
 
-export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletMode, onAssetClick }: DemoDashboardProps) {
+export function DemoDashboard({ activeMode, onModeChange, onAssetClick }: DemoDashboardProps) {
     const { toast } = useToast();
     const { primaryNavItems, secondaryNavTriggerCategories } = useMemo(() => {
     if (activeMode === 'Portfolio') {
@@ -510,22 +507,22 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
                     onAddFunds={() => setIsAddFundsDialogOpen(true)}
                     onWithdrawFunds={() => setIsAddFundsDialogOpen(true)}
                 />
-                <FiatHoldingsSection title="Pledged Fiat Holdings" holdings={pledgedFiatHoldings} intradayPositions={[]} foPositions={[]} mainPortfolioCashBalance={0} setMainPortfolioCashBalance={() => {}} cryptoCashBalance={0} setCryptoCashBalance={() => {}} isPledged={true} onAssetClick={onAssetClick} onAddFunds={() => setIsAddFundsDialogOpen(true)} />
+                <FiatHoldingsSection title="Pledged Fiat Holdings" holdings={pledgedFiatHoldings} intradayPositions={[]} foPositions={[]} mainPortfolioCashBalance={0} setMainPortfolioCashBalance={() => {}} cryptoCashBalance={0} setCryptoCashBalance={() => {}} isPledged={true} onAssetClick={onAssetClick} />
                 <WealthHoldingsSection holdings={pledgedWealthHoldings} isPledged={true} onAssetClick={onAssetClick} />
-                <CryptoHoldingsSection title="Pledged Crypto Holdings" holdings={pledgedCryptoHoldings} cashBalance={0} setCashBalance={() => {}} mainPortfolioCashBalance={0} setMainPortfolioCashBalance={() => {}} isRealMode={false} isPledged={true} walletMode={walletMode} setWalletMode={setWalletMode} onAssetClick={onAssetClick} />
+                <CryptoHoldingsSection title="Pledged Crypto Holdings" holdings={pledgedCryptoHoldings} cashBalance={0} setCashBalance={() => {}} mainPortfolioCashBalance={0} setMainPortfolioCashBalance={() => {}} isRealMode={false} isPledged={true} onAssetClick={onAssetClick} />
             </div>
         )
     }
 
     switch (activePrimaryItem) {
         case 'Fiat':
-            if (isFiatHoldingsView) return <><FiatHoldingsSection holdings={fiatHoldings} intradayPositions={[]} foPositions={[]} mainPortfolioCashBalance={mainPortfolioCashBalance} setMainPortfolioCashBalance={setMainPortfolioCashBalance} cryptoCashBalance={cryptoCashBalance} setCryptoCashBalance={setCryptoCashBalance} onAssetClick={onAssetClick} onAddFunds={() => setIsAddFundsDialogOpen(true)} /><NewsSection articles={newsForView} /></>;
+            if (isFiatHoldingsView) return <><FiatHoldingsSection holdings={fiatHoldings} intradayPositions={[]} foPositions={[]} mainPortfolioCashBalance={mainPortfolioCashBalance} setMainPortfolioCashBalance={setMainPortfolioCashBalance} cryptoCashBalance={cryptoCashBalance} setCryptoCashBalance={setCryptoCashBalance} onAssetClick={onAssetClick} /><NewsSection articles={newsForView} /></>;
             if (isWealthHoldingsView) return <><WealthHoldingsSection holdings={wealthHoldings} onAssetClick={onAssetClick} /><NewsSection articles={newsForView} /></>;
             if (isPositionsView) return <div className="space-y-8"><IntradayPositionsSection onAssetClick={onAssetClick}/><FoPositionsSection onAssetClick={onAssetClick}/><FoBasketSection /><NewsSection articles={newsForView} /></div>;
             if (isWatchlistView) return <div className="space-y-8"><WatchlistSection title="My Fiat Watchlist" defaultInitialItems={itemsForWatchlist} localStorageKeyOverride="simFiatWatchlist" onAssetClick={onAssetClick}/><NewsSection articles={newsForView} /></div>;
             return null;
         case 'Crypto':
-            if (isCryptoHoldingsView) return <><CryptoHoldingsSection title="Crypto & Web3 Wallet" holdings={cryptoAndWeb3Holdings} cashBalance={cryptoCashBalance} setCashBalance={setCryptoCashBalance} mainPortfolioCashBalance={mainPortfolioCashBalance} setMainPortfolioCashBalance={setMainPortfolioCashBalance} isRealMode={false} walletMode={walletMode} setWalletMode={setWalletMode} onAssetClick={onAssetClick} /><NewsSection articles={newsForView} /></>;
+            if (isCryptoHoldingsView) return <><CryptoHoldingsSection title="Crypto & Web3 Wallet" holdings={cryptoAndWeb3Holdings} cashBalance={cryptoCashBalance} setCashBalance={setCryptoCashBalance} mainPortfolioCashBalance={mainPortfolioCashBalance} setMainPortfolioCashBalance={setMainPortfolioCashBalance} isRealMode={false} onAssetClick={onAssetClick} /><NewsSection articles={newsForView} /></>;
             if (isPositionsView) return <div className="space-y-8"><CryptoFuturesSection positions={mockCryptoFutures} cashBalance={cryptoCashBalance} /><CryptoBasketSection /><NewsSection articles={newsForView} /></div>;
             if (isWatchlistView) return <div className="space-y-8"><WatchlistSection title="My Crypto Watchlist" defaultInitialItems={itemsForWatchlist} localStorageKeyOverride={'simCryptoWatchlist'} onAssetClick={onAssetClick} /><NewsSection articles={newsForView} /></div>;
             return null;
@@ -596,16 +593,6 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
     } else if (activeMode === 'Crypto') {
         const isNumberedWatchlist = !!activeSecondaryItem.match(/^Watchlist \d+$/);
 
-        if (walletMode === 'cold' && activePrimaryItem === 'Spot') {
-            return (
-                <div className="flex flex-col items-center justify-center text-center py-12 text-muted-foreground">
-                    <ShieldCheck className="h-16 w-16 mb-4 text-blue-500" />
-                    <h2 className="text-2xl font-semibold mb-2 text-foreground">Spot Trading Disabled</h2>
-                    <p className="max-w-md">Spot trading is unavailable in Cold Wallet mode. Switch to your Hot Wallet to trade spot assets.</p>
-                </div>
-            );
-        }
-        
         if (activePrimaryItem === "Spot" && activeSecondaryItem.startsWith("Top watchlist")) {
              return (
                 <div className="space-y-8">
@@ -720,7 +707,6 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
         onPrimaryNavClick={handlePrimaryNavClick}
         onSecondaryNavClick={handleSecondaryNavClick}
         secondaryNavTriggerCategories={secondaryNavTriggerCategories}
-        walletMode={walletMode}
         activeMode={activeMode}
       />
       
