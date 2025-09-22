@@ -57,7 +57,6 @@ import { mockCryptoOptionsForWatchlist } from '@/lib/mockData/cryptoOptionsWatch
 import { mockCryptoIndices } from '@/lib/mockData/cryptoIndices';
 import { mockUsStocks } from '@/lib/mockData/usStocks';
 import Image from 'next/image';
-import { FundTransferDialog } from '../shared/FundTransferDialog';
 import { useToast } from '@/hooks/use-toast';
 import { mockETFs } from '@/lib/mockData/etfs';
 
@@ -276,41 +275,21 @@ export function DemoDashboard({ activeMode, onModeChange, onAssetClick }: DemoDa
     secondaryNavTriggerCategories[primaryNavItems[0]]?.[0] || ""
   );
   
-  const [mainPortfolioCashBalance, setMainPortfolioCashBalance] = usePersistentState('mainPortfolioCashBalance', 50000.00);
-  const [cryptoCashBalance, setCryptoCashBalance] = usePersistentState('cryptoCashBalance', 15000.00);
+  const [availableMargin, setAvailableMargin] = usePersistentState('unifiedCashBalance', 65000.00);
   const [strategyLegs, setStrategyLegs] = useState<SelectedOptionLeg[]>([]);
-  const [isFundTransferDialogOpen, setIsFundTransferDialogOpen] = useState(false);
   const [isAddFundsDialogOpen, setIsAddFundsDialogOpen] = useState(false);
-  const [transferDirection, setTransferDirection] = useState<'toCrypto' | 'fromCrypto'>('toCrypto');
-
-  const handleOpenFundTransferDialog = (direction: 'toCrypto' | 'fromCrypto') => {
-    setTransferDirection(direction);
-    setIsFundTransferDialogOpen(true);
-  };
   
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
   };
 
-  const handleTransferConfirm = (amount: number, direction: 'toCrypto' | 'fromCrypto') => {
-    if (direction === 'toCrypto') {
-      setMainPortfolioCashBalance((prev: number) => prev - amount);
-      setCryptoCashBalance((prev: number) => prev + amount);
-      toast({ title: "Transfer Successful", description: `${formatCurrency(amount)} transferred to Crypto Wallet.` });
-    } else { // fromCrypto
-      setMainPortfolioCashBalance((prev: number) => prev + amount);
-      setCryptoCashBalance((prev: number) => prev - amount);
-      toast({ title: "Transfer Successful", description: `${formatCurrency(amount)} transferred to Main Portfolio.` });
-    }
-  };
-
   const handleAddWithdrawConfirm = (amount: number, type: 'add' | 'withdraw') => {
       if (type === 'add') {
-        setMainPortfolioCashBalance((prev: number) => prev + amount);
-        toast({ title: "Funds Added", description: `${formatCurrency(amount)} added to your main portfolio.` });
+        setAvailableMargin((prev: number) => prev + amount);
+        toast({ title: "Funds Added", description: `${formatCurrency(amount)} added to your available margin.` });
       } else {
-        setMainPortfolioCashBalance((prev: number) => prev - amount);
-        toast({ title: "Withdrawal Successful", description: `${formatCurrency(amount)} withdrawn from your main portfolio.` });
+        setAvailableMargin((prev: number) => prev - amount);
+        toast({ title: "Withdrawal Successful", description: `${formatCurrency(amount)} withdrawn from your account.` });
       }
   };
 
@@ -464,7 +443,7 @@ export function DemoDashboard({ activeMode, onModeChange, onAssetClick }: DemoDa
                 <OverallPortfolioSummary 
                     totalPortfolioValue={totalPortfolioValue} 
                     unrealisedPnl={unrealisedPnl}
-                    availableMargin={mainPortfolioCashBalance + cryptoCashBalance} // simplified
+                    availableMargin={availableMargin}
                     investedMargin={investedMargin}
                     onAddFunds={() => setIsAddFundsDialogOpen(true)}
                     onWithdrawFunds={() => setIsAddFundsDialogOpen(true)}
@@ -493,7 +472,7 @@ export function DemoDashboard({ activeMode, onModeChange, onAssetClick }: DemoDa
         const totalPledgedInvestment = allPledged.reduce((acc, h) => acc + (h.quantity * h.avgCostPrice), 0);
         const unrealisedPnl = totalPledgedValue - totalPledgedInvestment;
         // Mock margin values
-        const availableMargin = allPledged.reduce((acc, h) => acc + (h.currentValue * 0.8), 0); // 80% of value as margin
+        const availableMarginFromPledge = allPledged.reduce((acc, h) => acc + (h.currentValue * 0.8), 0); // 80% of value as margin
         const investedMargin = totalPledgedInvestment;
         
         return (
@@ -502,28 +481,28 @@ export function DemoDashboard({ activeMode, onModeChange, onAssetClick }: DemoDa
                     title="Pledge Overview"
                     totalPortfolioValue={totalPledgedValue} 
                     unrealisedPnl={unrealisedPnl}
-                    availableMargin={availableMargin}
+                    availableMargin={availableMarginFromPledge}
                     investedMargin={investedMargin}
                     onAddFunds={() => setIsAddFundsDialogOpen(true)}
                     onWithdrawFunds={() => setIsAddFundsDialogOpen(true)}
                 />
-                <FiatHoldingsSection title="Pledged Fiat Holdings" holdings={pledgedFiatHoldings} intradayPositions={[]} foPositions={[]} mainPortfolioCashBalance={0} setMainPortfolioCashBalance={() => {}} cryptoCashBalance={0} setCryptoCashBalance={() => {}} isPledged={true} onAssetClick={onAssetClick} />
+                <FiatHoldingsSection title="Pledged Fiat Holdings" holdings={pledgedFiatHoldings} intradayPositions={[]} foPositions={[]} isPledged={true} onAssetClick={onAssetClick} />
                 <WealthHoldingsSection holdings={pledgedWealthHoldings} isPledged={true} onAssetClick={onAssetClick} />
-                <CryptoHoldingsSection title="Pledged Crypto Holdings" holdings={pledgedCryptoHoldings} cashBalance={0} setCashBalance={() => {}} mainPortfolioCashBalance={0} setMainPortfolioCashBalance={() => {}} isRealMode={false} isPledged={true} onAssetClick={onAssetClick} />
+                <CryptoHoldingsSection title="Pledged Crypto Holdings" holdings={pledgedCryptoHoldings} isRealMode={false} isPledged={true} onAssetClick={onAssetClick} />
             </div>
         )
     }
 
     switch (activePrimaryItem) {
         case 'Fiat':
-            if (isFiatHoldingsView) return <><FiatHoldingsSection holdings={fiatHoldings} intradayPositions={[]} foPositions={[]} mainPortfolioCashBalance={mainPortfolioCashBalance} setMainPortfolioCashBalance={setMainPortfolioCashBalance} cryptoCashBalance={cryptoCashBalance} setCryptoCashBalance={setCryptoCashBalance} onAssetClick={onAssetClick} /><NewsSection articles={newsForView} /></>;
+            if (isFiatHoldingsView) return <><FiatHoldingsSection holdings={fiatHoldings} intradayPositions={[]} foPositions={[]} onAssetClick={onAssetClick} /><NewsSection articles={newsForView} /></>;
             if (isWealthHoldingsView) return <><WealthHoldingsSection holdings={wealthHoldings} onAssetClick={onAssetClick} /><NewsSection articles={newsForView} /></>;
             if (isPositionsView) return <div className="space-y-8"><IntradayPositionsSection onAssetClick={onAssetClick}/><FoPositionsSection onAssetClick={onAssetClick}/><FoBasketSection /><NewsSection articles={newsForView} /></div>;
             if (isWatchlistView) return <div className="space-y-8"><WatchlistSection title="My Fiat Watchlist" defaultInitialItems={itemsForWatchlist} localStorageKeyOverride="simFiatWatchlist" onAssetClick={onAssetClick}/><NewsSection articles={newsForView} /></div>;
             return null;
         case 'Crypto':
-            if (isCryptoHoldingsView) return <><CryptoHoldingsSection title="Crypto & Web3 Wallet" holdings={cryptoAndWeb3Holdings} cashBalance={cryptoCashBalance} setCashBalance={setCryptoCashBalance} mainPortfolioCashBalance={mainPortfolioCashBalance} setMainPortfolioCashBalance={setMainPortfolioCashBalance} isRealMode={false} onAssetClick={onAssetClick} /><NewsSection articles={newsForView} /></>;
-            if (isPositionsView) return <div className="space-y-8"><CryptoFuturesSection positions={mockCryptoFutures} cashBalance={cryptoCashBalance} /><CryptoBasketSection /><NewsSection articles={newsForView} /></div>;
+            if (isCryptoHoldingsView) return <><CryptoHoldingsSection title="Crypto & Web3 Wallet" holdings={cryptoAndWeb3Holdings} isRealMode={false} onAssetClick={onAssetClick} /><NewsSection articles={newsForView} /></>;
+            if (isPositionsView) return <div className="space-y-8"><CryptoFuturesSection positions={mockCryptoFutures} cashBalance={0} /><CryptoBasketSection /><NewsSection articles={newsForView} /></div>;
             if (isWatchlistView) return <div className="space-y-8"><WatchlistSection title="My Crypto Watchlist" defaultInitialItems={itemsForWatchlist} localStorageKeyOverride={'simCryptoWatchlist'} onAssetClick={onAssetClick} /><NewsSection articles={newsForView} /></div>;
             return null;
         default: return null;
@@ -713,21 +692,14 @@ export function DemoDashboard({ activeMode, onModeChange, onAssetClick }: DemoDa
       {activeMode === 'Portfolio' ? renderPortfolioContent() : renderMarketContent()}
 
     </main>
-    <FundTransferDialog
-        isOpen={isFundTransferDialogOpen}
-        onOpenChange={setIsFundTransferDialogOpen}
-        transferDirection={transferDirection}
-        mainPortfolioCashBalance={mainPortfolioCashBalance}
-        cryptoCashBalance={cryptoCashBalance}
-        onTransferConfirm={handleTransferConfirm}
-        currencyMode={'INR'}
-      />
        <AddFundsDialog
         isOpen={isAddFundsDialogOpen}
         onOpenChange={setIsAddFundsDialogOpen}
-        currentBalance={mainPortfolioCashBalance}
+        currentBalance={availableMargin}
         onConfirm={handleAddWithdrawConfirm}
       />
     </>
   );
 }
+
+    

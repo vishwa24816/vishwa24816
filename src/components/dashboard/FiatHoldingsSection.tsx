@@ -16,7 +16,6 @@ import { PortfolioHeatmap, type HeatmapItem } from './PortfolioHeatmap';
 import { Chart } from "@/components/ui/chart";
 import { PledgeDialog } from './PledgeDialog';
 import { HoldingCard } from './HoldingCard';
-import { FundTransferDialog } from '../shared/FundTransferDialog';
 
 
 type HoldingFilterType = 'All' | 'Indian Stocks' | 'US Stocks' | 'Mutual Fund' | 'Bond';
@@ -27,10 +26,6 @@ interface FiatHoldingsSectionProps {
   title?: string;
   intradayPositions: IntradayPosition[];
   foPositions: FoPosition[];
-  mainPortfolioCashBalance: number;
-  setMainPortfolioCashBalance: React.Dispatch<React.SetStateAction<number>>;
-  cryptoCashBalance: number;
-  setCryptoCashBalance: React.Dispatch<React.SetStateAction<number>>;
   isPledged?: boolean;
   onAssetClick: (asset: Stock) => void;
 }
@@ -40,10 +35,6 @@ export function FiatHoldingsSection({
     title = "Fiat Holdings",
     intradayPositions,
     foPositions,
-    mainPortfolioCashBalance, 
-    setMainPortfolioCashBalance, 
-    cryptoCashBalance, 
-    setCryptoCashBalance,
     isPledged = false,
     onAssetClick,
 }: FiatHoldingsSectionProps) {
@@ -276,14 +267,6 @@ export function FiatHoldingsSection({
                       <p className="text-muted-foreground">Current Value</p>
                       <p className="font-medium text-foreground">{formatCurrency(totalCurrentValue, 'INR')}</p>
                     </div>
-                    {!isPledged && (
-                        <>
-                            <div className="flex justify-between items-center text-sm">
-                            <p className="text-muted-foreground">Cash Balance</p>
-                            <p className="font-medium text-foreground">{formatCurrency(mainPortfolioCashBalance, 'INR')}</p>
-                            </div>
-                        </>
-                    )}
                   </div>
               </div>
               
@@ -328,3 +311,5 @@ export function FiatHoldingsSection({
     </>
   );
 }
+
+    

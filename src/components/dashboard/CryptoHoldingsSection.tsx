@@ -9,7 +9,6 @@ import type { PortfolioHolding, Stock } from '@/types';
 import { cn } from '@/lib/utils';
 import { Bitcoin, XCircle, Coins, Landmark, Settings2, ChevronDown, BarChart2, LayoutGrid, List, PieChart } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
-import { FundTransferDialog } from '@/components/shared/FundTransferDialog';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PortfolioHeatmap, type HeatmapItem } from './PortfolioHeatmap';
 import { Chart } from "@/components/ui/chart";
@@ -23,10 +22,6 @@ type ViewMode = 'list' | 'bar' | 'heatmap' | 'pie';
 interface CryptoHoldingsSectionProps {
   holdings: PortfolioHolding[];
   title: string;
-  cashBalance: number;
-  setCashBalance: React.Dispatch<React.SetStateAction<number>>;
-  mainPortfolioCashBalance: number;
-  setMainPortfolioCashBalance: React.Dispatch<React.SetStateAction<number>>;
   isRealMode?: boolean;
   isPledged?: boolean;
   onAssetClick: (asset: Stock) => void;
@@ -35,17 +30,11 @@ interface CryptoHoldingsSectionProps {
 export function CryptoHoldingsSection({
   holdings,
   title,
-  cashBalance,
-  setCashBalance,
-  mainPortfolioCashBalance,
-  setMainPortfolioCashBalance,
   isRealMode = false,
   isPledged = false,
   onAssetClick,
 }: CryptoHoldingsSectionProps) {
   const { toast } = useToast();
-  const [isFundTransferDialogOpen, setIsFundTransferDialogOpen] = useState(false);
-  const [transferDirection, setTransferDirection] = useState<'toCrypto' | 'fromCrypto'>('toCrypto');
   const [viewMode, setViewMode] = useState<ViewMode>('list');
   const [pledgeDialogOpen, setPledgeDialogOpen] = useState(false);
   const [selectedHoldingForPledge, setSelectedHoldingForPledge] = useState<PortfolioHolding | null>(null);
@@ -78,23 +67,6 @@ export function CryptoHoldingsSection({
   const totalDayChangeAbsolute = holdings.reduce((acc, holding) => acc + holding.dayChangeAbsolute, 0);
   const totalPreviousDayValue = totalCurrentValue - totalDayChangeAbsolute;
   const totalDayChangePercent = totalPreviousDayValue !== 0 ? (totalDayChangeAbsolute / totalPreviousDayValue) * 100 : 0;
-
-  const handleOpenFundTransferDialog = (direction: 'toCrypto' | 'fromCrypto') => {
-    setTransferDirection(direction);
-    setIsFundTransferDialogOpen(true);
-  };
-
-  const handleTransferConfirm = (amount: number, direction: 'toCrypto' | 'fromCrypto') => {
-    if (direction === 'toCrypto') {
-      setMainPortfolioCashBalance(prev => prev - amount);
-      setCashBalance(prev => prev + amount);
-      toast({ title: "Transfer Successful", description: `${formatCurrency(amount)} transferred to ${title}.` });
-    } else { // fromCrypto
-      setMainPortfolioCashBalance(prev => prev + amount);
-      setCashBalance(prev => prev - amount);
-      toast({ title: "Transfer Successful", description: `${formatCurrency(amount)} transferred to Main Portfolio.` });
-    }
-  };
 
   const walletCardTitle = isRealMode ? 'Crypto Wallet' : 'Crypto & Web3 Wallet';
   const holdingsCardTitle = 'Crypto & Web3 Holdings';
@@ -306,20 +278,6 @@ export function CryptoHoldingsSection({
                   <p className="text-muted-foreground">Current Value</p>
                   <p className="font-medium text-foreground">{formatCurrency(totalCurrentValue)}</p>
                 </div>
-                <div className="flex justify-between items-center text-sm">
-                    <p className="text-muted-foreground">Cash Balance</p>
-                    <p className="font-medium text-foreground">{formatCurrency(cashBalance)}</p>
-                </div>
-                {!isRealMode && (
-                    <div className="pt-3 grid grid-cols-2 gap-2">
-                        <Button variant="outline" size="sm" className="h-11" onClick={() => handleOpenFundTransferDialog('toCrypto')}>
-                            <Coins className="mr-2 h-4 w-4" /> Add Funds
-                        </Button>
-                        <Button variant="outline" size="sm" className="h-11" onClick={() => handleOpenFundTransferDialog('fromCrypto')}>
-                            <Landmark className="mr-2 h-4 w-4" /> Withdraw
-                        </Button>
-                    </div>
-                )}
               </div>
             </div>
           </CardContent>
@@ -344,16 +302,6 @@ export function CryptoHoldingsSection({
           </CardContent>
         </Card>
       </div>
-
-      <FundTransferDialog
-        isOpen={isFundTransferDialogOpen}
-        onOpenChange={setIsFundTransferDialogOpen}
-        transferDirection={transferDirection}
-        mainPortfolioCashBalance={mainPortfolioCashBalance}
-        cryptoCashBalance={cashBalance}
-        onTransferConfirm={handleTransferConfirm}
-        currencyMode={'INR'}
-      />
       {selectedHoldingForPledge && (
         <PledgeDialog
             isOpen={pledgeDialogOpen}
@@ -367,3 +315,5 @@ export function CryptoHoldingsSection({
     </>
   );
 }
+
+    
