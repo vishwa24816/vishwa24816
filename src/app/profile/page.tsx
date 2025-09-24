@@ -93,7 +93,6 @@ export default function ProfilePage() {
   
   const [platformCurrency, setPlatformCurrency] = useState('INR');
   const [simbotVoice, setSimbotVoice] = useState('indian_man');
-  const [walletAutomation, setWalletAutomation] = useState('manual');
   const [professionalTag, setProfessionalTag] = useState('');
   const [identificationNumber, setIdentificationNumber] = useState('');
   
@@ -207,22 +206,9 @@ export default function ProfilePage() {
     },
     {
         icon: Repeat,
-        title: "Wallet Automation",
-        description: "Manage automatic wallet transfers and settings",
-        component: (
-            <ExpandableProfileItem icon={Repeat} title="Wallet Automation" description="Manage automatic wallet transfers and settings">
-                <RadioGroup value={walletAutomation} onValueChange={setWalletAutomation} className="space-y-2">
-                    <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="manual" id="automation-manual" />
-                        <Label htmlFor="automation-manual" className="font-normal">Manual</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="automatic" id="automation-automatic" />
-                        <Label htmlFor="automation-automatic" className="font-normal">Automatic</Label>
-                    </div>
-                </RadioGroup>
-            </ExpandableProfileItem>
-        )
+        title: "Wallet Management",
+        description: "Add, remove, or view your wallets",
+        onClick: () => router.push('/profile/wallets'),
     },
     {
       icon: LifeBuoy,
