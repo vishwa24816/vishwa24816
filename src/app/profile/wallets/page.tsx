@@ -18,11 +18,24 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
+} from "@/components/ui/alert-dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogClose
+} from "@/components/ui/dialog";
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 
 const mockWallets = [
-  { id: 'wallet1', name: 'My Main Wallet', phrase: 'apple banana cat dog elephant frog grape house ice cream jungle' },
-  { id: 'wallet2', name: 'Trading Wallet', phrase: 'king lion monkey nectar orange parrot queen rose sun tiger' },
+  { id: 'wallet1', name: 'My Main Wallet', phrase: 'apple banana cat dog elephant frog grape house ice cream jungle lion monkey' },
+  { id: 'wallet2', name: 'Trading Wallet', phrase: 'king lion monkey nectar orange parrot queen rose sun tiger unicorn violet' },
 ];
 
 const WalletCard = ({ wallet, onRemove }: { wallet: typeof mockWallets[0], onRemove: (id: string) => void }) => {
@@ -85,14 +98,39 @@ export default function WalletManagementPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [wallets, setWallets] = useState(mockWallets);
+  const [newWalletName, setNewWalletName] = useState('');
+  const [newWalletPhrase, setNewWalletPhrase] = useState('');
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
 
   const handleAddWallet = () => {
+    if (!newWalletName.trim() || !newWalletPhrase.trim()) {
+        toast({
+            title: "Incomplete information",
+            description: "Please provide both a wallet name and a recovery phrase.",
+            variant: "destructive"
+        });
+        return;
+    }
+
+    const wordCount = newWalletPhrase.trim().split(/\s+/).length;
+    if (wordCount < 12 || wordCount > 24) {
+      toast({
+        title: "Invalid Recovery Phrase",
+        description: "Recovery phrase must be between 12 and 24 words.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
     const newWallet = {
       id: `wallet${Date.now()}`,
-      name: `Wallet ${wallets.length + 1}`,
-      phrase: 'newly generated recovery phrase would appear here for the user to save',
+      name: newWalletName,
+      phrase: newWalletPhrase.trim(),
     };
     setWallets(prev => [...prev, newWallet]);
+    setNewWalletName('');
+    setNewWalletPhrase('');
+    setIsAddDialogOpen(false);
     toast({
       title: 'New Wallet Added (Mock)',
       description: `${newWallet.name} has been created.`,
@@ -122,9 +160,48 @@ export default function WalletManagementPage() {
         </header>
 
         <main className="flex-grow p-4 sm:p-6 lg:p-8 space-y-6">
-            <Button onClick={handleAddWallet} className="w-full">
-                <Plus className="mr-2 h-4 w-4" /> Add New Wallet
-            </Button>
+            <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+                <DialogTrigger asChild>
+                    <Button className="w-full">
+                        <Plus className="mr-2 h-4 w-4" /> Add New Wallet
+                    </Button>
+                </DialogTrigger>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Add a New Wallet</DialogTitle>
+                        <DialogDescription>
+                            Enter a name for your wallet and its recovery phrase to import it.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="py-4 space-y-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="wallet-name">Wallet Name</Label>
+                            <Input
+                                id="wallet-name"
+                                value={newWalletName}
+                                onChange={(e) => setNewWalletName(e.target.value)}
+                                placeholder="e.g., My DeFi Wallet"
+                            />
+                        </div>
+                        <div className="space-y-2">
+                             <Label htmlFor="recovery-phrase">Recovery Phrase (12-24 words)</Label>
+                            <Textarea
+                                id="recovery-phrase"
+                                value={newWalletPhrase}
+                                onChange={(e) => setNewWalletPhrase(e.target.value)}
+                                placeholder="Enter your secret recovery phrase separated by spaces"
+                                rows={4}
+                            />
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <DialogClose asChild>
+                            <Button variant="outline">Cancel</Button>
+                        </DialogClose>
+                        <Button onClick={handleAddWallet}>Save Wallet</Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
 
             <div className="space-y-4">
                 {wallets.map((wallet) => (
