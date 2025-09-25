@@ -67,7 +67,7 @@ export function OrdersPageContent({ activeMode, onAssetClick, onNavigate }: Orde
         <main className="flex-grow flex flex-col">
           <Tabs defaultValue={orderTabs[0].value} value={activeTab} onValueChange={setActiveTab} className="flex flex-col flex-grow">
             <div className="bg-background border-b">
-              <TabsList className={`w-full px-2 sm:px-4 lg:px-6 grid grid-cols-${orderTabs.length} h-auto p-0 border-none bg-transparent`}>
+              <TabsList className="w-full justify-start rounded-none bg-transparent p-0 px-2 sm:px-4 lg:px-6 h-auto">
                 {orderTabs.map((tab) => (
                   <TabsTrigger
                     key={tab.value}
