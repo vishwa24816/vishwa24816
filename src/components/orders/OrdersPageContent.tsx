@@ -23,14 +23,12 @@ import {
     mockWeb3Holdings
 } from '@/lib/mockData';
 import { useRouter } from 'next/navigation';
-import { GttOrdersDisplay } from './GttOrdersDisplay';
 import type { MainView } from '@/app/page';
 
 const demoOrderTabs = [
   { value: "limit", label: "Limit" },
   { value: "bids", label: "Bids" },
   { value: "hodl", label: "HODL" },
-  { value: "gtt", label: "GTT" },
   { value: "baskets", label: "Baskets" },
   { value: "sips", label: "SIPs" },
   { value: "alerts", label: "Alerts" },
@@ -39,7 +37,6 @@ const demoOrderTabs = [
 const realOrderTabs = [
   { value: "limit", label: "Limit" },
   { value: "hodl", label: "HODL" },
-  { value: "gtt", label: "GTT" },
   { value: "baskets", label: "Baskets" },
   { value: "sips", label: "SIPs" },
   { value: "alerts", label: "Alerts" },
@@ -70,7 +67,7 @@ export function OrdersPageContent({ activeMode, onAssetClick, onNavigate }: Orde
         <main className="flex-grow flex flex-col">
           <Tabs defaultValue={orderTabs[0].value} value={activeTab} onValueChange={setActiveTab} className="flex flex-col flex-grow">
             <div className="bg-background border-b">
-              <TabsList className="w-full px-2 sm:px-4 lg:px-6 grid grid-cols-7 h-auto p-0 border-none bg-transparent">
+              <TabsList className={`w-full px-2 sm:px-4 lg:px-6 grid grid-cols-${orderTabs.length} h-auto p-0 border-none bg-transparent`}>
                 {orderTabs.map((tab) => (
                   <TabsTrigger
                     key={tab.value}
@@ -104,9 +101,6 @@ export function OrdersPageContent({ activeMode, onAssetClick, onNavigate }: Orde
               </TabsContent>
               <TabsContent value="hodl" className="flex-grow flex flex-col mt-0 data-[state=inactive]:hidden">
                 <HodlOrdersDisplay />
-              </TabsContent>
-              <TabsContent value="gtt" className="flex-grow flex flex-col mt-0 data-[state=inactive]:hidden">
-                <GttOrdersDisplay isRealMode={isRealMode} />
               </TabsContent>
               <TabsContent value="baskets" className="flex-grow flex flex-col mt-0 data-[state=inactive]:hidden">
                 <BasketsDisplay isRealMode={isRealMode} />

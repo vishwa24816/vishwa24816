@@ -151,7 +151,6 @@ const StockOrderForm = ({ asset, assetType, productType, onProductTypeChange, in
                 <div className="flex items-center space-x-2"> <RadioGroupItem value="Intraday" id="intraday-stock" /> <Label htmlFor="intraday-stock" className="font-normal">Intraday</Label> </div>
                 <div className="flex items-center space-x-2"> <RadioGroupItem value="Delivery" id="delivery-stock" /> <Label htmlFor="delivery-stock" className="font-normal">Delivery</Label> </div>
                 <div className="flex items-center space-x-2"> <RadioGroupItem value="HODL" id="hodl-stock" /> <Label htmlFor="hodl-stock" className="font-normal">HODL</Label> </div>
-                <div className="flex items-center space-x-2"> <RadioGroupItem value="GTT" id="gtt-stock" /> <Label htmlFor="gtt-stock" className="font-normal">GTT</Label> </div>
             </RadioGroup>
 
             <div className="grid grid-cols-2 gap-4 items-end">
@@ -162,13 +161,6 @@ const StockOrderForm = ({ asset, assetType, productType, onProductTypeChange, in
                 </div>
             </div>
             
-            {productType === 'GTT' && (
-                 <div className="space-y-2 animate-accordion-down">
-                    <Label htmlFor="trigger-price-stock">Trigger Price</Label>
-                    <Input id="trigger-price-stock" type="number" placeholder="e.g. 2400.00" value={triggerPrice} onChange={(e) => setTriggerPrice(e.target.value)} />
-                </div>
-            )}
-
             {productType === 'HODL' && (
                 <div className="space-y-2 pt-2 animate-accordion-down">
                     <Label>Lock-in Period</Label>
@@ -530,5 +522,3 @@ export function OrderPlacementForm({ assetType, ...props }: OrderPlacementFormPr
 }
 
 // #endregion
-
-    
