@@ -20,6 +20,8 @@ import { Label } from '../ui/label';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '../ui/select';
 import { ScrollArea } from '../ui/scroll-area';
 import Image from 'next/image';
+import { useAuth } from '@/contexts/AuthContext';
+import { mockWallets } from '@/lib/mockData/wallets';
 
 export type WalletMode = 'exchange' | 'personal';
 type ViewMode = 'list' | 'bar' | 'heatmap' | 'pie';
@@ -188,6 +190,7 @@ export function CryptoHoldingsSection({
   setWalletMode,
 }: CryptoHoldingsSectionProps) {
   const { toast } = useToast();
+  const { primaryWalletId } = useAuth();
   const [viewMode, setViewMode] = useState<ViewMode>('list');
   const [pledgeDialogOpen, setPledgeDialogOpen] = useState(false);
   const [selectedHoldingForPledge, setSelectedHoldingForPledge] = useState<PortfolioHolding | null>(null);
@@ -197,6 +200,11 @@ export function CryptoHoldingsSection({
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
   };
+  
+  const primaryWallet = useMemo(() => {
+    if (!primaryWalletId) return null;
+    return mockWallets.find(w => w.id === primaryWalletId);
+  }, [primaryWalletId]);
 
   const handlePledgeClick = (holding: PortfolioHolding, mode: 'pledge' | 'payback') => {
     setSelectedHoldingForPledge(holding);
@@ -234,7 +242,7 @@ export function CryptoHoldingsSection({
   const totalPreviousDayValue = totalCurrentValue - totalDayChangeAbsolute;
   const totalDayChangePercent = totalPreviousDayValue !== 0 ? (totalDayChangeAbsolute / totalPreviousDayValue) * 100 : 0;
 
-  const walletCardTitle = isRealMode ? 'Crypto Wallet' : 'Crypto & Web3 Wallet';
+  const walletCardTitle = walletMode === 'personal' && primaryWallet ? primaryWallet.name : isRealMode ? 'Crypto Wallet' : 'Crypto & Web3 Wallet';
   const holdingsCardTitle = 'Crypto & Web3 Holdings';
 
   const chartData = useMemo(() => {
@@ -518,5 +526,3 @@ export function CryptoHoldingsSection({
     </>
   );
 }
-
-    

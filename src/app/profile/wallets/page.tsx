@@ -5,7 +5,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeft, Wallet, Plus, Eye, EyeOff, Trash2, Copy } from 'lucide-react';
+import { ArrowLeft, Wallet, Plus, Eye, EyeOff, Trash2, Copy, CheckCircle } from 'lucide-react';
 import { ProtectedRoute } from '@/components/shared/ProtectedRoute';
 import { useToast } from '@/hooks/use-toast';
 import {
@@ -32,13 +32,12 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Badge } from '@/components/ui/badge';
+import { mockWallets as initialMockWallets } from '@/lib/mockData/wallets';
+import { useAuth } from '@/contexts/AuthContext';
 
-const mockWallets = [
-  { id: 'wallet1', name: 'My Main Wallet', phrase: 'apple banana cat dog elephant frog grape house ice cream jungle lion monkey' },
-  { id: 'wallet2', name: 'Trading Wallet', phrase: 'king lion monkey nectar orange parrot queen rose sun tiger unicorn violet' },
-];
 
-const WalletCard = ({ wallet, onRemove }: { wallet: typeof mockWallets[0], onRemove: (id: string) => void }) => {
+const WalletCard = ({ wallet, onRemove, isPrimary, onSetPrimary }: { wallet: typeof initialMockWallets[0], onRemove: (id: string) => void, isPrimary: boolean, onSetPrimary: (id: string) => void }) => {
   const [showPhrase, setShowPhrase] = useState(false);
   const { toast } = useToast();
 
@@ -54,25 +53,28 @@ const WalletCard = ({ wallet, onRemove }: { wallet: typeof mockWallets[0], onRem
                 <Wallet className="h-5 w-5 text-primary" />
                 {wallet.name}
             </CardTitle>
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button variant="ghost" size="icon" className="text-destructive h-8 w-8">
-                    <Trash2 className="h-4 w-4" />
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    This action cannot be undone. This will permanently delete your wallet and remove its data from our servers.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction onClick={() => onRemove(wallet.id)} className="bg-destructive hover:bg-destructive/90">Delete</AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
+            <div className="flex items-center gap-1">
+                {isPrimary && <Badge variant="default" className="bg-green-600 hover:bg-green-700"><CheckCircle className="h-3 w-3 mr-1"/>Primary</Badge>}
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="ghost" size="icon" className="text-destructive h-8 w-8">
+                        <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This action cannot be undone. This will permanently delete your wallet and remove its data from our servers.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction onClick={() => onRemove(wallet.id)} className="bg-destructive hover:bg-destructive/90">Delete</AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+            </div>
         </CardHeader>
       <CardContent>
         <div className="flex items-center justify-between">
@@ -89,6 +91,11 @@ const WalletCard = ({ wallet, onRemove }: { wallet: typeof mockWallets[0], onRem
             </Button>
           </div>
         )}
+        {!isPrimary && (
+            <div className="mt-3 pt-3 border-t">
+                <Button variant="secondary" size="sm" onClick={() => onSetPrimary(wallet.id)}>Make Primary</Button>
+            </div>
+        )}
       </CardContent>
     </Card>
   );
@@ -97,7 +104,9 @@ const WalletCard = ({ wallet, onRemove }: { wallet: typeof mockWallets[0], onRem
 export default function WalletManagementPage() {
   const router = useRouter();
   const { toast } = useToast();
-  const [wallets, setWallets] = useState(mockWallets);
+  const { primaryWalletId, setPrimaryWalletId } = useAuth();
+  // We'll manage wallets in state so we can add/remove them
+  const [wallets, setWallets] = useState(initialMockWallets);
   const [newWalletName, setNewWalletName] = useState('');
   const [newWalletPhrase, setNewWalletPhrase] = useState('');
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
@@ -147,6 +156,18 @@ export default function WalletManagementPage() {
             variant: "destructive"
         });
     }
+    if (primaryWalletId === id) {
+        setPrimaryWalletId('');
+    }
+  }
+
+  const handleSetPrimary = (id: string) => {
+    setPrimaryWalletId(id);
+    const wallet = wallets.find(w => w.id === id);
+    toast({
+        title: "Primary Wallet Set",
+        description: `${wallet?.name} is now your primary wallet.`,
+    });
   }
 
   return (
@@ -205,7 +226,13 @@ export default function WalletManagementPage() {
 
             <div className="space-y-4">
                 {wallets.map((wallet) => (
-                    <WalletCard key={wallet.id} wallet={wallet} onRemove={handleRemoveWallet}/>
+                    <WalletCard 
+                        key={wallet.id} 
+                        wallet={wallet} 
+                        onRemove={handleRemoveWallet}
+                        isPrimary={primaryWalletId === wallet.id}
+                        onSetPrimary={handleSetPrimary}
+                    />
                 ))}
             </div>
         </main>

@@ -50,6 +50,7 @@ export * from './insights';
 export * from './etfs';
 export * from './superstars';
 export * from './transactions';
+export * from './wallets';
 
 import { mockStocks as stocks } from './stocks';
 import { mockUsStocks as usStocks } from './usStocks';
@@ -71,5 +72,3 @@ export const allAssets = [
     ...mockOptionsForWatchlist,
     ...mockCryptoFuturesForWatchlist,
 ];
-
-    

@@ -17,6 +17,8 @@ interface AuthContextType {
   setTheme: (theme: string) => void;
   language: string;
   setLanguage: (language: string) => void;
+  primaryWalletId: string | null;
+  setPrimaryWalletId: (walletId: string) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -26,6 +28,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
   const [theme, setThemeState] = useState('blue');
   const [language, setLanguageState] = useState('english');
+  const [primaryWalletId, setPrimaryWalletIdState] = useState<string | null>(null);
 
   useEffect(() => {
     // Check localStorage for a persisted user session
@@ -40,12 +43,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       
       const storedLanguage = localStorage.getItem('sim-language') || 'english';
       setLanguageState(storedLanguage);
+      
+      const storedPrimaryWallet = localStorage.getItem('simPrimaryWalletId');
+      if (storedPrimaryWallet) {
+        setPrimaryWalletIdState(storedPrimaryWallet);
+      }
 
     } catch (error) {
       console.error("Failed to parse from localStorage", error);
-      localStorage.removeItem('simUser');
-      localStorage.removeItem('sim-theme');
-      localStorage.removeItem('sim-language');
+      localStorage.clear();
     }
     setLoading(false);
   }, []);
@@ -57,7 +63,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem('simUser');
+    localStorage.clear();
   };
 
   const setTheme = (newTheme: string) => {
@@ -71,8 +77,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     localStorage.setItem('sim-language', newLanguage);
   };
 
+  const setPrimaryWalletId = (walletId: string) => {
+    setPrimaryWalletIdState(walletId);
+    localStorage.setItem('simPrimaryWalletId', walletId);
+  }
+
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated: !!user, login, logout, loading, theme, setTheme, language, setLanguage }}>
+    <AuthContext.Provider value={{ user, isAuthenticated: !!user, login, logout, loading, theme, setTheme, language, setLanguage, primaryWalletId, setPrimaryWalletId }}>
         {children}
         <Toaster />
     </AuthContext.Provider>
