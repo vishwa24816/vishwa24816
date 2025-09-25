@@ -72,7 +72,7 @@ export function OrdersPageContent({ activeMode, onAssetClick, onNavigate }: Orde
                   <TabsTrigger
                     key={tab.value}
                     value={tab.value}
-                    className="py-3 px-1 data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:shadow-none rounded-none text-muted-foreground hover:text-primary transition-colors text-xs sm:text-sm flex-shrink-0"
+                    className="py-3 px-3 data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:shadow-none rounded-none text-muted-foreground hover:text-primary transition-colors text-xs sm:text-sm"
                   >
                     {tab.label}
                   </TabsTrigger>
