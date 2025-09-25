@@ -179,6 +179,17 @@ const StockOrderForm = ({ asset, assetType, productType, onProductTypeChange, in
                 </div>
             )}
 
+            <div className="flex flex-wrap gap-x-4 sm:gap-x-6 gap-y-2 text-sm">
+                <div className="flex items-center space-x-2">
+                    <Checkbox id="day-order-stock" />
+                    <Label htmlFor="day-order-stock" className="font-normal">Day order</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                    <Checkbox id="aon-order-stock" />
+                    <Label htmlFor="aon-order-stock" className="font-normal">All or none order</Label>
+                </div>
+            </div>
+
             <RadioGroup value={orderType} onValueChange={(value) => setOrderType(value)} className="flex flex-wrap gap-x-4 gap-y-2">
                 <div className="flex items-center space-x-2"><RadioGroupItem value="Market" id="orderType-market-stock" /><Label htmlFor="orderType-market-stock" className="font-normal">Market</Label></div>
                 <div className="flex items-center space-x-2"><RadioGroupItem value="Limit" id="orderType-limit-stock" /><Label htmlFor="orderType-limit-stock" className="font-normal">Limit</Label></div>
@@ -306,6 +317,16 @@ const CryptoOrderForm = ({ asset, assetType, productType, onProductTypeChange, i
                                 </div>
                             </div>
                         )}
+                        <div className="flex flex-wrap gap-x-4 sm:gap-x-6 gap-y-2 text-sm">
+                            <div className="flex items-center space-x-2">
+                                <Checkbox id="day-order-crypto" />
+                                <Label htmlFor="day-order-crypto" className="font-normal">Day order</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                                <Checkbox id="aon-order-crypto" />
+                                <Label htmlFor="aon-order-crypto" className="font-normal">All or none order</Label>
+                            </div>
+                        </div>
                         <RadioGroup value={orderType} onValueChange={(value) => setOrderType(value)} className="flex flex-wrap gap-x-4 gap-y-2">
                            <div className="flex items-center space-x-2"><RadioGroupItem value="Market" id="orderType-market-crypto" /><Label htmlFor="orderType-market-crypto" className="font-normal">Market</Label></div>
                            <div className="flex items-center space-x-2"><RadioGroupItem value="Limit" id="orderType-limit-crypto" /><Label htmlFor="orderType-limit-crypto" className="font-normal">Limit</Label></div>
@@ -373,6 +394,18 @@ const FutureOrderForm = ({ asset, assetType, productType, onProductTypeChange, i
                     <div><Label htmlFor="qty-future">Lots</Label><Input id="qty-future" type="number" value={quantity} onChange={e => setQuantity(e.target.value)} min="1" step="1"/></div>
                     <div><Label htmlFor="price-future">Price</Label><Input id="price-future" type="text" value={price} onChange={e => setPrice(e.target.value)} disabled={orderType === 'Market'} /></div>
                 </div>
+
+                <div className="flex flex-wrap gap-x-4 sm:gap-x-6 gap-y-2 text-sm">
+                    <div className="flex items-center space-x-2">
+                        <Checkbox id="day-order-future" />
+                        <Label htmlFor="day-order-future" className="font-normal">Day order</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                        <Checkbox id="aon-order-future" />
+                        <Label htmlFor="aon-order-future" className="font-normal">All or none order</Label>
+                    </div>
+                </div>
+
                  <RadioGroup value={orderType} onValueChange={(value) => setOrderType(value)} className="flex flex-wrap gap-x-4 gap-y-2">
                    <div className="flex items-center space-x-2"><RadioGroupItem value="Market" id="orderType-market-future" /><Label htmlFor="orderType-market-future" className="font-normal">Market</Label></div>
                    <div className="flex items-center space-x-2"><RadioGroupItem value="Limit" id="orderType-limit-future" /><Label htmlFor="orderType-limit-future" className="font-normal">Limit</Label></div>
