@@ -60,30 +60,6 @@ const ExpandableProfileItem: React.FC<ProfileItemProps & {children: React.ReactN
     )
 }
 
-const WalletDownloadItem = () => {
-    const { toast } = useToast();
-
-    const handleDownload = (e: React.MouseEvent) => {
-        e.stopPropagation();
-        toast({
-            title: 'Downloading Wallet (Mock)',
-            description: 'Your secure offline wallet package is being prepared for download.',
-        });
-        // In a real app, this would trigger a file download.
-    };
-
-    return (
-        <div className="w-full text-left p-4 flex items-center">
-            <Download className="h-6 w-6 mr-4 text-primary" />
-            <div className="flex-grow">
-                <p className="font-semibold text-foreground">Offline Wallet</p>
-                <p className="text-sm text-muted-foreground">Download your secure offline wallet package.</p>
-            </div>
-            <Button onClick={handleDownload} size="sm">Download</Button>
-        </div>
-    )
-}
-
 
 export default function ProfilePage() {
   const { user, logout, theme, setTheme, language, setLanguage } = useAuth();
@@ -282,12 +258,6 @@ export default function ProfilePage() {
                 )}
             </ExpandableProfileItem>
         )
-    },
-    {
-        icon: Download,
-        title: "Offline Wallet",
-        description: "Download your secure offline wallet package",
-        component: <WalletDownloadItem />
     },
     {
         icon: Palette,
