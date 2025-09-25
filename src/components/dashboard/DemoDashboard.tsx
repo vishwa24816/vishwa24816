@@ -225,24 +225,23 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
     if (activeMode === 'Fiat') {
         const watchlistNav = ["Top watchlist", ...Array.from({ length: 3 }, (_, i) => `Watchlist ${i + 1}`)];
         return {
-            primaryNavItems: ["Indian Stocks", "US Stocks", "Futures", "Options", "IPO"],
+            primaryNavItems: ["Indian Stocks", "US Stocks", "Futures", "Options"],
             secondaryNavTriggerCategories: {
                 "Indian Stocks": watchlistNav,
                 "US Stocks": watchlistNav,
                 "Futures": ["Index Futures", "Stock Futures"],
                 "Options": ["Dashboard", "Custom", "Readymade"],
-                "IPO": ["All", "Upcoming", "Open", "Applied"],
             }
         };
     }
     if (activeMode === 'Wealth') {
         const watchlistNav = ["Top watchlist", ...Array.from({ length: 3 }, (_, i) => `Watchlist ${i + 1}`)];
         return {
-            primaryNavItems: ["Mutual Funds", "Bonds", "Insurance"],
+            primaryNavItems: ["Mutual Funds", "Bonds", "IPO"],
             secondaryNavTriggerCategories: {
                 "Mutual Funds": watchlistNav,
                 "Bonds": watchlistNav,
-                "Insurance": ["Life Insurance", "Health Insurance", "Car Insurance", "Bike Insurance", "Other Insurance"],
+                "IPO": ["All", "Upcoming", "Open", "Applied"],
             }
         };
     }
@@ -544,9 +543,7 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
             if (activeSecondaryItem === "Readymade") return ( <div className="space-y-8"><ReadymadeStrategiesSection onStrategySelect={(legs) => setStrategyLegs(legs)} />{strategyLegs.length > 0 && <StrategyBuilder legs={strategyLegs} setLegs={setStrategyLegs} />}<NewsSection articles={newsForView} /></div> );
             return null
         }
-        if (activePrimaryItem === "IPO") {
-            return <IpoSection activeTab={activeSecondaryItem} />;
-        }
+
         if (activePrimaryItem === "Futures") {
             if (activeSecondaryItem === "Index Futures") {
                 return (
@@ -664,15 +661,8 @@ export function DemoDashboard({ activeMode, onModeChange, walletMode, setWalletM
             if (isTopWatchlist) return <div className="space-y-8"><WatchlistSection title="Government Bonds" displayItems={governmentBonds} isPredefinedList={true} onAssetClick={onAssetClick} /><WatchlistSection title="Corporate Bonds" displayItems={corporateBonds} isPredefinedList={true} onAssetClick={onAssetClick} /><NewsSection articles={newsForView} /></div>;
             if (isNumberedWatchlist) return <div className="space-y-8"><WatchlistSection title={`Bonds - ${activeSecondaryItem}`} isPredefinedList={false} localStorageKeyOverride={`simAppWatchlist_Wealth_Bonds_${activeSecondaryItem.replace(/\s+/g, '_')}`} defaultInitialItems={[]} onAssetClick={onAssetClick} /><NewsSection articles={newsForView} /></div>;
         }
-        if (activePrimaryItem === "Insurance") {
-            return (
-                <div className="flex flex-col items-center justify-center text-center py-12 text-muted-foreground">
-                    <Image src="https://placehold.co/200x200.png" alt="Insurance Coming Soon" width={200} height={200} className="mb-8 opacity-75 rounded-lg" data-ai-hint="shield protection" />
-                    <ShieldCheck className="h-16 w-16 mb-4 text-primary" />
-                    <h2 className="text-2xl font-semibold mb-2 text-foreground">Insurance Marketplace Coming Soon!</h2>
-                    <p className="max-w-md">We are working hard to bring you a seamless way to compare and purchase insurance policies directly within SIM.</p>
-                </div>
-            );
+        if (activePrimaryItem === "IPO") {
+            return <IpoSection activeTab={activeSecondaryItem} />;
         }
     }
     
