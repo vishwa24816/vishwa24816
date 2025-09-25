@@ -1,5 +1,4 @@
 
-
 "use client";
 
 import React from 'react';
@@ -60,8 +59,7 @@ export function SubNav({
                   "border-b-2 hover:bg-transparent",
                   activePrimaryItem === item
                     ? "text-primary border-primary font-semibold"
-                    : "text-muted-foreground border-transparent hover:text-primary hover:border-primary/30",
-                  isWeb3AndCold && "opacity-50 cursor-not-allowed"
+                    : "text-muted-foreground border-transparent hover:text-primary hover:border-primary/30"
                 )}
                 onClick={() => onPrimaryNavClick(item)}
               >
