@@ -59,7 +59,7 @@ export function SubNav({
                   "border-b-2 hover:bg-transparent",
                   activePrimaryItem === item
                     ? "text-primary border-primary font-semibold"
-                    : "text-muted-foreground border-transparent hover:text-primary hover:border-primary/30"
+                    : "text-muted-foreground border-transparent hover:border-primary/30"
                 )}
                 onClick={() => onPrimaryNavClick(item)}
               >
@@ -85,7 +85,7 @@ export function SubNav({
                   "border-b-2 hover:bg-transparent",
                   activeSecondaryItem === item
                     ? "text-primary border-primary font-semibold"
-                    : "text-muted-foreground border-transparent hover:text-primary hover:border-primary/30",
+                    : "text-muted-foreground border-transparent hover:border-primary/30",
                    isSpotDisabled && "opacity-50 cursor-not-allowed"
                 )}
                 onClick={() => onSecondaryNavClick(item)}
