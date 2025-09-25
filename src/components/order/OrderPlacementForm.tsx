@@ -22,7 +22,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { CalendarIcon, ChevronDown, BarChartHorizontal, ShoppingBasket, BellPlus } from 'lucide-react';
+import { CalendarIcon, ChevronDown, BarChartHorizontal, ShoppingBasket, BellPlus, Percent, CircleDollarSign } from 'lucide-react';
 import { format } from "date-fns";
 import { cn } from '@/lib/utils';
 import { useToast } from "@/hooks/use-toast";
@@ -93,6 +93,51 @@ const MarketDepth = ({ asset, onPriceClick }: { asset: Stock; onPriceClick: (pri
                         ))}
                     </div>
                 </div>
+            </div>
+        </div>
+    );
+};
+
+const StopLossTakeProfit = ({ idPrefix }: { idPrefix: string }) => {
+    const [stopLossEnabled, setStopLossEnabled] = useState(false);
+    const [stopLossType, setStopLossType] = useState<'price' | 'percent'>('price');
+    const [takeProfitEnabled, setTakeProfitEnabled] = useState(false);
+    const [takeProfitType, setTakeProfitType] = useState<'price' | 'percent'>('price');
+
+    return (
+        <div className="space-y-4 pt-4 border-t">
+            {/* Stop Loss */}
+            <div className="space-y-3">
+                <div className="flex items-center space-x-2">
+                    <Checkbox id={`${idPrefix}-sl-enable`} checked={stopLossEnabled} onCheckedChange={(checked) => setStopLossEnabled(!!checked)} />
+                    <Label htmlFor={`${idPrefix}-sl-enable`} className="font-medium">Set Stop Loss</Label>
+                </div>
+                {stopLossEnabled && (
+                    <div className="grid grid-cols-[1fr_auto] gap-2 items-center pl-6 animate-accordion-down">
+                        <Input type="number" placeholder="Enter stop loss value" />
+                        <div className="flex items-center rounded-md bg-muted p-1">
+                            <Button variant={stopLossType === 'price' ? 'secondary' : 'ghost'} size="icon" className="h-6 w-6" onClick={() => setStopLossType('price')}><CircleDollarSign className="h-4 w-4" /></Button>
+                            <Button variant={stopLossType === 'percent' ? 'secondary' : 'ghost'} size="icon" className="h-6 w-6" onClick={() => setStopLossType('percent')}><Percent className="h-4 w-4" /></Button>
+                        </div>
+                    </div>
+                )}
+            </div>
+
+            {/* Take Profit */}
+            <div className="space-y-3">
+                <div className="flex items-center space-x-2">
+                    <Checkbox id={`${idPrefix}-tp-enable`} checked={takeProfitEnabled} onCheckedChange={(checked) => setTakeProfitEnabled(!!checked)} />
+                    <Label htmlFor={`${idPrefix}-tp-enable`} className="font-medium">Set Take Profit</Label>
+                </div>
+                {takeProfitEnabled && (
+                    <div className="grid grid-cols-[1fr_auto] gap-2 items-center pl-6 animate-accordion-down">
+                        <Input type="number" placeholder="Enter take profit value" />
+                         <div className="flex items-center rounded-md bg-muted p-1">
+                            <Button variant={takeProfitType === 'price' ? 'secondary' : 'ghost'} size="icon" className="h-6 w-6" onClick={() => setTakeProfitType('price')}><CircleDollarSign className="h-4 w-4" /></Button>
+                            <Button variant={takeProfitType === 'percent' ? 'secondary' : 'ghost'} size="icon" className="h-6 w-6" onClick={() => setTakeProfitType('percent')}><Percent className="h-4 w-4" /></Button>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );
@@ -170,6 +215,8 @@ const StockOrderForm = ({ asset, assetType, productType, onProductTypeChange, in
                     </div>
                 </div>
             )}
+            
+            <StopLossTakeProfit idPrefix="stock" />
 
             <div className="flex flex-wrap gap-x-4 sm:gap-x-6 gap-y-2 text-sm">
                 <div className="flex items-center space-x-2">
@@ -313,6 +360,7 @@ const CryptoOrderForm = ({ asset, assetType, productType, onProductTypeChange, i
                                 </div>
                             </div>
                         )}
+                        <StopLossTakeProfit idPrefix="crypto" />
                         <div className="flex flex-wrap gap-x-4 sm:gap-x-6 gap-y-2 text-sm">
                             <div className="flex items-center space-x-2">
                                 <Checkbox id="day-order-crypto" />
@@ -395,6 +443,8 @@ const FutureOrderForm = ({ asset, assetType, productType, onProductTypeChange, i
                     <div><Label htmlFor="price-future">Price</Label><Input id="price-future" type="text" value={price} onChange={e => setPrice(e.target.value)} disabled={orderType === 'Market'} /></div>
                 </div>
 
+                <StopLossTakeProfit idPrefix="future" />
+
                 <div className="flex flex-wrap gap-x-4 sm:gap-x-6 gap-y-2 text-sm">
                     <div className="flex items-center space-x-2">
                         <Checkbox id="day-order-future" />
@@ -468,6 +518,7 @@ const CryptoFutureOrderForm = ({ asset, assetType, productType, onProductTypeCha
                        <div className="flex items-center space-x-2"><RadioGroupItem value="Market" id="orderType-market-cf" /><Label htmlFor="orderType-market-cf" className="font-normal">Market</Label></div>
                        <div className="flex items-center space-x-2"><RadioGroupItem value="Limit" id="orderType-limit-cf" /><Label htmlFor="orderType-limit-cf" className="font-normal">Limit</Label></div>
                     </RadioGroup>
+                    <StopLossTakeProfit idPrefix="cf" />
                      <div className="space-y-2 pt-2">
                         <Label htmlFor="leverage-cf">Leverage</Label>
                         <Select value={mtfLeverage} onValueChange={setMtfLeverage}>
@@ -522,3 +573,5 @@ export function OrderPlacementForm({ assetType, ...props }: OrderPlacementFormPr
 }
 
 // #endregion
+
+    
