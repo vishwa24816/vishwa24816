@@ -153,7 +153,7 @@ export default function ProfilePage() {
       icon: UserX,
       title: "Account Management",
       description: "Delete or disable your account",
-      onClick: () => alert('Navigate to Account Management Page'),
+      onClick: () => router.push('/profile/account-management'),
     },
     {
       icon: Lock,
