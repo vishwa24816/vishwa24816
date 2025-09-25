@@ -188,6 +188,10 @@ const StockOrderForm = ({ asset, assetType, productType, onProductTypeChange, in
                     <Checkbox id="aon-order-stock" />
                     <Label htmlFor="aon-order-stock" className="font-normal">All or none order</Label>
                 </div>
+                <div className="flex items-center space-x-2">
+                    <Checkbox id="ioc-order-stock" />
+                    <Label htmlFor="ioc-order-stock" className="font-normal">IOC</Label>
+                </div>
             </div>
 
             <RadioGroup value={orderType} onValueChange={(value) => setOrderType(value)} className="flex flex-wrap gap-x-4 gap-y-2">
@@ -285,7 +289,7 @@ const CryptoOrderForm = ({ asset, assetType, productType, onProductTypeChange, i
     return (
         <div className="bg-card shadow-md rounded-lg mt-4">
             <Tabs value={orderMode} onValueChange={setOrderMode} className="w-full">
-                <TabsList className="w-full justify-start rounded-none bg-transparent border-b p-0">
+                 <TabsList className="w-full justify-start rounded-none bg-transparent border-b p-0">
                     <TabsTrigger value="Regular" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">Regular</TabsTrigger>
                     <TabsTrigger value="SP" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">SP</TabsTrigger>
                 </TabsList>
@@ -325,6 +329,10 @@ const CryptoOrderForm = ({ asset, assetType, productType, onProductTypeChange, i
                             <div className="flex items-center space-x-2">
                                 <Checkbox id="aon-order-crypto" />
                                 <Label htmlFor="aon-order-crypto" className="font-normal">All or none order</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                                <Checkbox id="ioc-order-crypto" />
+                                <Label htmlFor="ioc-order-crypto" className="font-normal">IOC</Label>
                             </div>
                         </div>
                         <RadioGroup value={orderType} onValueChange={(value) => setOrderType(value)} className="flex flex-wrap gap-x-4 gap-y-2">
@@ -403,6 +411,10 @@ const FutureOrderForm = ({ asset, assetType, productType, onProductTypeChange, i
                     <div className="flex items-center space-x-2">
                         <Checkbox id="aon-order-future" />
                         <Label htmlFor="aon-order-future" className="font-normal">All or none order</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                        <Checkbox id="ioc-order-future" />
+                        <Label htmlFor="ioc-order-future" className="font-normal">IOC</Label>
                     </div>
                 </div>
 
@@ -518,3 +530,5 @@ export function OrderPlacementForm({ assetType, ...props }: OrderPlacementFormPr
 }
 
 // #endregion
+
+    
