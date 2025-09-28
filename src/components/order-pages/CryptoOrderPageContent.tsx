@@ -173,3 +173,5 @@ export function CryptoOrderPageContent({ asset, assetSpecificNews, onBack }: Cry
       </div>
   );
 }
+
+    
