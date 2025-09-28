@@ -15,18 +15,16 @@ import { cn } from '@/lib/utils';
 import { MarketOverview } from '@/components/dashboard/MarketOverview';
 import { mockMarketIndices, mockCryptoAssets } from '@/lib/mockData';
 import { SideMenu } from './SideMenu';
-import type { WalletMode } from '../dashboard/CryptoHoldingsSection';
 import type { MainView } from '@/app/page';
 
 interface AppHeaderProps {
   activeMode?: 'Portfolio' | 'Fiat' | 'Crypto' | 'Web3' | 'Wealth';
   onModeChange?: (mode: 'Portfolio' | 'Fiat' | 'Crypto' | 'Web3' | 'Wealth') => void;
   isRealMode?: boolean;
-  walletMode?: WalletMode;
   onNavigate?: (view: MainView) => void;
 }
 
-export function AppHeader({ activeMode, onModeChange, isRealMode, walletMode, onNavigate }: AppHeaderProps) {
+export function AppHeader({ activeMode, onModeChange, isRealMode, onNavigate }: AppHeaderProps) {
   const { user } = useAuth();
   const router = useRouter();
   const pathname = usePathname();

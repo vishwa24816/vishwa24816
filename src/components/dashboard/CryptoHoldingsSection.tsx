@@ -176,8 +176,6 @@ interface CryptoHoldingsSectionProps {
   isRealMode?: boolean;
   isPledged?: boolean;
   onAssetClick: (asset: Stock) => void;
-  walletMode: WalletMode;
-  setWalletMode: (mode: WalletMode) => void;
 }
 
 export function CryptoHoldingsSection({
@@ -186,8 +184,6 @@ export function CryptoHoldingsSection({
   isRealMode = false,
   isPledged = false,
   onAssetClick,
-  walletMode,
-  setWalletMode,
 }: CryptoHoldingsSectionProps) {
   const { toast } = useToast();
   const { primaryWalletId } = useAuth();
@@ -242,7 +238,7 @@ export function CryptoHoldingsSection({
   const totalPreviousDayValue = totalCurrentValue - totalDayChangeAbsolute;
   const totalDayChangePercent = totalPreviousDayValue !== 0 ? (totalDayChangeAbsolute / totalPreviousDayValue) * 100 : 0;
 
-  const walletCardTitle = walletMode === 'personal' && primaryWallet ? primaryWallet.name : isRealMode ? 'Crypto Wallet' : 'Crypto & Web3 Wallet';
+  const walletCardTitle = primaryWallet ? primaryWallet.name : isRealMode ? 'Crypto Wallet' : 'Crypto & Web3 Wallet';
   const holdingsCardTitle = 'Crypto & Web3 Holdings';
 
   const chartData = useMemo(() => {
@@ -425,15 +421,6 @@ export function CryptoHoldingsSection({
             <CardTitle className="text-xl font-semibold font-headline text-primary flex items-center">
               <Bitcoin className="h-6 w-6 mr-2" /> {walletCardTitle}
             </CardTitle>
-            <Button
-              onClick={() => setWalletMode(walletMode === 'exchange' ? 'personal' : 'exchange')}
-              variant="outline"
-              size="sm"
-              className="h-8 px-3 text-xs capitalize flex items-center gap-2"
-            >
-              <Repeat className="h-4 w-4" />
-              {walletMode}
-            </Button>
           </CardHeader>
           <CardContent>
             <div className="space-y-3 pt-2 mb-4">
@@ -463,34 +450,32 @@ export function CryptoHoldingsSection({
                 </div>
               </div>
             </div>
-             {walletMode === 'personal' && (
-                <div className="pt-4 border-t space-y-2">
-                    <div className="grid grid-cols-3 gap-2">
-                        <Button variant="outline" onClick={() => toggleAction('send')}>
-                            <Send className="mr-2 h-4 w-4" /> Send
-                        </Button>
-                        <Button variant="outline" onClick={() => toggleAction('receive')}>
-                            <ArrowDownToLine className="mr-2 h-4 w-4" /> Receive
-                        </Button>
-                        <Button variant="outline" onClick={() => toggleAction('history')}>
-                            <History className="mr-2 h-4 w-4" /> History
-                        </Button>
-                    </div>
-                     {expandedAction === 'send' && (
-                        <SendContent assets={holdings} onConfirm={handleSendConfirm} onCancel={() => setExpandedAction(null)} />
-                    )}
-                    {expandedAction === 'receive' && holdings.length > 0 && (
-                        <ReceiveContent
-                            asset={holdings[0]}
-                            walletAddress="bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh"
-                            onCancel={() => setExpandedAction(null)}
-                        />
-                    )}
-                    {expandedAction === 'history' && (
-                        <HistoryContent transactions={mockTransactions} onCancel={() => setExpandedAction(null)} />
-                    )}
+             <div className="pt-4 border-t space-y-2">
+                <div className="grid grid-cols-3 gap-2">
+                    <Button variant="outline" onClick={() => toggleAction('send')}>
+                        <Send className="mr-2 h-4 w-4" /> Send
+                    </Button>
+                    <Button variant="outline" onClick={() => toggleAction('receive')}>
+                        <ArrowDownToLine className="mr-2 h-4 w-4" /> Receive
+                    </Button>
+                    <Button variant="outline" onClick={() => toggleAction('history')}>
+                        <History className="mr-2 h-4 w-4" /> History
+                    </Button>
                 </div>
-            )}
+                 {expandedAction === 'send' && (
+                    <SendContent assets={holdings} onConfirm={handleSendConfirm} onCancel={() => setExpandedAction(null)} />
+                )}
+                {expandedAction === 'receive' && holdings.length > 0 && (
+                    <ReceiveContent
+                        asset={holdings[0]}
+                        walletAddress="bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh"
+                        onCancel={() => setExpandedAction(null)}
+                    />
+                )}
+                {expandedAction === 'history' && (
+                    <HistoryContent transactions={mockTransactions} onCancel={() => setExpandedAction(null)} />
+                )}
+            </div>
           </CardContent>
         </Card>
 
