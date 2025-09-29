@@ -131,6 +131,7 @@ export const CustomNode: React.FC<NodeProps<CustomNodeData>> = ({ data, isConnec
   return (
     <Card className={cn(
         "shadow-lg w-52 bg-card border-2 border-primary/20",
+        isActionNode && 'nodrag',
         label === 'Execute Buy' && 'bg-green-600 text-white border-green-700',
         label === 'Execute Sell' && 'bg-red-500 text-white border-red-700',
     )}>
@@ -143,7 +144,7 @@ export const CustomNode: React.FC<NodeProps<CustomNodeData>> = ({ data, isConnec
           type="target"
           position={Position.Top}
           isConnectable={isConnectable}
-          className="!bg-primary"
+          className="!bg-primary !w-4 !h-4"
         />
       </CardHeader>
       {showContent && (
@@ -159,7 +160,7 @@ export const CustomNode: React.FC<NodeProps<CustomNodeData>> = ({ data, isConnec
         type="source"
         position={Position.Bottom}
         isConnectable={isConnectable}
-        className="!bg-primary"
+        className="!bg-primary !w-4 !h-4"
       />
     </Card>
   );
