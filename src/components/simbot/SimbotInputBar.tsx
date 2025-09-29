@@ -19,46 +19,32 @@ export function SimbotInputBar({ onNavigateRequest, showSuggestions = false, isR
     const [inputValue, setInputValue] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
-    const handleSendMessage = async (messageText: string, assetToNavigate?: { asset: Stock, details?: InitialOrderDetails }) => {
+    const handleSendMessage = async (messageText: string) => {
         const trimmedInput = messageText.trim();
         if (!trimmedInput) return;
 
         setIsLoading(true);
         setInputValue('');
 
-        if (assetToNavigate) {
-            setTimeout(() => {
-                onNavigateRequest(assetToNavigate.asset, assetToNavigate.details);
-            }, 1000);
-        }
-
         const result = await sendMessageToSimbotAction(trimmedInput);
-
-        if (result.navigationTarget && !assetToNavigate) {
-            const assetSymbol = result.navigationTarget.split('/').pop();
-            const asset = allAssets.find(a => a.symbol === assetSymbol);
-            if (asset) {
-                onNavigateRequest(asset);
-            }
-        }
+        setIsLoading(false);
         
         // In a real implementation, we'd add the response to a global message state.
-        // For this integration, we are just handling the navigation part.
         console.log("Simbot Reply:", result.reply);
 
-        setIsLoading(false);
-    };
-
-    const handleSuggestionClick = (message: string, symbol?: string, details?: InitialOrderDetails) => {
-        if (symbol) {
-            const asset = allAssets.find(a => a.symbol === symbol);
-            if (asset) {
-                handleSendMessage(message, { asset, details });
+        if (result.navigationTarget) {
+            if(result.navigationTarget === 'strategy-builder') {
+                 // The 'legs' will be handled by the page calling this component
+                 if(onNavigateRequest) {
+                     onNavigateRequest({} as Stock, { ...result.initialOrderDetails, legs: result.legs });
+                 }
             } else {
-                handleSendMessage(message);
+                const assetSymbol = result.navigationTarget.split('/').pop();
+                const asset = allAssets.find(a => a.symbol === assetSymbol);
+                if (asset) {
+                    onNavigateRequest(asset, result.initialOrderDetails);
+                }
             }
-        } else {
-             handleSendMessage(message);
         }
     };
     
@@ -85,7 +71,7 @@ export function SimbotInputBar({ onNavigateRequest, showSuggestions = false, isR
              {showSuggestions && (
                  <div className="flex items-center space-x-2 mb-2 overflow-x-auto no-scrollbar pb-1 px-4">
                     {suggestions.map((s, i) => (
-                         <Button key={i} variant="outline" size="sm" onClick={() => handleSuggestionClick(s.message, s.symbol, s.details as any)}>
+                         <Button key={i} variant="outline" size="sm" onClick={() => handleSendMessage(s.message)}>
                             {s.message}
                         </Button>
                     ))}
@@ -120,3 +106,5 @@ export function SimbotInputBar({ onNavigateRequest, showSuggestions = false, isR
         </div>
     );
 }
+
+    

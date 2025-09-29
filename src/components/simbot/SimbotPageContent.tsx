@@ -6,11 +6,10 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Bot, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import type { ChatMessage, Stock } from '@/types';
+import type { ChatMessage, Stock, InitialOrderDetails } from '@/types';
 import { sendMessageToSimbotAction } from '@/app/actions';
 import { useAuth } from '@/contexts/AuthContext';
 import { SimbotInputBar } from './SimbotInputBar';
-import type { InitialOrderDetails } from '@/app/page';
 
 export function SimbotPageContent({ onNavigateRequest }: { onNavigateRequest: (asset: Stock, details?: InitialOrderDetails) => void; }) {
   const { user: authUser, language, isRealMode } = useAuth();
@@ -103,3 +102,5 @@ export function SimbotPageContent({ onNavigateRequest }: { onNavigateRequest: (a
       </div>
   );
 }
+
+    

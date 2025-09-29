@@ -1,11 +1,11 @@
 
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import type { Stock, NewsArticle } from '@/types';
+import type { Stock, NewsArticle, InitialOrderDetails } from '@/types';
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, TrendingUp, TrendingDown, Info, Maximize2, BarChart2, Bot } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -19,9 +19,10 @@ interface CryptoFutureOrderPageContentProps {
   asset: Stock;
   assetSpecificNews: NewsArticle[];
   onBack: () => void;
+  initialDetails?: InitialOrderDetails | null;
 }
 
-export function CryptoFutureOrderPageContent({ asset, assetSpecificNews, onBack }: CryptoFutureOrderPageContentProps) {
+export function CryptoFutureOrderPageContent({ asset, assetSpecificNews, onBack, initialDetails }: CryptoFutureOrderPageContentProps) {
   const { toast } = useToast();
   
   const [activeTimescale, setActiveTimescale] = useState('24H');
@@ -88,7 +89,7 @@ export function CryptoFutureOrderPageContent({ asset, assetSpecificNews, onBack 
             ))}
           </div>
           
-          <OrderPlacementForm asset={asset} productType={productTypeForOrder} onProductTypeChange={setProductTypeForOrder} assetType={assetType}/>
+          <OrderPlacementForm asset={asset} productType={productTypeForOrder} onProductTypeChange={setProductTypeForOrder} assetType={assetType} initialDetails={initialDetails} />
 
           <Tabs defaultValue="overview" className="w-full">
             <TabsList className="w-full bg-muted/30 flex overflow-x-auto whitespace-nowrap no-scrollbar rounded-none p-0 h-auto border-b mb-1">
@@ -155,6 +156,10 @@ export function CryptoFutureOrderPageContent({ asset, assetSpecificNews, onBack 
                   <p className="text-xs text-muted-foreground">Lot Size</p>
                   <p className="font-semibold text-foreground">{asset.lotSize || 'N/A'}</p>
                 </div>
+                 <div>
+                  <p className="text-xs text-muted-foreground">Open Interest</p>
+                  <p className="font-semibold text-foreground">{asset.openInterest?.toLocaleString() || 'N/A'}</p>
+                </div>
               </div>
             </TabsContent>
 
@@ -171,3 +176,5 @@ export function CryptoFutureOrderPageContent({ asset, assetSpecificNews, onBack 
     </div>
   );
 }
+
+    
