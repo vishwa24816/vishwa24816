@@ -11,6 +11,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 
 interface PostCardProps {
@@ -41,6 +42,9 @@ const RecommendationIcon = ({ type }: { type?: CommunityPost['recommendationType
 
 export function PostCard({ post, onAssetClick, isDetailPage = false }: PostCardProps) {
   const router = useRouter();
+  const [isLiked, setIsLiked] = useState(false);
+  const [likeCount, setLikeCount] = useState(post.likes);
+
   const timeAgo = formatDistanceToNow(new Date(post.timestamp), { addSuffix: true });
   const userInitial = post.user.name?.[0].toUpperCase() || post.user.username?.[0].toUpperCase() || 'U';
   const isResearchPost = post.researchFirm || post.recommendationType;
@@ -56,6 +60,12 @@ export function PostCard({ post, onAssetClick, isDetailPage = false }: PostCardP
     if (!isDetailPage) {
       router.push(`/community/post/${post.id}`);
     }
+  };
+  
+  const handleLikeClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsLiked(!isLiked);
+    setLikeCount(currentCount => isLiked ? currentCount - 1 : currentCount + 1);
   };
 
   return (
@@ -152,9 +162,9 @@ export function PostCard({ post, onAssetClick, isDetailPage = false }: PostCardP
               <Repeat className="h-4 w-4 group-hover:text-primary transition-colors" />
               <span className="text-xs">{post.reposts > 0 ? post.reposts : ''}</span>
             </Button>
-            <Button variant="ghost" size="sm" className="hover:bg-primary/10 hover:text-primary rounded-full flex items-center space-x-1.5 group">
-              <Heart className="h-4 w-4 group-hover:text-primary transition-colors" />
-              <span className="text-xs">{post.likes > 0 ? post.likes : ''}</span>
+             <Button variant="ghost" size="sm" className="hover:bg-red-500/10 hover:text-red-500 rounded-full flex items-center space-x-1.5 group" onClick={handleLikeClick}>
+              <Heart className={cn("h-4 w-4 group-hover:text-red-500 transition-colors", isLiked && "fill-red-500 text-red-500")} />
+              <span className={cn("text-xs", isLiked && "text-red-500")}>{likeCount > 0 ? likeCount : ''}</span>
             </Button>
             <Button variant="ghost" size="sm" className="hover:bg-primary/10 hover:text-primary rounded-full flex items-center group">
               <Share2 className="h-4 w-4 group-hover:text-primary transition-colors" />
