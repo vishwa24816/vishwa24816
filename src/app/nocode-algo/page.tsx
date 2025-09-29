@@ -63,8 +63,8 @@ const initialNodes: Node[] = [
 const nodeConfig = {
     'start-trigger': { label: 'Start Trigger', icon: Zap },
     'condition': { label: 'If/Else Condition', icon: GitBranch },
-    'buy': { label: 'Execute Buy', icon: CheckCircle, className: "bg-green-500 text-white" },
-    'sell': { label: 'Execute Sell', icon: XCircle, className: "bg-red-500 text-white" },
+    'buy': { label: 'Execute Buy', icon: CheckCircle },
+    'sell': { label: 'Execute Sell', icon: XCircle },
     'end-flow': { label: 'End Flow', icon: ArrowRight },
 };
 type NodeTypeKey = keyof typeof nodeConfig;
@@ -93,7 +93,7 @@ const NodePalette = ({ onNodeClick }: { onNodeClick: (type: NodeTypeKey) => void
                     onClick={() => onNodeClick(type as NodeTypeKey)}
                     onDragStart={(event) => onDragStart(event, type as NodeTypeKey)}
                     draggable
-                    className={cn("p-3 border rounded-md cursor-pointer flex items-center gap-2 transition-colors hover:shadow-md hover:border-primary", config.className)}
+                    className={cn("p-3 border rounded-md cursor-pointer flex items-center gap-2 transition-colors hover:shadow-md hover:border-primary")}
                 >
                     <Icon className="h-5 w-5" />
                     <span className="text-sm font-medium">{config.label}</span>

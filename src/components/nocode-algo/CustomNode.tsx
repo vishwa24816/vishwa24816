@@ -128,13 +128,20 @@ export const CustomNode: React.FC<NodeProps<CustomNodeData>> = ({ data, isConnec
   const handleStopPropagation = (e: React.MouseEvent) => {
     e.stopPropagation();
   };
+  
+  const isActionNode = label === 'Execute Buy' || label === 'Execute Sell';
+  const showContent = isExpanded && !isActionNode;
 
   return (
-    <Card className="shadow-lg w-52 bg-card border-2 border-primary/20">
+    <Card className={cn(
+        "shadow-lg w-52 bg-card border-2 border-primary/20",
+        label === 'Execute Buy' && 'bg-green-500/90 text-white border-green-700',
+        label === 'Execute Sell' && 'bg-red-500/90 text-white border-red-700',
+    )}>
       {/* The 'nodrag' class on the CardHeader makes the entire node draggable via its header */}
       <CardHeader className="nodrag flex flex-row items-center justify-between p-3 space-y-0 cursor-move">
         <CardTitle className="text-sm font-medium flex items-center gap-2">
-          {Icon && <Icon className="h-4 w-4 text-primary" />}
+          {Icon && <Icon className={cn("h-4 w-4", isActionNode ? 'text-white' : 'text-primary')} />}
           {label}
         </CardTitle>
         <Handle
@@ -144,7 +151,7 @@ export const CustomNode: React.FC<NodeProps<CustomNodeData>> = ({ data, isConnec
           className="!bg-primary"
         />
       </CardHeader>
-      {isExpanded && (
+      {showContent && (
         <CardContent className="p-3 pt-0" onClick={handleStopPropagation}>
           {label === 'If/Else Condition' ? (
               <ConditionNodeContent />
