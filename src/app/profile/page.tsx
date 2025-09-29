@@ -162,25 +162,6 @@ export default function ProfilePage() {
       onClick: () => router.push('/profile/security'),
     },
     {
-      icon: Wallet,
-      title: "Portfolio Based Currency",
-      description: "Select your preferred currency for portfolio view",
-      component: (
-         <ExpandableProfileItem icon={Wallet} title="Portfolio Based Currency" description="Select your preferred currency for portfolio view">
-            <RadioGroup value={platformCurrency} onValueChange={setPlatformCurrency} className="space-y-2">
-                 <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="INR" id="currency-inr" />
-                    <Label htmlFor="currency-inr" className="font-normal">INR</Label>
-                </div>
-                 <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="USDT" id="currency-usdt" />
-                    <Label htmlFor="currency-usdt" className="font-normal">USDT</Label>
-                </div>
-            </RadioGroup>
-        </ExpandableProfileItem>
-      )
-    },
-    {
         icon: Repeat,
         title: "Wallet Management",
         description: "Add, remove, or view your wallets",

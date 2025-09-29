@@ -290,41 +290,28 @@ const StockOrderForm = ({ asset, assetType, productType, onProductTypeChange, in
 };
 
 const CryptoOrderForm = ({ asset, assetType, productType, onProductTypeChange, initialDetails, userHoldings }: any) => {
-    const [quantity, setQuantity] = useState<number | string>('1');
+    const [quantity, setQuantity] = useState<number | string>(initialDetails?.quantity || '');
     const [price, setPrice] = useState<number | string>(asset?.price?.toFixed(2) || '');
     const [orderMode, setOrderMode] = useState('Regular');
     const [orderType, setOrderType] = useState('Limit');
     const [isAddToBasketDialogOpen, setIsAddToBasketDialogOpen] = useState(false);
     const [lockInYears, setLockInYears] = useState('');
     const [lockInMonths, setLockInMonths] = useState('');
-    const [baseCurrency, setBaseCurrency] = useState('INR');
+    
+    const [displayedMargin, setDisplayedMargin] = useState('₹0.00');
 
-    const displayedMargin = useMemo(() => {
+    useEffect(() => {
         const numQty = parseFloat(String(quantity)) || 0;
         const numPrice = parseFloat(String(price)) || 0;
-        
-        if (baseCurrency === 'INR') {
-            return `₹${(numQty * numPrice).toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-        }
-        
-        const baseAsset = userHoldings.find((h: PortfolioHolding) => h.symbol === baseCurrency);
-        if (baseAsset) {
-            const totalCostInQuote = numQty * numPrice;
-            const margin = totalCostInQuote / baseAsset.ltp;
-            return `${margin.toFixed(8)} ${baseCurrency}`;
-        }
+        setDisplayedMargin(`₹${(numQty * numPrice).toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`);
 
-        return '₹0.00';
-
-    }, [quantity, price, baseCurrency, userHoldings, asset.price]);
+    }, [quantity, price]);
 
     const handleMarketDepthPriceClick = (clickedPrice: number) => {
         setPrice(clickedPrice.toFixed(2));
         setOrderType('Limit');
     };
     
-    const availableCurrencies = ['INR', ...userHoldings.map((h: PortfolioHolding) => h.symbol)];
-
     return (
         <div className="bg-card shadow-md rounded-lg mt-4">
             <Tabs value={orderMode} onValueChange={setOrderMode} className="w-full">
@@ -341,15 +328,6 @@ const CryptoOrderForm = ({ asset, assetType, productType, onProductTypeChange, i
                         <div className="grid grid-cols-2 gap-4 items-end">
                             <div><Label htmlFor="qty-crypto">Qty.</Label><Input id="qty-crypto" type="text" value={quantity} onChange={(e) => setQuantity(e.target.value)} /></div>
                             <div><Label htmlFor="price-crypto">Price</Label><Input id="price-crypto" type="text" value={price} onChange={(e) => setPrice(e.target.value)} disabled={orderType === 'Market'} /></div>
-                        </div>
-                         <div className="space-y-2">
-                            <Label htmlFor="base-currency">Pay with</Label>
-                            <Select value={baseCurrency} onValueChange={setBaseCurrency}>
-                                <SelectTrigger id="base-currency"><SelectValue placeholder="Select currency" /></SelectTrigger>
-                                <SelectContent>
-                                    {availableCurrencies.map((c) => c && <SelectItem key={c} value={c}>{c}</SelectItem>)}
-                                </SelectContent>
-                            </Select>
                         </div>
                         {productType === 'HODL' && (
                             <div className="space-y-2 pt-2 animate-accordion-down">
@@ -573,5 +551,3 @@ export function OrderPlacementForm({ assetType, ...props }: OrderPlacementFormPr
 }
 
 // #endregion
-
-    

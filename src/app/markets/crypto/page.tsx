@@ -17,7 +17,6 @@ type CryptoFilter = 'all' | 'trending' | 'gainers' | 'losers';
 
 export default function CryptoMarketsPage() {
     const [activeTab, setActiveTab] = useState<CryptoFilter>('all');
-    const [currency, setCurrency] = useState('usd');
     const [timeframe, setTimeframe] = useState('24h');
     const [selectedAsset, setSelectedAsset] = useState<Stock | null>(null);
 
@@ -75,17 +74,6 @@ export default function CryptoMarketsPage() {
                     <div className="border-b bg-background p-4 flex items-center gap-2">
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <Button variant="outline" size="sm" className="capitalize">{currency} <ChevronDown className="h-4 w-4 ml-1" /></Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent>
-                                <DropdownMenuRadioGroup value={currency} onValueChange={setCurrency}>
-                                    <DropdownMenuRadioItem value="usd">USD</DropdownMenuRadioItem>
-                                    <DropdownMenuRadioItem value="inr">INR</DropdownMenuRadioItem>
-                                </DropdownMenuRadioGroup>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
                                 <Button variant="outline" size="sm" className="capitalize">{timeframe} <ChevronDown className="h-4 w-4 ml-1" /></Button>
                             </DropdownMenuTrigger>
                              <DropdownMenuContent>
@@ -102,7 +90,7 @@ export default function CryptoMarketsPage() {
                     <ScrollArea className="flex-grow">
                         <div className="divide-y divide-border">
                             {filteredAssets.map((asset, index) => (
-                                <CryptoListItem key={asset.id} asset={asset} rank={index + 1} currency={currency} onClick={() => handleAssetClick(asset)} />
+                                <CryptoListItem key={asset.id} asset={asset} rank={index + 1} onClick={() => handleAssetClick(asset)} />
                             ))}
                         </div>
                     </ScrollArea>

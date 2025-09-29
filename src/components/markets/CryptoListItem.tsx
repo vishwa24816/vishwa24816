@@ -11,14 +11,13 @@ import { cn } from '@/lib/utils';
 interface CryptoListItemProps {
   asset: Stock;
   rank: number;
-  currency: 'usd' | 'inr';
   onClick: () => void;
 }
 
-const formatCurrency = (value: number, currency: 'usd' | 'inr', compact: boolean = false) => {
-    const formatter = new Intl.NumberFormat('en-US', {
+const formatCurrency = (value: number, compact: boolean = false) => {
+    const formatter = new Intl.NumberFormat('en-IN', {
         style: 'currency',
-        currency: currency.toUpperCase(),
+        currency: 'INR',
         notation: compact ? 'compact' : 'standard',
         minimumFractionDigits: 2,
         maximumFractionDigits: compact ? 2 : (value < 1 ? 6 : 2),
@@ -26,15 +25,14 @@ const formatCurrency = (value: number, currency: 'usd' | 'inr', compact: boolean
     return formatter.format(value);
 };
 
-export const CryptoListItem: React.FC<CryptoListItemProps> = ({ asset, rank, currency, onClick }) => {
+export const CryptoListItem: React.FC<CryptoListItemProps> = ({ asset, rank, onClick }) => {
     const isPositive = asset.changePercent >= 0;
-    const USD_TO_INR_RATE = 83;
     
-    const displayPrice = currency === 'inr' ? asset.price : asset.price / USD_TO_INR_RATE;
+    const displayPrice = asset.price;
     const marketCapValue = asset.marketCap ? parseFloat(asset.marketCap.replace('₹', '').replace('T', '')) * 1e12 : 0;
-    const displayMarketCap = currency === 'inr' ? marketCapValue : marketCapValue / USD_TO_INR_RATE;
+    const displayMarketCap = marketCapValue;
     const volumeValue = asset.volume || 0;
-    const displayVolume = currency === 'inr' ? volumeValue : volumeValue / USD_TO_INR_RATE;
+    const displayVolume = volumeValue;
 
     return (
         <div className="px-4 py-3 hover:bg-muted/50 cursor-pointer" onClick={onClick}>
@@ -49,11 +47,11 @@ export const CryptoListItem: React.FC<CryptoListItemProps> = ({ asset, rank, cur
                          <p className="text-xs text-muted-foreground">{asset.name}</p>
                     </div>
                     <p className="text-xs text-muted-foreground">
-                        Mkt Cap: {formatCurrency(displayMarketCap, currency, true)}
+                        Mkt Cap: {formatCurrency(displayMarketCap, true)}
                     </p>
                 </div>
                  <div className="text-right shrink-0">
-                    <p className="font-semibold text-foreground text-sm">{formatCurrency(displayPrice, currency)}</p>
+                    <p className="font-semibold text-foreground text-sm">{formatCurrency(displayPrice)}</p>
                     <p className={cn("text-xs flex items-center justify-end", isPositive ? 'text-green-600' : 'text-red-500')}>
                         {isPositive ? <TrendingUp className="h-3 w-3 mr-1" /> : <TrendingDown className="h-3 w-3 mr-1" />}
                         {asset.changePercent.toFixed(2)}%
@@ -64,7 +62,7 @@ export const CryptoListItem: React.FC<CryptoListItemProps> = ({ asset, rank, cur
                 </Button>
             </div>
              <p className="text-xs text-muted-foreground mt-1 text-right">
-                Vol (24h): {formatCurrency(displayVolume, currency, true)}
+                Vol (24h): {formatCurrency(displayVolume, true)}
             </p>
         </div>
     );

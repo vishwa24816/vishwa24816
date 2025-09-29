@@ -84,7 +84,7 @@ const MarketCapitalCard = () => (
       <CardTitle className="text-base">Market Capital</CardTitle>
     </CardHeader>
     <CardContent>
-      <p className="text-2xl font-bold">$ 2.35T</p>
+      <p className="text-2xl font-bold">₹2.35T</p>
       <div className="h-20 -mx-6 -mb-6">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={marketCapData} margin={{ top: 5, right: 0, left: 0, bottom: 0 }}>
@@ -211,8 +211,8 @@ const CompareCoin = () => (
 
 const MarketStatsCard: React.FC<{ asset: Stock }> = ({ asset }) => {
     const stats = [
-        { label: 'Coin Price', value: `$${(asset.price / 83).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 6})}` },
-        { label: 'Market Capital', value: `$${(parseFloat(asset.marketCap?.replace('₹', '').replace('T', ''))*1e12 / 83 / 1e12).toFixed(2)}T` },
+        { label: 'Coin Price', value: `₹${(asset.price).toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: (asset.price) < 1 ? 6 : 2})}` },
+        { label: 'Market Capital', value: asset.marketCap || 'N/A' },
         { label: 'Technology', value: asset.fundamentals?.technology || 'N/A' },
         { label: 'Introduction Year', value: asset.fundamentals?.introductionYear || 'N/A' },
         { label: 'Tech Score Indicator', value: asset.fundamentals?.techScoreIndicator || 'N/A' },
@@ -306,11 +306,11 @@ export default function CryptoMarketPage({ params, onBack }: CryptoMarketPagePro
                     <TabsContent value="market" className="p-4 space-y-6 mt-0">
                          <div className="flex items-start justify-between">
                             <div className="flex-1">
-                                <p className="text-sm text-muted-foreground">{asset.name} / U.S. Dollar</p>
-                                <p className="text-3xl font-bold">${(asset.price / 83).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: (asset.price / 83) < 1 ? 6 : 2})}</p>
+                                <p className="text-sm text-muted-foreground">{asset.name} / Indian Rupee</p>
+                                <p className="text-3xl font-bold">₹{(asset.price).toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: (asset.price) < 1 ? 6 : 2})}</p>
                                 <div className="flex items-center text-sm">
                                     <span className={cn(isPositiveChange ? 'text-green-500' : 'text-red-500')}>
-                                        {(asset.change / 83).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: (asset.price / 83) < 1 ? 6 : 2, signDisplay: 'always'})}
+                                        {(asset.change).toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: (asset.price) < 1 ? 6 : 2, signDisplay: 'always'})}
                                     </span>
                                     <span className={cn("ml-2", isPositiveChange ? 'text-green-500' : 'text-red-500')}>
                                         ({asset.changePercent.toFixed(2)}%)
@@ -380,17 +380,17 @@ export default function CryptoMarketPage({ params, onBack }: CryptoMarketPagePro
                         <CollapsibleSection title="Performance" icon={LineChart} defaultOpen>
                              <div className="mb-6">
                                 {asset.todayLow && asset.todayHigh && (
-                                    <PerformanceBar low={asset.todayLow / 83} high={asset.todayHigh / 83} current={asset.price / 83} labelLow="Today's Low" labelHigh="Today's High" />
+                                    <PerformanceBar low={asset.todayLow} high={asset.todayHigh} current={asset.price} labelLow="Today's Low" labelHigh="Today's High" />
                                 )}
                                 {asset.fiftyTwoWeekLow && asset.fiftyTwoWeekHigh && (
                                     <div className="mt-3">
-                                    <PerformanceBar low={asset.fiftyTwoWeekLow / 83} high={asset.fiftyTwoWeekHigh / 83} current={asset.price / 83} labelLow="52 Week Low" labelHigh="52 Week High" />
+                                    <PerformanceBar low={asset.fiftyTwoWeekLow} high={asset.fiftyTwoWeekHigh} current={asset.price} labelLow="52 Week Low" labelHigh="52 Week High" />
                                     </div>
                                 )}
                             </div>
                             <div className="grid grid-cols-2 gap-4 text-sm pt-2 mb-6">
-                                <div><p className="text-xs text-muted-foreground">Open Price</p><p className="font-semibold text-foreground">${asset.openPrice ? (asset.openPrice / 83).toFixed(2) : 'N/A'}</p></div>
-                                <div><p className="text-xs text-muted-foreground">Prev. Close</p><p className="font-semibold text-foreground">${asset.prevClosePrice ? (asset.prevClosePrice / 83).toFixed(2) : 'N/A'}</p></div>
+                                <div><p className="text-xs text-muted-foreground">Open Price</p><p className="font-semibold text-foreground">₹{asset.openPrice ? (asset.openPrice).toFixed(2) : 'N/A'}</p></div>
+                                <div><p className="text-xs text-muted-foreground">Prev. Close</p><p className="font-semibold text-foreground">₹{asset.prevClosePrice ? (asset.prevClosePrice).toFixed(2) : 'N/A'}</p></div>
                                 <div><p className="text-xs text-muted-foreground">Volume (24H)</p><p className="font-semibold text-foreground">{asset.volume?.toLocaleString() || 'N/A'}</p></div>
                                 <div><p className="text-xs text-muted-foreground">Market Cap</p><p className="font-semibold text-foreground">{asset.marketCap || 'N/A'}</p></div>
                             </div>
@@ -412,6 +412,3 @@ export default function CryptoMarketPage({ params, onBack }: CryptoMarketPagePro
         </div>
     );
 }
-
-
-
