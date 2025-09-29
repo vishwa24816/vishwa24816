@@ -31,8 +31,7 @@ export interface InitialOrderDetails {
 }
 
 export default function DashboardRouterPage() {
-  const { user, loading } = useAuth();
-  const isRealMode = user?.id === 'REAL456';
+  const { user, loading, isRealMode } = useAuth();
 
   const [activeMainView, setActiveMainView] = useState<MainView>('home');
   const [previousMainView, setPreviousMainView] = useState<MainView>('home');
@@ -154,10 +153,10 @@ export default function DashboardRouterPage() {
         />
       ) : shouldShowSimbotOnlyFooter ? (
         <footer className="fixed bottom-0 left-0 right-0 z-40 bg-card border-t border-border rounded-t-2xl shadow-lg p-2">
-            <SimbotInputBar onNavigateRequest={handleAssetClick} />
+            <SimbotInputBar onNavigateRequest={handleAssetClick} isRealMode={isRealMode} />
         </footer>
       ) : activeMainView !== 'asset_order' ? (
-         <AppFooter activeView={activeMainView} onNavigate={handleNavigate} />
+         <AppFooter activeView={activeView} onNavigate={handleNavigate} />
       ) : null}
     </ProtectedRoute>
   );

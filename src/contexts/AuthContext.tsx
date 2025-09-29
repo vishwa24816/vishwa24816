@@ -10,6 +10,7 @@ import { Toaster } from "@/components/ui/toaster";
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
+  isRealMode: boolean;
   login: (userData: User) => void;
   logout: () => void;
   loading: boolean;
@@ -82,8 +83,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     localStorage.setItem('simPrimaryWalletId', walletId);
   }
 
+  const isRealMode = user?.id === 'REAL456';
+
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated: !!user, login, logout, loading, theme, setTheme, language, setLanguage, primaryWalletId, setPrimaryWalletId }}>
+    <AuthContext.Provider value={{ user, isAuthenticated: !!user, isRealMode, login, logout, loading, theme, setTheme, language, setLanguage, primaryWalletId, setPrimaryWalletId }}>
         {children}
         <Toaster />
     </AuthContext.Provider>

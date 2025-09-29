@@ -13,7 +13,7 @@ import { SimbotInputBar } from './SimbotInputBar';
 import type { InitialOrderDetails } from '@/app/page';
 
 export function SimbotPageContent({ onNavigateRequest }: { onNavigateRequest: (asset: Stock, details?: InitialOrderDetails) => void; }) {
-  const { user: authUser, language } = useAuth();
+  const { user: authUser, language, isRealMode } = useAuth();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
@@ -98,7 +98,7 @@ export function SimbotPageContent({ onNavigateRequest }: { onNavigateRequest: (a
         </main>
         
         <footer className="fixed bottom-16 left-0 right-0 bg-background/80 backdrop-blur-sm border-t z-10">
-          <SimbotInputBar onNavigateRequest={onNavigateRequest} showSuggestions={true} />
+          <SimbotInputBar onNavigateRequest={onNavigateRequest} showSuggestions={true} isRealMode={isRealMode} />
         </footer>
       </div>
   );

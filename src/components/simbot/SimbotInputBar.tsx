@@ -12,9 +12,10 @@ import { allAssets } from '@/lib/mockData';
 interface SimbotInputBarProps {
     onNavigateRequest: (asset: Stock, details?: InitialOrderDetails) => void;
     showSuggestions?: boolean;
+    isRealMode?: boolean;
 }
 
-export function SimbotInputBar({ onNavigateRequest, showSuggestions = false }: SimbotInputBarProps) {
+export function SimbotInputBar({ onNavigateRequest, showSuggestions = false, isRealMode = false }: SimbotInputBarProps) {
     const [inputValue, setInputValue] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
@@ -48,12 +49,16 @@ export function SimbotInputBar({ onNavigateRequest, showSuggestions = false }: S
         setIsLoading(false);
     };
 
-    const handleSuggestionClick = (message: string, symbol: string, details?: InitialOrderDetails) => {
-        const asset = allAssets.find(a => a.symbol === symbol);
-        if (asset) {
-            handleSendMessage(message, { asset, details });
+    const handleSuggestionClick = (message: string, symbol?: string, details?: InitialOrderDetails) => {
+        if (symbol) {
+            const asset = allAssets.find(a => a.symbol === symbol);
+            if (asset) {
+                handleSendMessage(message, { asset, details });
+            } else {
+                handleSendMessage(message);
+            }
         } else {
-            handleSendMessage(message);
+             handleSendMessage(message);
         }
     };
     
@@ -62,13 +67,28 @@ export function SimbotInputBar({ onNavigateRequest, showSuggestions = false }: S
         handleSendMessage(inputValue);
     };
 
+    const demoSuggestions = [
+        { message: 'Buy Bitcoin', symbol: 'BTC', details: {} },
+        { message: 'Buy reliance qty 123', symbol: 'RELIANCE', details: { quantity: 123 } },
+        { message: 'Do an SIP on Parag Parikh Flexi cap for 100rs weekly', symbol: 'PARAGPARIKH', details: { orderType: 'SIP', sipAmount: 100, sipFrequency: 'Weekly' } },
+    ];
+
+    const realSuggestions = [
+        { message: 'Buy ether futures at 500rs at 10x leverage', symbol: 'ETHINR.P' },
+        { message: 'Make a long straddle on nearest expiry on bitcoin' },
+    ];
+
+    const suggestions = isRealMode ? realSuggestions : demoSuggestions;
+
     return (
         <div className="w-full pt-2">
              {showSuggestions && (
                  <div className="flex items-center space-x-2 mb-2 overflow-x-auto no-scrollbar pb-1 px-4">
-                    <Button variant="outline" size="sm" onClick={() => handleSuggestionClick('Buy Bitcoin', 'BTC')}>बिटकॉइन खरीदें</Button>
-                    <Button variant="outline" size="sm" onClick={() => handleSuggestionClick('Buy reliance qty 123', 'RELIANCE', { quantity: 123 })}>Buy reliance qty 123</Button>
-                    <Button variant="outline" size="sm" onClick={() => handleSuggestionClick('Do an SIP on Parag Parikh Flexi cap for 100rs weekly', 'PARAGPARIKH', { orderType: 'SIP', sipAmount: 100, sipFrequency: 'Weekly' })}>Do an SIP on Parag Parikh Flexi cap for 100rs weekly</Button>
+                    {suggestions.map((s, i) => (
+                         <Button key={i} variant="outline" size="sm" onClick={() => handleSuggestionClick(s.message, s.symbol, s.details as any)}>
+                            {s.message}
+                        </Button>
+                    ))}
                  </div>
             )}
             <form onSubmit={handleFormSubmit} className="flex items-center space-x-2 px-2">
