@@ -1,7 +1,7 @@
 
 "use client";
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import type { SipOrder } from '@/types';
@@ -12,12 +12,28 @@ import { CalendarClock, Edit3, PauseCircle, PlayCircle, XCircle } from 'lucide-r
 
 interface SipItemProps {
   sip: SipOrder;
+  onStatusChange: (id: string, newStatus: 'Active' | 'Paused' | 'Cancelled') => void;
 }
 
-const SipItem: React.FC<SipItemProps> = ({ sip }) => {
+const SipItem: React.FC<SipItemProps> = ({ sip, onStatusChange }) => {
   const { toast } = useToast();
   const currencySymbol = '₹';
   const valueDisplay = sip.amount ? `${currencySymbol}${sip.amount.toLocaleString()}` : `${sip.quantity} units`;
+
+  const handleTogglePause = () => {
+    if (sip.status === 'Active') {
+      onStatusChange(sip.id, 'Paused');
+      toast({ title: `SIP Paused: ${sip.instrumentName}` });
+    } else if (sip.status === 'Paused') {
+      onStatusChange(sip.id, 'Active');
+      toast({ title: `SIP Resumed: ${sip.instrumentName}` });
+    }
+  };
+  
+  const handleCancel = () => {
+      onStatusChange(sip.id, 'Cancelled');
+      toast({ title: `SIP Cancelled: ${sip.instrumentName}`, variant: "destructive"});
+  }
 
   return (
     <div className="border-b">
@@ -40,30 +56,42 @@ const SipItem: React.FC<SipItemProps> = ({ sip }) => {
         </div>
        <div className="px-3 pb-2 flex justify-end space-x-2">
             <Button variant="outline" size="sm" onClick={() => toast({ title: `Modify SIP: ${sip.instrumentName}`})}>
-            <Edit3 className="mr-1 h-3 w-3" /> Modify
+                <Edit3 className="mr-1 h-3 w-3" /> Modify
             </Button>
             {sip.status === 'Active' && (
-            <Button variant="outline" size="sm" className="text-yellow-600 border-yellow-500 hover:bg-yellow-500/10 hover:text-yellow-700" onClick={() => toast({ title: `Pause SIP: ${sip.instrumentName}`})}>
-                <PauseCircle className="mr-1 h-3 w-3" /> Pause
-            </Button>
+                <Button variant="outline" size="sm" className="text-yellow-600 border-yellow-500 hover:bg-yellow-500/10 hover:text-yellow-700" onClick={handleTogglePause}>
+                    <PauseCircle className="mr-1 h-3 w-3" /> Pause
+                </Button>
             )}
             {sip.status === 'Paused' && (
-            <Button variant="outline" size="sm" className="text-green-600 border-green-500 hover:bg-green-500/10 hover:text-green-700" onClick={() => toast({ title: `Resume SIP: ${sip.instrumentName}`})}>
-                <PlayCircle className="mr-1 h-3 w-3" /> Resume
-            </Button>
+                <Button variant="outline" size="sm" className="text-green-600 border-green-500 hover:bg-green-500/10 hover:text-green-700" onClick={handleTogglePause}>
+                    <PlayCircle className="mr-1 h-3 w-3" /> Resume
+                </Button>
             )}
-            <Button variant="destructive" size="sm" onClick={() => toast({ title: `Cancel SIP: ${sip.instrumentName}`, variant: "destructive"})}>
-            <XCircle className="mr-1 h-3 w-3" /> Cancel
-            </Button>
+            {sip.status !== 'Cancelled' && sip.status !== 'Completed' && (
+                <Button variant="destructive" size="sm" onClick={handleCancel}>
+                    <XCircle className="mr-1 h-3 w-3" /> Cancel
+                </Button>
+            )}
       </div>
     </div>
   );
 };
 
 export function SipsDisplay({ isRealMode = false }: { isRealMode?: boolean }) {
-  const sips = isRealMode 
+  const initialSips = isRealMode 
     ? mockSips.filter(s => s.assetType === 'Crypto') // Simple filter for real mode
     : mockSips;
+    
+  const [sips, setSips] = useState<SipOrder[]>(initialSips);
+
+  const handleStatusChange = (id: string, newStatus: 'Active' | 'Paused' | 'Cancelled') => {
+      setSips(currentSips => 
+          currentSips.map(sip => 
+              sip.id === id ? { ...sip, status: newStatus } : sip
+          )
+      );
+  };
 
   if (sips.length === 0) {
     return (
@@ -79,7 +107,7 @@ export function SipsDisplay({ isRealMode = false }: { isRealMode?: boolean }) {
   return (
     <ScrollArea className="h-[calc(100vh-200px)] p-1">
       {sips.map((sip) => (
-        <SipItem key={sip.id} sip={sip} />
+        <SipItem key={sip.id} sip={sip} onStatusChange={handleStatusChange} />
       ))}
     </ScrollArea>
   );
