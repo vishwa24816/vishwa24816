@@ -31,6 +31,17 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+  DialogClose,
+} from "@/components/ui/dialog";
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
   GitBranch,
   Search,
   CheckCircle,
@@ -41,6 +52,7 @@ import {
   Play,
   Share2,
   Menu,
+  Trash2,
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
@@ -65,7 +77,6 @@ const nodeConfig = {
     'condition': { label: 'If/Else Condition', icon: GitBranch },
     'buy': { label: 'Execute Buy', icon: CheckCircle },
     'sell': { label: 'Execute Sell', icon: XCircle },
-    'end-flow': { label: 'End Flow', icon: ArrowRight },
 };
 type NodeTypeKey = keyof typeof nodeConfig;
 
@@ -104,6 +115,13 @@ const NodePalette = ({ onNodeClick }: { onNodeClick: (type: NodeTypeKey) => void
     )
 }
 
+interface SavedFlow {
+    id: string;
+    name: string;
+    nodes: Node[];
+    edges: Edge[];
+}
+
 const NocodeAlgoEditor = () => {
     const { user } = useAuth();
     const { toast } = useToast();
@@ -113,6 +131,13 @@ const NocodeAlgoEditor = () => {
     const [edges, setEdges] = useState<Edge[]>([]);
     
     const reactFlowInstance = useReactFlow();
+
+    const [savedFlows, setSavedFlows] = useState<SavedFlow[]>([
+        { id: 'flow1', name: 'RSI Momentum Strategy', nodes: [], edges: [] },
+        { id: 'flow2', name: 'SMA Crossover Bot', nodes: [], edges: [] },
+    ]);
+    const [isSaveDialogOpen, setIsSaveDialogOpen] = useState(false);
+    const [flowName, setFlowName] = useState('');
 
     const onNodesChange = useCallback((changes: NodeChange[]) => setNodes((nds) => applyNodeChanges(changes, nds)), []);
     const onEdgesChange = useCallback((changes: EdgeChange[]) => setEdges((eds) => applyEdgeChanges(changes, eds)), []);
@@ -167,24 +192,48 @@ const NocodeAlgoEditor = () => {
     };
 
     const onNodeClick = (event: React.MouseEvent, node: Node) => {
-        setNodes((prevNodes) =>
-            prevNodes.map((n) => {
-                if (n.id === node.id) {
-                    return {
-                        ...n,
-                        data: {
-                            ...n.data,
-                            isExpanded: !n.data.isExpanded,
-                        },
-                    };
-                }
-                return n;
-            })
-        );
+        if(node.type === 'custom') { // Only expand custom nodes
+            setNodes((prevNodes) =>
+                prevNodes.map((n) => {
+                    if (n.id === node.id) {
+                        return {
+                            ...n,
+                            data: {
+                                ...n.data,
+                                isExpanded: !n.data.isExpanded,
+                            },
+                        };
+                    }
+                    return n;
+                })
+            );
+        }
     };
     
     const handleSimbotNavigation = (asset: Stock, details?: InitialOrderDetails) => {
       router.push(`/order/stock/${asset.symbol}`);
+    };
+
+    const handleSaveFlow = () => {
+        if (!flowName.trim()) {
+            toast({ title: 'Please enter a name for your flow.', variant: 'destructive'});
+            return;
+        }
+        const newFlow: SavedFlow = {
+            id: `flow-${Date.now()}`,
+            name: flowName,
+            nodes: nodes,
+            edges: edges,
+        };
+        setSavedFlows(prev => [...prev, newFlow]);
+        setIsSaveDialogOpen(false);
+        setFlowName('');
+        toast({ title: "Flow Saved!", description: `${flowName} has been added to your saved flows.`});
+    };
+
+    const handleRemoveFlow = (idToRemove: string) => {
+        setSavedFlows(prev => prev.filter(flow => flow.id !== idToRemove));
+        toast({ title: "Flow Removed", variant: 'destructive'});
     };
 
 
@@ -213,7 +262,7 @@ const NocodeAlgoEditor = () => {
                         <SheetTrigger asChild>
                             <Button variant="outline" size="icon">
                                 <Menu className="h-5 w-5" />
-                                <span className="sr-only">Open Nodes Menu</span>
+                                <span className="sr-only">Open Menu</span>
                             </Button>
                         </SheetTrigger>
                         <SheetContent side="left" className="w-[300px]">
@@ -221,14 +270,50 @@ const NocodeAlgoEditor = () => {
                                 <SheetTitle className="text-lg">Nodes</SheetTitle>
                             </SheetHeader>
                             <NodePalette onNodeClick={handleNodeClick} />
+                             <div className="mt-6 p-4 border-t">
+                                <h3 className="text-lg font-semibold mb-3">Saved Algo Flows</h3>
+                                <div className="space-y-2">
+                                    {savedFlows.map(flow => (
+                                        <div key={flow.id} className="flex items-center justify-between p-2 rounded-md hover:bg-muted">
+                                            <span className="text-sm font-medium">{flow.name}</span>
+                                            <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => handleRemoveFlow(flow.id)}>
+                                                <Trash2 className="h-4 w-4" />
+                                            </Button>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
                         </SheetContent>
                     </Sheet>
                 </div>
                 
                 <div className="absolute top-4 right-4 flex space-x-2">
-                    <Button onClick={() => toast({title: "Flow Saved (Mock)"})}>
-                        <Save className="mr-2 h-4 w-4" /> Save
-                    </Button>
+                    <Dialog open={isSaveDialogOpen} onOpenChange={setIsSaveDialogOpen}>
+                        <DialogTrigger asChild>
+                            <Button><Save className="mr-2 h-4 w-4" /> Save</Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                            <DialogHeader>
+                                <DialogTitle>Save Algo Flow</DialogTitle>
+                            </DialogHeader>
+                            <div className="py-4">
+                                <Label htmlFor="flow-name">Flow Name</Label>
+                                <Input 
+                                    id="flow-name" 
+                                    value={flowName} 
+                                    onChange={(e) => setFlowName(e.target.value)} 
+                                    placeholder="e.g., RSI Momentum Strategy"
+                                />
+                            </div>
+                            <DialogFooter>
+                                <DialogClose asChild>
+                                    <Button variant="outline">Cancel</Button>
+                                </DialogClose>
+                                <Button onClick={handleSaveFlow}>Save Flow</Button>
+                            </DialogFooter>
+                        </DialogContent>
+                    </Dialog>
+                    
                     <Button onClick={() => toast({title: "Executing Flow (Mock)"})}>
                         <Play className="mr-2 h-4 w-4" /> Run
                     </Button>
