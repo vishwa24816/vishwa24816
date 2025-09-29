@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { PlusCircle } from 'lucide-react';
+import { PlusCircle, XCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { LucideIcon } from 'lucide-react';
 
@@ -35,6 +35,11 @@ export const CustomNode: React.FC<NodeProps<CustomNodeData>> = ({ data, isConnec
     newFields[index] = value;
     setAssetFields(newFields);
   };
+  
+  const handleRemoveAsset = (indexToRemove: number) => {
+    setAssetFields(prev => prev.filter((_, index) => index !== indexToRemove));
+  };
+
 
   return (
     <Card className="shadow-lg w-52 bg-card border-2 border-primary/20">
@@ -56,7 +61,14 @@ export const CustomNode: React.FC<NodeProps<CustomNodeData>> = ({ data, isConnec
           <div className="space-y-2 text-xs">
             {assetFields.map((field, index) => (
                  <div key={index} className="space-y-1">
-                    <Label htmlFor={`asset-name-${id}-${index}`}>Asset Name</Label>
+                    <div className="flex items-center justify-between">
+                         <Label htmlFor={`asset-name-${id}-${index}`}>Asset Name</Label>
+                         {assetFields.length > 1 && (
+                            <Button variant="ghost" size="icon" className="h-5 w-5 text-destructive" onClick={() => handleRemoveAsset(index)}>
+                                <XCircle className="h-4 w-4"/>
+                            </Button>
+                         )}
+                    </div>
                     <Input 
                         id={`asset-name-${id}-${index}`} 
                         placeholder="Enter asset name..." 
