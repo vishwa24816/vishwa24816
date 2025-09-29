@@ -8,6 +8,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { PlusCircle, XCircle } from 'lucide-react';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { cn } from '@/lib/utils';
 import type { LucideIcon } from 'lucide-react';
 
@@ -17,48 +24,74 @@ interface CustomNodeData {
   isExpanded: boolean;
 }
 
-export const CustomNode: React.FC<NodeProps<CustomNodeData>> = ({ data, isConnectable, id }) => {
-  const { label, icon: Icon, isExpanded } = data;
-  const [assetFields, setAssetFields] = useState(['']);
+const ConditionNodeContent = () => {
+    const [indicator, setIndicator] = useState('rsi');
 
-  const handleStopPropagation = (e: React.MouseEvent) => {
-    e.stopPropagation();
-  };
+    return (
+        <div className="space-y-4 text-xs">
+            <div className="space-y-2">
+                <Label htmlFor="indicator-type">Indicator</Label>
+                <Select value={indicator} onValueChange={setIndicator}>
+                    <SelectTrigger id="indicator-type" className="h-8">
+                        <SelectValue placeholder="Select Indicator" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="rsi">RSI (Relative Strength Index)</SelectItem>
+                        <SelectItem value="macd">MACD (Moving Average Convergence Divergence)</SelectItem>
+                        <SelectItem value="sma">SMA (Simple Moving Average)</SelectItem>
+                        <SelectItem value="price">Price</SelectItem>
+                    </SelectContent>
+                </Select>
+            </div>
+            <div className="space-y-2">
+                <Label htmlFor="condition-direction">Condition</Label>
+                 <Select defaultValue="above">
+                    <SelectTrigger id="condition-direction" className="h-8">
+                        <SelectValue placeholder="Select Condition" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="above">Is Above</SelectItem>
+                        <SelectItem value="below">Is Below</SelectItem>
+                        <SelectItem value="crosses_above">Crosses Above</SelectItem>
+                        <SelectItem value="crosses_below">Crosses Below</SelectItem>
+                    </SelectContent>
+                </Select>
+            </div>
+             <div className="space-y-2">
+                <Label htmlFor="indicator-value">Value</Label>
+                <Input 
+                    id="indicator-value" 
+                    placeholder={indicator.toUpperCase() === 'RSI' ? 'e.g., 70' : 'Enter value...'}
+                    className="h-8" 
+                />
+            </div>
+             <div className="flex justify-end pt-2">
+                <Button size="sm" className="h-8 text-xs">Apply</Button>
+            </div>
+        </div>
+    );
+}
 
-  const handleAddAsset = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setAssetFields(prev => [...prev, '']);
-  }
-  
-  const handleAssetChange = (index: number, value: string) => {
-    const newFields = [...assetFields];
-    newFields[index] = value;
-    setAssetFields(newFields);
-  };
-  
-  const handleRemoveAsset = (indexToRemove: number) => {
-    setAssetFields(prev => prev.filter((_, index) => index !== indexToRemove));
-  };
+const DefaultNodeContent = ({ id }: { id: string }) => {
+    const [assetFields, setAssetFields] = useState(['']);
 
+    const handleAddAsset = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        setAssetFields(prev => [...prev, '']);
+    }
+    
+    const handleAssetChange = (index: number, value: string) => {
+        const newFields = [...assetFields];
+        newFields[index] = value;
+        setAssetFields(newFields);
+    };
+    
+    const handleRemoveAsset = (indexToRemove: number) => {
+        setAssetFields(prev => prev.filter((_, index) => index !== indexToRemove));
+    };
 
-  return (
-    <Card className="shadow-lg w-52 bg-card border-2 border-primary/20">
-      {/* The 'nodrag' class on the CardHeader makes the entire node draggable via its header */}
-      <CardHeader className="nodrag flex flex-row items-center justify-between p-3 space-y-0 cursor-move">
-        <CardTitle className="text-sm font-medium flex items-center gap-2">
-          {Icon && <Icon className="h-4 w-4 text-primary" />}
-          {label}
-        </CardTitle>
-        <Handle
-          type="target"
-          position={Position.Top}
-          isConnectable={isConnectable}
-          className="!bg-primary"
-        />
-      </CardHeader>
-      {isExpanded && (
-        <CardContent className="p-3 pt-0" onClick={handleStopPropagation}>
-          <div className="space-y-2 text-xs">
+    return (
+         <div className="space-y-2 text-xs">
             {assetFields.map((field, index) => (
                  <div key={index} className="space-y-1">
                     <div className="flex items-center justify-between">
@@ -86,6 +119,38 @@ export const CustomNode: React.FC<NodeProps<CustomNodeData>> = ({ data, isConnec
                 <Button size="sm" className="h-8 text-xs">Apply</Button>
             </div>
           </div>
+    )
+}
+
+export const CustomNode: React.FC<NodeProps<CustomNodeData>> = ({ data, isConnectable, id }) => {
+  const { label, icon: Icon, isExpanded } = data;
+  
+  const handleStopPropagation = (e: React.MouseEvent) => {
+    e.stopPropagation();
+  };
+
+  return (
+    <Card className="shadow-lg w-52 bg-card border-2 border-primary/20">
+      {/* The 'nodrag' class on the CardHeader makes the entire node draggable via its header */}
+      <CardHeader className="nodrag flex flex-row items-center justify-between p-3 space-y-0 cursor-move">
+        <CardTitle className="text-sm font-medium flex items-center gap-2">
+          {Icon && <Icon className="h-4 w-4 text-primary" />}
+          {label}
+        </CardTitle>
+        <Handle
+          type="target"
+          position={Position.Top}
+          isConnectable={isConnectable}
+          className="!bg-primary"
+        />
+      </CardHeader>
+      {isExpanded && (
+        <CardContent className="p-3 pt-0" onClick={handleStopPropagation}>
+          {label === 'If/Else Condition' ? (
+              <ConditionNodeContent />
+          ) : (
+              <DefaultNodeContent id={id} />
+          )}
         </CardContent>
       )}
       <Handle
