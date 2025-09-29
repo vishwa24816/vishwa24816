@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Mail, ChevronRight, User, ShieldCheck, Banknote, Users, UserX, Lock, Wallet, LifeBuoy, FileText, Star, Gift, Info, Briefcase, ChevronDown, Palette, Languages, AudioLines, Repeat, Download, Award } from 'lucide-react';
+import { Mail, ChevronRight, User, ShieldCheck, Banknote, Users, UserX, Lock, Wallet, LifeBuoy, FileText, Star, Gift, Info, Briefcase, ChevronDown, Palette, Languages, AudioLines, Repeat, Download, Award, KeyRound, Copy } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { useRouter } from 'next/navigation';
@@ -196,6 +196,46 @@ export default function ProfilePage() {
       title: "About SIM",
       description: "Know more about our company and mission",
       onClick: () => alert('Navigate to About Us Page'),
+    },
+    {
+      icon: KeyRound,
+      title: 'API',
+      description: 'Manage your API keys for programmatic access',
+      component: (
+        <ExpandableProfileItem
+          icon={KeyRound}
+          title="API"
+          description="Manage your API keys for programmatic access"
+        >
+          <div className="space-y-4">
+            <div className="p-3 bg-background/50 rounded-md">
+              <Label className="text-xs font-normal text-muted-foreground">
+                Your API Key
+              </Label>
+              <div className="flex items-center gap-2 mt-1">
+                <Input
+                  readOnly
+                  value="sim_live_********************abcd"
+                  className="text-xs h-8 font-mono border-dashed"
+                />
+                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => {
+                  navigator.clipboard.writeText('sim_live_********************abcd');
+                  toast({ title: 'API Key Copied' });
+                }}>
+                  <Copy className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => toast({ title: 'New API Key Generated (Mock)' })}
+            >
+              Generate New Key
+            </Button>
+          </div>
+        </ExpandableProfileItem>
+      ),
     },
     {
       icon: Briefcase,
