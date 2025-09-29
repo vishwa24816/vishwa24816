@@ -12,8 +12,8 @@ import { useAuth } from '@/contexts/AuthContext';
 import { KeyRound, User, LogIn } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-const DEMO_CREDENTIALS = { ucc: 'DEMO123', mpin: '1234' };
-const REAL_CREDENTIALS = { ucc: 'REAL456', mpin: '5678' };
+const DEMO_CREDENTIALS = { ucc: 'DEMO123', mpin: '1234', name: 'Demo User' };
+const REAL_CREDENTIALS = { ucc: 'REAL456', mpin: '5678', name: 'Real User' };
 
 export function LoginForm() {
   const router = useRouter();
@@ -33,7 +33,7 @@ export function LoginForm() {
     e.preventDefault();
     setDemoError('');
     if (demoUcc === DEMO_CREDENTIALS.ucc && demoMpin === DEMO_CREDENTIALS.mpin) {
-      login({ id: demoUcc, email: `${demoUcc}@sim.app` });
+      login({ id: demoUcc, email: `${demoUcc}@sim.app`, name: DEMO_CREDENTIALS.name });
       router.push('/');
     } else {
       setDemoError('Invalid Simulation UCC or MPIN.');
@@ -44,7 +44,7 @@ export function LoginForm() {
     e.preventDefault();
     setRealError('');
     if (realUcc === REAL_CREDENTIALS.ucc && realMpin === REAL_CREDENTIALS.mpin) {
-      login({ id: realUcc, email: `${realUcc}@sim.app` });
+      login({ id: realUcc, email: `${realUcc}@sim.app`, name: REAL_CREDENTIALS.name });
       router.push('/');
     } else {
       setRealError('Invalid Real Account UCC or MPIN.');

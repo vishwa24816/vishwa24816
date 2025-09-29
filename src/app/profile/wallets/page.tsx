@@ -35,6 +35,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { mockWallets as initialMockWallets } from '@/lib/mockData/wallets';
 import { useAuth } from '@/contexts/AuthContext';
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectGroup, SelectLabel, SelectItem } from '@/components/ui/select';
 
 
 const WalletCard = ({ wallet, onRemove, isPrimary, onSetPrimary }: { wallet: typeof initialMockWallets[0], onRemove: (id: string) => void, isPrimary: boolean, onSetPrimary: (id: string) => void }) => {
@@ -104,14 +105,32 @@ const WalletCard = ({ wallet, onRemove, isPrimary, onSetPrimary }: { wallet: typ
 export default function WalletManagementPage() {
   const router = useRouter();
   const { toast } = useToast();
-  const { primaryWalletId, setPrimaryWalletId } = useAuth();
-  // We'll manage wallets in state so we can add/remove them
+  const { user, primaryWalletId, setPrimaryWalletId } = useAuth();
   const [wallets, setWallets] = useState(initialMockWallets);
   const [newWalletName, setNewWalletName] = useState('');
   const [newWalletPhrase, setNewWalletPhrase] = useState('');
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [createPassword, setCreatePassword] = useState('');
+  const [selectedAccount, setSelectedAccount] = useState('');
+
+  const handleAccountSelect = (value: string) => {
+    setSelectedAccount(value);
+    if (value === 'DEMO123') {
+        const demoWallet = {
+            id: 'wallet-demo-123',
+            name: `${user?.name || 'Demo'}'s Wallet`,
+            phrase: 'This is a mock wallet for your demo account. Do not use for real assets.'
+        };
+        setWallets(prev => [...prev, demoWallet]);
+        toast({
+            title: 'Demo Wallet Added',
+            description: 'A mock wallet for your simulation account has been added.',
+        });
+        setIsCreateDialogOpen(false); // Close dialog immediately
+        setSelectedAccount(''); // Reset selection
+    }
+  };
 
   const handleAddWallet = () => {
     if (!newWalletName.trim() || !newWalletPhrase.trim()) {
@@ -173,6 +192,10 @@ export default function WalletManagementPage() {
   }
 
   const handleMailRecovery = () => {
+    if (selectedAccount !== 'REAL456') {
+        toast({ title: 'Please select your Real Account.', variant: 'destructive'});
+        return;
+    }
     if(!createPassword) {
         toast({
             title: "Password Required",
@@ -187,6 +210,7 @@ export default function WalletManagementPage() {
     });
     setIsCreateDialogOpen(false);
     setCreatePassword('');
+    setSelectedAccount('');
   };
 
   return (
@@ -210,11 +234,30 @@ export default function WalletManagementPage() {
                   <DialogHeader>
                       <DialogTitle>Create New Crypto Wallet</DialogTitle>
                       <DialogDescription>
-                          Enter your account password to confirm your identity. A new wallet will be created and the recovery phrase will be mailed to you.
+                          Select an account to create a new wallet for, or add a demo wallet.
                       </DialogDescription>
                   </DialogHeader>
                   <div className="py-4 space-y-4">
-                       <div className="space-y-2">
+                        <div className="space-y-2">
+                           <Label htmlFor="account-select">Select Account</Label>
+                           <Select value={selectedAccount} onValueChange={handleAccountSelect}>
+                                <SelectTrigger id="account-select">
+                                    <SelectValue placeholder="Select an account..." />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectGroup>
+                                        <SelectLabel>Simulation Account</SelectLabel>
+                                        <SelectItem value="DEMO123">DEMO123</SelectItem>
+                                    </SelectGroup>
+                                    <SelectGroup>
+                                        <SelectLabel>Real Account</SelectLabel>
+                                        <SelectItem value="REAL456">REAL456</SelectItem>
+                                    </SelectGroup>
+                                </SelectContent>
+                           </Select>
+                        </div>
+                       {selectedAccount === 'REAL456' && (
+                         <div className="space-y-2 animate-accordion-down">
                             <Label htmlFor="create-wallet-password">Password</Label>
                             <div className="relative">
                                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -228,12 +271,13 @@ export default function WalletManagementPage() {
                                 />
                             </div>
                         </div>
+                       )}
                   </div>
                   <DialogFooter>
                       <DialogClose asChild>
                           <Button variant="outline">Cancel</Button>
                       </DialogClose>
-                      <Button onClick={handleMailRecovery}>Mail Me</Button>
+                      <Button onClick={handleMailRecovery} disabled={selectedAccount !== 'REAL456'}>Mail Me</Button>
                   </DialogFooter>
               </DialogContent>
             </Dialog>
