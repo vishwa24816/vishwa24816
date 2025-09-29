@@ -178,8 +178,8 @@ export const CustomNode: React.FC<NodeProps<CustomNodeData>> = ({ data, isConnec
         </CardContent>
       )}
 
-      <Handle type="source" position={Position.Left} isConnectable={isConnectable} className="!bg-primary !h-4 !w-2 !rounded-sm" />
-      <Handle type="source" position={Position.Right} isConnectable={isConnectable} className="!bg-primary !h-4 !w-2 !rounded-sm" />
+      <Handle type="source" position={Position.Left} isConnectable={isConnectable} className="!bg-primary !h-2 !w-4 !rounded-sm" />
+      <Handle type="source" position={Position.Right} isConnectable={isConnectable} className="!bg-primary !h-2 !w-4 !rounded-sm" />
       <Handle type="source" position={Position.Bottom} isConnectable={isConnectable} className="!bg-primary !w-4 !h-2 !rounded-sm" />
     </Card>
   );

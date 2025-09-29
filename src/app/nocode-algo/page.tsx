@@ -88,7 +88,7 @@ const nodeTypes: NodeTypes = {
 let id = 2;
 const getId = () => `${id++}`;
 
-const NodePalette = ({ onNodeClick }: { onNodeClick: (type: NodeTypeKey) => void }) => {
+const NodePalette = ({ onNodeAdd }: { onNodeAdd: (type: NodeTypeKey) => void }) => {
     const onDragStart = (event: DragEvent, nodeType: NodeTypeKey) => {
         event.dataTransfer.setData('application/reactflow', nodeType);
         event.dataTransfer.effectAllowed = 'move';
@@ -101,7 +101,7 @@ const NodePalette = ({ onNodeClick }: { onNodeClick: (type: NodeTypeKey) => void
                 return (
                 <div
                     key={type}
-                    onClick={() => onNodeClick(type as NodeTypeKey)}
+                    onClick={() => onNodeAdd(type as NodeTypeKey)}
                     onDragStart={(event) => onDragStart(event, type as NodeTypeKey)}
                     draggable
                     className={cn("p-3 border rounded-md cursor-pointer flex items-center gap-2 transition-colors hover:shadow-md hover:border-primary")}
@@ -139,27 +139,19 @@ const NocodeAlgoEditor = () => {
     const [isSaveDialogOpen, setIsSaveDialogOpen] = useState(false);
     const [flowName, setFlowName] = useState('');
 
-    const onNodesChange = useCallback((changes: NodeChange[]) => setNodes((nds) => applyNodeChanges(changes, nds)), []);
-    const onEdgesChange = useCallback((changes: EdgeChange[]) => setEdges((eds) => applyEdgeChanges(changes, eds)), []);
+    const onNodesChange = useCallback((changes: NodeChange[]) => setNodes((nds) => applyNodeChanges(changes, nds)), [setNodes]);
+    const onEdgesChange = useCallback((changes: EdgeChange[]) => setEdges((eds) => applyEdgeChanges(changes, eds)), [setEdges]);
     
-    const onConnect = useCallback((params: Connection | Edge) => setEdges((eds) => addEdge(params, eds)), []);
-
-    const onDragOver = (event: DragEvent) => {
+    const onConnect = useCallback((params: Connection | Edge) => setEdges((eds) => addEdge(params, eds)), [setEdges]);
+    
+    const onDragOver = useCallback((event: DragEvent) => {
         event.preventDefault();
         event.dataTransfer.dropEffect = 'move';
-    };
+    }, []);
 
-    const onDrop = (event: DragEvent) => {
-        event.preventDefault();
-
-        const type = event.dataTransfer.getData('application/reactflow') as NodeTypeKey;
+    const addNewNode = useCallback((type: NodeTypeKey, position: {x: number, y: number}) => {
         const nodeInfo = nodeConfig[type];
         if (!nodeInfo) return;
-
-        const position = reactFlowInstance.screenToFlowPosition({
-            x: event.clientX,
-            y: event.clientY,
-        });
 
         const newNode: Node = {
             id: getId(),
@@ -169,27 +161,27 @@ const NocodeAlgoEditor = () => {
         };
 
         setNodes((nds) => nds.concat(newNode));
-    };
+    }, [setNodes]);
 
-    const handleNodeClick = (type: NodeTypeKey) => {
-      const nodeInfo = nodeConfig[type];
-      if (!nodeInfo) return;
+    const onDrop = useCallback((event: DragEvent) => {
+        event.preventDefault();
 
+        const type = event.dataTransfer.getData('application/reactflow') as NodeTypeKey;
+        const position = reactFlowInstance.screenToFlowPosition({
+            x: event.clientX,
+            y: event.clientY,
+        });
+        addNewNode(type, position);
+    }, [reactFlowInstance, addNewNode]);
+
+    const handleAddNodeFromPalette = useCallback((type: NodeTypeKey) => {
       const { x, y } = reactFlowInstance.getViewport();
       const position = {
         x: -x + reactFlowInstance.width / 2 - 100,
         y: -y + reactFlowInstance.height / 2 - 50,
       };
-
-      const newNode: Node = {
-        id: getId(),
-        type: 'custom',
-        position,
-        data: { label: nodeInfo.label, icon: nodeInfo.icon, isExpanded: false },
-      };
-
-      setNodes((nds) => nds.concat(newNode));
-    };
+      addNewNode(type, position);
+    }, [reactFlowInstance, addNewNode]);
     
     const handleSimbotNavigation = (asset: Stock, details?: InitialOrderDetails) => {
       router.push(`/order/stock/${asset.symbol}`);
@@ -231,6 +223,7 @@ const NocodeAlgoEditor = () => {
                     onConnect={onConnect}
                     fitView
                     nodeTypes={nodeTypes}
+                    // No onNodeClick handler here
                 >
                     <Background />
                     <Controls position="bottom-left"/>
@@ -249,7 +242,7 @@ const NocodeAlgoEditor = () => {
                             <SheetHeader>
                                 <SheetTitle className="text-lg">Nodes</SheetTitle>
                             </SheetHeader>
-                            <NodePalette onNodeClick={handleNodeClick} />
+                            <NodePalette onNodeAdd={handleAddNodeFromPalette} />
                              <div className="mt-6 p-4 border-t">
                                 <h3 className="text-lg font-semibold mb-3">Saved Algo Flows</h3>
                                 <div className="space-y-2">
