@@ -5,7 +5,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeft, Wallet, Plus, Eye, EyeOff, Trash2, Copy, CheckCircle } from 'lucide-react';
+import { ArrowLeft, Wallet, Plus, Eye, EyeOff, Trash2, Copy, CheckCircle, Lock } from 'lucide-react';
 import { ProtectedRoute } from '@/components/shared/ProtectedRoute';
 import { useToast } from '@/hooks/use-toast';
 import {
@@ -110,6 +110,8 @@ export default function WalletManagementPage() {
   const [newWalletName, setNewWalletName] = useState('');
   const [newWalletPhrase, setNewWalletPhrase] = useState('');
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [createPassword, setCreatePassword] = useState('');
 
   const handleAddWallet = () => {
     if (!newWalletName.trim() || !newWalletPhrase.trim()) {
@@ -170,6 +172,23 @@ export default function WalletManagementPage() {
     });
   }
 
+  const handleMailRecovery = () => {
+    if(!createPassword) {
+        toast({
+            title: "Password Required",
+            description: "Please enter your password to proceed.",
+            variant: "destructive"
+        });
+        return;
+    }
+    toast({
+      title: "Recovery Phrase Requested",
+      description: "Within 1 hour, a crypto wallet Recovery Phrase will be sent to your registered email.",
+    });
+    setIsCreateDialogOpen(false);
+    setCreatePassword('');
+  };
+
   return (
     <ProtectedRoute>
       <div className="flex flex-col min-h-screen bg-muted/20">
@@ -181,15 +200,53 @@ export default function WalletManagementPage() {
         </header>
 
         <main className="flex-grow p-4 sm:p-6 lg:p-8 space-y-6">
+            <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+              <DialogTrigger asChild>
+                  <Button variant="outline" className="w-full">
+                      <Plus className="mr-2 h-4 w-4" /> Create Crypto Wallet
+                  </Button>
+              </DialogTrigger>
+              <DialogContent>
+                  <DialogHeader>
+                      <DialogTitle>Create New Crypto Wallet</DialogTitle>
+                      <DialogDescription>
+                          Enter your account password to confirm your identity. A new wallet will be created and the recovery phrase will be mailed to you.
+                      </DialogDescription>
+                  </DialogHeader>
+                  <div className="py-4 space-y-4">
+                       <div className="space-y-2">
+                            <Label htmlFor="create-wallet-password">Password</Label>
+                            <div className="relative">
+                                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                                <Input
+                                    id="create-wallet-password"
+                                    type="password"
+                                    value={createPassword}
+                                    onChange={(e) => setCreatePassword(e.target.value)}
+                                    placeholder="Enter your password"
+                                    className="pl-10"
+                                />
+                            </div>
+                        </div>
+                  </div>
+                  <DialogFooter>
+                      <DialogClose asChild>
+                          <Button variant="outline">Cancel</Button>
+                      </DialogClose>
+                      <Button onClick={handleMailRecovery}>Mail Me</Button>
+                  </DialogFooter>
+              </DialogContent>
+            </Dialog>
+
             <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
                 <DialogTrigger asChild>
                     <Button className="w-full">
-                        <Plus className="mr-2 h-4 w-4" /> Add New Wallet
+                        <Plus className="mr-2 h-4 w-4" /> Import Existing Wallet
                     </Button>
                 </DialogTrigger>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Add a New Wallet</DialogTitle>
+                        <DialogTitle>Import Existing Wallet</DialogTitle>
                         <DialogDescription>
                             Enter a name for your wallet and its recovery phrase to import it.
                         </DialogDescription>
