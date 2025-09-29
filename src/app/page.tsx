@@ -156,7 +156,7 @@ export default function DashboardRouterPage() {
             <SimbotInputBar onNavigateRequest={handleAssetClick} isRealMode={isRealMode} />
         </footer>
       ) : activeMainView !== 'asset_order' ? (
-         <AppFooter activeView={activeView} onNavigate={handleNavigate} />
+         <AppFooter activeView={activeMainView} onNavigate={handleNavigate} />
       ) : null}
     </ProtectedRoute>
   );
