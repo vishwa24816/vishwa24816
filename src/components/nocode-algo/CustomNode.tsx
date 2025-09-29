@@ -131,21 +131,16 @@ export const CustomNode: React.FC<NodeProps<CustomNodeData>> = ({ data, isConnec
   return (
     <Card className={cn(
         "shadow-lg w-52 bg-card border-2 border-primary/20",
-        isActionNode && 'nodrag',
         label === 'Execute Buy' && 'bg-green-600 text-white border-green-700',
         label === 'Execute Sell' && 'bg-red-500 text-white border-red-700',
     )}>
+      <Handle type="target" position={Position.Top} isConnectable={isConnectable} className="!bg-primary !w-4 !h-2 !rounded-sm" />
+      <Handle type="source" position={Position.Left} isConnectable={isConnectable} className="!bg-primary !h-4 !w-2 !rounded-sm" />
       <CardHeader className="flex flex-row items-center justify-between p-3 space-y-0 cursor-move">
         <CardTitle className="text-sm font-medium flex items-center gap-2">
           {Icon && <Icon className={cn("h-4 w-4", isActionNode ? 'text-white' : 'text-primary')} />}
           {label}
         </CardTitle>
-        <Handle
-          type="target"
-          position={Position.Top}
-          isConnectable={isConnectable}
-          className="!bg-primary !w-4 !h-4"
-        />
       </CardHeader>
       {showContent && (
         <CardContent className="p-3 pt-0 nodrag">
@@ -156,12 +151,8 @@ export const CustomNode: React.FC<NodeProps<CustomNodeData>> = ({ data, isConnec
           )}
         </CardContent>
       )}
-      <Handle
-        type="source"
-        position={Position.Bottom}
-        isConnectable={isConnectable}
-        className="!bg-primary !w-4 !h-4"
-      />
+      <Handle type="source" position={Position.Right} isConnectable={isConnectable} className="!bg-primary !h-4 !w-2 !rounded-sm" />
+      <Handle type="source" position={Position.Bottom} isConnectable={isConnectable} className="!bg-primary !w-4 !h-2 !rounded-sm" />
     </Card>
   );
 };
