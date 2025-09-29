@@ -54,7 +54,7 @@ const WalletCard = ({ wallet, onRemove, isPrimary, onSetPrimary }: { wallet: typ
                 {wallet.name}
             </CardTitle>
             <div className="flex items-center gap-1">
-                {isPrimary && <Badge variant="default" className="bg-green-600 hover:bg-green-700"><CheckCircle className="h-3 w-3 mr-1"/>Primary</Badge>}
+                {isPrimary && <Badge variant="default"><CheckCircle className="h-3 w-3 mr-1"/>Primary</Badge>}
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
                     <Button variant="ghost" size="icon" className="text-destructive h-8 w-8">
