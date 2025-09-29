@@ -2,12 +2,12 @@
 "use client";
 
 import React, { useState } from 'react';
-import { Handle, Position, NodeProps } from 'reactflow';
+import { Handle, Position, NodeProps, useReactFlow } from 'reactflow';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { PlusCircle, XCircle } from 'lucide-react';
+import { PlusCircle, XCircle, ChevronDown } from 'lucide-react';
 import {
   Select,
   SelectContent,
@@ -124,9 +124,28 @@ const DefaultNodeContent = ({ id }: { id: string }) => {
 
 export const CustomNode: React.FC<NodeProps<CustomNodeData>> = ({ data, isConnectable, id }) => {
   const { label, icon: Icon, isExpanded } = data;
-  
+  const { setNodes } = useReactFlow();
+
   const isActionNode = label === 'Execute Buy' || label === 'Execute Sell';
   const showContent = isExpanded && !isActionNode;
+
+  const toggleExpand = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setNodes((nodes) =>
+      nodes.map((n) => {
+        if (n.id === id) {
+          return {
+            ...n,
+            data: {
+              ...n.data,
+              isExpanded: !n.data.isExpanded,
+            },
+          };
+        }
+        return n;
+      })
+    );
+  };
 
   return (
     <Card className={cn(
@@ -135,13 +154,20 @@ export const CustomNode: React.FC<NodeProps<CustomNodeData>> = ({ data, isConnec
         label === 'Execute Sell' && 'bg-red-500 text-white border-red-700',
     )}>
       <Handle type="target" position={Position.Top} isConnectable={isConnectable} className="!bg-primary !w-4 !h-2 !rounded-sm" />
-      <Handle type="source" position={Position.Left} isConnectable={isConnectable} className="!bg-primary !h-4 !w-2 !rounded-sm" />
+      
       <CardHeader className="flex flex-row items-center justify-between p-3 space-y-0 cursor-move">
         <CardTitle className="text-sm font-medium flex items-center gap-2">
           {Icon && <Icon className={cn("h-4 w-4", isActionNode ? 'text-white' : 'text-primary')} />}
           {label}
         </CardTitle>
+        {!isActionNode && (
+             <Button variant="ghost" size="icon" className="h-6 w-6 shrink-0" onClick={toggleExpand}>
+                <ChevronDown className={cn("h-4 w-4 transition-transform", isExpanded && "rotate-180")}/>
+                <span className="sr-only">{isExpanded ? 'Collapse' : 'Expand'}</span>
+            </Button>
+        )}
       </CardHeader>
+      
       {showContent && (
         <CardContent className="p-3 pt-0 nodrag">
           {label === 'If/Else Condition' ? (
@@ -151,6 +177,8 @@ export const CustomNode: React.FC<NodeProps<CustomNodeData>> = ({ data, isConnec
           )}
         </CardContent>
       )}
+
+      <Handle type="source" position={Position.Left} isConnectable={isConnectable} className="!bg-primary !h-4 !w-2 !rounded-sm" />
       <Handle type="source" position={Position.Right} isConnectable={isConnectable} className="!bg-primary !h-4 !w-2 !rounded-sm" />
       <Handle type="source" position={Position.Bottom} isConnectable={isConnectable} className="!bg-primary !w-4 !h-2 !rounded-sm" />
     </Card>

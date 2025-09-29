@@ -190,25 +190,6 @@ const NocodeAlgoEditor = () => {
 
       setNodes((nds) => nds.concat(newNode));
     };
-
-    const onNodeClick = (event: React.MouseEvent, node: Node) => {
-        if(node.type === 'custom') { // Only expand custom nodes
-            setNodes((prevNodes) =>
-                prevNodes.map((n) => {
-                    if (n.id === node.id) {
-                        return {
-                            ...n,
-                            data: {
-                                ...n.data,
-                                isExpanded: !n.data.isExpanded,
-                            },
-                        };
-                    }
-                    return n;
-                })
-            );
-        }
-    };
     
     const handleSimbotNavigation = (asset: Stock, details?: InitialOrderDetails) => {
       router.push(`/order/stock/${asset.symbol}`);
@@ -250,7 +231,6 @@ const NocodeAlgoEditor = () => {
                     onConnect={onConnect}
                     fitView
                     nodeTypes={nodeTypes}
-                    onNodeClick={onNodeClick}
                 >
                     <Background />
                     <Controls position="bottom-left"/>
