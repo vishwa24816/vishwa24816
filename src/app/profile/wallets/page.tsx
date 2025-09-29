@@ -84,6 +84,9 @@ const WalletCard = ({ wallet, onRemove, isPrimary, onSetPrimary }: { wallet: typ
             {showPhrase ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
           </Button>
         </div>
+        {wallet.account && (
+          <p className="text-xs text-muted-foreground mb-2">Account: <span className="font-medium text-foreground">{wallet.account}</span></p>
+        )}
         {showPhrase && (
           <div className="mt-2 p-3 bg-muted rounded-md flex items-center justify-between animate-accordion-down">
             <p className="text-sm font-mono break-all">{wallet.phrase}</p>
@@ -120,7 +123,8 @@ export default function WalletManagementPage() {
         const demoWallet = {
             id: 'wallet-demo-123',
             name: `${user?.name || 'Demo'}'s Wallet`,
-            phrase: 'This is a mock wallet for your demo account. Do not use for real assets.'
+            phrase: 'This is a mock wallet for your demo account. Do not use for real assets.',
+            account: 'DEMO123'
         };
         setWallets(prev => [...prev, demoWallet]);
         toast({
@@ -156,6 +160,7 @@ export default function WalletManagementPage() {
       id: `wallet${Date.now()}`,
       name: newWalletName,
       phrase: newWalletPhrase.trim(),
+      account: 'Imported'
     };
     setWallets(prev => [...prev, newWallet]);
     setNewWalletName('');
