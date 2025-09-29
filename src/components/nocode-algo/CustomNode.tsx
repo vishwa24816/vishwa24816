@@ -138,8 +138,7 @@ export const CustomNode: React.FC<NodeProps<CustomNodeData>> = ({ data, isConnec
         label === 'Execute Buy' && 'bg-green-500/90 text-white border-green-700',
         label === 'Execute Sell' && 'bg-red-500/90 text-white border-red-700',
     )}>
-      {/* The 'nodrag' class on the CardHeader makes the entire node draggable via its header */}
-      <CardHeader className="nodrag flex flex-row items-center justify-between p-3 space-y-0 cursor-move">
+      <CardHeader className="flex flex-row items-center justify-between p-3 space-y-0 cursor-move">
         <CardTitle className="text-sm font-medium flex items-center gap-2">
           {Icon && <Icon className={cn("h-4 w-4", isActionNode ? 'text-white' : 'text-primary')} />}
           {label}
