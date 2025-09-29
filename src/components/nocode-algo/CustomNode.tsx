@@ -125,18 +125,14 @@ const DefaultNodeContent = ({ id }: { id: string }) => {
 export const CustomNode: React.FC<NodeProps<CustomNodeData>> = ({ data, isConnectable, id }) => {
   const { label, icon: Icon, isExpanded } = data;
   
-  const handleStopPropagation = (e: React.MouseEvent) => {
-    e.stopPropagation();
-  };
-  
   const isActionNode = label === 'Execute Buy' || label === 'Execute Sell';
   const showContent = isExpanded && !isActionNode;
 
   return (
     <Card className={cn(
         "shadow-lg w-52 bg-card border-2 border-primary/20",
-        label === 'Execute Buy' && 'bg-green-500/90 text-white border-green-700',
-        label === 'Execute Sell' && 'bg-red-500/90 text-white border-red-700',
+        label === 'Execute Buy' && 'bg-green-600 text-white border-green-700',
+        label === 'Execute Sell' && 'bg-red-500 text-white border-red-700',
     )}>
       <CardHeader className="flex flex-row items-center justify-between p-3 space-y-0 cursor-move">
         <CardTitle className="text-sm font-medium flex items-center gap-2">
@@ -151,7 +147,7 @@ export const CustomNode: React.FC<NodeProps<CustomNodeData>> = ({ data, isConnec
         />
       </CardHeader>
       {showContent && (
-        <CardContent className="p-3 pt-0" onClick={handleStopPropagation}>
+        <CardContent className="p-3 pt-0 nodrag">
           {label === 'If/Else Condition' ? (
               <ConditionNodeContent />
           ) : (
