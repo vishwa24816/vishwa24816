@@ -203,7 +203,6 @@ export function RealDashboard({ activeMode, onAssetClick }: RealDashboardProps) 
           if (activePrimaryItem === "Spot" && activeSecondaryItem.startsWith("Top watchlist")) {
             return (
                 <div className="space-y-8">
-                    <CryptoHoldingsSection title="Crypto Wallet & Holdings" holdings={cryptoHoldings} isRealMode={true} onAssetClick={onAssetClick} />
                     <MarketMovers stocks={mockCryptoAssets} displayMode="trending" category="Crypto" onAssetClick={onAssetClick} />
                     <WatchlistSection title={"Top Crypto"} displayItems={itemsForWatchlist} isPredefinedList={true} onAssetClick={onAssetClick} />
                     <MarketMovers stocks={mockCryptoAssets} displayMode="gainers-losers" onAssetClick={onAssetClick} />
