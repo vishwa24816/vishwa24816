@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { SipForm } from './SipForm';
 import type { InitialOrderDetails } from '@/app/page';
+import { SwipeButton } from '@/components/ui/swipe-button';
 
 interface MutualFundOrderFormProps {
   asset: Stock;
@@ -27,7 +28,7 @@ export function MutualFundOrderForm({ asset, assetType, initialDetails }: Mutual
     const [lockInMonths, setLockInMonths] = useState('');
 
     const isCrypto = asset.exchange?.toLowerCase().includes('crypto');
-    const currencySymbol = isCrypto ? '₹' : '₹'; // Always INR now
+    const currencySymbol = '₹';
 
     const handleOneTimeBuy = () => {
         if (!oneTimeAmount || parseFloat(oneTimeAmount) <= 0) {
@@ -79,7 +80,9 @@ export function MutualFundOrderForm({ asset, assetType, initialDetails }: Mutual
                         <Label htmlFor="one-time-amount">Investment Amount ({currencySymbol})</Label>
                         <Input id="one-time-amount" type="number" value={oneTimeAmount} onChange={(e) => setOneTimeAmount(e.target.value)} placeholder="e.g., 5000" />
                     </div>
-                    <Button onClick={handleOneTimeBuy} className="w-full text-base py-3 h-12">Invest Now</Button>
+                    <div className="pt-2">
+                      <SwipeButton onConfirm={handleOneTimeBuy} text="Swipe to Invest" />
+                    </div>
                 </div>
             </TabsContent>
             <TabsContent value="hodl" className="mt-4">
@@ -103,7 +106,9 @@ export function MutualFundOrderForm({ asset, assetType, initialDetails }: Mutual
                         </div>
                     </div>
 
-                    <Button onClick={handleHodlBuy} className="w-full text-base py-3 h-12">Invest for Long Term</Button>
+                    <div className="pt-2">
+                        <SwipeButton onConfirm={handleHodlBuy} text="Swipe to HODL" />
+                    </div>
                 </div>
             </TabsContent>
             <TabsContent value="start-sp" className="mt-4">
