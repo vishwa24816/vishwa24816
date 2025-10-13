@@ -218,7 +218,7 @@ const StockOrderForm = ({ asset, assetType, productType, onProductTypeChange, in
             
             <StopLossTakeProfit idPrefix="stock" />
 
-            <div className="flex flex-wrap gap-x-4 sm:gap-x-6 gap-y-2 text-sm">
+            <div className="flex flex-wrap gap-x-4 sm:gap-x-6 gap-y-2 text-sm pt-4 border-t">
                 <div className="flex items-center space-x-2">
                     <Checkbox id="day-order-stock" />
                     <Label htmlFor="day-order-stock" className="font-normal">Day order</Label>
@@ -233,7 +233,7 @@ const StockOrderForm = ({ asset, assetType, productType, onProductTypeChange, in
                 </div>
             </div>
 
-            <RadioGroup value={orderType} onValueChange={(value) => setOrderType(value)} className="flex flex-wrap gap-x-4 gap-y-2">
+            <RadioGroup value={orderType} onValueChange={(value) => setOrderType(value)} className="flex flex-wrap gap-x-4 gap-y-2 pt-4 border-t">
                 <div className="flex items-center space-x-2"><RadioGroupItem value="Market" id="orderType-market-stock" /><Label htmlFor="orderType-market-stock" className="font-normal">Market</Label></div>
                 <div className="flex items-center space-x-2"><RadioGroupItem value="Limit" id="orderType-limit-stock" /><Label htmlFor="orderType-limit-stock" className="font-normal">Limit</Label></div>
             </RadioGroup>
@@ -339,7 +339,7 @@ const CryptoOrderForm = ({ asset, assetType, productType, onProductTypeChange, i
                             </div>
                         )}
                         <StopLossTakeProfit idPrefix="crypto" />
-                        <div className="flex flex-wrap gap-x-4 sm:gap-x-6 gap-y-2 text-sm">
+                        <div className="flex flex-wrap gap-x-4 sm:gap-x-6 gap-y-2 text-sm pt-4 border-t">
                             <div className="flex items-center space-x-2">
                                 <Checkbox id="day-order-crypto" />
                                 <Label htmlFor="day-order-crypto" className="font-normal">Day order</Label>
@@ -353,7 +353,7 @@ const CryptoOrderForm = ({ asset, assetType, productType, onProductTypeChange, i
                                 <Label htmlFor="ioc-order-crypto" className="font-normal">IOC</Label>
                             </div>
                         </div>
-                        <RadioGroup value={orderType} onValueChange={(value) => setOrderType(value)} className="flex flex-wrap gap-x-4 gap-y-2">
+                        <RadioGroup value={orderType} onValueChange={(value) => setOrderType(value)} className="flex flex-wrap gap-x-4 gap-y-2 pt-4 border-t">
                            <div className="flex items-center space-x-2"><RadioGroupItem value="Market" id="orderType-market-crypto" /><Label htmlFor="orderType-market-crypto" className="font-normal">Market</Label></div>
                            <div className="flex items-center space-x-2"><RadioGroupItem value="Limit" id="orderType-limit-crypto" /><Label htmlFor="orderType-limit-crypto" className="font-normal">Limit</Label></div>
                         </RadioGroup>
@@ -423,7 +423,7 @@ const FutureOrderForm = ({ asset, assetType, productType, onProductTypeChange, i
 
                 <StopLossTakeProfit idPrefix="future" />
 
-                <div className="flex flex-wrap gap-x-4 sm:gap-x-6 gap-y-2 text-sm">
+                <div className="flex flex-wrap gap-x-4 sm:gap-x-6 gap-y-2 text-sm pt-4 border-t">
                     <div className="flex items-center space-x-2">
                         <Checkbox id="day-order-future" />
                         <Label htmlFor="day-order-future" className="font-normal">Day order</Label>
@@ -438,7 +438,7 @@ const FutureOrderForm = ({ asset, assetType, productType, onProductTypeChange, i
                     </div>
                 </div>
 
-                 <RadioGroup value={orderType} onValueChange={(value) => setOrderType(value)} className="flex flex-wrap gap-x-4 gap-y-2">
+                 <RadioGroup value={orderType} onValueChange={(value) => setOrderType(value)} className="flex flex-wrap gap-x-4 gap-y-2 pt-4 border-t">
                    <div className="flex items-center space-x-2"><RadioGroupItem value="Market" id="orderType-market-future" /><Label htmlFor="orderType-market-future" className="font-normal">Market</Label></div>
                    <div className="flex items-center space-x-2"><RadioGroupItem value="Limit" id="orderType-limit-future" /><Label htmlFor="orderType-limit-future" className="font-normal">Limit</Label></div>
                 </RadioGroup>
@@ -492,12 +492,12 @@ const CryptoFutureOrderForm = ({ asset, assetType, productType, onProductTypeCha
                         <div><Label htmlFor="qty-cf">Qty.</Label><Input id="qty-cf" type="text" value={quantity} onChange={e => setQuantity(e.target.value)}/></div>
                         <div><Label htmlFor="price-cf">Price</Label><Input id="price-cf" type="text" value={price} onChange={e => setPrice(e.target.value)} disabled={orderType === 'Market'} /></div>
                     </div>
-                     <RadioGroup value={orderType} onValueChange={(value) => setOrderType(value)} className="flex flex-wrap gap-x-4 gap-y-2">
+                     <RadioGroup value={orderType} onValueChange={(value) => setOrderType(value)} className="flex flex-wrap gap-x-4 gap-y-2 pt-4 border-t">
                        <div className="flex items-center space-x-2"><RadioGroupItem value="Market" id="orderType-market-cf" /><Label htmlFor="orderType-market-cf" className="font-normal">Market</Label></div>
                        <div className="flex items-center space-x-2"><RadioGroupItem value="Limit" id="orderType-limit-cf" /><Label htmlFor="orderType-limit-cf" className="font-normal">Limit</Label></div>
                     </RadioGroup>
                     <StopLossTakeProfit idPrefix="cf" />
-                     <div className="space-y-2 pt-2">
+                     <div className="space-y-2 pt-4 border-t">
                         <Label htmlFor="leverage-cf">Leverage</Label>
                         <Select value={mtfLeverage} onValueChange={setMtfLeverage}>
                             <SelectTrigger id="leverage-cf" className="w-full sm:w-[180px]"><SelectValue placeholder="Select leverage" /></SelectTrigger>
