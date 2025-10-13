@@ -20,8 +20,7 @@ interface FirebaseServices {
 }
 
 export function initializeFirebase(): FirebaseServices {
-  const apps = getApps();
-  const app = apps.length > 0 ? apps[0] : initializeApp(firebaseConfig);
+  const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
   const auth = getAuth(app);
   const firestore = getFirestore(app);
 
