@@ -19,7 +19,6 @@ export * from './optionChainData';
 export * from './cryptoFuturesWatchlist';
 export * from './foBaskets';
 export * from './communityPosts';
-export * from './comments';
 export * from './gttOrders';
 export * from './bondBids';
 export * from './sips';

@@ -86,7 +86,10 @@ const WalletCard = ({ wallet, onRemove, isPrimary, onSetPrimary }: { wallet: typ
           </Button>
         </div>
         {wallet.account && (
-          <p className="text-xs text-muted-foreground mb-2">Account: <span className="font-medium text-foreground">{wallet.account}</span></p>
+            <div className="text-xs text-muted-foreground mb-2">
+                <p>Account: <span className="font-medium text-foreground">{wallet.account}</span></p>
+                <p>Type: <span className="font-medium text-foreground">{wallet.custodyType}</span></p>
+            </div>
         )}
         {showPhrase && (
           <div className="mt-2 p-3 bg-muted rounded-md flex items-center justify-between animate-accordion-down">
@@ -165,7 +168,8 @@ export default function WalletManagementPage() {
       id: `wallet${Date.now()}`,
       name: newWalletName,
       phrase: newWalletPhrase.trim(),
-      account: 'Imported'
+      account: 'Imported',
+      custodyType: 'Self',
     };
     setWallets(prev => [...prev, newWallet]);
     setNewWalletName('');
