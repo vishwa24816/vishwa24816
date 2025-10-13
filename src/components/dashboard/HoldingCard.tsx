@@ -94,20 +94,20 @@ export const HoldingCard: React.FC<HoldingCardProps> = ({ holding, onPledgeClick
     return (
         <div className="border-b transition-all duration-300">
             <div 
-                className="flex items-center p-3 cursor-pointer hover:bg-muted/50"
+                className="grid grid-cols-[1fr_auto_auto] items-center p-3 cursor-pointer hover:bg-muted/50 gap-4"
                 onClick={() => setIsExpanded(!isExpanded)}
             >
-                <div className="flex-1 min-w-0">
+                <div className="min-w-0">
                     <p className="font-semibold text-sm text-foreground truncate">{holding.name}</p>
                     <p className="text-xs text-muted-foreground">{holding.symbol}</p>
                 </div>
-                <div className="text-right ml-4 shrink-0">
+                <div className="text-right shrink-0">
                     <p className={cn("text-sm font-medium", isProfit ? 'text-green-600' : 'text-red-600')}>
                         {formatCurrency(holding.profitAndLoss ?? 0)}
                     </p>
                     <p className="text-xs text-muted-foreground">({(holding.profitAndLossPercent ?? 0).toFixed(2)}%)</p>
                 </div>
-                <ChevronDown className={cn("h-4 w-4 ml-3 text-muted-foreground transition-transform shrink-0", isExpanded && "rotate-180")} />
+                <ChevronDown className={cn("h-4 w-4 text-muted-foreground transition-transform shrink-0", isExpanded && "rotate-180")} />
             </div>
 
             {isExpanded && (
