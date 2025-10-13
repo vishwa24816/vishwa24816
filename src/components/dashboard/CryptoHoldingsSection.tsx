@@ -126,7 +126,10 @@ const ReceiveContent = ({ asset, walletAddress, onCancel }: { asset: PortfolioHo
 
 const HistoryContent = ({ transactions, onCancel }: { transactions: Transaction[], onCancel: () => void }) => {
     const formatCurrency = (value: number) => {
-        return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
+      if (Math.abs(value) >= 10000000) {
+        return `₹${(value / 10000000).toFixed(2)} Cr`;
+      }
+      return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
     };
 
     return (
@@ -194,6 +197,9 @@ export function CryptoHoldingsSection({
   const [expandedAction, setExpandedAction] = useState<ExpandedAction>(null);
 
   const formatCurrency = (value: number) => {
+    if (Math.abs(value) >= 10000000) {
+      return `₹${(value / 10000000).toFixed(2)} Cr`;
+    }
     return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
   };
   
@@ -511,3 +517,5 @@ export function CryptoHoldingsSection({
     </>
   );
 }
+
+    
