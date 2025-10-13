@@ -211,11 +211,12 @@ export function DemoDashboard({ activeMode, onModeChange, onAssetClick }: DemoDa
     const { primaryNavItems, secondaryNavTriggerCategories } = useMemo(() => {
     if (activeMode === 'Portfolio') {
         return {
-            primaryNavItems: ["Overview", "Fiat", "Crypto", "Pledged Holdings"],
+            primaryNavItems: ["Overview", "Fiat", "Crypto", "Exchange", "Pledged Holdings"],
             secondaryNavTriggerCategories: {
                 Overview: [],
                 Fiat: ["Fiat Holdings", "Wealth Holdings", "Positions", "Portfolio Watchlist"],
                 Crypto: ["Holdings", "Positions", "Portfolio Watchlist"],
+                Exchange: [],
                 "Pledged Holdings": [],
             }
         }
@@ -464,6 +465,16 @@ export function DemoDashboard({ activeMode, onModeChange, onAssetClick }: DemoDa
         )
     }
 
+    if (activePrimaryItem === 'Exchange') {
+        return (
+            <div className="text-center py-10 text-muted-foreground">
+                <PackageOpen className="h-16 w-16 mb-4 mx-auto" />
+                <h2 className="text-2xl font-semibold mb-2 text-foreground">Exchange Section</h2>
+                <p className="max-w-md mx-auto">This section is for exchange-related features. Content is coming soon.</p>
+            </div>
+        )
+    }
+
     if (activePrimaryItem === 'Pledged Holdings') {
         const pledgedFiatHoldings = fiatHoldings.slice(0, 2); 
         const pledgedWealthHoldings = wealthHoldings.slice(0, 2);
@@ -607,26 +618,38 @@ export function DemoDashboard({ activeMode, onModeChange, onAssetClick }: DemoDa
         let web3Items: Stock[] = [];
         let watchlistTitle = activePrimaryItem;
         switch (activePrimaryItem) {
-            case 'Trending': web3Items = mockWeb3Trending; watchlistTitle = "Trending Web3 Tokens"; break;
-            case 'AI': web3Items = mockWeb3AI; watchlistTitle = "Top AI Tokens"; break;
-            case 'DeFi': web3Items = mockWeb3DeFi; watchlistTitle = "Top DeFi Tokens"; break;
-            case 'Memes': web3Items = mockWeb3Memes; watchlistTitle = "Top Meme Tokens"; break;
-            case 'NFT':
-                // Special case for NFT, since it might need a different display
-                return (
-                    <div className="space-y-8">
-                        <WatchlistSection 
-                            title="Top NFT Collections" 
-                            displayItems={[]} // Let's assume a special NFT component would be used
-                            isPredefinedList={true} 
-                            onAssetClick={onAssetClick} 
-                        />
-                        <NewsSection articles={newsForView} />
-                    </div>
-                );
+            case 'Trending':
+                web3Items = mockWeb3Trending;
+                watchlistTitle = "Trending Web3 Tokens";
+                break;
+            case 'AI':
+                web3Items = mockWeb3AI;
+                watchlistTitle = "Top AI Tokens";
+                break;
+            case 'DeFi':
+                web3Items = mockWeb3DeFi;
+                watchlistTitle = "Top DeFi Tokens";
+                break;
+            case 'Memes':
+                web3Items = mockWeb3Memes;
+                watchlistTitle = "Top Meme Tokens";
+                break;
+             case 'NFT':
+                web3Items = mockWeb3NFTs;
+                watchlistTitle = "Top NFT Collections";
+                break;
         }
         newsForView = getRelevantNewsForWatchlistItems(web3Items, mockNewsArticles);
-        return <div className="space-y-8"><WatchlistSection title={watchlistTitle} displayItems={web3Items} isPredefinedList={true} onAssetClick={onAssetClick} /><NewsSection articles={newsForView} /></div>;
+        return (
+            <div className="space-y-8">
+                <WatchlistSection 
+                    title={watchlistTitle} 
+                    displayItems={web3Items} 
+                    isPredefinedList={true} 
+                />
+                <NewsSection articles={newsForView} />
+            </div>
+        );
     } else if (activeMode === 'Wealth') {
         if (activePrimaryItem === "Mutual Funds") {
             const isTopWatchlist = activeSecondaryItem.startsWith("Top watchlist");
@@ -694,3 +717,5 @@ export function DemoDashboard({ activeMode, onModeChange, onAssetClick }: DemoDa
     </>
   );
 }
+
+    
