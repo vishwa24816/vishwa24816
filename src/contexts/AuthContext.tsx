@@ -6,13 +6,15 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { Toaster } from "@/components/ui/toaster";
+import { getAuth, onAuthStateChanged, signOut, GoogleAuthProvider, signInWithPopup, type User as FirebaseUser } from 'firebase/auth';
+import { initializeFirebase } from '@/firebase/index';
 import { mockWallets } from '@/lib/mockData/wallets';
 
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   isRealMode: boolean;
-  login: (userData: User) => void;
+  login: () => void;
   logout: () => void;
   loading: boolean;
   theme: string;
@@ -33,12 +35,24 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [primaryWalletId, setPrimaryWalletIdState] = useState<string | null>(null);
 
   useEffect(() => {
-    // Check localStorage for a persisted user session
-    try {
-      const storedUser = localStorage.getItem('simUser');
-      if (storedUser) {
-        setUser(JSON.parse(storedUser));
+    const { auth } = initializeFirebase();
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser: FirebaseUser | null) => {
+      if (firebaseUser) {
+        const appUser: User = {
+          id: firebaseUser.uid,
+          email: firebaseUser.email || 'no-email@sim.app',
+          name: firebaseUser.displayName || 'Anonymous User'
+        };
+        setUser(appUser);
+        localStorage.setItem('simUser', JSON.stringify(appUser));
+      } else {
+        setUser(null);
+        localStorage.removeItem('simUser');
       }
+      setLoading(false);
+    });
+
+    try {
       const storedTheme = localStorage.getItem('sim-theme') || 'blue';
       setThemeState(storedTheme);
       document.documentElement.setAttribute('data-theme', storedTheme);
@@ -54,22 +68,32 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (storedPrimaryWallet) {
         setPrimaryWalletIdState(storedPrimaryWallet);
       }
-
     } catch (error) {
-      console.error("Failed to parse from localStorage", error);
-      localStorage.clear();
+      console.error("Failed to access localStorage", error);
     }
-    setLoading(false);
+    
+    return () => unsubscribe();
   }, []);
 
-  const login = (userData: User) => {
-    setUser(userData);
-    localStorage.setItem('simUser', JSON.stringify(userData));
+  const login = async () => {
+    const { auth } = initializeFirebase();
+    const provider = new GoogleAuthProvider();
+    try {
+      await signInWithPopup(auth, provider);
+      // onAuthStateChanged will handle setting the user state
+    } catch (error) {
+      console.error("Error during sign-in:", error);
+    }
   };
 
-  const logout = () => {
-    setUser(null);
-    localStorage.clear();
+  const logout = async () => {
+    const { auth } = initializeFirebase();
+    try {
+      await signOut(auth);
+      // onAuthStateChanged will handle setting the user state to null
+    } catch (error) {
+      console.error("Error during sign-out:", error);
+    }
   };
 
   const setTheme = (newTheme: string) => {
@@ -88,7 +112,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     localStorage.setItem('simPrimaryWalletId', walletId);
   }
 
-  const isRealMode = user?.id === 'REAL456';
+  const isRealMode = user?.id === 'REAL456'; // This might need to be re-evaluated
 
   return (
     <AuthContext.Provider value={{ user, isAuthenticated: !!user, isRealMode, login, logout, loading, theme, setTheme, language, setLanguage, primaryWalletId, setPrimaryWalletId }}>
