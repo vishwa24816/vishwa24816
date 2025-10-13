@@ -397,13 +397,15 @@ export function CryptoHoldingsSection({
                         </div>
                     </div>
                 </div>
-                 {holdings.length > 0 ? (
-                    renderContent()
-                ) : (
-                     <div className="text-center py-10 text-muted-foreground">
-                        <p>No Pledged {title.includes('Web3') ? 'Web3' : 'Crypto'} Holdings.</p>
-                    </div>
-                )}
+                 <div className="p-0">
+                    {holdings.length > 0 ? (
+                        renderContent()
+                    ) : (
+                        <div className="text-center py-10 text-muted-foreground">
+                            <p>No Pledged {title.includes('Web3') ? 'Web3' : 'Crypto'} Holdings.</p>
+                        </div>
+                    )}
+                </div>
             </CardContent>
              {selectedHoldingForPledge && (
                 <PledgeDialog
@@ -459,13 +461,13 @@ export function CryptoHoldingsSection({
              <div className="pt-4 border-t space-y-2">
                 <div className="grid grid-cols-3 gap-2">
                     <Button variant="outline" onClick={() => toggleAction('send')}>
-                        <Send className="mr-0.5 h-4 w-4" /> Send
+                        <Send className="mr-1 h-4 w-4" /> Send
                     </Button>
                     <Button variant="outline" onClick={() => toggleAction('receive')}>
-                        <ArrowDownToLine className="mr-0.5 h-4 w-4" /> Receive
+                        <ArrowDownToLine className="mr-1 h-4 w-4" /> Receive
                     </Button>
                     <Button variant="outline" onClick={() => toggleAction('history')}>
-                        <History className="mr-0.5 h-4 w-4" /> History
+                        <History className="mr-1 h-4 w-4" /> History
                     </Button>
                 </div>
                  {expandedAction === 'send' && (
