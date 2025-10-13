@@ -52,6 +52,16 @@ export function SimbotInputBar({ onNavigateRequest, showSuggestions = false, isR
         e.preventDefault();
         handleSendMessage(inputValue);
     };
+    
+    const handleSuggestionClick = (suggestion: { message: string, symbol: string, details?: InitialOrderDetails }) => {
+        const asset = allAssets.find(a => a.symbol === suggestion.symbol);
+        if (asset && onNavigateRequest) {
+            onNavigateRequest(asset, suggestion.details);
+        } else {
+            // Fallback to AI if direct navigation fails or for more complex queries
+            handleSendMessage(suggestion.message);
+        }
+    };
 
     const demoSuggestions = [
         { message: 'Buy Bitcoin', symbol: 'BTC', details: {} },
@@ -71,7 +81,7 @@ export function SimbotInputBar({ onNavigateRequest, showSuggestions = false, isR
              {showSuggestions && (
                  <div className="flex items-center space-x-2 mb-2 overflow-x-auto no-scrollbar pb-1 px-4">
                     {suggestions.map((s, i) => (
-                         <Button key={i} variant="outline" size="sm" onClick={() => handleSendMessage(s.message)}>
+                         <Button key={i} variant="outline" size="sm" onClick={() => handleSuggestionClick(s as any)}>
                             {s.message}
                         </Button>
                     ))}
@@ -106,5 +116,3 @@ export function SimbotInputBar({ onNavigateRequest, showSuggestions = false, isR
         </div>
     );
 }
-
-    
