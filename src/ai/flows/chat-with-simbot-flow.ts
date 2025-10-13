@@ -46,7 +46,7 @@ const navigateToInstrument = ai.defineTool(
         outputSchema: z.any(),
     },
     async (input) => {
-        const stock = allStocks.find(s => s.symbol.toUpperCase() === input.ticker.toUpperCase());
+        const stock = allStocks.find(s => s.symbol.toUpperCase() === input.ticker.toUpperCase() || s.name.toUpperCase() === input.ticker.toUpperCase());
         if (stock) {
             let path = '';
             if (stock.exchange?.toLowerCase().includes('future')) {
@@ -131,7 +131,7 @@ const prompt = ai.definePrompt({
   prompt: `You are Simbot, a helpful AI assistant for the SIM (Simulation) application.
   You are an expert in Indian and crypto stock markets, finance, and investment in a simulated environment.
   Keep your answers concise and friendly.
-  - If the user asks to buy or view a stock, future, or any other instrument, extract the ticker, quantity, and leverage (if mentioned) and use the navigateToInstrument tool. Do not ask for confirmation, just use the tool.
+  - If the user asks to buy or view a stock, future, or any other instrument, extract the ticker, quantity, and leverage (if mentioned) and use the navigateToInstrument tool. Do not ask for confirmation, just use the tool. For "Bitcoin", use the ticker "BTC".
   - If the user asks to create an option strategy like a "straddle" or "strangle", use the createOptionStrategy tool.
   - For leveraged futures orders, use the navigateToInstrument tool to go to the future's page. The user can set leverage there.
 
@@ -150,30 +150,33 @@ const chatWithSimbotFlow = ai.defineFlow(
     const llmResponse = await prompt(input);
     const toolRequest = llmResponse.toolRequest();
 
-    if (toolRequest?.tool === 'navigateToInstrument') {
-        const toolOutput = await navigateToInstrument(toolRequest.input);
-        if (toolOutput.success) {
+    if (toolRequest) {
+        if (toolRequest.tool === 'navigateToInstrument') {
+            const toolOutput = await navigateToInstrument(toolRequest.input);
+            if (toolOutput.success) {
+                return {
+                    reply: `Navigating you to the order page for ${toolOutput.symbol}...`,
+                    navigationTarget: toolOutput.url,
+                    initialOrderDetails: toolOutput.initialDetails,
+                };
+            } else {
+                 return {
+                    reply: `Sorry, I couldn't find the instrument with ticker "${toolOutput.symbol}". Please check the symbol and try again.`,
+                };
+            }
+        }
+        
+        if (toolRequest.tool === 'createOptionStrategy') {
+            const toolOutput = await createOptionStrategy(toolRequest.input);
             return {
-                reply: `Navigating you to the order page for ${toolOutput.symbol}...`,
-                navigationTarget: toolOutput.url,
-                initialOrderDetails: toolOutput.initialDetails,
-            };
-        } else {
-             return {
-                reply: `Sorry, I couldn't find the instrument with ticker "${toolOutput.symbol}". Please check the symbol and try again.`,
+                reply: toolOutput.reply,
+                navigationTarget: 'strategy-builder',
+                initialOrderDetails: { targetView: toolOutput.targetView },
+                legs: toolOutput.legs,
             };
         }
     }
-    
-    if (toolRequest?.tool === 'createOptionStrategy') {
-        const toolOutput = await createOptionStrategy(toolRequest.input);
-        return {
-            reply: toolOutput.reply,
-            navigationTarget: 'strategy-builder',
-            initialOrderDetails: { targetView: toolOutput.targetView },
-            legs: toolOutput.legs,
-        };
-    }
+
 
     const output = llmResponse.output();
     if (!output?.reply) {
@@ -183,7 +186,3 @@ const chatWithSimbotFlow = ai.defineFlow(
     return output;
   }
 );
-
-    
-
-    
