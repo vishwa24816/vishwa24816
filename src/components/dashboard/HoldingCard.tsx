@@ -97,8 +97,8 @@ export const HoldingCard: React.FC<HoldingCardProps> = ({ holding, onPledgeClick
                 className="flex items-center justify-between p-3 cursor-pointer hover:bg-muted/50"
                 onClick={() => setIsExpanded(!isExpanded)}
             >
-                <div className="flex-1">
-                    <p className="font-semibold text-sm text-foreground">{holding.name}</p>
+                <div className="flex-1 min-w-0 pr-4">
+                    <p className="font-semibold text-sm text-foreground truncate">{holding.name}</p>
                     <p className="text-xs text-muted-foreground">{holding.symbol}</p>
                 </div>
                 <div className="text-right ml-2 shrink-0">
@@ -107,7 +107,7 @@ export const HoldingCard: React.FC<HoldingCardProps> = ({ holding, onPledgeClick
                     </p>
                     <p className="text-xs text-muted-foreground">({(holding.profitAndLossPercent ?? 0).toFixed(2)}%)</p>
                 </div>
-                <ChevronDown className={cn("h-4 w-4 ml-3 text-muted-foreground transition-transform", isExpanded && "rotate-180")} />
+                <ChevronDown className={cn("h-4 w-4 ml-3 text-muted-foreground transition-transform shrink-0", isExpanded && "rotate-180")} />
             </div>
 
             {isExpanded && (
