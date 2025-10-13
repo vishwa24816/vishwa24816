@@ -6,6 +6,7 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { Toaster } from "@/components/ui/toaster";
+import { mockWallets } from '@/lib/mockData/wallets';
 
 interface AuthContextType {
   user: User | null;
@@ -45,7 +46,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const storedLanguage = localStorage.getItem('sim-language') || 'english';
       setLanguageState(storedLanguage);
       
-      const storedPrimaryWallet = localStorage.getItem('simPrimaryWalletId');
+      let storedPrimaryWallet = localStorage.getItem('simPrimaryWalletId');
+      if (!storedPrimaryWallet && mockWallets.length > 0) {
+        storedPrimaryWallet = mockWallets[0].id;
+        localStorage.setItem('simPrimaryWalletId', storedPrimaryWallet);
+      }
       if (storedPrimaryWallet) {
         setPrimaryWalletIdState(storedPrimaryWallet);
       }
