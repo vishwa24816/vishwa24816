@@ -102,8 +102,8 @@ export default function DashboardRouterPage() {
   const getPaddingBottom = () => {
     if (shouldShowOrderFooter) return 'pb-[120px]'; // Space for OrderPageFooter
     if (shouldShowSimbotOnlyFooter) return 'pb-[60px]'; // Space for Simbot only footer
-    if (activeMainView !== 'simbot') return 'pb-[120px]'; // Space for AppFooter with Simbot
-    return 'pb-[60px]'; // Space for AppFooter without Simbot
+    if (activeMainView !== 'simbot') return 'pb-16'; // Space for AppFooter
+    return 'pb-16'; 
   }
 
   const renderContent = () => {
@@ -159,7 +159,7 @@ export default function DashboardRouterPage() {
             <SimbotInputBar onNavigateRequest={handleAssetClick} isRealMode={isRealMode} />
         </footer>
       ) : activeMainView !== 'asset_order' ? (
-         <AppFooter activeView={activeMainView} onNavigate={handleNavigate} onNavigateRequest={handleAssetClick} />
+         <AppFooter activeView={activeMainView} onNavigate={handleNavigate} />
       ) : null}
     </ProtectedRoute>
   );

@@ -3,10 +3,8 @@
 
 import { Home, ClipboardList, Bot, Filter, Users } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import type { MainView, InitialOrderDetails } from '@/app/page';
+import type { MainView } from '@/app/page';
 import { Button } from '../ui/button';
-import { SimbotInputBar } from '../simbot/SimbotInputBar';
-import type { Stock } from '@/types';
 
 interface NavItemProps {
   view: MainView;
@@ -36,10 +34,9 @@ const NavItem: React.FC<NavItemProps> = ({ view, icon: Icon, label, isActive, on
 interface AppFooterProps {
     activeView: MainView;
     onNavigate: (view: MainView) => void;
-    onNavigateRequest: (asset: Stock, details?: InitialOrderDetails) => void;
 }
 
-export function AppFooter({ activeView, onNavigate, onNavigateRequest }: AppFooterProps) {
+export function AppFooter({ activeView, onNavigate }: AppFooterProps) {
 
   const navItems: { view: MainView; icon: React.ElementType; label: string; }[] = [
     { view: "home", icon: Home, label: "Home" },
@@ -51,18 +48,13 @@ export function AppFooter({ activeView, onNavigate, onNavigateRequest }: AppFoot
 
   return (
     <footer className="fixed bottom-0 left-0 right-0 z-40 bg-card border-t border-border rounded-t-2xl shadow-lg">
-      <nav className="mx-auto flex h-14 items-stretch justify-around">
+      <nav className="mx-auto flex h-16 items-stretch justify-around">
         {navItems.map((item) => (
           <div key={item.label} className="flex-1">
             <NavItem {...item} isActive={activeView === item.view} onNavigate={onNavigate} />
           </div>
         ))}
       </nav>
-      {activeView !== 'simbot' && (
-        <div className="border-t">
-          <SimbotInputBar onNavigateRequest={onNavigateRequest} />
-        </div>
-      )}
     </footer>
   );
 }
