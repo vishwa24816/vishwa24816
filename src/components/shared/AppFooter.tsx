@@ -3,8 +3,10 @@
 
 import { Home, ClipboardList, Bot, Filter, Users } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import type { MainView } from '@/app/page';
+import type { MainView, InitialOrderDetails } from '@/app/page';
 import { Button } from '../ui/button';
+import { SimbotInputBar } from '../simbot/SimbotInputBar';
+import type { Stock } from '@/types';
 
 interface NavItemProps {
   view: MainView;
@@ -34,9 +36,10 @@ const NavItem: React.FC<NavItemProps> = ({ view, icon: Icon, label, isActive, on
 interface AppFooterProps {
     activeView: MainView;
     onNavigate: (view: MainView) => void;
+    onNavigateRequest: (asset: Stock, details?: InitialOrderDetails) => void;
 }
 
-export function AppFooter({ activeView, onNavigate }: AppFooterProps) {
+export function AppFooter({ activeView, onNavigate, onNavigateRequest }: AppFooterProps) {
 
   const navItems: { view: MainView; icon: React.ElementType; label: string; }[] = [
     { view: "home", icon: Home, label: "Home" },
@@ -55,6 +58,11 @@ export function AppFooter({ activeView, onNavigate }: AppFooterProps) {
           </div>
         ))}
       </nav>
+      {activeView !== 'simbot' && (
+        <div className="border-t">
+          <SimbotInputBar onNavigateRequest={onNavigateRequest} />
+        </div>
+      )}
     </footer>
   );
 }

@@ -28,6 +28,9 @@ export interface InitialOrderDetails {
     orderType?: string; // 'SIP' etc.
     sipAmount?: number;
     sipFrequency?: 'Daily' | 'Weekly' | 'Monthly' | 'Annually';
+    leverage?: number;
+    legs?: any[];
+    targetView?: string;
 }
 
 export default function DashboardRouterPage() {
@@ -156,7 +159,7 @@ export default function DashboardRouterPage() {
             <SimbotInputBar onNavigateRequest={handleAssetClick} isRealMode={isRealMode} />
         </footer>
       ) : activeMainView !== 'asset_order' ? (
-         <AppFooter activeView={activeMainView} onNavigate={handleNavigate} />
+         <AppFooter activeView={activeMainView} onNavigate={handleNavigate} onNavigateRequest={handleAssetClick} />
       ) : null}
     </ProtectedRoute>
   );
