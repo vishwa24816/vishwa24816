@@ -88,7 +88,7 @@ const SendContent = ({ assets, onConfirm, onCancel }: { assets: PortfolioHolding
          <div className="flex justify-end gap-2">
             <Button variant="ghost" onClick={onCancel}>Cancel</Button>
             <Button onClick={handleSend} disabled={!address || !amount || !selectedAsset}>
-                <Send className="mr-2 h-4 w-4" /> Send
+                <Send className="mr-0.5 h-4 w-4" /> Send
             </Button>
         </div>
     </div>
@@ -289,7 +289,7 @@ export function CryptoHoldingsSection({
     switch(viewMode) {
       case 'list':
         return (
-          <div className="mt-4">
+          <div className="mt-4 -mx-6">
             {holdings.map((holding) => (
               <HoldingCard 
                   key={holding.id} 
@@ -517,5 +517,3 @@ export function CryptoHoldingsSection({
     </>
   );
 }
-
-    

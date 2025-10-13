@@ -18,7 +18,7 @@ import { PledgeDialog } from './PledgeDialog';
 import { HoldingCard } from './HoldingCard';
 
 
-type HoldingFilterType = 'All' | 'Indian Stocks' | 'US Stocks' | 'Mutual Fund' | 'Bond';
+type HoldingFilterType = 'All' | 'Indian Stocks' | 'US Stocks';
 type ViewMode = 'list' | 'bar' | 'heatmap' | 'pie';
 
 interface FiatHoldingsSectionProps {
@@ -160,7 +160,7 @@ export function FiatHoldingsSection({
     switch (viewMode) {
       case 'list':
         return (
-          <div className="mt-4">
+          <div className="mt-4 -mx-6">
             {filteredHoldings.map((holding) => (
               <HoldingCard 
                   key={holding.id} 
@@ -311,5 +311,3 @@ export function FiatHoldingsSection({
     </>
   );
 }
-
-    
