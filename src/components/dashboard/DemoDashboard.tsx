@@ -467,7 +467,7 @@ export function DemoDashboard({ activeMode, onModeChange, onAssetClick }: DemoDa
     }
 
     if (activePrimaryItem === 'Exchange') {
-        return <ExchangeCard />
+        return <ExchangeCard portfolioHoldings={allHoldings} />
     }
 
     if (activePrimaryItem === 'Pledged Holdings') {
@@ -712,3 +712,5 @@ export function DemoDashboard({ activeMode, onModeChange, onAssetClick }: DemoDa
     </>
   );
 }
+
+    

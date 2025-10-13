@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,8 +9,10 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ArrowDown, Repeat } from 'lucide-react';
 import { allAssets } from '@/lib/mockData';
-import type { Stock } from '@/types';
+import type { Stock, PortfolioHolding } from '@/types';
 import { useToast } from '@/hooks/use-toast';
+import { cn } from '@/lib/utils';
+
 
 type AssetType = 'Fiat' | 'Crypto' | 'Wealth';
 
@@ -22,7 +24,8 @@ const AssetRow = ({
     setSelectedAsset,
     amount,
     setAmount,
-    isReadOnly = false
+    isReadOnly = false,
+    balance
 }: {
     label: string,
     assetType: AssetType,
@@ -31,7 +34,8 @@ const AssetRow = ({
     setSelectedAsset: (asset: Stock | null) => void,
     amount: string,
     setAmount: (amount: string) => void,
-    isReadOnly?: boolean
+    isReadOnly?: boolean,
+    balance?: number | null;
 }) => {
     const assetsForType = useMemo(() => {
         switch (assetType) {
@@ -53,7 +57,12 @@ const AssetRow = ({
 
     return (
         <div className="p-4 rounded-lg bg-muted/50 border space-y-3">
-            <p className="text-sm font-medium text-muted-foreground">{label}</p>
+            <div className="flex justify-between items-center">
+                 <p className="text-sm font-medium text-muted-foreground">{label}</p>
+                 {balance !== undefined && balance !== null && (
+                    <p className="text-xs font-medium text-muted-foreground">Balance: {balance.toLocaleString()}</p>
+                 )}
+            </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                     <Label htmlFor={`${label}-type`}>Type</Label>
@@ -103,13 +112,36 @@ const AssetRow = ({
 }
 
 
-export function ExchangeCard() {
+export function ExchangeCard({ portfolioHoldings }: { portfolioHoldings: PortfolioHolding[] }) {
     const { toast } = useToast();
     const [fromAssetType, setFromAssetType] = useState<AssetType>('Fiat');
     const [toAssetType, setToAssetType] = useState<AssetType>('Crypto');
     const [fromAsset, setFromAsset] = useState<Stock | null>(null);
     const [toAsset, setToAsset] = useState<Stock | null>(null);
     const [fromAmount, setFromAmount] = useState('');
+    const [error, setError] = useState<string | null>(null);
+
+    const fromAssetHolding = useMemo(() => {
+        if (!fromAsset) return null;
+        return portfolioHoldings.find(h => h.symbol === fromAsset.symbol);
+    }, [fromAsset, portfolioHoldings]);
+
+    useEffect(() => {
+        if (!fromAsset || !fromAmount) {
+            setError(null);
+            return;
+        }
+
+        const holdingQty = fromAssetHolding?.quantity || 0;
+        const enteredQty = parseFloat(fromAmount);
+
+        if (enteredQty > holdingQty) {
+            setError(`Insufficient balance. You only have ${holdingQty.toLocaleString()} ${fromAsset.symbol}.`);
+        } else {
+            setError(null);
+        }
+
+    }, [fromAmount, fromAsset, fromAssetHolding]);
     
     const exchangeRate = useMemo(() => {
         if (!fromAsset || !toAsset) return null;
@@ -123,6 +155,15 @@ export function ExchangeCard() {
     }, [exchangeRate, fromAmount]);
 
     const handleSwap = () => {
+        if (error) {
+            toast({
+                title: 'Cannot Swap',
+                description: error,
+                variant: 'destructive',
+            });
+            return;
+        }
+        
         if (!fromAsset || !toAsset || !fromAmount || !toAmount) {
             toast({
                 title: 'Incomplete Details',
@@ -155,6 +196,7 @@ export function ExchangeCard() {
                     setSelectedAsset={setFromAsset}
                     amount={fromAmount}
                     setAmount={setFromAmount}
+                    balance={fromAssetHolding?.quantity}
                />
                 <div className="flex justify-center -my-6 z-10">
                     <Button variant="outline" size="icon" className="rounded-full bg-background">
@@ -178,8 +220,12 @@ export function ExchangeCard() {
                     </div>
                 )}
                 
+                {error && (
+                    <p className="text-sm text-center text-destructive pt-2">{error}</p>
+                )}
+                
                 <div className="pt-4">
-                    <Button onClick={handleSwap} className="w-full" disabled={!fromAsset || !toAsset || !fromAmount}>
+                    <Button onClick={handleSwap} className="w-full" disabled={!!error || !fromAsset || !toAsset || !fromAmount}>
                         Swap
                     </Button>
                 </div>
@@ -188,3 +234,4 @@ export function ExchangeCard() {
     );
 }
 
+    
