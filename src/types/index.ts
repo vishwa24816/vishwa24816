@@ -102,18 +102,11 @@ export interface MarketIndex {
   changePercent: number;
 }
 
-export interface NewsArticle {
-  id: string;
-  headline: string;
-  source: string;
-  timestamp: string;
-  url?: string;
-}
-
 export interface User {
   id: string;
   email: string;
-  name?: string;
+  name: string;
+  ucc: string;
 }
 
 export interface PortfolioHolding {

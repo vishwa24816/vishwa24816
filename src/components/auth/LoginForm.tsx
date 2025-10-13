@@ -8,26 +8,53 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
-import { LogIn } from 'lucide-react';
+import { LogIn, UserCheck, UserCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { cn } from '@/lib/utils';
 
 export function LoginForm() {
   const { login } = useAuth();
   const { toast } = useToast();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [ucc, setUcc] = useState('');
+  const [pin, setPin] = useState('');
+  const [activeTab, setActiveTab] = useState<'sim' | 'real'>('sim');
 
   const handleLogin = () => {
-    if (!email) {
+    if (!ucc) {
       toast({
         title: "Login Error",
-        description: "Please enter your email.",
+        description: "Please enter your UCC.",
         variant: "destructive",
       });
       return;
     }
-    // The password is not used in this mock login, but would be in a real app
-    login(email);
+    if (!pin || pin.length !== 4) {
+      toast({
+        title: "Login Error",
+        description: "Please enter your 4-digit PIN.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    const uccToLogin = activeTab === 'real' ? 'REAL456' : ucc;
+    
+    login(uccToLogin, pin);
+  };
+  
+  const handleUccChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.toUpperCase();
+    if (value.length <= 7) {
+      setUcc(value);
+    }
+  };
+
+  const handlePinChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.replace(/[^0-9]/g, '');
+    if (value.length <= 4) {
+      setPin(value);
+    }
   };
 
   return (
@@ -40,28 +67,40 @@ export function LoginForm() {
           </svg>
         </div>
         <CardTitle className="text-3xl font-headline">Welcome to SIM</CardTitle>
-        <CardDescription>Sign in to access your stock simulation dashboard.</CardDescription>
+        <CardDescription>Sign in to access your dashboard.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input 
-                id="email" 
-                type="email" 
-                placeholder="user@example.com" 
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-            />
-        </div>
-        <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
-            <Input 
-                id="password" 
-                type="password" 
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-            />
-        </div>
+        <Tabs defaultValue="sim" value={activeTab} onValueChange={(v) => setActiveTab(v as 'sim' | 'real')} className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="sim" className="flex items-center gap-2"><UserCircle className="h-4 w-4" />Simulation</TabsTrigger>
+                <TabsTrigger value="real" className="flex items-center gap-2"><UserCheck className="h-4 w-4" />Real</TabsTrigger>
+            </TabsList>
+            <div className="pt-6 space-y-4">
+                 <div className="space-y-2">
+                    <Label htmlFor="ucc">UCC (Client Code)</Label>
+                    <Input 
+                        id="ucc" 
+                        type="text" 
+                        placeholder={activeTab === 'sim' ? 'e.g. DEMO123' : 'Enter Real UCC'}
+                        value={ucc}
+                        onChange={handleUccChange}
+                        maxLength={7}
+                    />
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="pin">4-Digit PIN</Label>
+                    <Input 
+                        id="pin" 
+                        type="password"
+                        value={pin}
+                        onChange={handlePinChange}
+                        maxLength={4}
+                        pattern="\d{4}"
+                    />
+                </div>
+            </div>
+        </Tabs>
+        
         <Button onClick={handleLogin} className="w-full text-lg py-6 mt-2">
             <LogIn className="mr-2 h-5 w-5" />
             Sign In

@@ -12,7 +12,7 @@ interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   isRealMode: boolean;
-  login: (email: string) => void;
+  login: (ucc: string, pin: string) => void;
   logout: () => void;
   loading: boolean;
   theme: string;
@@ -67,13 +67,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   }, []);
 
-  const login = (email: string) => {
+  const login = (ucc: string, pin: string) => {
     setLoading(true);
-    // This is a mock login. In a real app, you'd verify credentials.
+    // This is a mock login. A real app would verify credentials.
+    // We'll use the UCC to determine the user type.
+    const isReal = ucc.toUpperCase() === 'REAL456';
     const mockUser: User = {
-      id: email.includes('real') ? 'REAL456' : 'DEMO123',
-      email: email,
-      name: email.split('@')[0]
+      id: isReal ? 'REAL456' : ucc || 'DEMO123',
+      ucc: isReal ? 'REAL456' : ucc || 'DEMO123',
+      email: isReal ? 'real.user@example.com' : 'demo.user@example.com',
+      name: isReal ? 'Real User' : 'Demo User'
     };
     setUser(mockUser);
     try {
@@ -105,7 +108,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setLanguageState(newLanguage);
     localStorage.setItem('sim-language', newLanguage);
   };
-
+  
   const setPrimaryWalletId = (walletId: string) => {
     setPrimaryWalletIdState(walletId);
     localStorage.setItem('simPrimaryWalletId', walletId);
