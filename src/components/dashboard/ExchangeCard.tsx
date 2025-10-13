@@ -149,14 +149,18 @@ const AssetRow = ({
             </div>
              <div className="space-y-2">
                 <Label htmlFor={`${label}-amount`}>Quantity</Label>
-                <Input
-                    id={`${label}-amount`}
-                    type="number"
-                    value={amount}
-                    onChange={(e) => setAmount(e.target.value)}
-                    readOnly={isReadOnly}
-                    placeholder="0.00"
-                />
+                {isReadOnly ? (
+                    <p className="font-semibold text-lg text-primary h-10 flex items-center">{amount ? `≈ ${parseFloat(amount).toLocaleString(undefined, { maximumFractionDigits: 6 })}` : '0.00'}</p>
+                ) : (
+                    <Input
+                        id={`${label}-amount`}
+                        type="number"
+                        value={amount}
+                        onChange={(e) => setAmount(e.target.value)}
+                        readOnly={isReadOnly}
+                        placeholder="0.00"
+                    />
+                )}
             </div>
         </div>
     );
