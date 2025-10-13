@@ -36,6 +36,7 @@ import { Badge } from '@/components/ui/badge';
 import { mockWallets as initialMockWallets } from '@/lib/mockData/wallets';
 import { useAuth } from '@/contexts/AuthContext';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectGroup, SelectLabel, SelectItem } from '@/components/ui/select';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
 
 const WalletCard = ({ wallet, onRemove, isPrimary, onSetPrimary }: { wallet: typeof initialMockWallets[0], onRemove: (id: string) => void, isPrimary: boolean, onSetPrimary: (id: string) => void }) => {
@@ -116,9 +117,11 @@ export default function WalletManagementPage() {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [createPassword, setCreatePassword] = useState('');
   const [selectedAccount, setSelectedAccount] = useState('');
+  const [custodyType, setCustodyType] = useState('custodian');
 
   const handleAccountSelect = (value: string) => {
     setSelectedAccount(value);
+    setCustodyType('custodian'); // Reset custody type on account change
     if (value === 'DEMO123') {
         const demoWallet = {
             id: 'wallet-demo-123',
@@ -126,13 +129,15 @@ export default function WalletManagementPage() {
             phrase: 'This is a mock wallet for your demo account. Do not use for real assets.',
             account: 'DEMO123'
         };
-        setWallets(prev => [...prev, demoWallet]);
+        if (!wallets.some(w => w.id === demoWallet.id)) {
+            setWallets(prev => [...prev, demoWallet]);
+        }
         toast({
             title: 'Demo Wallet Added',
             description: 'A mock wallet for your simulation account has been added.',
         });
-        setIsCreateDialogOpen(false); // Close dialog immediately
-        setSelectedAccount(''); // Reset selection
+        setIsCreateDialogOpen(false); 
+        setSelectedAccount(''); 
     }
   };
 
@@ -239,7 +244,7 @@ export default function WalletManagementPage() {
                   <DialogHeader>
                       <DialogTitle>Create New Crypto Wallet</DialogTitle>
                       <DialogDescription>
-                          Select an account to create a new wallet for, or add a demo wallet.
+                          Select an account and custody type to create a new wallet.
                       </DialogDescription>
                   </DialogHeader>
                   <div className="py-4 space-y-4">
@@ -261,7 +266,22 @@ export default function WalletManagementPage() {
                                 </SelectContent>
                            </Select>
                         </div>
-                       {selectedAccount === 'REAL456' && (
+                        {selectedAccount && (
+                            <div className="space-y-2 animate-accordion-down">
+                                <Label>Custody Type</Label>
+                                <RadioGroup value={custodyType} onValueChange={setCustodyType} className="flex gap-4">
+                                    <Label htmlFor="custody-custodian" className="flex items-center gap-2 p-3 border rounded-md has-[:checked]:bg-primary/10 has-[:checked]:border-primary flex-1 cursor-pointer">
+                                        <RadioGroupItem value="custodian" id="custody-custodian" />
+                                        Custodian
+                                    </Label>
+                                     <Label htmlFor="custody-self" className="flex items-center gap-2 p-3 border rounded-md has-[:checked]:bg-primary/10 has-[:checked]:border-primary flex-1 cursor-pointer">
+                                        <RadioGroupItem value="self" id="custody-self" />
+                                        Self
+                                    </Label>
+                                </RadioGroup>
+                            </div>
+                        )}
+                       {selectedAccount === 'REAL456' && custodyType === 'custodian' && (
                          <div className="space-y-2 animate-accordion-down">
                             <Label htmlFor="create-wallet-password">Password</Label>
                             <div className="relative">
@@ -282,7 +302,9 @@ export default function WalletManagementPage() {
                       <DialogClose asChild>
                           <Button variant="outline">Cancel</Button>
                       </DialogClose>
-                      <Button onClick={handleMailRecovery} disabled={selectedAccount !== 'REAL456'}>Mail Me</Button>
+                      <Button onClick={handleMailRecovery} disabled={!selectedAccount || (selectedAccount === 'REAL456' && custodyType === 'custodian' && !createPassword)}>
+                          {custodyType === 'custodian' ? 'Mail Me' : 'Create Wallet'}
+                      </Button>
                   </DialogFooter>
               </DialogContent>
             </Dialog>
