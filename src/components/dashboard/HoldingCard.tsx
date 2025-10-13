@@ -52,10 +52,10 @@ const PledgedDetails: React.FC<{ holding: PortfolioHolding, onPledgeClick: (hold
             </div>
             <div className="pt-2 flex gap-2">
                 <Button size="sm" variant="outline" className="flex-1 justify-center" onClick={() => onPledgeClick(holding, 'pledge')}>
-                    <PlusCircle className="mr-2 h-4 w-4" /> Pledge More
+                    <PlusCircle className="mr-0.5 h-4 w-4" /> Pledge More
                 </Button>
                 <Button size="sm" variant="destructive" className="flex-1 justify-center" onClick={() => onPledgeClick(holding, 'payback')}>
-                    <MinusCircle className="mr-2 h-4 w-4" /> Payback
+                    <MinusCircle className="mr-0.5 h-4 w-4" /> Payback
                 </Button>
             </div>
         </div>
@@ -94,14 +94,14 @@ export const HoldingCard: React.FC<HoldingCardProps> = ({ holding, onPledgeClick
     return (
         <div className="border-b transition-all duration-300">
             <div 
-                className="flex items-center justify-between p-3 cursor-pointer hover:bg-muted/50"
+                className="flex items-center p-3 cursor-pointer hover:bg-muted/50"
                 onClick={() => setIsExpanded(!isExpanded)}
             >
-                <div className="flex-1 min-w-0 pr-4">
+                <div className="flex-1 min-w-0">
                     <p className="font-semibold text-sm text-foreground truncate">{holding.name}</p>
                     <p className="text-xs text-muted-foreground">{holding.symbol}</p>
                 </div>
-                <div className="text-right ml-2 shrink-0">
+                <div className="text-right ml-4 shrink-0">
                     <p className={cn("text-sm font-medium", isProfit ? 'text-green-600' : 'text-red-600')}>
                         {formatCurrency(holding.profitAndLoss ?? 0)}
                     </p>
@@ -141,13 +141,13 @@ export const HoldingCard: React.FC<HoldingCardProps> = ({ holding, onPledgeClick
                         </div>
                         <div className="pt-2 flex gap-2">
                             <Button size="sm" variant="outline" className="flex-1 justify-center" onClick={handleAdjustPosition}>
-                                <Settings2 className="mr-2 h-4 w-4" /> Adjust
+                                <Settings2 className="mr-0.5 h-4 w-4" /> Adjust
                             </Button>
                             <Button size="sm" variant="outline" className="flex-1 justify-center" onClick={() => onPledgeClick(holding, 'pledge')}>
-                                <Landmark className="mr-2 h-4 w-4" /> Pledge
+                                <Landmark className="mr-0.5 h-4 w-4" /> Pledge
                             </Button>
                             <Button size="sm" variant="destructive" className="flex-1 justify-center" onClick={handleExitPosition}>
-                                <XCircle className="mr-2 h-4 w-4" /> Exit
+                                <XCircle className="mr-0.5 h-4 w-4" /> Exit
                             </Button>
                         </div>
                     </div>
