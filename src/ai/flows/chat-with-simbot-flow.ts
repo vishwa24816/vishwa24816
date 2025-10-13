@@ -148,9 +148,11 @@ const chatWithSimbotFlow = ai.defineFlow(
   },
   async (input) => {
     const llmResponse = await prompt(input);
-    const toolRequest = llmResponse.toolRequest();
-
-    if (toolRequest) {
+    
+    // This is the main change. We process the tool requests first.
+    if (llmResponse.isToolRequest()) {
+        const toolRequest = llmResponse.toolRequest();
+        
         if (toolRequest.tool === 'navigateToInstrument') {
             const toolOutput = await navigateToInstrument(toolRequest.input);
             if (toolOutput.success) {
