@@ -160,7 +160,7 @@ export function FiatHoldingsSection({
     switch (viewMode) {
       case 'list':
         return (
-          <div className="mt-4 -mx-6">
+          <div className="mt-4">
             {filteredHoldings.map((holding) => (
               <HoldingCard 
                   key={holding.id} 
@@ -271,8 +271,8 @@ export function FiatHoldingsSection({
               </div>
               
               {!isPledged && (
-                <div className="border-b border-border">
-                    <div className="flex space-x-1 overflow-x-auto whitespace-nowrap pb-0 no-scrollbar">
+                <div className="border-b border-border -mx-6">
+                    <div className="flex space-x-1 overflow-x-auto whitespace-nowrap pb-0 no-scrollbar px-6">
                     {filterOptions.map((option) => (
                         <Button
                         key={option.value}

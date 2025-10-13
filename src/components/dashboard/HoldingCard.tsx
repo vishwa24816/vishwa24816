@@ -94,7 +94,7 @@ export const HoldingCard: React.FC<HoldingCardProps> = ({ holding, onPledgeClick
     return (
         <div className="border-b transition-all duration-300">
             <div 
-                className="grid grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)_auto] items-center p-3 cursor-pointer hover:bg-muted/50 gap-2"
+                className="grid grid-cols-[minmax(0,2fr)_minmax(0,1fr)_auto] items-center p-3 cursor-pointer hover:bg-muted/50 gap-2"
                 onClick={() => setIsExpanded(!isExpanded)}
             >
                 <div className="min-w-0">

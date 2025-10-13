@@ -289,7 +289,7 @@ export function CryptoHoldingsSection({
     switch(viewMode) {
       case 'list':
         return (
-          <div className="mt-4 -mx-6">
+          <div className="mt-4">
             {holdings.map((holding) => (
               <HoldingCard 
                   key={holding.id} 
