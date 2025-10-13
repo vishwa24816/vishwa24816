@@ -11,12 +11,20 @@ import { useRouter } from 'next/navigation';
 type PositionItem = PortfolioHolding | IntradayPosition | FoPosition | CryptoFuturePosition;
 
 const formatCurrency = (value: number, currency: 'INR' | 'USDT' = 'INR') => {
-  if (currency === 'USDT') return `${value.toFixed(2)} USDT`;
+  if (currency === 'USDT') {
+    if (Math.abs(value) >= 1000000) return `${(value / 1000000).toFixed(2)}M USDT`;
+    if (Math.abs(value) >= 1000) return `${(value / 1000).toFixed(2)}K USDT`;
+    return `${value.toFixed(2)} USDT`;
+  }
+
+  if (Math.abs(value) >= 10000000) {
+    return `₹${(value / 10000000).toFixed(2)} Cr`;
+  }
   return new Intl.NumberFormat('en-IN', {
     style: 'currency',
     currency: 'INR',
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
   }).format(value);
 };
 

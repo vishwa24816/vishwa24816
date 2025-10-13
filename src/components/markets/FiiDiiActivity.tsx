@@ -11,7 +11,10 @@ import { Info, ArrowUpDown } from 'lucide-react';
 import { Chart } from "@/components/ui/chart";
 
 const formatCurrency = (value: number) => {
-    return `${(value / 100).toFixed(2)} Cr`;
+    if (Math.abs(value) >= 1000) {
+        return `₹${(value / 1000).toFixed(2)}k Cr`;
+    }
+    return `₹${value.toFixed(2)} Cr`;
 };
 
 const chartConfig = {

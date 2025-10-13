@@ -13,9 +13,10 @@ type InvestorType = 'individual' | 'institutional' | 'fii';
 type SortKey = 'netWorth' | 'stocksCount';
 
 const formatNetWorth = (value: number) => {
-    return new Intl.NumberFormat('en-IN', {
-        maximumFractionDigits: 3,
-    }).format(value) + ' Cr';
+    if (value >= 10000) {
+        return `₹${(value / 10000).toFixed(2)} Lakh Cr`;
+    }
+    return `₹${value.toLocaleString('en-IN', { maximumFractionDigits: 0 })} Cr`;
 };
 
 export const SuperstarsScreener = () => {
