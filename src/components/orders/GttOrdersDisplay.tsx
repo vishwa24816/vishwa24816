@@ -4,18 +4,33 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import type { GttOrder } from '@/types';
-import { mockGttOrders, mockRealGttOrders } from '@/lib/mockData';
+import type { GttOrder, Stock } from '@/types';
+import { mockGttOrders, mockRealGttOrders, allAssets } from '@/lib/mockData';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { Target, Edit3, XCircle } from 'lucide-react';
 
 interface GttOrderItemProps {
   order: GttOrder;
+  onAssetClick: (asset: Stock) => void;
 }
 
-const GttOrderItem: React.FC<GttOrderItemProps> = ({ order }) => {
+const GttOrderItem: React.FC<GttOrderItemProps> = ({ order, onAssetClick }) => {
   const { toast } = useToast();
+
+  const handleModifyClick = () => {
+    const asset = allAssets.find(a => a.symbol === order.symbol);
+    if (asset) {
+      onAssetClick(asset);
+    } else {
+      toast({
+        title: "Asset not found",
+        description: `Could not find details for ${order.symbol}.`,
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <div className="border-b">
         <div className="p-3">
@@ -37,18 +52,18 @@ const GttOrderItem: React.FC<GttOrderItemProps> = ({ order }) => {
             </div>
         </div>
         <div className="px-3 pb-2 flex justify-end space-x-2">
-            <Button variant="outline" size="sm" onClick={() => toast({ title: `Modify GTT: ${order.symbol}`})}>
-            <Edit3 className="mr-1 h-3 w-3" /> Modify
+            <Button variant="outline" size="sm" onClick={handleModifyClick}>
+                <Edit3 className="mr-1 h-3 w-3" /> Modify
             </Button>
             <Button variant="destructive" size="sm" onClick={() => toast({ title: `Cancel GTT: ${order.symbol}`, variant: "destructive"})}>
-            <XCircle className="mr-1 h-3 w-3" /> Cancel
+                <XCircle className="mr-1 h-3 w-3" /> Cancel
             </Button>
         </div>
     </div>
   );
 };
 
-export function GttOrdersDisplay({ isRealMode = false }: { isRealMode?: boolean }) {
+export function GttOrdersDisplay({ isRealMode = false, onAssetClick }: { isRealMode?: boolean; onAssetClick: (asset: Stock) => void; }) {
   const orders = isRealMode ? mockRealGttOrders : mockGttOrders;
 
   if (orders.length === 0) {
@@ -63,7 +78,7 @@ export function GttOrdersDisplay({ isRealMode = false }: { isRealMode?: boolean 
   return (
     <ScrollArea className="h-[calc(100vh-200px)] p-1">
       {orders.map((order) => (
-        <GttOrderItem key={order.id} order={order} />
+        <GttOrderItem key={order.id} order={order} onAssetClick={onAssetClick} />
       ))}
     </ScrollArea>
   );

@@ -24,9 +24,11 @@ import {
 } from '@/lib/mockData';
 import { useRouter } from 'next/navigation';
 import type { MainView } from '@/app/page';
+import { GttOrdersDisplay } from './GttOrdersDisplay';
 
 const demoOrderTabs = [
   { value: "limit", label: "Limit" },
+  { value: "gtt", label: "GTT" },
   { value: "bids", label: "Bids" },
   { value: "hodl", label: "HODL" },
   { value: "baskets", label: "Baskets" },
@@ -36,6 +38,7 @@ const demoOrderTabs = [
 
 const realOrderTabs = [
   { value: "limit", label: "Limit" },
+  { value: "gtt", label: "GTT" },
   { value: "hodl", label: "HODL" },
   { value: "baskets", label: "Baskets" },
   { value: "sips", label: "SIPs" },
@@ -94,10 +97,13 @@ export function OrdersPageContent({ activeMode, onAssetClick, onNavigate }: Orde
 
             <div className="w-full px-0 sm:px-2 md:px-4 py-4 flex-grow flex flex-col">
               <TabsContent value="limit" className="flex-grow flex flex-col mt-0 data-[state=inactive]:hidden">
-                <LimitOrdersDisplay isRealMode={isRealMode} />
+                <LimitOrdersDisplay isRealMode={isRealMode} onAssetClick={onAssetClick} />
+              </TabsContent>
+               <TabsContent value="gtt" className="flex-grow flex flex-col mt-0 data-[state=inactive]:hidden">
+                <GttOrdersDisplay isRealMode={isRealMode} onAssetClick={onAssetClick} />
               </TabsContent>
               <TabsContent value="bids" className="flex-grow flex flex-col mt-0 data-[state=inactive]:hidden">
-                <BondBidsDisplay />
+                <BondBidsDisplay onAssetClick={onAssetClick} />
               </TabsContent>
               <TabsContent value="hodl" className="flex-grow flex flex-col mt-0 data-[state=inactive]:hidden">
                 <HodlOrdersDisplay />

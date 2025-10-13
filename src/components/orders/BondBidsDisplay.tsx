@@ -4,18 +4,39 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import type { BondBid } from '@/types';
-import { mockBondBids } from '@/lib/mockData';
+import type { BondBid, Stock } from '@/types';
+import { mockBondBids, allAssets } from '@/lib/mockData';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { LandPlot, XCircle, Edit3 } from 'lucide-react'; // Using LandPlot as a generic icon for bonds/bids
 
 interface BondBidItemProps {
   bid: BondBid;
+  onAssetClick: (asset: Stock) => void;
 }
 
-const BondBidItem: React.FC<BondBidItemProps> = ({ bid }) => {
+const BondBidItem: React.FC<BondBidItemProps> = ({ bid, onAssetClick }) => {
   const { toast } = useToast();
+
+  const handleModifyClick = () => {
+    const asset = allAssets.find(a => a.symbol === bid.isin);
+    if (asset) {
+      onAssetClick(asset);
+    } else {
+        // Fallback for bonds which might not be in allAssets as stocks
+        const bondAsset: Stock = {
+            id: bid.id,
+            symbol: bid.isin,
+            name: bid.bondName,
+            price: bid.bidPrice,
+            change: 0,
+            changePercent: 0,
+            exchange: 'BOND'
+        };
+        onAssetClick(bondAsset);
+    }
+  };
+
   return (
     <div className="border-b">
         <div className="p-3">
@@ -34,7 +55,7 @@ const BondBidItem: React.FC<BondBidItemProps> = ({ bid }) => {
             </div>
         </div>
         <div className="px-3 pb-2 flex justify-end space-x-2">
-            <Button variant="outline" size="sm" onClick={() => toast({ title: `Modify Bid: ${bid.isin}`})}>
+            <Button variant="outline" size="sm" onClick={handleModifyClick}>
                 <Edit3 className="mr-1 h-3 w-3" /> Modify
             </Button>
             <Button variant="destructive" size="sm" onClick={() => toast({ title: `Cancel Bid: ${bid.isin}`, variant: "destructive"})}>
@@ -45,7 +66,7 @@ const BondBidItem: React.FC<BondBidItemProps> = ({ bid }) => {
   );
 };
 
-export function BondBidsDisplay() {
+export function BondBidsDisplay({ onAssetClick }: { onAssetClick: (asset: Stock) => void; }) {
   const bids = mockBondBids;
 
   if (bids.length === 0) {
@@ -60,7 +81,7 @@ export function BondBidsDisplay() {
   return (
     <ScrollArea className="h-[calc(100vh-200px)] p-1">
       {bids.map((bid) => (
-        <BondBidItem key={bid.id} bid={bid} />
+        <BondBidItem key={bid.id} bid={bid} onAssetClick={onAssetClick} />
       ))}
     </ScrollArea>
   );

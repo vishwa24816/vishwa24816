@@ -4,14 +4,15 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import type { GttOrder } from '@/types';
-import { mockGttOrders, mockRealGttOrders } from '@/lib/mockData';
+import type { GttOrder, Stock } from '@/types';
+import { mockGttOrders, mockRealGttOrders, allAssets } from '@/lib/mockData';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { Target, Edit3, XCircle } from 'lucide-react';
 
 interface LimitOrderItemProps {
   order: GttOrder;
+  onAssetClick: (asset: Stock) => void;
 }
 
 // Mock data for regular open/limit orders (distinct from GTT)
@@ -19,8 +20,22 @@ const mockLimitOrders = mockGttOrders.map(o => ({...o, id: `limit-${o.id}`})).sl
 const mockRealLimitOrders = mockRealGttOrders.map(o => ({...o, id: `limit-${o.id}`})).slice(0,1);
 
 
-const LimitOrderItem: React.FC<LimitOrderItemProps> = ({ order }) => {
+const LimitOrderItem: React.FC<LimitOrderItemProps> = ({ order, onAssetClick }) => {
   const { toast } = useToast();
+  
+  const handleModifyClick = () => {
+    const asset = allAssets.find(a => a.symbol === order.symbol);
+    if (asset) {
+      onAssetClick(asset);
+    } else {
+      toast({
+        title: "Asset not found",
+        description: `Could not find details for ${order.symbol}.`,
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <div className="border-b">
         <div className="p-3">
@@ -44,7 +59,7 @@ const LimitOrderItem: React.FC<LimitOrderItemProps> = ({ order }) => {
             </div>
         </div>
         <div className="px-3 pb-2 flex justify-end space-x-2">
-            <Button variant="outline" size="sm" onClick={() => toast({ title: `Modify Order: ${order.symbol}`})}>
+            <Button variant="outline" size="sm" onClick={handleModifyClick}>
             <Edit3 className="mr-1 h-3 w-3" /> Modify
             </Button>
             <Button variant="destructive" size="sm" onClick={() => toast({ title: `Cancel Order: ${order.symbol}`, variant: "destructive"})}>
@@ -55,7 +70,7 @@ const LimitOrderItem: React.FC<LimitOrderItemProps> = ({ order }) => {
   );
 };
 
-export function LimitOrdersDisplay({ isRealMode = false }: { isRealMode?: boolean }) {
+export function LimitOrdersDisplay({ isRealMode = false, onAssetClick }: { isRealMode?: boolean; onAssetClick: (asset: Stock) => void; }) {
   const orders = isRealMode ? mockRealLimitOrders : mockLimitOrders;
 
   if (orders.length === 0) {
@@ -70,7 +85,7 @@ export function LimitOrdersDisplay({ isRealMode = false }: { isRealMode?: boolea
   return (
     <ScrollArea className="h-[calc(100vh-200px)] p-1">
       {orders.map((order) => (
-        <LimitOrderItem key={order.id} order={order} />
+        <LimitOrderItem key={order.id} order={order} onAssetClick={onAssetClick}/>
       ))}
     </ScrollArea>
   );
