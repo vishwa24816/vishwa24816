@@ -10,10 +10,10 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
-import { mockStocks, mockCryptoFuturesForWatchlist } from '@/lib/mockData';
+import { mockStocks, mockCryptoFuturesForWatchlist, mockCryptoAssets } from '@/lib/mockData';
 import { mockUsStocks } from '@/lib/mockData/usStocks';
 
-const allStocks = [...mockStocks, ...mockUsStocks, ...mockCryptoFuturesForWatchlist];
+const allStocks = [...mockStocks, ...mockUsStocks, ...mockCryptoFuturesForWatchlist, ...mockCryptoAssets];
 
 const ChatWithSimbotInputSchema = z.object({
   message: z.string().describe('The user message to Simbot.'),
@@ -51,6 +51,8 @@ const navigateToInstrument = ai.defineTool(
             let path = '';
             if (stock.exchange?.toLowerCase().includes('future')) {
                 path = stock.exchange?.toLowerCase().includes('crypto') ? `/order/crypto-future/${stock.symbol}` : `/order/future/${stock.symbol}`;
+            } else if (stock.exchange?.toLowerCase().includes('crypto')) {
+                path = `/order/crypto/${stock.symbol}`;
             } else {
                 path = `/order/stock/${stock.symbol}`;
             }
@@ -181,5 +183,7 @@ const chatWithSimbotFlow = ai.defineFlow(
     return output;
   }
 );
+
+    
 
     
