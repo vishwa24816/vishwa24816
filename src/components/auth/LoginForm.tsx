@@ -1,56 +1,30 @@
 
 "use client";
 
-import React, { useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
-import { KeyRound, User, LogIn } from 'lucide-react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { LogIn } from 'lucide-react';
 
-const DEMO_CREDENTIALS = { ucc: 'DEMO123', mpin: '1234', name: 'Demo User' };
-const REAL_CREDENTIALS = { ucc: 'REAL456', mpin: '5678', name: 'Real User' };
+const GoogleIcon = () => (
+    <svg className="mr-2 h-4 w-4" viewBox="0 0 48 48">
+        <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12
+        c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24
+        c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z" />
+        <path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657
+        C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z" />
+        <path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36
+        c-5.222,0-9.565-3.108-11.127-7.481l-6.522,5.025C9.505,39.556,16.227,44,24,44z" />
+        <path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571
+        c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z" />
+    </svg>
+);
+
 
 export function LoginForm() {
-  const router = useRouter();
   const { login } = useAuth();
-  
-  // State for Demo Form
-  const [demoUcc, setDemoUcc] = useState(DEMO_CREDENTIALS.ucc);
-  const [demoMpin, setDemoMpin] = useState(DEMO_CREDENTIALS.mpin);
-  const [demoError, setDemoError] = useState('');
-
-  // State for Real Form
-  const [realUcc, setRealUcc] = useState('');
-  const [realMpin, setRealMpin] = useState('');
-  const [realError, setRealError] = useState('');
-
-  const handleDemoSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setDemoError('');
-    if (demoUcc === DEMO_CREDENTIALS.ucc && demoMpin === DEMO_CREDENTIALS.mpin) {
-      login({ id: demoUcc, email: `${demoUcc}@sim.app`, name: DEMO_CREDENTIALS.name });
-      router.push('/');
-    } else {
-      setDemoError('Invalid Simulation UCC or MPIN.');
-    }
-  };
-
-  const handleRealSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setRealError('');
-    if (realUcc === REAL_CREDENTIALS.ucc && realMpin === REAL_CREDENTIALS.mpin) {
-      login({ id: realUcc, email: `${realUcc}@sim.app`, name: REAL_CREDENTIALS.name });
-      router.push('/');
-    } else {
-      setRealError('Invalid Real Account UCC or MPIN.');
-    }
-  };
-
 
   return (
     <Card className="w-full max-w-md shadow-2xl">
@@ -65,99 +39,18 @@ export function LoginForm() {
         <CardDescription>Sign in to access your stock simulation dashboard.</CardDescription>
       </CardHeader>
       <CardContent>
-        <Tabs defaultValue="demo" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="demo">Simulation Account</TabsTrigger>
-            <TabsTrigger value="real">Real Account</TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="demo" className="pt-6">
-            <form onSubmit={handleDemoSubmit} className="space-y-6">
-              <div className="space-y-2">
-                <Label htmlFor="demo_ucc">UCC (Unique Client Code)</Label>
-                <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                  <Input
-                    id="demo_ucc"
-                    type="text"
-                    placeholder="Enter your UCC"
-                    value={demoUcc}
-                    onChange={(e) => setDemoUcc(e.target.value.toUpperCase())}
-                    required
-                    className="pl-10"
-                  />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="demo_mpin">4-Digit MPIN</Label>
-                <div className="relative">
-                  <KeyRound className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                  <Input
-                    id="demo_mpin"
-                    type="password"
-                    placeholder="••••"
-                    value={demoMpin}
-                    onChange={(e) => setDemoMpin(e.target.value)}
-                    required
-                    maxLength={4}
-                    className="pl-10"
-                  />
-                </div>
-              </div>
-              {demoError && <p className="text-sm text-destructive">{demoError}</p>}
-              <Button type="submit" className="w-full text-lg py-6">
-                <LogIn className="mr-2 h-5 w-5" /> Sign In to Simulation
-              </Button>
-            </form>
-          </TabsContent>
-
-          <TabsContent value="real" className="pt-6">
-            <form onSubmit={handleRealSubmit} className="space-y-6">
-               <div className="space-y-2">
-                <Label htmlFor="real_ucc">UCC (Unique Client Code)</Label>
-                <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                  <Input
-                    id="real_ucc"
-                    type="text"
-                    placeholder="Enter your UCC"
-                    value={realUcc}
-                    onChange={(e) => setRealUcc(e.target.value.toUpperCase())}
-                    required
-                    className="pl-10"
-                  />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="real_mpin">4-Digit MPIN</Label>
-                <div className="relative">
-                  <KeyRound className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                  <Input
-                    id="real_mpin"
-                    type="password"
-                    placeholder="••••"
-                    value={realMpin}
-                    onChange={(e) => setRealMpin(e.target.value)}
-                    required
-                    maxLength={4}
-                    className="pl-10"
-                  />
-                </div>
-              </div>
-              {realError && <p className="text-sm text-destructive">{realError}</p>}
-              <Button type="submit" className="w-full text-lg py-6">
-                <LogIn className="mr-2 h-5 w-5" /> Sign In to Real Account
-              </Button>
-            </form>
-          </TabsContent>
-        </Tabs>
+        <Button onClick={login} className="w-full text-lg py-6">
+            <GoogleIcon />
+            Sign in with Google
+        </Button>
       </CardContent>
       <CardFooter className="flex justify-center text-sm">
         <p className="text-muted-foreground">
-          Don't have an account?{' '}
-          <Link href="#" className="text-primary hover:underline font-semibold" onClick={(e) => { e.preventDefault(); alert('Sign up feature coming soon!'); }}>
-            Sign Up
+          By continuing, you agree to our{' '}
+          <Link href="#" className="text-primary hover:underline font-semibold" onClick={(e) => { e.preventDefault(); alert('Terms of Service page coming soon!'); }}>
+            Terms of Service
           </Link>
+          .
         </p>
       </CardFooter>
     </Card>
