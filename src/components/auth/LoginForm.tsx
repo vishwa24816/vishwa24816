@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -16,9 +16,20 @@ import { cn } from '@/lib/utils';
 export function LoginForm() {
   const { login } = useAuth();
   const { toast } = useToast();
-  const [ucc, setUcc] = useState('');
-  const [pin, setPin] = useState('');
+  const [ucc, setUcc] = useState('DEMO123');
+  const [pin, setPin] = useState('1234');
   const [activeTab, setActiveTab] = useState<'sim' | 'real'>('sim');
+
+  useEffect(() => {
+    if (activeTab === 'sim') {
+      setUcc('DEMO123');
+      setPin('1234');
+    } else {
+      setUcc('REAL456');
+      setPin('1234');
+    }
+  }, [activeTab]);
+
 
   const handleLogin = () => {
     if (!ucc) {
@@ -38,9 +49,7 @@ export function LoginForm() {
       return;
     }
     
-    const uccToLogin = activeTab === 'real' ? 'REAL456' : ucc;
-    
-    login(uccToLogin, pin);
+    login(ucc, pin);
   };
   
   const handleUccChange = (e: React.ChangeEvent<HTMLInputElement>) => {
