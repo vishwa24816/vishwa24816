@@ -25,6 +25,7 @@ import { OverallPortfolioSummary } from './OverallPortfolioSummary';
 import { OpenPositionsDisplay } from '../orders/OpenPositionsDisplay';
 import { AddFundsDialog } from '@/components/shared/AddFundsDialog';
 import { IpoSection } from './IpoSection';
+import { ExchangeCard } from './ExchangeCard';
 
 
 import React, { useState, useMemo, useEffect } from 'react';
@@ -466,13 +467,7 @@ export function DemoDashboard({ activeMode, onModeChange, onAssetClick }: DemoDa
     }
 
     if (activePrimaryItem === 'Exchange') {
-        return (
-            <div className="text-center py-10 text-muted-foreground">
-                <PackageOpen className="h-16 w-16 mb-4 mx-auto" />
-                <h2 className="text-2xl font-semibold mb-2 text-foreground">Exchange Section</h2>
-                <p className="max-w-md mx-auto">This section is for exchange-related features. Content is coming soon.</p>
-            </div>
-        )
+        return <ExchangeCard />
     }
 
     if (activePrimaryItem === 'Pledged Holdings') {
@@ -717,5 +712,3 @@ export function DemoDashboard({ activeMode, onModeChange, onAssetClick }: DemoDa
     </>
   );
 }
-
-    

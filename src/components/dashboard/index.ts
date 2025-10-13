@@ -1,5 +1,4 @@
 
-
 export * from "./SubNav";
 export * from "./NewsSection";
 export * from "./WatchlistSection";
@@ -27,3 +26,4 @@ export * from "./GainersLosersSection";
 export * from "./VolumeOiSection";
 export * from "./IpoSection";
 export * from "./IpoCard";
+export * from "./ExchangeCard";
