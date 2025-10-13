@@ -115,7 +115,7 @@ export function PortfolioCategoryCard({ title, items, onCategoryClick, onAssetCl
               return (
                  <button key={index} onClick={(e) => handleAssetItemClick(e, item)} className="w-full text-left p-2 rounded-md hover:bg-background/50">
                     <div className="flex justify-between items-center">
-                        <span className="font-medium truncate pr-4">{name}</span>
+                        <span className="font-medium truncate w-1/2 pr-2">{name}</span>
                         <span className={cn(isItemProfit ? 'text-green-600' : 'text-red-600', 'font-mono')}>
                             {isItemProfit ? '+' : ''}{formatCurrency(pnl)}
                         </span>
