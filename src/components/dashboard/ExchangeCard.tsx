@@ -69,7 +69,7 @@ const AssetRow = ({
                     <Select value={assetType} onValueChange={(v) => {
                         setAssetType(v as AssetType);
                         setSelectedAsset(null);
-                    }} disabled={isReadOnly}>
+                    }}>
                         <SelectTrigger id={`${label}-type`}>
                             <SelectValue placeholder="Asset Type" />
                         </SelectTrigger>
@@ -82,7 +82,7 @@ const AssetRow = ({
                 </div>
                  <div className="space-y-2">
                     <Label htmlFor={`${label}-asset`}>Asset</Label>
-                    <Select value={selectedAsset?.symbol || ''} onValueChange={handleAssetChange} disabled={isReadOnly}>
+                    <Select value={selectedAsset?.symbol || ''} onValueChange={handleAssetChange}>
                          <SelectTrigger id={`${label}-asset`}>
                             <SelectValue placeholder="Select Asset" />
                         </SelectTrigger>
@@ -198,11 +198,7 @@ export function ExchangeCard({ portfolioHoldings }: { portfolioHoldings: Portfol
                     setAmount={setFromAmount}
                     balance={fromAssetHolding?.quantity}
                />
-                <div className="flex justify-center -my-6 z-10">
-                    <Button variant="outline" size="icon" className="rounded-full bg-background">
-                        <ArrowDown className="h-5 w-5"/>
-                    </Button>
-                </div>
+               
                <AssetRow
                     label="To"
                     assetType={toAssetType}
