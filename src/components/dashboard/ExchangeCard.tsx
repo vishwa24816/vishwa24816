@@ -7,7 +7,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowDown, Repeat } from 'lucide-react';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Command, CommandInput, CommandEmpty, CommandGroup, CommandItem, CommandList } from '@/components/ui/command';
+import { Repeat } from 'lucide-react';
 import { allAssets } from '@/lib/mockData';
 import type { Stock, PortfolioHolding } from '@/types';
 import { useToast } from '@/hooks/use-toast';
@@ -25,7 +27,9 @@ const AssetRow = ({
     amount,
     setAmount,
     isReadOnly = false,
-    balance
+    balance,
+    portfolioHoldings,
+    isSearchable = false,
 }: {
     label: string,
     assetType: AssetType,
@@ -35,24 +39,35 @@ const AssetRow = ({
     amount: string,
     setAmount: (amount: string) => void,
     isReadOnly?: boolean,
-    balance?: number | null;
+    balance?: number | null,
+    portfolioHoldings?: PortfolioHolding[],
+    isSearchable?: boolean,
 }) => {
-    const assetsForType = useMemo(() => {
-        switch (assetType) {
-            case 'Fiat':
-                return allAssets.filter(a => a.exchange === 'NSE' || a.exchange === 'BSE' || a.exchange === 'NFO');
-            case 'Crypto':
-                return allAssets.filter(a => a.exchange === 'Crypto' || a.exchange === 'Crypto Futures');
-            case 'Wealth':
-                 return allAssets.filter(a => a.exchange === 'MF' || a.exchange === 'BOND');
-            default:
-                return [];
-        }
-    }, [assetType]);
+    const [searchOpen, setSearchOpen] = useState(false);
     
-    const handleAssetChange = (symbol: string) => {
-        const asset = assetsForType.find(a => a.symbol === symbol) || null;
+    const assetsForType = useMemo(() => {
+        const baseAssets = allAssets.filter(a => {
+            switch (assetType) {
+                case 'Fiat': return a.exchange === 'NSE' || a.exchange === 'BSE' || a.exchange === 'NFO';
+                case 'Crypto': return a.exchange === 'Crypto' || a.exchange === 'Crypto Futures';
+                case 'Wealth': return a.exchange === 'MF' || a.exchange === 'BOND';
+                default: return false;
+            }
+        });
+
+        if (label === 'From' && portfolioHoldings) {
+            const holdingSymbols = new Set(portfolioHoldings.map(h => h.symbol));
+            return baseAssets.filter(a => holdingSymbols.has(a.symbol));
+        }
+        return baseAssets;
+    }, [assetType, label, portfolioHoldings]);
+    
+    const handleAssetChange = (assetSymbol: string) => {
+        const asset = assetsForType.find(a => a.symbol === assetSymbol) || null;
         setSelectedAsset(asset);
+        if (isSearchable) {
+            setSearchOpen(false);
+        }
     }
 
     return (
@@ -82,18 +97,54 @@ const AssetRow = ({
                 </div>
                  <div className="space-y-2">
                     <Label htmlFor={`${label}-asset`}>Asset</Label>
-                    <Select value={selectedAsset?.symbol || ''} onValueChange={handleAssetChange}>
-                         <SelectTrigger id={`${label}-asset`}>
-                            <SelectValue placeholder="Select Asset" />
-                        </SelectTrigger>
-                        <SelectContent>
-                             {assetsForType.map(asset => (
-                                <SelectItem key={asset.id} value={asset.symbol}>
-                                    {asset.name} ({asset.symbol})
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
+                    {isSearchable ? (
+                         <Popover open={searchOpen} onOpenChange={setSearchOpen}>
+                            <PopoverTrigger asChild>
+                                <Button
+                                    variant="outline"
+                                    role="combobox"
+                                    aria-expanded={searchOpen}
+                                    className="w-full justify-between font-normal"
+                                >
+                                    {selectedAsset ? selectedAsset.name : "Select Asset"}
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
+                                <Command>
+                                    <CommandInput placeholder="Search asset..." />
+                                    <CommandList>
+                                        <CommandEmpty>No asset found.</CommandEmpty>
+                                        <CommandGroup>
+                                            {assetsForType.map((asset) => (
+                                                <CommandItem
+                                                    key={asset.id}
+                                                    value={asset.symbol}
+                                                    onSelect={(currentValue) => {
+                                                        handleAssetChange(currentValue.toUpperCase());
+                                                    }}
+                                                >
+                                                    {asset.name} ({asset.symbol})
+                                                </CommandItem>
+                                            ))}
+                                        </CommandGroup>
+                                    </CommandList>
+                                </Command>
+                            </PopoverContent>
+                        </Popover>
+                    ) : (
+                        <Select value={selectedAsset?.symbol || ''} onValueChange={handleAssetChange}>
+                             <SelectTrigger id={`${label}-asset`}>
+                                <SelectValue placeholder="Select Asset" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                 {assetsForType.map(asset => (
+                                    <SelectItem key={asset.id} value={asset.symbol}>
+                                        {asset.name} ({asset.symbol})
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    )}
                 </div>
             </div>
              <div className="space-y-2">
@@ -197,6 +248,7 @@ export function ExchangeCard({ portfolioHoldings }: { portfolioHoldings: Portfol
                     amount={fromAmount}
                     setAmount={setFromAmount}
                     balance={fromAssetHolding?.quantity}
+                    portfolioHoldings={portfolioHoldings}
                />
                
                <AssetRow
@@ -208,6 +260,7 @@ export function ExchangeCard({ portfolioHoldings }: { portfolioHoldings: Portfol
                     amount={toAmount}
                     setAmount={() => {}} // This is calculated, so empty setter
                     isReadOnly={true}
+                    isSearchable={true}
                 />
                 
                 {exchangeRate && (
@@ -229,5 +282,3 @@ export function ExchangeCard({ portfolioHoldings }: { portfolioHoldings: Portfol
         </Card>
     );
 }
-
-    
