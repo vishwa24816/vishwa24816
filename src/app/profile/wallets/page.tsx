@@ -130,7 +130,8 @@ export default function WalletManagementPage() {
             id: 'wallet-demo-123',
             name: `${user?.name || 'Demo'}'s Wallet`,
             phrase: 'This is a mock wallet for your demo account. Do not use for real assets.',
-            account: 'DEMO123'
+            account: 'DEMO123',
+            custodyType: 'Custodian',
         };
         if (!wallets.some(w => w.id === demoWallet.id)) {
             setWallets(prev => [...prev, demoWallet]);
@@ -210,7 +211,7 @@ export default function WalletManagementPage() {
         toast({ title: 'Please select your Real Account.', variant: 'destructive'});
         return;
     }
-    if(!createPassword) {
+    if(custodyType === 'custodian' && !createPassword) {
         toast({
             title: "Password Required",
             description: "Please enter your password to proceed.",
@@ -270,7 +271,7 @@ export default function WalletManagementPage() {
                                 </SelectContent>
                            </Select>
                         </div>
-                        {selectedAccount && (
+                        {selectedAccount === 'REAL456' && (
                             <div className="space-y-2 animate-accordion-down">
                                 <Label>Custody Type</Label>
                                 <RadioGroup value={custodyType} onValueChange={setCustodyType} className="flex gap-4">
