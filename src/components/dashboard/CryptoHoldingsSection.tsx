@@ -473,10 +473,10 @@ export function CryptoHoldingsSection({
                  {expandedAction === 'send' && (
                     <SendContent assets={holdings} onConfirm={handleSendConfirm} onCancel={() => setExpandedAction(null)} />
                 )}
-                {expandedAction === 'receive' && holdings.length > 0 && (
+                {expandedAction === 'receive' && holdings.length > 0 && primaryWallet && (
                     <ReceiveContent
                         asset={holdings[0]}
-                        walletAddress="bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh"
+                        walletAddress={primaryWallet.phrase}
                         onCancel={() => setExpandedAction(null)}
                     />
                 )}
