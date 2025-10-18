@@ -1,70 +1,44 @@
 
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
-import { LogIn, UserCheck, UserCircle } from 'lucide-react';
+import { LogIn } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { cn } from '@/lib/utils';
 
 export function LoginForm() {
   const { login } = useAuth();
   const { toast } = useToast();
-  const [ucc, setUcc] = useState('DEMO123');
-  const [pin, setPin] = useState('1234');
-  const [activeTab, setActiveTab] = useState<'sim' | 'real'>('sim');
 
-  useEffect(() => {
-    if (activeTab === 'sim') {
-      setUcc('DEMO123');
-      setPin('1234');
-    } else {
-      setUcc('REAL456');
-      setPin('1234');
-    }
-  }, [activeTab]);
-
-
-  const handleLogin = () => {
-    if (!ucc) {
+  const handleLogin = async () => {
+    try {
+      await login();
+      toast({
+        title: "Login Successful",
+        description: "You have successfully signed in with Google.",
+      });
+    } catch (error) {
+      console.error("Login failed:", error);
       toast({
         title: "Login Error",
-        description: "Please enter your UCC.",
+        description: "Failed to sign in with Google. Please try again.",
         variant: "destructive",
       });
-      return;
     }
-    if (!pin || pin.length !== 4) {
-      toast({
-        title: "Login Error",
-        description: "Please enter your 4-digit PIN.",
-        variant: "destructive",
-      });
-      return;
-    }
-    
-    login(ucc, pin);
   };
   
-  const handleUccChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.toUpperCase();
-    if (value.length <= 7) {
-      setUcc(value);
-    }
-  };
+  const GoogleIcon = () => (
+    <svg className="mr-2 h-5 w-5" viewBox="0 0 48 48">
+      <path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8c-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039L38.804 12.039C35.536 8.91 30.092 6 24 6C13.438 6 5 14.438 5 25s8.438 19 19 19s19-8.438 19-19c0-1.052-.115-2.078-.323-3.083z" />
+      <path fill="#FF3D00" d="M6.306 14.691L12.55 19.165C13.899 15.602 16.65 13 20 13c1.945 0 3.728.694 5.106 1.839l5.437-5.437C28.243 5.437 24 2.5 17.5 2.5c-5.83 0-10.938 2.846-14.194 7.191z" />
+      <path fill="#4CAF50" d="M19 45.4c5.83 0 10.938-2.846 14.194-7.191l-5.437-5.437c-1.378 1.145-3.161 1.839-5.106 1.839-3.35 0-6.101-2.602-7.45-6.165L5.306 33.309C8.562 40.563 15 45.4 19 45.4z" />
+      <path fill="#1976D2" d="M43.611 20.083H24v8h11.303c-.792 2.237-2.231 4.16-4.087 5.571l5.437 5.437c3.26-3.083 5.353-7.51 5.353-12.917C44 21.052 43.885 20.078 43.611 20.083z" />
+    </svg>
+  );
 
-  const handlePinChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.replace(/[^0-9]/g, '');
-    if (value.length <= 4) {
-      setPin(value);
-    }
-  };
 
   return (
     <Card className="w-full max-w-md shadow-2xl">
@@ -79,40 +53,9 @@ export function LoginForm() {
         <CardDescription>Sign in to access your dashboard.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        <Tabs defaultValue="sim" value={activeTab} onValueChange={(v) => setActiveTab(v as 'sim' | 'real')} className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="sim" className="flex items-center gap-2"><UserCircle className="h-4 w-4" />Simulation</TabsTrigger>
-                <TabsTrigger value="real" className="flex items-center gap-2"><UserCheck className="h-4 w-4" />Real</TabsTrigger>
-            </TabsList>
-            <div className="pt-6 space-y-4">
-                 <div className="space-y-2">
-                    <Label htmlFor="ucc">UCC (Client Code)</Label>
-                    <Input 
-                        id="ucc" 
-                        type="text" 
-                        placeholder={activeTab === 'sim' ? 'e.g. DEMO123' : 'Enter Real UCC'}
-                        value={ucc}
-                        onChange={handleUccChange}
-                        maxLength={7}
-                    />
-                </div>
-                <div className="space-y-2">
-                    <Label htmlFor="pin">4-Digit PIN</Label>
-                    <Input 
-                        id="pin" 
-                        type="password"
-                        value={pin}
-                        onChange={handlePinChange}
-                        maxLength={4}
-                        pattern="\d{4}"
-                    />
-                </div>
-            </div>
-        </Tabs>
-        
-        <Button onClick={handleLogin} className="w-full text-lg py-6 mt-2">
-            <LogIn className="mr-2 h-5 w-5" />
-            Sign In
+        <Button onClick={handleLogin} variant="outline" className="w-full text-lg py-6 mt-2">
+            <GoogleIcon />
+            Sign in with Google
         </Button>
       </CardContent>
       <CardFooter className="flex justify-center text-sm">
