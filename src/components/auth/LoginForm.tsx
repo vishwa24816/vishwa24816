@@ -20,6 +20,7 @@ export function LoginForm() {
         title: "Login Successful",
         description: "You have successfully signed in with Google.",
       });
+      // The redirect will be handled by the login page's useEffect
     } catch (error) {
       console.error("Login failed:", error);
       toast({
