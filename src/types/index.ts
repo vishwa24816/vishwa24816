@@ -480,5 +480,3 @@ export interface Transaction {
     type: 'CREDIT' | 'DEBIT' | 'NEUTRAL';
     asset?: string;
 }
-
-    

@@ -13,6 +13,7 @@ interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   isRealMode: boolean;
+  login: (ucc: string, pin: string) => Promise<void>;
   signInWithGoogle: () => Promise<void>;
   signInWithApple: () => Promise<void>;
   signInWithEmail: (email: string, pass: string) => Promise<void>;
@@ -43,15 +44,25 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (firebaseUser) {
         const appUser: User = {
           id: firebaseUser.uid,
-          ucc: firebaseUser.uid.slice(0, 7).toUpperCase(), // Create a mock UCC
+          ucc: firebaseUser.uid.slice(0, 7).toUpperCase(), // Create a mock UCC from UID
           email: firebaseUser.email || 'no-email@example.com',
-          name: firebaseUser.displayName || 'Anonymous User',
+          name: firebaseUser.displayName || 'Firebase User',
         };
         setUser(appUser);
         localStorage.setItem('simUser', JSON.stringify(appUser));
       } else {
-        setUser(null);
-        localStorage.removeItem('simUser');
+        // If no Firebase user, check for mock user in localStorage
+        const localUser = localStorage.getItem('simUser');
+        if (localUser) {
+          try {
+            setUser(JSON.parse(localUser));
+          } catch(e) {
+            setUser(null);
+            localStorage.removeItem('simUser');
+          }
+        } else {
+            setUser(null);
+        }
       }
       setLoading(false);
     });
@@ -76,6 +87,31 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     return () => unsubscribe();
   }, [auth]);
+
+  const login = async (ucc: string, pin: string) => {
+    setLoading(true);
+    // This is a mock login for the developer flow
+    return new Promise<void>((resolve, reject) => {
+        setTimeout(() => {
+            const normalizedUcc = ucc.toUpperCase();
+            if ((normalizedUcc === 'DEMO123' || normalizedUcc === 'REAL456') && pin === '1234') {
+                const mockUser: User = {
+                    id: normalizedUcc === 'REAL456' ? 'REAL456' : 'DEMO123-USERID',
+                    ucc: normalizedUcc,
+                    name: normalizedUcc === 'REAL456' ? 'Real User' : 'Demo User',
+                    email: `${normalizedUcc.toLowerCase()}@simulation.app`
+                };
+                setUser(mockUser);
+                localStorage.setItem('simUser', JSON.stringify(mockUser));
+                setLoading(false);
+                resolve();
+            } else {
+                setLoading(false);
+                reject(new Error("Invalid UCC or PIN."));
+            }
+        }, 1000);
+    });
+  };
   
   const signInWithGoogle = async () => {
     setLoading(true);
@@ -86,7 +122,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       console.error("Error during Google sign-in:", error);
       throw error;
     } finally {
-      setLoading(false);
+      // setLoading(false) is handled by onAuthStateChanged
     }
   };
 
@@ -98,7 +134,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     } catch (error) {
       console.error("Error during Apple sign-in:", error);
     } finally {
-      setLoading(false);
+       // setLoading(false) is handled by onAuthStateChanged
     }
   };
 
@@ -110,23 +146,25 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       console.error("Error during email sign-in:", error);
       throw error;
     } finally {
-      setLoading(false);
+       // setLoading(false) is handled by onAuthStateChanged
     }
   }
 
   const signInWithPhone = async () => {
-    // Phone auth requires more UI setup (Recaptcha, OTP input), so this is a placeholder
     console.log("Phone sign-in process started");
   }
 
   const logout = async () => {
     setLoading(true);
     try {
+      // This will sign out from Firebase. For mock auth, we just clear local storage.
       await signOut(auth);
-      // onAuthStateChanged will handle removing the user
     } catch (error) {
-      console.error("Error signing out:", error);
+      console.error("Error signing out from Firebase:", error);
     } finally {
+      // This part handles both Firebase and mock logout
+      setUser(null);
+      localStorage.removeItem('simUser');
       setLoading(false);
     }
   };
@@ -147,10 +185,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     localStorage.setItem('simPrimaryWalletId', walletId);
   }
   
-  const isRealMode = false; 
+  const isRealMode = user?.ucc === 'REAL456'; 
 
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated: !!user, isRealMode, signInWithGoogle, signInWithApple, signInWithEmail, signInWithPhone, logout, loading, theme, setTheme, language, setLanguage, primaryWalletId, setPrimaryWalletId }}>
+    <AuthContext.Provider value={{ user, isAuthenticated: !!user, isRealMode, login, signInWithGoogle, signInWithApple, signInWithEmail, signInWithPhone, logout, loading, theme, setTheme, language, setLanguage, primaryWalletId, setPrimaryWalletId }}>
       {children}
       <Toaster />
     </AuthContext.Provider>
