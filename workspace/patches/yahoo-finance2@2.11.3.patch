@@ -1,0 +1,17 @@
+diff --git a/node_modules/yahoo-finance2/esm/tests/fetchCache.js b/node_modules/yahoo-finance2/esm/tests/fetchCache.js
+index 7a0914d..8b28f11 100644
+--- a/node_modules/yahoo-finance2/esm/tests/fetchCache.js
++++ b/node_modules/yahoo-finance2/esm/tests/fetchCache.js
+@@ -3,9 +3,9 @@
+ // a simple in-memory store.
+ //
+ // import createFetchCache from "fetch-mock-cache/lib/runtimes/deno.ts";
+-// import Store from "fetch-mock-cache/lib/stores/fs.ts";
+-import createFetchCache from "@gadicc/fetch-mock-cache/runtimes/deno.ts";
+-import Store from "@gadicc/fetch-mock-cache/stores/fs.ts";
++// import Store from "fetch-mock-cache/lib/stores/fs.ts"; // commented out by patch-package
++import createFetchCache from "@gadicc/fetch-mock-cache/runtimes/node.js"; // patched by patch-package
++// import Store from "@gadicc/fetch-mock-cache/stores/fs.ts"; // commented out by patch-package
+ const fetchCache = createFetchCache({ Store });
+ const originalFetch = globalThis.fetch;
+ globalThis.fetch = async (url, options) => {
