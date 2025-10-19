@@ -13,6 +13,7 @@ interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   isRealMode: boolean;
+  signInWithGoogle: () => Promise<void>;
   signInWithApple: () => Promise<void>;
   signInWithEmail: (email: string, pass: string) => Promise<void>;
   signInWithPhone: () => Promise<void>;
@@ -75,6 +76,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     return () => unsubscribe();
   }, [auth]);
+  
+  const signInWithGoogle = async () => {
+    setLoading(true);
+    const provider = new GoogleAuthProvider();
+    try {
+      await signInWithPopup(auth, provider);
+    } catch (error) {
+      console.error("Error during Google sign-in:", error);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const signInWithApple = async () => {
     setLoading(true);
@@ -136,7 +150,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const isRealMode = false; 
 
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated: !!user, isRealMode, signInWithApple, signInWithEmail, signInWithPhone, logout, loading, theme, setTheme, language, setLanguage, primaryWalletId, setPrimaryWalletId }}>
+    <AuthContext.Provider value={{ user, isAuthenticated: !!user, isRealMode, signInWithGoogle, signInWithApple, signInWithEmail, signInWithPhone, logout, loading, theme, setTheme, language, setLanguage, primaryWalletId, setPrimaryWalletId }}>
       {children}
       <Toaster />
     </AuthContext.Provider>
