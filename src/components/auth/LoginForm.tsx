@@ -28,17 +28,17 @@ const AppleIcon = () => (
 );
 
 const DeveloperLoginDialog = ({ onLoginSuccess }: { onLoginSuccess: () => void }) => {
-    const { login, isRealMode, loading } = useAuth();
+    const { login } = useAuth();
     const { toast } = useToast();
     const [activeTab, setActiveTab] = useState('simulation');
-    const [ucc, setUcc] = useState(activeTab === 'simulation' ? 'DEMO123' : 'REAL456');
+    const [ucc, setUcc] = useState('DEMO123');
     const [pin, setPin] = useState('1234');
     const [isLoading, setIsLoading] = useState(false);
     
     const handleTabChange = (value: string) => {
         setActiveTab(value);
         setUcc(value === 'simulation' ? 'DEMO123' : 'REAL456');
-        setPin('1234'); // Reset pin for safety, though it's always '1234' here
+        setPin('1234');
     };
 
     const handleDevLogin = async (e: React.FormEvent) => {
@@ -109,24 +109,26 @@ const DeveloperLoginDialog = ({ onLoginSuccess }: { onLoginSuccess: () => void }
 };
 
 export function LoginForm() {
-  const { signInWithGoogle, signInWithApple, signInWithEmail } = useAuth();
+  const { signInWithGoogle, signInWithApple, signInWithEmail, signInWithPhone } = useAuth();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState<null | 'google' | 'apple' | 'email' | 'phone'>(null);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isDevLoginOpen, setIsDevLoginOpen] = useState(false);
 
-  const handleFirebaseAuth = async (provider: 'google' | 'apple' | 'email') => {
+  const handleFirebaseAuth = async (provider: 'google' | 'apple' | 'email' | 'phone') => {
     setIsLoading(provider);
     try {
       if (provider === 'google') await signInWithGoogle();
-      if (provider === 'apple') await signInWithApple();
-      if (provider === 'email') await signInWithEmail(email, password);
+      else if (provider === 'apple') await signInWithApple();
+      else if (provider === 'email') await signInWithEmail(email, password);
+      else if (provider === 'phone') await signInWithPhone();
       
       toast({
         title: "Sign-In Successful",
         description: `You have successfully signed in with ${provider.charAt(0).toUpperCase() + provider.slice(1)}.`,
       });
+      // The redirect will be handled by the login page's useEffect
     } catch (error: any) {
       console.error(`${provider} Sign-In failed:`, error);
       toast({
@@ -141,6 +143,10 @@ export function LoginForm() {
 
   const handleEmailSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!email || !password) {
+      toast({ title: 'Please enter both email and password.', variant: 'destructive'});
+      return;
+    }
     handleFirebaseAuth('email');
   };
 
@@ -196,11 +202,10 @@ export function LoginForm() {
         <Separator />
         
          <div className="space-y-2">
-            <Button variant="outline" className="w-full" disabled>
-                <Phone className="mr-2 h-4 w-4"/>
+            <Button variant="outline" className="w-full" onClick={() => handleFirebaseAuth('phone')}>
+                {isLoading === 'phone' ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Phone className="mr-2 h-4 w-4"/>}
                 Sign in with Phone
             </Button>
-            <p className="text-center text-xs text-muted-foreground">Phone sign-in coming soon.</p>
         </div>
         
       </CardContent>

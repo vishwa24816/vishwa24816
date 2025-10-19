@@ -50,6 +50,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         };
         setUser(appUser);
         localStorage.setItem('simUser', JSON.stringify(appUser));
+        setLoading(false);
       } else {
         // If no Firebase user, check for mock user in localStorage
         const localUser = localStorage.getItem('simUser');
@@ -63,8 +64,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         } else {
             setUser(null);
         }
+        setLoading(false);
       }
-      setLoading(false);
     });
 
     // Other localStorage initializations
@@ -133,6 +134,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       await signInWithPopup(auth, provider);
     } catch (error) {
       console.error("Error during Apple sign-in:", error);
+      throw error;
     } finally {
        // setLoading(false) is handled by onAuthStateChanged
     }
@@ -152,6 +154,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const signInWithPhone = async () => {
     console.log("Phone sign-in process started");
+    throw new Error("Phone sign-in is not yet implemented.");
   }
 
   const logout = async () => {
