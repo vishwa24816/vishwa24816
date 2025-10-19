@@ -1,44 +1,69 @@
 
 "use client";
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Separator } from '@/components/ui/separator';
 import { useAuth } from '@/contexts/AuthContext';
-import { LogIn } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { Mail, Phone, Loader2 } from 'lucide-react';
 
 export function LoginForm() {
-  const { login } = useAuth();
+  const { signInWithApple, signInWithEmail } = useAuth();
   const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState<null | 'apple' | 'email' | 'phone'>(null);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
-  const handleLogin = async () => {
-    try {
-      await login();
-      toast({
-        title: "Login Successful",
-        description: "You have successfully signed in with Google.",
-      });
-    } catch (error) {
-      console.error("Login failed:", error);
-      toast({
-        title: "Login Error",
-        description: "Failed to sign in with Google. Please try again.",
-        variant: "destructive",
-      });
-    }
-  };
-  
-  const GoogleIcon = () => (
-    <svg className="mr-2 h-5 w-5" viewBox="0 0 48 48">
-      <path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8c-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039L38.804 12.039C35.536 8.91 30.092 6 24 6C13.438 6 5 14.438 5 25s8.438 19 19 19s19-8.438 19-19c0-1.052-.115-2.078-.323-3.083z" />
-      <path fill="#FF3D00" d="M6.306 14.691L12.55 19.165C13.899 15.602 16.65 13 20 13c1.945 0 3.728.694 5.106 1.839l5.437-5.437C28.243 5.437 24 2.5 17.5 2.5c-5.83 0-10.938 2.846-14.194 7.191z" />
-      <path fill="#4CAF50" d="M19 45.4c5.83 0 10.938-2.846 14.194-7.191l-5.437-5.437c-1.378 1.145-3.161 1.839-5.106 1.839-3.35 0-6.101-2.602-7.45-6.165L5.306 33.309C8.562 40.563 15 45.4 19 45.4z" />
-      <path fill="#1976D2" d="M43.611 20.083H24v8h11.303c-.792 2.237-2.231 4.16-4.087 5.571l5.437 5.437c3.26-3.083 5.353-7.51 5.353-12.917C44 21.052 43.885 20.078 43.611 20.083z" />
+  const AppleIcon = () => (
+    <svg className="mr-2 h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12.01,16.09c-1.6,0-1.89-1.02-3.43-1.02s-2,1-3.41,1c-1.54,0-2.88-1.09-3.79-2.61c-1.3-2.14-1.09-4.83,0.4-6.84 c0.77-1.04,1.86-1.7,3.06-1.7c1.48,0,2.1,0.91,3.48,0.91c1.33,0,1.94-0.91,3.43-0.91c1.11,0,2.15,0.59,2.88,1.52 c-1.7,1.06-2.73,2.7-2.73,4.52c0,2.02,1.31,3.21,2.95,4.19c-0.89,1.4-1.9,2.23-3.27,2.23C13.25,18.3,12.91,18.3,12.01,16.09z M14.65,4.01C14.07,3.06,13.06,2.5,11.95,2.5c-1.5,0-2.83,0.96-3.6,2.44C9,5.89,9.97,6.5,11.16,6.5c1.55,0,2.78-0.98,3.49-2.49z"/>
     </svg>
   );
 
+  const handleAppleLogin = async () => {
+    setIsLoading('apple');
+    try {
+      await signInWithApple();
+      toast({
+        title: "Sign-In Successful",
+        description: "You have successfully signed in with Apple.",
+      });
+    } catch (error) {
+      console.error("Apple Sign-In failed:", error);
+      toast({
+        title: "Sign-In Error",
+        description: "Failed to sign in with Apple. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+        setIsLoading(null);
+    }
+  };
+
+  const handleEmailLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading('email');
+    try {
+        await signInWithEmail(email, password);
+        toast({
+            title: "Sign-In Successful",
+            description: "You have successfully signed in.",
+        });
+    } catch (error: any) {
+        toast({
+            title: "Sign-In Error",
+            description: error.message || "Invalid email or password. Please try again.",
+            variant: "destructive",
+        });
+    } finally {
+        setIsLoading(null);
+    }
+  }
 
   return (
     <Card className="w-full max-w-md shadow-2xl">
@@ -53,10 +78,46 @@ export function LoginForm() {
         <CardDescription>Sign in to access your dashboard.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        <Button onClick={handleLogin} variant="outline" className="w-full text-lg py-6 mt-2">
-            <GoogleIcon />
-            Sign in with Google
+        
+        <Button onClick={handleAppleLogin} variant="outline" className="w-full text-lg py-6 mt-2 bg-black text-white hover:bg-black/80 hover:text-white" disabled={isLoading !== null}>
+          {isLoading === 'apple' ? <Loader2 className="mr-2 h-5 w-5 animate-spin"/> : <AppleIcon />}
+           Sign in with Apple
         </Button>
+        
+        <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
+            </div>
+        </div>
+
+        <form onSubmit={handleEmailLogin} className="space-y-4">
+             <div className="space-y-2">
+                <Label htmlFor="email"><Mail className="inline-block mr-2 h-4 w-4 text-muted-foreground" />Email</Label>
+                <Input id="email" type="email" placeholder="m@example.com" required value={email} onChange={e => setEmail(e.target.value)} disabled={isLoading !== null} />
+            </div>
+             <div className="space-y-2">
+                <Label htmlFor="password">Password</Label>
+                <Input id="password" type="password" required value={password} onChange={e => setPassword(e.target.value)} disabled={isLoading !== null} />
+            </div>
+            <Button type="submit" className="w-full" disabled={isLoading !== null}>
+                {isLoading === 'email' && <Loader2 className="mr-2 h-5 w-5 animate-spin"/>}
+                Sign In with Email
+            </Button>
+        </form>
+
+        <Separator />
+        
+         <div className="space-y-2">
+            <Button variant="outline" className="w-full" disabled>
+                <Phone className="mr-2 h-4 w-4"/>
+                Sign in with Phone
+            </Button>
+            <p className="text-center text-xs text-muted-foreground">Phone sign-in coming soon.</p>
+        </div>
+        
       </CardContent>
       <CardFooter className="flex justify-center text-sm">
         <p className="text-muted-foreground">

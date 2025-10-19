@@ -6,15 +6,17 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { usePathname } from 'next/navigation';
 import { Toaster } from "@/components/ui/toaster";
 import { initializeFirebase } from '@/firebase';
-import { onAuthStateChanged, signOut, signInWithPopup, GoogleAuthProvider, type User as FirebaseUser } from 'firebase/auth';
+import { onAuthStateChanged, signOut, signInWithPopup, GoogleAuthProvider, type User as FirebaseUser, OAuthProvider, signInWithEmailAndPassword } from 'firebase/auth';
 import { mockWallets } from '@/lib/mockData/wallets';
 
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   isRealMode: boolean;
-  login: () => Promise<void>; // Updated login function
-  logout: () => Promise<void>; // Updated logout function
+  signInWithApple: () => Promise<void>;
+  signInWithEmail: (email: string, pass: string) => Promise<void>;
+  signInWithPhone: () => Promise<void>;
+  logout: () => Promise<void>;
   loading: boolean;
   theme: string;
   setTheme: (theme: string) => void;
@@ -74,17 +76,34 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return () => unsubscribe();
   }, [auth]);
 
-  const login = async () => {
+  const signInWithApple = async () => {
     setLoading(true);
-    const provider = new GoogleAuthProvider();
+    const provider = new OAuthProvider('apple.com');
     try {
       await signInWithPopup(auth, provider);
-      // onAuthStateChanged will handle setting the user
     } catch (error) {
-      console.error("Error during Google sign-in:", error);
+      console.error("Error during Apple sign-in:", error);
+    } finally {
       setLoading(false);
     }
   };
+
+  const signInWithEmail = async (email: string, pass: string) => {
+    setLoading(true);
+    try {
+      await signInWithEmailAndPassword(auth, email, pass);
+    } catch (error) {
+      console.error("Error during email sign-in:", error);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const signInWithPhone = async () => {
+    // Phone auth requires more UI setup (Recaptcha, OTP input), so this is a placeholder
+    console.log("Phone sign-in process started");
+  }
 
   const logout = async () => {
     setLoading(true);
@@ -113,13 +132,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setPrimaryWalletIdState(walletId);
     localStorage.setItem('simPrimaryWalletId', walletId);
   }
-
-  // The concept of "real mode" might change. For now, we can base it on a specific user ID or remove it.
-  // Let's assume for now it's not a feature.
-  const isRealMode = false; // Simplified for Firebase auth
+  
+  const isRealMode = false; 
 
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated: !!user, isRealMode, login, logout, loading, theme, setTheme, language, setLanguage, primaryWalletId, setPrimaryWalletId }}>
+    <AuthContext.Provider value={{ user, isAuthenticated: !!user, isRealMode, signInWithApple, signInWithEmail, signInWithPhone, logout, loading, theme, setTheme, language, setLanguage, primaryWalletId, setPrimaryWalletId }}>
       {children}
       <Toaster />
     </AuthContext.Provider>
