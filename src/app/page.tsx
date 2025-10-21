@@ -39,6 +39,7 @@ export interface InitialOrderDetails {
     leverage?: number;
     legs?: any[];
     targetView?: string;
+    navigationTarget?: string;
 }
 
 export default function DashboardRouterPage() {
@@ -73,24 +74,18 @@ export default function DashboardRouterPage() {
   };
 
   const handleAssetClick = (asset: Stock, details?: InitialOrderDetails) => {
-    if (details?.legs) {
+    if (details?.navigationTarget === 'strategy_builder' || details?.legs) {
         setPreviousMainView(activeMainView);
         if (details.targetView === 'Crypto') {
             handleModeChange('Crypto');
-            handleNavigate('home');
-             // A bit of a hack to ensure state updates before setting legs
-            setTimeout(() => {
-                handleNavigate('strategy_builder');
-                setInitialOrderDetails(details);
-            }, 0);
         } else {
             handleModeChange('Fiat');
-            handleNavigate('home');
-             setTimeout(() => {
-                handleNavigate('strategy_builder');
-                setInitialOrderDetails(details);
-            }, 0);
         }
+        // A bit of a hack to ensure mode state updates before rendering the builder
+        setTimeout(() => {
+            handleNavigate('strategy_builder');
+            setInitialOrderDetails(details);
+        }, 0);
         return;
     }
 

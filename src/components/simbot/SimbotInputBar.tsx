@@ -64,7 +64,7 @@ export function SimbotInputBar({ onNavigateRequest, showSuggestions = false, isR
                 { id: `leg2-${Date.now()}`, underlyingSymbol: 'NIFTY', instrumentName: `NIFTY ${expiry} ${atmStrike} PE`, expiryDate: expiry, strikePrice: atmStrike, optionType: 'Put', action: 'Sell', ltp: 130, quantity: 1 },
             ];
              if(onNavigateRequest) {
-                onNavigateRequest({} as Stock, { targetView: 'Fiat', legs });
+                onNavigateRequest({} as Stock, { navigationTarget: 'strategy_builder', targetView: 'Fiat', legs });
             }
             return;
         }
