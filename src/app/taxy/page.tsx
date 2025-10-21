@@ -70,7 +70,13 @@ export function TaxyPageContent() {
         <main className="flex-grow container mx-auto p-4 sm:p-6 lg:p-8">
             <div className="flex flex-col sm:flex-row justify-between sm:items-center mb-6 gap-4">
                 <h1 className="text-3xl font-bold text-foreground">Tax Reports</h1>
-                <Button>Previously Generated Reports</Button>
+                <div className="flex gap-2">
+                    <Button variant="outline">Previously Generated Reports</Button>
+                    <Button>
+                        <Download className="mr-2 h-4 w-4" />
+                        Download All Reports
+                    </Button>
+                </div>
             </div>
 
             <div className="flex items-center gap-4 mb-6">
@@ -95,14 +101,6 @@ export function TaxyPageContent() {
                       report={report} 
                     />
                 ))}
-            </div>
-            
-            <div className="mt-8 sticky bottom-4 z-10">
-                <Card className="bg-background/80 backdrop-blur-sm border-primary/30 max-w-2xl mx-auto animate-fade-in">
-                  <div className="p-4 flex flex-col sm:flex-row items-center justify-center gap-4">
-                    <Button>Download All Reports</Button>
-                  </div>
-                </Card>
             </div>
         </main>
   );
