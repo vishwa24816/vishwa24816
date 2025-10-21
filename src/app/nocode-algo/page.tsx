@@ -143,8 +143,8 @@ export function NoCodeAlgoPageContent({ onNavigate }: NoCodeAlgoPageContentProps
     }
 
     return (
-        <div className="w-full h-[calc(100vh-60px)] flex flex-col">
-            <header className="p-2 border-b flex items-center justify-between">
+        <div className="w-full h-screen flex flex-col">
+            <header className="p-2 border-b flex items-center justify-between bg-background">
                 <div className="flex items-center gap-2">
                     <Sheet>
                         <SheetTrigger asChild>
@@ -206,7 +206,7 @@ export function NoCodeAlgoPageContent({ onNavigate }: NoCodeAlgoPageContentProps
                     nodeTypes={nodeTypes}
                     fitView
                 >
-                    <Controls />
+                    <Controls style={{ bottom: 20 }} />
                     <Background />
                 </ReactFlow>
             </div>
