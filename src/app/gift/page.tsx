@@ -92,27 +92,27 @@ const HoldingItem = ({ holding }: { holding: PortfolioHolding }) => {
     );
 };
 
+export function GiftPageContent() {
+    return (
+        <main className="flex-grow">
+            <ScrollArea className="h-[calc(100vh-80px)]">
+                <div className="p-4 space-y-3">
+                    {allHoldings.map(holding => (
+                        <HoldingItem key={holding.id} holding={holding} />
+                    ))}
+                </div>
+            </ScrollArea>
+        </main>
+    )
+}
+
 export default function GiftPage() {
     const router = useRouter();
     
     return (
         <ProtectedRoute>
             <div className="flex flex-col min-h-screen bg-background text-foreground">
-                <header className="flex items-center p-4 border-b">
-                    <Button variant="ghost" size="icon" onClick={() => router.back()}>
-                        <ArrowLeft className="h-6 w-6" />
-                    </Button>
-                    <h1 className="text-xl font-bold ml-4">Gift an Asset</h1>
-                </header>
-                <main className="flex-grow">
-                    <ScrollArea className="h-[calc(100vh-80px)]">
-                        <div className="p-4 space-y-3">
-                            {allHoldings.map(holding => (
-                                <HoldingItem key={holding.id} holding={holding} />
-                            ))}
-                        </div>
-                    </ScrollArea>
-                </main>
+                <GiftPageContent />
             </div>
         </ProtectedRoute>
     );

@@ -19,9 +19,15 @@ import { OrderPageDispatcher } from '@/components/order/OrderPageDispatcher';
 import { SimbotInputBar } from '@/components/simbot/SimbotInputBar';
 import { OrderPageFooter } from '@/components/shared/OrderPageFooter';
 import { cn } from '@/lib/utils';
+import { BacktesterPageContent } from '@/app/backtester/page';
+import { SimballPageContent } from '@/app/simball/page';
+import { TaxyPageContent } from '@/app/taxy/page';
+import { FamilyAccountPageContent } from './family/page';
+import { GiftPageContent } from './gift/page';
+import { SupportPageContent } from './support/page';
 
 
-export type MainView = 'home' | 'orders' | 'simbot' | 'screener' | 'community' | 'asset_order' | 'analytics';
+export type MainView = 'home' | 'orders' | 'simbot' | 'screener' | 'community' | 'asset_order' | 'analytics' | 'backtester' | 'simball' | 'taxy' | 'family' | 'gift' | 'support';
 
 export interface InitialOrderDetails {
     quantity?: number;
@@ -87,7 +93,7 @@ export default function DashboardRouterPage() {
       );
   }
   
-  const showModeSwitcher = !['orders', 'screener', 'simbot', 'analytics'].includes(activeMainView);
+  const showModeSwitcher = !['orders', 'screener', 'simbot', 'analytics', 'backtester', 'simball', 'taxy', 'family', 'gift', 'support'].includes(activeMainView);
 
   const shouldShowOrderFooter = 
     activeMainView === 'asset_order' && 
@@ -105,6 +111,9 @@ export default function DashboardRouterPage() {
     if (activeMainView !== 'simbot') return 'pb-16'; // Space for AppFooter
     return 'pb-16'; 
   }
+  
+  const noFooterViews: MainView[] = ['backtester', 'simball', 'taxy', 'family', 'gift', 'support'];
+  const showAppFooter = !shouldShowOrderFooter && !shouldShowSimbotOnlyFooter && activeMainView !== 'asset_order' && !noFooterViews.includes(activeMainView);
 
   const renderContent = () => {
     switch (activeMainView) {
@@ -124,6 +133,18 @@ export default function DashboardRouterPage() {
         return <CommunityPageContent onAssetClick={handleAssetClick} activeMode={activeMode} />;
       case 'analytics':
         return <AnalyticsPageContent />;
+      case 'backtester':
+        return <BacktesterPageContent />;
+      case 'simball':
+        return <SimballPageContent />;
+      case 'taxy':
+        return <TaxyPageContent />;
+      case 'family':
+        return <FamilyAccountPageContent />;
+      case 'gift':
+        return <GiftPageContent />;
+      case 'support':
+        return <SupportPageContent />;
       case 'asset_order':
         if (selectedAsset) {
           return <OrderPageDispatcher asset={selectedAsset} onBack={() => handleNavigate(previousMainView)} initialDetails={initialOrderDetails} productType={productTypeForOrder} onProductTypeChange={setProductTypeForOrder} />;
@@ -158,7 +179,7 @@ export default function DashboardRouterPage() {
         <footer className="fixed bottom-0 left-0 right-0 z-40 bg-card border-t border-border rounded-t-2xl shadow-lg p-2">
             <SimbotInputBar onNavigateRequest={handleAssetClick} isRealMode={isRealMode} />
         </footer>
-      ) : activeMainView !== 'asset_order' ? (
+      ) : showAppFooter ? (
          <AppFooter activeView={activeMainView} onNavigate={handleNavigate} />
       ) : null}
     </ProtectedRoute>

@@ -48,14 +48,15 @@ export function SideMenu({ onNavigate }: { onNavigate?: (view: MainView) => void
   const handleThemeToggle = () => {
       setTheme(theme === 'light' ? 'dark' : 'light');
   }
-
-  const handleAnalyticsClick = () => {
+  
+  const handleNavigation = (view: MainView) => {
     if (onNavigate) {
-      onNavigate('analytics');
+      onNavigate(view);
     } else {
-      router.push('/?view=analytics');
+        // Fallback for pages that don't use the main layout
+        router.push(`/${view}`);
     }
-  };
+  }
 
   if (!isMounted) {
     return (
@@ -87,7 +88,7 @@ export function SideMenu({ onNavigate }: { onNavigate?: (view: MainView) => void
             <Button
               variant="ghost"
               className="justify-start text-base p-3 hover:bg-accent/10"
-              onClick={() => onNavigate ? onNavigate('home') : router.push('/')}
+              onClick={() => handleNavigation('home')}
             >
               <HomeIcon className="mr-3 h-5 w-5 text-primary" />
               Home
@@ -107,7 +108,7 @@ export function SideMenu({ onNavigate }: { onNavigate?: (view: MainView) => void
             <Button
               variant="ghost"
               className="justify-start text-base p-3 hover:bg-accent/10"
-              onClick={handleAnalyticsClick}
+              onClick={() => handleNavigation('analytics')}
             >
               <TrendingUp className="mr-3 h-5 w-5 text-primary" />
               Analytics
@@ -117,7 +118,7 @@ export function SideMenu({ onNavigate }: { onNavigate?: (view: MainView) => void
             <Button
                 variant="ghost"
                 className="justify-start text-base p-3 hover:bg-accent/10"
-                onClick={() => router.push('/gift')}
+                onClick={() => handleNavigation('gift')}
             >
                 <Gift className="mr-3 h-5 w-5 text-primary" />
                 Gift
@@ -127,7 +128,7 @@ export function SideMenu({ onNavigate }: { onNavigate?: (view: MainView) => void
             <Button
                 variant="ghost"
                 className="justify-start text-base p-3 hover:bg-accent/10"
-                onClick={() => router.push('/family')}
+                onClick={() => handleNavigation('family')}
             >
                 <Users className="mr-3 h-5 w-5 text-primary" />
                 Family Account
@@ -137,7 +138,7 @@ export function SideMenu({ onNavigate }: { onNavigate?: (view: MainView) => void
             <Button
               variant="ghost"
               className="justify-start text-base p-3 hover:bg-accent/10"
-              onClick={() => router.push('/backtester')}
+              onClick={() => handleNavigation('backtester')}
             >
               <History className="mr-3 h-5 w-5 text-primary" />
               Backtester
@@ -147,7 +148,7 @@ export function SideMenu({ onNavigate }: { onNavigate?: (view: MainView) => void
             <Button
               variant="ghost"
               className="justify-start text-base p-3 hover:bg-accent/10"
-              onClick={() => router.push('/simball')}
+              onClick={() => handleNavigation('simball')}
             >
               <Sparkles className="mr-3 h-5 w-5 text-primary" />
               SIMBALL
@@ -157,7 +158,7 @@ export function SideMenu({ onNavigate }: { onNavigate?: (view: MainView) => void
             <Button
               variant="ghost"
               className="justify-start text-base p-3 hover:bg-accent/10"
-              onClick={() => router.push('/taxy')}
+              onClick={() => handleNavigation('taxy')}
             >
               <FileText className="mr-3 h-5 w-5 text-primary" />
               Taxy
@@ -167,7 +168,7 @@ export function SideMenu({ onNavigate }: { onNavigate?: (view: MainView) => void
             <Button
               variant="ghost"
               className="justify-start text-base p-3 hover:bg-accent/10"
-              onClick={() => router.push('/support')}
+              onClick={() => handleNavigation('support')}
             >
               <LifeBuoy className="mr-3 h-5 w-5 text-primary" />
               Support

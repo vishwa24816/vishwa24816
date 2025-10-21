@@ -73,9 +73,8 @@ const leaderboardData = [
     { rank: 5, name: 'Rohan', pnl: 41800, avatar: 'https://placehold.co/100x100.png?text=R' },
 ];
 
-export default function SimballPage() {
+export function SimballPageContent() {
     const { user } = useAuth();
-    const isRealMode = user?.id === 'REAL456';
     const [activeGameBrokerage, setActiveGameBrokerage] = useState<number | null>(null);
 
     const handlePlayGame = (brokerage: number) => {
@@ -88,11 +87,6 @@ export default function SimballPage() {
 
 
   return (
-    <ProtectedRoute>
-      <div className="flex flex-col min-h-screen bg-background text-foreground">
-        <AppHeader
-          isRealMode={isRealMode}
-        />
         <main className="flex-grow container mx-auto p-4 sm:p-6 lg:p-8 space-y-8">
             <h1 className="text-3xl font-bold text-center text-primary">SIMBALL</h1>
 
@@ -202,12 +196,15 @@ export default function SimballPage() {
                 </div>
             </div>
         </main>
-        {activeGameBrokerage !== null && (
-            <div className="fixed inset-0 bg-black/80 z-50 animate-fade-in flex items-center justify-center">
-                <DXBallGame brickCount={activeGameBrokerage} onGameEnd={handleCloseGame} />
-            </div>
-        )}
-      </div>
-    </ProtectedRoute>
   );
+}
+
+export default function SimballPage() {
+    return (
+        <ProtectedRoute>
+            <div className="flex flex-col min-h-screen bg-background text-foreground">
+                <SimballPageContent />
+            </div>
+        </ProtectedRoute>
+    )
 }

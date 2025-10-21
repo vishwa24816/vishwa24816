@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState } from 'react';
@@ -36,7 +37,7 @@ const SubAccountCard = ({ account, onRemove }: { account: typeof mockInitialSubA
   </Card>
 );
 
-export default function FamilyAccountPage() {
+export function FamilyAccountPageContent() {
   const router = useRouter();
   const { toast } = useToast();
   const [subAccounts, setSubAccounts] = useState(mockInitialSubAccounts);
@@ -79,15 +80,6 @@ export default function FamilyAccountPage() {
   }
 
   return (
-    <ProtectedRoute>
-      <div className="flex flex-col min-h-screen bg-muted/20">
-        <header className="flex items-center p-4 border-b bg-background sticky top-0 z-10">
-          <Button variant="ghost" size="icon" onClick={() => router.back()}>
-            <ArrowLeft className="h-6 w-6" />
-          </Button>
-          <h1 className="text-xl font-bold ml-4">Family Accounts</h1>
-        </header>
-
         <main className="flex-grow p-4 sm:p-6 lg:p-8 space-y-6">
             <Card>
                 <CardHeader>
@@ -128,7 +120,16 @@ export default function FamilyAccountPage() {
                 </div>
             </div>
         </main>
-      </div>
-    </ProtectedRoute>
   );
+}
+
+
+export default function FamilyAccountPage() {
+    return (
+        <ProtectedRoute>
+            <div className="flex flex-col min-h-screen bg-muted/20">
+                <FamilyAccountPageContent />
+            </div>
+        </ProtectedRoute>
+    )
 }
