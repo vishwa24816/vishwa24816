@@ -155,7 +155,7 @@ export const CustomNode: React.FC<NodeProps<CustomNodeData>> = ({ data, isConnec
     )}>
       <Handle type="target" position={Position.Top} isConnectable={isConnectable} className="!bg-primary !w-4 !h-2 !rounded-sm" />
       
-      <CardHeader className="flex flex-row items-center justify-between p-3 space-y-0 cursor-move">
+      <CardHeader className="react-flow__node-drag-handle flex flex-row items-center justify-between p-3 space-y-0 cursor-move">
         <CardTitle className="text-sm font-medium flex items-center gap-2">
           {Icon && <Icon className={cn("h-4 w-4", isActionNode ? 'text-white' : 'text-primary')} />}
           {label}
