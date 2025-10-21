@@ -195,6 +195,12 @@ export function SimballPageContent() {
                     />
                 </div>
             </div>
+             {activeGameBrokerage !== null && (
+                <DXBallGame 
+                    brickCount={activeGameBrokerage}
+                    onGameEnd={handleCloseGame}
+                />
+            )}
         </main>
   );
 }
