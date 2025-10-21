@@ -35,8 +35,8 @@ export const DXBallGame: React.FC<DXBallGameProps> = ({ brickCount, onGameEnd })
     if (!ctx) return;
 
     // --- Game Setup ---
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    canvas.width = window.innerWidth > 800 ? 800 : window.innerWidth;
+    canvas.height = window.innerHeight > 600 ? 600 : window.innerHeight;
 
     const paddleHeight = 15;
     const paddleWidth = 180;
@@ -52,15 +52,19 @@ export const DXBallGame: React.FC<DXBallGameProps> = ({ brickCount, onGameEnd })
 
     // --- Brick Generation ---
     game.bricks = [];
-    const brickColumnCount = 12;
     const brickWidth = 60;
     const brickHeight = 20;
     const brickPadding = 10;
     const brickOffsetTop = 40;
+    
+    // Dynamic column calculation
+    const maxBricksPerRow = Math.floor(canvas.width / (brickWidth + brickPadding));
+    const brickColumnCount = Math.min(brickCount, maxBricksPerRow);
+    
     const totalBrickWidth = brickColumnCount * (brickWidth + brickPadding) - brickPadding;
     const brickOffsetLeft = (canvas.width - totalBrickWidth) / 2;
     
-    let bricksToCreate = Math.min(brickCount, 60); // Cap bricks at a reasonable number for gameplay
+    let bricksToCreate = brickCount; 
     for (let i = 0; i < bricksToCreate; i++) {
         const c = i % brickColumnCount;
         const r = Math.floor(i / brickColumnCount);
@@ -88,6 +92,7 @@ export const DXBallGame: React.FC<DXBallGameProps> = ({ brickCount, onGameEnd })
       }
     }
     const touchMoveHandler = (e: TouchEvent) => {
+        e.preventDefault(); // Prevent scrolling
         const relativeX = e.touches[0].clientX - canvas.getBoundingClientRect().left;
         if (relativeX > paddleWidth / 2 && relativeX < canvas.width - paddleWidth / 2) {
             game.paddleX = relativeX - paddleWidth / 2;
@@ -117,7 +122,6 @@ export const DXBallGame: React.FC<DXBallGameProps> = ({ brickCount, onGameEnd })
     const drawBricks = () => {
         game.bricks.forEach((brick, index) => {
             if (brick.status > 0) {
-                const row = Math.floor(index / brickColumnCount);
                 ctx.beginPath();
                 ctx.rect(brick.x, brick.y, brickWidth, brickHeight);
                 if (brick.status === 2) {
