@@ -74,7 +74,7 @@ export default function DashboardRouterPage() {
   };
 
   const handleAssetClick = (asset: Stock, details?: InitialOrderDetails) => {
-    if (details?.navigationTarget === 'strategy_builder' || details?.legs) {
+    if (details?.navigationTarget === 'strategy-builder' || details?.legs) {
         setPreviousMainView(activeMainView);
         if (details.targetView === 'Crypto') {
             handleModeChange('Crypto');

@@ -22,7 +22,7 @@ export type ChatWithSimbotInput = z.infer<typeof ChatWithSimbotInputSchema>;
 
 const ChatWithSimbotOutputSchema = z.object({
   reply: z.string().describe("Simbot's reply to the user message."),
-  navigationTarget: z.string().optional().describe("The URL to navigate to, if any."),
+  navigationTarget: z.string().optional().describe("The URL to navigate to, or a special view like 'strategy-builder'."),
   initialOrderDetails: z.any().optional().describe("Pre-filled details for the order page, like quantity or leverage."),
   legs: z.any().optional().describe("Pre-filled legs for the strategy builder."),
 });
@@ -117,6 +117,7 @@ const createOptionStrategy = ai.defineTool(
         return {
             success: true,
             reply: `I've prepared a short ${strategy} on ${underlying} for you in the strategy builder. Please review and execute it.`,
+            navigationTarget: 'strategy-builder',
             targetView: targetView,
             legs: legs,
         };
