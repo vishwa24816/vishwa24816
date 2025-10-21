@@ -73,19 +73,9 @@ const leaderboardData = [
     { rank: 5, name: 'Rohan', pnl: 41800, avatar: 'https://placehold.co/100x100.png?text=R' },
 ];
 
-export function SimballPageContent() {
+export function SimballPageContent({ onPlayGame }: { onPlayGame: (brokerage: number) => void }) {
     const { user } = useAuth();
-    const [activeGameBrokerage, setActiveGameBrokerage] = useState<number | null>(null);
-
-    const handlePlayGame = (brokerage: number) => {
-        setActiveGameBrokerage(brokerage);
-    };
-
-    const handleCloseGame = () => {
-        setActiveGameBrokerage(null);
-    };
-
-
+    
   return (
         <main className="flex-grow container mx-auto p-4 sm:p-6 lg:p-8 space-y-8">
             <h1 className="text-3xl font-bold text-center text-primary">SIMBALL</h1>
@@ -143,7 +133,7 @@ export function SimballPageContent() {
                         gradientTo="to-emerald-600"
                         brokerage={50}
                         isPlayed={false}
-                        onClick={() => handlePlayGame(50)}
+                        onClick={() => onPlayGame(50)}
                     />
                      <FireCard 
                         tradeType="SELL"
@@ -154,7 +144,7 @@ export function SimballPageContent() {
                         gradientTo="to-rose-600"
                         brokerage={80}
                         isPlayed={false}
-                        onClick={() => handlePlayGame(80)}
+                        onClick={() => onPlayGame(80)}
                     />
                     <FireCard 
                         tradeType="BUY"
@@ -165,7 +155,7 @@ export function SimballPageContent() {
                         gradientTo="to-cyan-600"
                         brokerage={40}
                         isPlayed={false}
-                        onClick={() => handlePlayGame(40)}
+                        onClick={() => onPlayGame(40)}
                     />
                 </div>
             </div>
@@ -195,12 +185,6 @@ export function SimballPageContent() {
                     />
                 </div>
             </div>
-             {activeGameBrokerage !== null && (
-                <DXBallGame 
-                    brickCount={activeGameBrokerage}
-                    onGameEnd={handleCloseGame}
-                />
-            )}
         </main>
   );
 }
@@ -209,7 +193,7 @@ export default function SimballPage() {
     return (
         <ProtectedRoute>
             <div className="flex flex-col min-h-screen bg-background text-foreground">
-                <SimballPageContent />
+                <SimballPageContent onPlayGame={() => {}} />
             </div>
         </ProtectedRoute>
     )

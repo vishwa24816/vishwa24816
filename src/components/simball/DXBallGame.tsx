@@ -52,13 +52,13 @@ export const DXBallGame: React.FC<DXBallGameProps> = ({ brickCount, onGameEnd })
 
     // --- Brick Generation ---
     game.bricks = [];
-    const brickWidth = 60;
+    const brickWidth = 75;
     const brickHeight = 20;
     const brickPadding = 10;
     const brickOffsetTop = 40;
     
     let bricksToCreate = brickCount;
-    const brickColumnCount = Math.floor(canvas.width / (brickWidth + brickPadding));
+    const brickColumnCount = Math.floor((canvas.width - 20) / (brickWidth + brickPadding));
     const brickRowCount = Math.ceil(bricksToCreate / brickColumnCount);
     
     const totalBrickWidth = brickColumnCount * (brickWidth + brickPadding) - brickPadding;
@@ -219,8 +219,8 @@ export const DXBallGame: React.FC<DXBallGameProps> = ({ brickCount, onGameEnd })
   }
 
   return (
-    <div className="fixed inset-0 bg-gray-900 flex items-center justify-center z-50 animate-scale-in">
-        <canvas ref={canvasRef} />
+    <div className="fixed inset-0 bg-gray-900 z-[100] flex items-center justify-center animate-scale-in">
+        <canvas ref={canvasRef} className="w-full h-full" />
         <Button variant="ghost" size="icon" className="absolute top-3 right-3 text-white hover:bg-white/20" onClick={onGameEnd}>
             <X className="h-6 w-6"/>
         </Button>

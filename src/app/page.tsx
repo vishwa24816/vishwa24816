@@ -25,6 +25,7 @@ import { TaxyPageContent } from '@/app/taxy/page';
 import { FamilyAccountPageContent } from './family/page';
 import { GiftPageContent } from './gift/page';
 import { SupportPageContent } from './support/page';
+import { DXBallGame } from '@/components/simball/DXBallGame';
 
 
 export type MainView = 'home' | 'orders' | 'simbot' | 'screener' | 'community' | 'asset_order' | 'analytics' | 'backtester' | 'simball' | 'taxy' | 'family' | 'gift' | 'support';
@@ -48,6 +49,8 @@ export default function DashboardRouterPage() {
   const [selectedAsset, setSelectedAsset] = useState<Stock | null>(null);
   const [initialOrderDetails, setInitialOrderDetails] = useState<InitialOrderDetails | null>(null);
   const [productTypeForOrder, setProductTypeForOrder] = useState('Delivery');
+  
+  const [activeSimballGame, setActiveSimballGame] = useState<number | null>(null);
 
   const handleModeChange = (mode: 'Portfolio' | 'Fiat' | 'Wealth' | 'Crypto' | 'Web3') => {
       if (isRealMode && mode === 'Fiat') {
@@ -74,6 +77,14 @@ export default function DashboardRouterPage() {
     setInitialOrderDetails(details || null);
     setActiveMainView('asset_order');
   };
+  
+  const handleLaunchSimball = (brokerage: number) => {
+    setActiveSimballGame(brokerage);
+  }
+  
+  const handleEndSimball = () => {
+    setActiveSimballGame(null);
+  }
 
   if (loading || !user) {
      return (
@@ -91,6 +102,17 @@ export default function DashboardRouterPage() {
             </div>
         </ProtectedRoute>
       );
+  }
+  
+  if (activeSimballGame !== null) {
+    return (
+        <ProtectedRoute>
+            <DXBallGame 
+                brickCount={activeSimballGame}
+                onGameEnd={handleEndSimball}
+            />
+        </ProtectedRoute>
+    );
   }
   
   const showModeSwitcher = !['orders', 'screener', 'simbot', 'analytics', 'backtester', 'simball', 'taxy', 'family', 'gift', 'support'].includes(activeMainView);
@@ -136,7 +158,7 @@ export default function DashboardRouterPage() {
       case 'backtester':
         return <BacktesterPageContent />;
       case 'simball':
-        return <SimballPageContent />;
+        return <SimballPageContent onPlayGame={handleLaunchSimball} />;
       case 'taxy':
         return <TaxyPageContent />;
       case 'family':
