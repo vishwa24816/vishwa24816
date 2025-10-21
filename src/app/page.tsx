@@ -185,12 +185,14 @@ export default function DashboardRouterPage() {
   return (
     <ProtectedRoute>
       <div className="flex flex-col h-screen">
-        <AppHeader 
-          activeMode={activeMode}
-          onModeChange={showModeSwitcher ? handleModeChange : undefined}
-          isRealMode={isRealMode}
-          onNavigate={handleNavigate}
-        />
+        {activeMainView !== 'nocode_algo' && (
+          <AppHeader 
+            activeMode={activeMode}
+            onModeChange={showModeSwitcher ? handleModeChange : undefined}
+            isRealMode={isRealMode}
+            onNavigate={handleNavigate}
+          />
+        )}
         <div className={cn("flex-grow overflow-y-auto", getPaddingBottom())}>
             {renderContent()}
         </div>
