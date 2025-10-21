@@ -53,8 +53,22 @@ export function SimbotInputBar({ onNavigateRequest, showSuggestions = false, isR
         handleSendMessage(inputValue);
     };
     
-    const handleSuggestionClick = (suggestion: { message: string, symbol?: string, details?: InitialOrderDetails }) => {
+    const handleSuggestionClick = (suggestion: { message: string, symbol?: string, details?: InitialOrderDetails, action?: string }) => {
         const asset = suggestion.symbol ? allAssets.find(a => a.symbol === suggestion.symbol) : undefined;
+        
+        if (suggestion.action === 'create_nifty_straddle') {
+            const expiry = '25 JUL 2024';
+            const atmStrike = 22000;
+            const legs = [
+                { id: `leg1-${Date.now()}`, underlyingSymbol: 'NIFTY', instrumentName: `NIFTY ${expiry} ${atmStrike} CE`, expiryDate: expiry, strikePrice: atmStrike, optionType: 'Call', action: 'Sell', ltp: 150, quantity: 1 },
+                { id: `leg2-${Date.now()}`, underlyingSymbol: 'NIFTY', instrumentName: `NIFTY ${expiry} ${atmStrike} PE`, expiryDate: expiry, strikePrice: atmStrike, optionType: 'Put', action: 'Sell', ltp: 130, quantity: 1 },
+            ];
+             if(onNavigateRequest) {
+                onNavigateRequest({} as Stock, { targetView: 'Fiat', legs });
+            }
+            return;
+        }
+
         if (asset && onNavigateRequest && suggestion.details) {
             onNavigateRequest(asset, suggestion.details);
         } else {
@@ -67,7 +81,7 @@ export function SimbotInputBar({ onNavigateRequest, showSuggestions = false, isR
         { message: 'Buy Bitcoin', symbol: 'BTC', details: {} },
         { message: 'Buy reliance qty 123', symbol: 'RELIANCE', details: { quantity: 123 } },
         { message: 'Do an SIP on Parag Parikh Flexi cap for 100rs weekly', symbol: 'PARAGPARIKH', details: { orderType: 'SIP', sipAmount: 100, sipFrequency: 'Weekly' } },
-        { message: 'Make a short straddle on nifty July' },
+        { message: 'Make a short straddle on nifty July', action: 'create_nifty_straddle' },
     ];
 
     const realSuggestions = [

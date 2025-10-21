@@ -29,7 +29,7 @@ import { DXBallGame } from '@/components/simball/DXBallGame';
 import { NoCodeAlgoPageContent } from '@/app/nocode-algo/page';
 
 
-export type MainView = 'home' | 'orders' | 'simbot' | 'screener' | 'community' | 'asset_order' | 'analytics' | 'backtester' | 'simball' | 'taxy' | 'family' | 'gift' | 'support' | 'nocode_algo';
+export type MainView = 'home' | 'orders' | 'simbot' | 'screener' | 'community' | 'asset_order' | 'analytics' | 'backtester' | 'simball' | 'taxy' | 'family' | 'gift' | 'support' | 'nocode_algo' | 'strategy_builder';
 
 export interface InitialOrderDetails {
     quantity?: number;
@@ -73,6 +73,27 @@ export default function DashboardRouterPage() {
   };
 
   const handleAssetClick = (asset: Stock, details?: InitialOrderDetails) => {
+    if (details?.legs) {
+        setPreviousMainView(activeMainView);
+        if (details.targetView === 'Crypto') {
+            handleModeChange('Crypto');
+            handleNavigate('home');
+             // A bit of a hack to ensure state updates before setting legs
+            setTimeout(() => {
+                handleNavigate('strategy_builder');
+                setInitialOrderDetails(details);
+            }, 0);
+        } else {
+            handleModeChange('Fiat');
+            handleNavigate('home');
+             setTimeout(() => {
+                handleNavigate('strategy_builder');
+                setInitialOrderDetails(details);
+            }, 0);
+        }
+        return;
+    }
+
     setPreviousMainView(activeMainView);
     setSelectedAsset(asset);
     setInitialOrderDetails(details || null);
@@ -116,7 +137,7 @@ export default function DashboardRouterPage() {
     );
   }
   
-  const showModeSwitcher = !['orders', 'screener', 'simbot', 'analytics', 'backtester', 'simball', 'taxy', 'family', 'gift', 'support', 'nocode_algo'].includes(activeMainView);
+  const showModeSwitcher = !['orders', 'screener', 'simbot', 'analytics', 'backtester', 'simball', 'taxy', 'family', 'gift', 'support', 'nocode_algo', 'strategy_builder'].includes(activeMainView);
 
   const shouldShowOrderFooter = 
     activeMainView === 'asset_order' && 
@@ -136,7 +157,7 @@ export default function DashboardRouterPage() {
     return 'pb-16'; 
   }
   
-  const noFooterViews: MainView[] = ['backtester', 'simball', 'taxy', 'family', 'gift', 'support'];
+  const noFooterViews: MainView[] = ['backtester', 'simball', 'taxy', 'family', 'gift', 'support', 'strategy_builder'];
   const showAppFooter = !shouldShowOrderFooter && !shouldShowSimbotOnlyFooter && activeMainView !== 'asset_order' && !noFooterViews.includes(activeMainView);
 
   const renderContent = () => {
@@ -171,6 +192,12 @@ export default function DashboardRouterPage() {
         return <GiftPageContent />;
       case 'support':
         return <SupportPageContent />;
+      case 'strategy_builder':
+         return isRealMode ? (
+          <RealDashboard activeMode={activeMode} onAssetClick={handleAssetClick} />
+        ) : (
+          <DemoDashboard activeMode={activeMode} onModeChange={handleModeChange} onAssetClick={handleAssetClick}/>
+        );
       case 'asset_order':
         if (selectedAsset) {
           return <OrderPageDispatcher asset={selectedAsset} onBack={() => handleNavigate(previousMainView)} initialDetails={initialOrderDetails} productType={productTypeForOrder} onProductTypeChange={setProductTypeForOrder} />;
