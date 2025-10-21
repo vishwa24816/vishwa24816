@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { useAuth } from '@/contexts/AuthContext';
-import { LineChart, PlayCircle, SlidersHorizontal, Bot, Info } from 'lucide-react';
+import { LineChart, PlayCircle, SlidersHorizontal, Bot, Info, CalendarIcon, Settings, Share2, Save, Plus } from 'lucide-react';
 import {
   Table,
   TableBody,
@@ -23,6 +23,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
+import { Switch } from '@/components/ui/switch';
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
+import { format } from 'date-fns';
+import { useToast } from '@/hooks/use-toast';
 
 
 const SegmentedControl = ({
@@ -53,12 +58,13 @@ const SegmentedControl = ({
 
 export function BacktesterPageContent() {
     const { user } = useAuth();
+    const { toast } = useToast();
     const [strategy, setStrategy] = useState("WHEN SMA(50) crosses above SMA(200)\nBUY 1 BTC\n\nWHEN SMA(50) crosses below SMA(200)\nSELL ALL");
     const [aiQuery, setAiQuery] = useState("Find profitable momentum strategies for NIFTY 50 index stocks.");
     const [isBacktesting, setIsBacktesting] = useState(false);
     const [backtestResult, setBacktestResult] = useState<any>(null);
     
-    // State for the new manual tester form
+    // State for the manual tester form
     const [atmType, setAtmType] = useState('point');
     const [index, setIndex] = useState('nifty');
     const [segment, setSegment] = useState('options');
@@ -67,6 +73,11 @@ export function BacktesterPageContent() {
     const [strikePrice, setStrikePrice] = useState('atm');
     const [totalLots, setTotalLots] = useState('1');
     const [expiryType, setExpiryType] = useState('weekly');
+    
+    // State for the new detailed builder
+    const [showDetailedBuilder, setShowDetailedBuilder] = useState(false);
+    const [fromDate, setFromDate] = useState<Date | undefined>(new Date('2025-09-20'));
+    const [toDate, setToDate] = useState<Date | undefined>(new Date('2025-10-21'));
 
 
     const handleRunBacktest = () => {
@@ -90,10 +101,7 @@ export function BacktesterPageContent() {
     }
     
     const handleAddPosition = () => {
-         toast({
-            title: "Position Added (Mock)",
-            description: `Added ${totalLots} lot(s) of ${index} ${optionType} to the strategy.`,
-        });
+        setShowDetailedBuilder(true);
     }
 
     return (
@@ -216,6 +224,69 @@ export function BacktesterPageContent() {
                         <Button onClick={handleAddPosition} className="w-full">Add Position</Button>
                     </CardContent>
                 </Card>
+                
+                {showDetailedBuilder && (
+                    <Card className="mb-6 animate-accordion-down">
+                        <CardHeader>
+                            <CardTitle>Detailed Strategy Builder</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-6">
+                            <div className="flex items-center space-x-4">
+                               <Label htmlFor="live-spot-atm" className="flex flex-col items-center gap-1 cursor-pointer">
+                                  <span>Live Spot as ATM</span>
+                                  <Switch id="live-spot-atm" />
+                               </Label>
+                                <Label htmlFor="futures-atm" className="flex flex-col items-center gap-1 cursor-pointer">
+                                  <span>Use Futures as ATM</span>
+                                  <Switch id="futures-atm" />
+                               </Label>
+                            </div>
+                            <RadioGroup defaultValue="one-leg" className="flex space-x-4">
+                                <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="one-leg" id="one-leg" />
+                                    <Label htmlFor="one-leg">Square Off One Leg</Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="all-legs" id="all-legs" />
+                                    <Label htmlFor="all-legs">Square Off All Legs</Label>
+                                </div>
+                            </RadioGroup>
+                            
+                            <Button variant="outline" className="w-full justify-start"><Plus className="mr-2 h-4 w-4"/> Strategy Target Profit</Button>
+                            <Button variant="outline" className="w-full justify-start"><Plus className="mr-2 h-4 w-4"/> Strategy Stop Loss</Button>
+
+                            <div className="space-y-2">
+                                <Label>Date Range</Label>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <Popover>
+                                        <PopoverTrigger asChild>
+                                            <Button variant="outline" className={cn("justify-start text-left font-normal", !fromDate && "text-muted-foreground")}>
+                                                <CalendarIcon className="mr-2 h-4 w-4" />
+                                                {fromDate ? format(fromDate, "PPP") : <span>From date</span>}
+                                            </Button>
+                                        </PopoverTrigger>
+                                        <PopoverContent className="w-auto p-0"><Calendar mode="single" selected={fromDate} onSelect={setFromDate} initialFocus /></PopoverContent>
+                                    </Popover>
+                                    <Popover>
+                                        <PopoverTrigger asChild>
+                                            <Button variant="outline" className={cn("justify-start text-left font-normal", !toDate && "text-muted-foreground")}>
+                                                <CalendarIcon className="mr-2 h-4 w-4" />
+                                                {toDate ? format(toDate, "PPP") : <span>To date</span>}
+                                            </Button>
+                                        </PopoverTrigger>
+                                        <PopoverContent className="w-auto p-0"><Calendar mode="single" selected={toDate} onSelect={setToDate} initialFocus /></PopoverContent>
+                                    </Popover>
+                                </div>
+                            </div>
+                             <div className="flex flex-col gap-4">
+                               <Button onClick={handleRunBacktest} className="w-full bg-green-600 hover:bg-green-700">Start Backtest</Button>
+                               <Button variant="outline" className="w-full"><Share2 className="mr-2 h-4 w-4" /> Share Strategy</Button>
+                               <Button variant="outline" className="w-full"><Save className="mr-2 h-4 w-4" /> Save Strategy</Button>
+                               <Button variant="outline" className="w-full"><Plus className="mr-2 h-4 w-4" /> New Strategy</Button>
+                           </div>
+                        </CardContent>
+                    </Card>
+                )}
 
 
                 {isBacktesting && (
