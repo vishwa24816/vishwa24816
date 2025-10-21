@@ -67,10 +67,9 @@ export const InputNode: React.FC<NodeProps> = ({ data, id }) => {
         <Handle
             type="source"
             position={Position.Right}
-            className="!w-20 !h-20"
             style={{
-                width: '20px',
-                height: '20px',
+                width: '5px',
+                height: '5px',
                 background: '#555',
                 border: '2px solid white',
             }}
@@ -105,10 +104,9 @@ export const ConditionNode: React.FC<NodeProps> = ({ data, id }) => {
             <Handle
                 type="target"
                 position={Position.Left}
-                className="!w-20 !h-20"
                 style={{
-                    width: '20px',
-                    height: '20px',
+                    width: '5px',
+                    height: '5px',
                     background: '#555',
                     border: '2px solid white',
                 }}
@@ -119,12 +117,11 @@ export const ConditionNode: React.FC<NodeProps> = ({ data, id }) => {
                 id="a"
                 style={{
                     top: '33%',
-                    width: '20px',
-                    height: '20px',
+                    width: '5px',
+                    height: '5px',
                     background: '#555',
                     border: '2px solid white',
                 }}
-                className="!w-20 !h-20"
             />
             <Handle
                 type="source"
@@ -132,12 +129,11 @@ export const ConditionNode: React.FC<NodeProps> = ({ data, id }) => {
                 id="b"
                 style={{
                     top: '66%',
-                    width: '20px',
-                    height: '20px',
+                    width: '5px',
+                    height: '5px',
                     background: '#555',
                     border: '2px solid white',
                 }}
-                className="!w-20 !h-20"
             />
 
              <div className="space-y-1">
@@ -188,10 +184,9 @@ export const OutputNode: React.FC<NodeProps> = ({ data, id }) => {
         <Handle
             type="target"
             position={Position.Left}
-            className="!w-20 !h-20"
             style={{
-                width: '20px',
-                height: '20px',
+                width: '5px',
+                height: '5px',
                 background: '#555',
                 border: '2px solid white',
             }}
