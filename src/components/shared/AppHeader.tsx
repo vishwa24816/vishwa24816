@@ -14,7 +14,7 @@ import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { MarketOverview } from '@/components/dashboard/MarketOverview';
 import { mockMarketIndices, mockCryptoAssets } from '@/lib/mockData';
-import { SideMenu } from './SideMenu';
+import { SideMenu } from '@/components/shared/SideMenu';
 import type { MainView } from '@/app/page';
 
 interface AppHeaderProps {

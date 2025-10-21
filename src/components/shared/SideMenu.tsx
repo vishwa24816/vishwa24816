@@ -11,9 +11,7 @@ import {
   HomeIcon,
   Info as InfoIcon,
   TrendingUp,
-  Trophy,
   LifeBuoy,
-  Puzzle,
   Sun,
   Moon,
   Sparkles,
@@ -21,7 +19,6 @@ import {
   FileText,
   Gift,
   Users,
-  Repeat,
 } from 'lucide-react';
 import {
   Sheet,
@@ -34,47 +31,29 @@ import {
 import type { MainView } from '@/app/page';
 
 export function SideMenu({ onNavigate }: { onNavigate?: (view: MainView) => void }) {
-  const { user, logout } = useAuth();
+  const { user, logout, theme, setTheme } = useAuth();
   const router = useRouter();
-  const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
-    const storedTheme = localStorage.getItem('sim-theme') as 'light' | 'dark' | null;
-    const initialTheme = storedTheme || 'light';
-    setTheme(initialTheme);
-    if (initialTheme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
   }, []);
-
-  useEffect(() => {
-    if (!isMounted) return;
-    if (theme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-    localStorage.setItem('sim-theme', theme);
-  }, [theme, isMounted]);
-
-  const toggleTheme = () => {
-    setTheme((currentTheme) => (currentTheme === 'light' ? 'dark' : 'light'));
-  };
 
   const handleLogout = () => {
     logout();
     router.push('/login');
   };
+  
+  const handleThemeToggle = () => {
+      setTheme(theme === 'light' ? 'dark' : 'light');
+  }
 
   const handleAnalyticsClick = () => {
     if (onNavigate) {
       onNavigate('analytics');
     } else {
-      router.push('/'); // Navigate to home page which will then show the analytics view
+      router.push('/?view=analytics');
     }
   };
 
@@ -197,7 +176,7 @@ export function SideMenu({ onNavigate }: { onNavigate?: (view: MainView) => void
           <Button
             variant="ghost"
             className="justify-start text-base p-3 hover:bg-accent/10"
-            onClick={toggleTheme}
+            onClick={handleThemeToggle}
           >
             {theme === 'light' ? (
               <Moon className="mr-3 h-5 w-5 text-primary" />
@@ -228,7 +207,3 @@ export function SideMenu({ onNavigate }: { onNavigate?: (view: MainView) => void
     </Sheet>
   );
 }
-
-    
-
-    
