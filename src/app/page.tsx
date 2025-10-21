@@ -26,9 +26,10 @@ import { FamilyAccountPageContent } from './family/page';
 import { GiftPageContent } from './gift/page';
 import { SupportPageContent } from './support/page';
 import { DXBallGame } from '@/components/simball/DXBallGame';
+import { NoCodeAlgoPageContent } from '@/app/nocode-algo/page';
 
 
-export type MainView = 'home' | 'orders' | 'simbot' | 'screener' | 'community' | 'asset_order' | 'analytics' | 'backtester' | 'simball' | 'taxy' | 'family' | 'gift' | 'support';
+export type MainView = 'home' | 'orders' | 'simbot' | 'screener' | 'community' | 'asset_order' | 'analytics' | 'backtester' | 'simball' | 'taxy' | 'family' | 'gift' | 'support' | 'nocode_algo';
 
 export interface InitialOrderDetails {
     quantity?: number;
@@ -115,7 +116,7 @@ export default function DashboardRouterPage() {
     );
   }
   
-  const showModeSwitcher = !['orders', 'screener', 'simbot', 'analytics', 'backtester', 'simball', 'taxy', 'family', 'gift', 'support'].includes(activeMainView);
+  const showModeSwitcher = !['orders', 'screener', 'simbot', 'analytics', 'backtester', 'simball', 'taxy', 'family', 'gift', 'support', 'nocode_algo'].includes(activeMainView);
 
   const shouldShowOrderFooter = 
     activeMainView === 'asset_order' && 
@@ -123,9 +124,10 @@ export default function DashboardRouterPage() {
     selectedAsset?.exchange?.toLowerCase().includes('bond') === false;
 
   const shouldShowSimbotOnlyFooter = 
-    activeMainView === 'asset_order' &&
+    (activeMainView === 'asset_order' &&
     (selectedAsset?.exchange?.toLowerCase().includes('mf') === true ||
-     selectedAsset?.exchange?.toLowerCase().includes('bond') === true);
+     selectedAsset?.exchange?.toLowerCase().includes('bond') === true)) ||
+     activeMainView === 'nocode_algo';
 
   const getPaddingBottom = () => {
     if (shouldShowOrderFooter) return 'pb-[120px]'; // Space for OrderPageFooter
@@ -155,6 +157,8 @@ export default function DashboardRouterPage() {
         return <CommunityPageContent onAssetClick={handleAssetClick} activeMode={activeMode} />;
       case 'analytics':
         return <AnalyticsPageContent />;
+      case 'nocode_algo':
+        return <NoCodeAlgoPageContent />;
       case 'backtester':
         return <BacktesterPageContent />;
       case 'simball':
