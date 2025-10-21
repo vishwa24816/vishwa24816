@@ -60,7 +60,7 @@ export function BacktesterPageContent() {
     const { user } = useAuth();
     const { toast } = useToast();
     const [strategy, setStrategy] = useState("WHEN SMA(50) crosses above SMA(200)\nBUY 1 BTC\n\nWHEN SMA(50) crosses below SMA(200)\nSELL ALL");
-    const [aiQuery, setAiQuery] = useState("Find profitable momentum strategies for NIFTY 50 index stocks.");
+    const [aiQuery, setAiQuery] = useState("WHEN SMA(50) crosses above SMA(200)\nBUY 1 BTC\n\nWHEN SMA(50) crosses below SMA(200)\nSELL ALL");
     const [isBacktesting, setIsBacktesting] = useState(false);
     const [backtestResult, setBacktestResult] = useState<any>(null);
     
