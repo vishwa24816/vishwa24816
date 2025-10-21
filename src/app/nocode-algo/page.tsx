@@ -44,6 +44,7 @@ import { Label } from '@/components/ui/label';
 import { toast } from '@/hooks/use-toast';
 import { Play, Zap, Menu, Database, GitBranch, Terminal, Save, Trash2, History } from 'lucide-react';
 import { InputNode, ConditionNode, OutputNode } from '@/components/nocode-algo/nodes';
+import type { MainView } from '../page';
 
 
 const initialNodes: Node[] = [
@@ -67,7 +68,11 @@ interface SavedStrategy {
     edges: Edge[];
 }
 
-export function NoCodeAlgoPageContent() {
+interface NoCodeAlgoPageContentProps {
+  onNavigate: (view: MainView) => void;
+}
+
+export function NoCodeAlgoPageContent({ onNavigate }: NoCodeAlgoPageContentProps) {
     const [nodes, setNodes] = useState<Node[]>(initialNodes);
     const [edges, setEdges] = useState<Edge[]>(initialEdges);
     const [isSaveDialogOpen, setIsSaveDialogOpen] = useState(false);
@@ -134,7 +139,7 @@ export function NoCodeAlgoPageContent() {
     }
 
     const backtestStrategy = (strategyName: string) => {
-        toast({ title: 'Backtesting Strategy (Mock)', description: `Starting backtest for "${strategyName}".`});
+        onNavigate('backtester');
     }
 
     return (

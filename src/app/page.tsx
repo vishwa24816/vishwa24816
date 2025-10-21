@@ -158,7 +158,7 @@ export default function DashboardRouterPage() {
       case 'analytics':
         return <AnalyticsPageContent />;
       case 'nocode_algo':
-        return <NoCodeAlgoPageContent />;
+        return <NoCodeAlgoPageContent onNavigate={handleNavigate} />;
       case 'backtester':
         return <BacktesterPageContent />;
       case 'simball':
