@@ -55,11 +55,12 @@ export function NoCodeAlgoPageContent() {
         [setEdges]
     );
     
+    // Pass setNodes to custom nodes so they can delete themselves
     const nodeTypes: NodeTypes = useMemo(() => ({ 
-        inputNode: InputNode,
-        conditionNode: ConditionNode,
-        outputNode: OutputNode,
-    }), []);
+        inputNode: (props: any) => <InputNode {...props} data={{ ...props.data, setNodes }} />,
+        conditionNode: (props: any) => <ConditionNode {...props} data={{ ...props.data, setNodes }} />,
+        outputNode: (props: any) => <OutputNode {...props} data={{ ...props.data, setNodes }} />,
+    }), [setNodes]);
     
     const addNode = (type: 'inputNode' | 'conditionNode' | 'outputNode') => {
         const newNode: Node = {
@@ -69,7 +70,7 @@ export function NoCodeAlgoPageContent() {
                 x: Math.random() * 400 + 100,
                 y: Math.random() * 200 + 100,
             },
-            data: { label: `${type.replace('Node', '')}` },
+            data: { label: `${type.replace('Node', '')}`, setNodes },
         };
         setNodes((nds) => nds.concat(newNode));
     };

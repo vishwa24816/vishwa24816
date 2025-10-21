@@ -1,66 +1,97 @@
 
 "use client";
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Handle, Position, type NodeProps } from 'reactflow';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
-import { Database, GitBranch, Terminal } from 'lucide-react';
+import { Database, GitBranch, Terminal, X, Trash2, PlusCircle } from 'lucide-react';
+import { Button } from '../ui/button';
 
-const NodeWrapper: React.FC<React.PropsWithChildren<{ title: string; icon: React.ElementType, type: 'input' | 'default' | 'output' }>> = ({ children, title, icon: Icon, type }) => {
+// A delete button that will be positioned on the top-right of the node
+const NodeDeleteButton = ({ onClick }: { onClick: () => void }) => (
+    <button onClick={onClick} className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full p-0.5 z-10 hover:bg-destructive/80 transition-colors">
+        <X className="h-3 w-3" />
+        <span className="sr-only">Delete Node</span>
+    </button>
+);
+
+
+const NodeWrapper: React.FC<React.PropsWithChildren<{ title: string; icon: React.ElementType, type: 'input' | 'default' | 'output', onDelete: () => void }>> = ({ children, title, icon: Icon, type, onDelete }) => {
     return (
-        <Card className={cn(
-            "w-64 shadow-lg border-2",
-            type === 'input' && "border-green-500",
-            type === 'default' && "border-blue-500",
-            type === 'output' && "border-purple-500",
-        )}>
-            <CardHeader className="p-3 bg-muted/50 rounded-t-lg">
-                <CardTitle className="text-sm font-medium flex items-center gap-2">
-                    <Icon className="h-4 w-4" />
-                    {title}
-                </CardTitle>
-            </CardHeader>
-            <CardContent className="p-3 text-xs space-y-2">
-                {children}
-            </CardContent>
-        </Card>
+        <div className="relative">
+            <NodeDeleteButton onClick={onDelete} />
+            <Card className={cn(
+                "w-64 shadow-lg border-2",
+                type === 'input' && "border-green-500",
+                type === 'default' && "border-blue-500",
+                type === 'output' && "border-purple-500",
+            )}>
+                <CardHeader className="p-3 bg-muted/50 rounded-t-lg">
+                    <CardTitle className="text-sm font-medium flex items-center gap-2">
+                        <Icon className="h-4 w-4" />
+                        {title}
+                    </CardTitle>
+                </CardHeader>
+                <CardContent className="p-3 text-xs space-y-2">
+                    {children}
+                </CardContent>
+            </Card>
+        </div>
     );
 };
 
 
-export const InputNode: React.FC<NodeProps> = ({ data }) => {
+export const InputNode: React.FC<NodeProps> = ({ data, id }) => {
+  const { setNodes } = data;
+  const [assets, setAssets] = useState(['NIFTY 50']);
+
+  const addAsset = () => setAssets(prev => [...prev, '']);
+  const removeAsset = (index: number) => setAssets(prev => prev.filter((_, i) => i !== index));
+  const updateAsset = (index: number, value: string) => {
+    const newAssets = [...assets];
+    newAssets[index] = value;
+    setAssets(newAssets);
+  };
+  
+  const onDelete = () => {
+    setNodes((nds: any[]) => nds.filter((node) => node.id !== id));
+  };
+
+
   return (
-    <NodeWrapper title="Start" icon={Database} type="input">
+    <NodeWrapper title="Start" icon={Database} type="input" onDelete={onDelete}>
         <Handle type="source" position={Position.Right} className="w-2 h-2" />
-        <div className="space-y-1">
-            <Label>Asset</Label>
-            <Input defaultValue="NIFTY 50" />
-        </div>
-        <div className="space-y-1">
-            <Label>Timeframe</Label>
-            <Select defaultValue="1min">
-                <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                    <SelectItem value="1min">1 Minute</SelectItem>
-                    <SelectItem value="5min">5 Minutes</SelectItem>
-                    <SelectItem value="15min">15 Minutes</SelectItem>
-                    <SelectItem value="1hour">1 Hour</SelectItem>
-                    <SelectItem value="1day">1 Day</SelectItem>
-                </SelectContent>
-            </Select>
+         <div className="space-y-2">
+            <Label>Assets</Label>
+            {assets.map((asset, index) => (
+                 <div key={index} className="flex items-center gap-2">
+                    <Input value={asset} onChange={(e) => updateAsset(index, e.target.value)} />
+                    {assets.length > 1 && (
+                        <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => removeAsset(index)}>
+                            <Trash2 className="h-4 w-4" />
+                        </Button>
+                    )}
+                </div>
+            ))}
+            <Button variant="outline" size="sm" className="w-full mt-1" onClick={addAsset}>
+                <PlusCircle className="h-4 w-4 mr-2"/> Add Asset
+            </Button>
         </div>
     </NodeWrapper>
   );
 };
 
 
-export const ConditionNode: React.FC<NodeProps> = ({ data }) => {
+export const ConditionNode: React.FC<NodeProps> = ({ data, id }) => {
+    const { setNodes } = data;
+    const onDelete = () => setNodes((nds: any[]) => nds.filter((node) => node.id !== id));
+
     return (
-        <NodeWrapper title="Condition" icon={GitBranch} type="default">
+        <NodeWrapper title="Condition" icon={GitBranch} type="default" onDelete={onDelete}>
             <Handle type="target" position={Position.Left} className="w-2 h-2" />
             <Handle type="source" position={Position.Right} id="a" style={{ top: '33%' }} className="w-2 h-2" />
             <Handle type="source" position={Position.Right} id="b" style={{ top: '66%' }} className="w-2 h-2" />
@@ -104,9 +135,12 @@ export const ConditionNode: React.FC<NodeProps> = ({ data }) => {
     );
 };
 
-export const OutputNode: React.FC<NodeProps> = ({ data }) => {
+export const OutputNode: React.FC<NodeProps> = ({ data, id }) => {
+  const { setNodes } = data;
+  const onDelete = () => setNodes((nds: any[]) => nds.filter((node) => node.id !== id));
+
   return (
-    <NodeWrapper title="Execute" icon={Terminal} type="output">
+    <NodeWrapper title="Execute" icon={Terminal} type="output" onDelete={onDelete}>
         <Handle type="target" position={Position.Left} className="w-2 h-2" />
         <div className="space-y-1">
             <Label>Action</Label>
