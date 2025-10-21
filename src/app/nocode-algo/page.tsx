@@ -42,7 +42,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from '@/hooks/use-toast';
-import { Play, Zap, Menu, Database, GitBranch, Terminal, Save, Trash2, History } from 'lucide-react';
+import { ArrowLeft, Play, Zap, Menu, Database, GitBranch, Terminal, Save, Trash2, History } from 'lucide-react';
 import { InputNode, ConditionNode, OutputNode } from '@/components/nocode-algo/nodes';
 import type { MainView } from '../page';
 
@@ -146,6 +146,9 @@ export function NoCodeAlgoPageContent({ onNavigate }: NoCodeAlgoPageContentProps
         <div className="w-full h-screen flex flex-col">
             <header className="p-2 border-b flex items-center justify-between bg-background">
                 <div className="flex items-center gap-2">
+                     <Button variant="ghost" size="icon" onClick={() => onNavigate('home')}>
+                        <ArrowLeft className="h-5 w-5" />
+                    </Button>
                     <Sheet>
                         <SheetTrigger asChild>
                             <Button variant="ghost" size="icon"><Menu className="h-5 w-5" /></Button>
