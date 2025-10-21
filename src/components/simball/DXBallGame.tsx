@@ -35,8 +35,8 @@ export const DXBallGame: React.FC<DXBallGameProps> = ({ brickCount, onGameEnd })
     if (!ctx) return;
 
     // --- Game Setup ---
-    canvas.width = window.innerWidth > 800 ? 800 : window.innerWidth;
-    canvas.height = window.innerHeight > 600 ? 600 : window.innerHeight;
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
 
     const paddleHeight = 15;
     const paddleWidth = 180;
@@ -57,23 +57,22 @@ export const DXBallGame: React.FC<DXBallGameProps> = ({ brickCount, onGameEnd })
     const brickPadding = 10;
     const brickOffsetTop = 40;
     
-    // Dynamic column calculation
-    const maxBricksPerRow = Math.floor(canvas.width / (brickWidth + brickPadding));
-    const brickColumnCount = Math.min(brickCount, maxBricksPerRow);
+    let bricksToCreate = brickCount;
+    const brickColumnCount = Math.floor(canvas.width / (brickWidth + brickPadding));
+    const brickRowCount = Math.ceil(bricksToCreate / brickColumnCount);
     
     const totalBrickWidth = brickColumnCount * (brickWidth + brickPadding) - brickPadding;
     const brickOffsetLeft = (canvas.width - totalBrickWidth) / 2;
-    
-    let bricksToCreate = brickCount; 
-    for (let i = 0; i < bricksToCreate; i++) {
-        const c = i % brickColumnCount;
-        const r = Math.floor(i / brickColumnCount);
-
-        const brickX = c * (brickWidth + brickPadding) + brickOffsetLeft;
-        const brickY = r * (brickHeight + brickPadding) + brickOffsetTop;
-
-        const isHardBrick = r % 2 === 0;
-        game.bricks.push({ x: brickX, y: brickY, status: isHardBrick ? 2 : 1 });
+     
+    for (let r = 0; r < brickRowCount; r++) {
+        for (let c = 0; c < brickColumnCount; c++) {
+            if (r * brickColumnCount + c < bricksToCreate) {
+                const brickX = c * (brickWidth + brickPadding) + brickOffsetLeft;
+                const brickY = r * (brickHeight + brickPadding) + brickOffsetTop;
+                const isHardBrick = r % 2 === 0;
+                game.bricks.push({ x: brickX, y: brickY, status: isHardBrick ? 2 : 1 });
+            }
+        }
     }
     
     // --- Controls ---
