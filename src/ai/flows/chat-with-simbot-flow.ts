@@ -85,7 +85,7 @@ const createOptionStrategy = ai.defineTool(
         const targetView = isCrypto ? 'Crypto' : 'Fiat';
         const targetUnderlying = isCrypto ? (underlying.toUpperCase().startsWith('B') ? 'BTC' : 'ETH') : 'NIFTY';
         
-        // Mocked legs for a long straddle
+        // Mocked legs for a short straddle
         const atmStrike = targetUnderlying === 'NIFTY' ? 22000 : 65000;
         const expiry = '25 JUL 2024';
 
@@ -97,7 +97,7 @@ const createOptionStrategy = ai.defineTool(
                 expiryDate: expiry,
                 strikePrice: atmStrike,
                 optionType: 'Call',
-                action: 'Buy',
+                action: 'Sell',
                 ltp: 150,
                 quantity: 1,
             },
@@ -108,7 +108,7 @@ const createOptionStrategy = ai.defineTool(
                 expiryDate: expiry,
                 strikePrice: atmStrike,
                 optionType: 'Put',
-                action: 'Buy',
+                action: 'Sell',
                 ltp: 130,
                 quantity: 1,
             },
@@ -116,7 +116,7 @@ const createOptionStrategy = ai.defineTool(
         
         return {
             success: true,
-            reply: `I've prepared a long ${strategy} on ${underlying} for you in the strategy builder. Please review and execute it.`,
+            reply: `I've prepared a short ${strategy} on ${underlying} for you in the strategy builder. Please review and execute it.`,
             targetView: targetView,
             legs: legs,
         };
