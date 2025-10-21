@@ -53,12 +53,12 @@ export function SimbotInputBar({ onNavigateRequest, showSuggestions = false, isR
         handleSendMessage(inputValue);
     };
     
-    const handleSuggestionClick = (suggestion: { message: string, symbol: string, details?: InitialOrderDetails }) => {
-        const asset = allAssets.find(a => a.symbol === suggestion.symbol);
-        if (asset && onNavigateRequest) {
+    const handleSuggestionClick = (suggestion: { message: string, symbol?: string, details?: InitialOrderDetails }) => {
+        const asset = suggestion.symbol ? allAssets.find(a => a.symbol === suggestion.symbol) : undefined;
+        if (asset && onNavigateRequest && suggestion.details) {
             onNavigateRequest(asset, suggestion.details);
         } else {
-            // Fallback to AI if direct navigation fails or for more complex queries
+            // Fallback to AI for more complex queries or when direct nav isn't specified
             handleSendMessage(suggestion.message);
         }
     };
@@ -67,6 +67,7 @@ export function SimbotInputBar({ onNavigateRequest, showSuggestions = false, isR
         { message: 'Buy Bitcoin', symbol: 'BTC', details: {} },
         { message: 'Buy reliance qty 123', symbol: 'RELIANCE', details: { quantity: 123 } },
         { message: 'Do an SIP on Parag Parikh Flexi cap for 100rs weekly', symbol: 'PARAGPARIKH', details: { orderType: 'SIP', sipAmount: 100, sipFrequency: 'Weekly' } },
+        { message: 'Make a short straddle on nifty July' },
     ];
 
     const realSuggestions = [
