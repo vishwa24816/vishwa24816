@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { useAuth } from '@/contexts/AuthContext';
-import { LineChart, PlayCircle, SlidersHorizontal, Bot } from 'lucide-react';
+import { LineChart, PlayCircle, SlidersHorizontal, Bot, Info } from 'lucide-react';
 import {
   Table,
   TableBody,
@@ -17,6 +17,39 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { Label } from '@/components/ui/label';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
+import { cn } from '@/lib/utils';
+import { Badge } from '@/components/ui/badge';
+
+
+const SegmentedControl = ({
+    options,
+    value,
+    onValueChange,
+}: {
+    options: string[];
+    value: string;
+    onValueChange: (value: string) => void;
+}) => {
+    return (
+        <div className="grid grid-cols-2 gap-1 rounded-md bg-muted p-1">
+            {options.map((option) => (
+                <Button
+                    key={option}
+                    variant={value === option ? 'secondary' : 'ghost'}
+                    onClick={() => onValueChange(option)}
+                    className="py-1.5 h-auto text-sm"
+                >
+                    {option}
+                </Button>
+            ))}
+        </div>
+    );
+};
+
 
 export function BacktesterPageContent() {
     const { user } = useAuth();
@@ -24,6 +57,16 @@ export function BacktesterPageContent() {
     const [aiQuery, setAiQuery] = useState("Find profitable momentum strategies for NIFTY 50 index stocks.");
     const [isBacktesting, setIsBacktesting] = useState(false);
     const [backtestResult, setBacktestResult] = useState<any>(null);
+    
+    // State for the new manual tester form
+    const [atmType, setAtmType] = useState('point');
+    const [index, setIndex] = useState('nifty');
+    const [segment, setSegment] = useState('options');
+    const [optionType, setOptionType] = useState('call');
+    const [actionType, setActionType] = useState('buy');
+    const [strikePrice, setStrikePrice] = useState('atm');
+    const [totalLots, setTotalLots] = useState('1');
+    const [expiryType, setExpiryType] = useState('weekly');
 
 
     const handleRunBacktest = () => {
@@ -44,6 +87,13 @@ export function BacktesterPageContent() {
             });
             setIsBacktesting(false);
         }, 2000);
+    }
+    
+    const handleAddPosition = () => {
+         toast({
+            title: "Position Added (Mock)",
+            description: `Added ${totalLots} lot(s) of ${index} ${optionType} to the strategy.`,
+        });
     }
 
     return (
@@ -76,28 +126,94 @@ export function BacktesterPageContent() {
                     </CardContent>
                 </Card>
                 
-                <Card className="mb-6">
+                 <Card className="mb-6">
                     <CardHeader>
                         <CardTitle className="flex items-center">
                             <SlidersHorizontal className="mr-2 h-5 w-5 text-primary" />
                             Manual Tester
                         </CardTitle>
                         <CardDescription>
-                            Write your trading logic using simple conditions. The system will parse and execute it over historical data.
+                            Define your options position and backtest it against historical data.
                         </CardDescription>
                     </CardHeader>
-                    <CardContent>
-                        <Textarea 
-                            value={strategy}
-                            onChange={(e) => setStrategy(e.target.value)}
-                            rows={6}
-                            placeholder="e.g., WHEN SMA(50) > SMA(200) BUY 1 BTC..."
-                            className="font-mono text-sm"
-                        />
-                        <Button onClick={handleRunBacktest} disabled={isBacktesting} className="mt-4 w-full sm:w-auto">
-                            <PlayCircle className="mr-2 h-5 w-5" />
-                            {isBacktesting ? 'Running Manual Backtest...' : 'Run Manual Backtest'}
-                        </Button>
+                    <CardContent className="space-y-6">
+                        <RadioGroup value={atmType} onValueChange={setAtmType} className="grid grid-cols-2 gap-x-4 gap-y-2">
+                           <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="point" id="atm-point" />
+                                <Label htmlFor="atm-point">ATM Point</Label>
+                           </div>
+                            <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="percent" id="atm-percent" />
+                                <Label htmlFor="atm-percent">ATM Percent</Label>
+                           </div>
+                           <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="width" id="straddle-width" />
+                                <Label htmlFor="straddle-width" className="flex items-center">Straddle Width <Badge variant="secondary" className="ml-2 text-green-600 bg-green-100">New</Badge></Label>
+                           </div>
+                           <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="closest" id="closest-premium" />
+                                <Label htmlFor="closest-premium" className="flex items-center">Closest Premium (CP) <Info className="h-3 w-3 ml-1 text-muted-foreground"/></Label>
+                           </div>
+                           <div className="flex items-center space-x-2 col-span-2">
+                                <RadioGroupItem value="cp-based" id="cp-based" />
+                                <Label htmlFor="cp-based" className="flex items-center">CP based on Straddle Premium (SP) <Info className="h-3 w-3 ml-1 text-muted-foreground"/></Label>
+                           </div>
+                        </RadioGroup>
+
+                        <div className="space-y-2">
+                            <Label>Select Index:</Label>
+                            <Select value={index} onValueChange={setIndex}>
+                                <SelectTrigger><SelectValue /></SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="nifty">Nifty</SelectItem>
+                                    <SelectItem value="banknifty">Bank Nifty</SelectItem>
+                                    <SelectItem value="finnifty">Fin Nifty</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        
+                        <div className="space-y-2">
+                            <Label>Select Segment:</Label>
+                            <SegmentedControl options={['Futures', 'Options']} value={segment} onValueChange={setSegment} />
+                        </div>
+                         <div className="space-y-2">
+                            <Label>Option Type:</Label>
+                            <SegmentedControl options={['Call', 'Put']} value={optionType} onValueChange={setOptionType} />
+                        </div>
+                         <div className="space-y-2">
+                            <Label>Action Type:</Label>
+                             <SegmentedControl options={['Buy', 'Sell']} value={actionType} onValueChange={setActionType} />
+                        </div>
+                        
+                        <div className="space-y-2">
+                            <Label>Strike Price:</Label>
+                            <Select value={strikePrice} onValueChange={setStrikePrice}>
+                                <SelectTrigger><SelectValue /></SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="atm">ATM</SelectItem>
+                                    <SelectItem value="itm">ITM</SelectItem>
+                                    <SelectItem value="otm">OTM</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+
+                         <div className="space-y-2">
+                            <Label htmlFor="total-lots">Total Lot:</Label>
+                            <Input id="total-lots" type="number" value={totalLots} onChange={e => setTotalLots(e.target.value)} min="1" />
+                        </div>
+
+                         <div className="space-y-2">
+                            <Label>Expiry Type:</Label>
+                            <Select value={expiryType} onValueChange={setExpiryType}>
+                                <SelectTrigger><SelectValue /></SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="weekly">Weekly</SelectItem>
+                                    <SelectItem value="monthly">Monthly</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+
+                        <Button onClick={handleAddPosition} className="w-full">Add Position</Button>
                     </CardContent>
                 </Card>
 
