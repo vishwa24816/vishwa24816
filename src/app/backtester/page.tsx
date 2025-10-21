@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { useAuth } from '@/contexts/AuthContext';
-import { LineChart, PlayCircle, SlidersHorizontal } from 'lucide-react';
+import { LineChart, PlayCircle, SlidersHorizontal, Bot } from 'lucide-react';
 import {
   Table,
   TableBody,
@@ -21,6 +21,7 @@ import {
 export default function BacktesterPage() {
     const { user } = useAuth();
     const [strategy, setStrategy] = useState("WHEN SMA(50) crosses above SMA(200)\nBUY 1 BTC\n\nWHEN SMA(50) crosses below SMA(200)\nSELL ALL");
+    const [aiQuery, setAiQuery] = useState("Find profitable momentum strategies for NIFTY 50 index stocks.");
     const [isBacktesting, setIsBacktesting] = useState(false);
     const [backtestResult, setBacktestResult] = useState<any>(null);
 
@@ -56,8 +57,33 @@ export default function BacktesterPage() {
                         <Card className="mb-6">
                             <CardHeader>
                                 <CardTitle className="flex items-center">
+                                    <Bot className="mr-2 h-5 w-5 text-primary" />
+                                    AI Strategy Backtester
+                                </CardTitle>
+                                <CardDescription>
+                                    Describe a strategy in natural language and let our AI test it for you.
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <Textarea 
+                                    value={aiQuery}
+                                    onChange={(e) => setAiQuery(e.target.value)}
+                                    rows={4}
+                                    placeholder="e.g., 'Test a moving average crossover strategy on BTC/USD'"
+                                    className="font-mono text-sm"
+                                />
+                                <Button onClick={handleRunBacktest} disabled={isBacktesting} className="mt-4 w-full sm:w-auto">
+                                    <PlayCircle className="mr-2 h-5 w-5" />
+                                    {isBacktesting ? 'Running AI Backtest...' : 'Run AI Backtest'}
+                                </Button>
+                            </CardContent>
+                        </Card>
+                        
+                        <Card className="mb-6">
+                            <CardHeader>
+                                <CardTitle className="flex items-center">
                                     <SlidersHorizontal className="mr-2 h-5 w-5 text-primary" />
-                                    Define Your Strategy
+                                    Manual Tester
                                 </CardTitle>
                                 <CardDescription>
                                     Write your trading logic using simple conditions. The system will parse and execute it over historical data.
@@ -73,10 +99,11 @@ export default function BacktesterPage() {
                                 />
                                 <Button onClick={handleRunBacktest} disabled={isBacktesting} className="mt-4 w-full sm:w-auto">
                                     <PlayCircle className="mr-2 h-5 w-5" />
-                                    {isBacktesting ? 'Running Backtest...' : 'Run Backtest'}
+                                    {isBacktesting ? 'Running Manual Backtest...' : 'Run Manual Backtest'}
                                 </Button>
                             </CardContent>
                         </Card>
+
 
                         {isBacktesting && (
                             <div className="text-center p-8">
