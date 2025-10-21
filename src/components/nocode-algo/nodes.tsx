@@ -64,7 +64,17 @@ export const InputNode: React.FC<NodeProps> = ({ data, id }) => {
 
   return (
     <NodeWrapper title="Start" icon={Database} type="input" onDelete={onDelete}>
-        <Handle type="source" position={Position.Right} className="w-10 h-10" />
+        <Handle
+            type="source"
+            position={Position.Right}
+            className="!w-20 !h-20"
+            style={{
+                width: '20px',
+                height: '20px',
+                background: '#555',
+                border: '2px solid white',
+            }}
+        />
          <div className="space-y-2">
             <Label>Assets</Label>
             {assets.map((asset, index) => (
@@ -92,9 +102,43 @@ export const ConditionNode: React.FC<NodeProps> = ({ data, id }) => {
 
     return (
         <NodeWrapper title="Condition" icon={GitBranch} type="default" onDelete={onDelete}>
-            <Handle type="target" position={Position.Left} className="w-10 h-10" />
-            <Handle type="source" position={Position.Right} id="a" style={{ top: '33%' }} className="w-10 h-10" />
-            <Handle type="source" position={Position.Right} id="b" style={{ top: '66%' }} className="w-10 h-10" />
+            <Handle
+                type="target"
+                position={Position.Left}
+                className="!w-20 !h-20"
+                style={{
+                    width: '20px',
+                    height: '20px',
+                    background: '#555',
+                    border: '2px solid white',
+                }}
+            />
+            <Handle
+                type="source"
+                position={Position.Right}
+                id="a"
+                style={{
+                    top: '33%',
+                    width: '20px',
+                    height: '20px',
+                    background: '#555',
+                    border: '2px solid white',
+                }}
+                className="!w-20 !h-20"
+            />
+            <Handle
+                type="source"
+                position={Position.Right}
+                id="b"
+                style={{
+                    top: '66%',
+                    width: '20px',
+                    height: '20px',
+                    background: '#555',
+                    border: '2px solid white',
+                }}
+                className="!w-20 !h-20"
+            />
 
              <div className="space-y-1">
                 <Label>IF</Label>
@@ -141,7 +185,17 @@ export const OutputNode: React.FC<NodeProps> = ({ data, id }) => {
 
   return (
     <NodeWrapper title="Execute" icon={Terminal} type="output" onDelete={onDelete}>
-        <Handle type="target" position={Position.Left} className="w-10 h-10" />
+        <Handle
+            type="target"
+            position={Position.Left}
+            className="!w-20 !h-20"
+            style={{
+                width: '20px',
+                height: '20px',
+                background: '#555',
+                border: '2px solid white',
+            }}
+        />
         <div className="space-y-1">
             <Label>Action</Label>
             <Select defaultValue="buy">
