@@ -62,7 +62,7 @@ const ExpandableProfileItem: React.FC<ProfileItemProps & {children: React.ReactN
 
 
 export default function ProfilePage() {
-  const { user, logout, theme, setTheme, language, setLanguage } = useAuth();
+  const { user, logout, colorTheme, setColorTheme, language, setLanguage } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
   const isRealMode = user?.id === 'REAL456';
@@ -286,7 +286,7 @@ export default function ProfilePage() {
         description: "Choose your preferred color theme",
         component: (
             <ExpandableProfileItem icon={Palette} title="Platform Colour" description="Choose your preferred color theme">
-                <RadioGroup value={theme} onValueChange={setTheme} className="grid grid-cols-2 gap-2">
+                <RadioGroup value={colorTheme} onValueChange={setColorTheme} className="grid grid-cols-2 gap-2">
                      {themeOptions.map((themeOption) => (
                         <div key={themeOption.value} className="flex items-center space-x-2">
                             <RadioGroupItem value={themeOption.value} id={`color-${themeOption.value}`} />

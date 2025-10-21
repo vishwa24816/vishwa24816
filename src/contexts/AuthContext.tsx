@@ -22,6 +22,8 @@ interface AuthContextType {
   loading: boolean;
   theme: string;
   setTheme: (theme: string) => void;
+  colorTheme: string;
+  setColorTheme: (theme: string) => void;
   language: string;
   setLanguage: (language: string) => void;
   primaryWalletId: string | null;
@@ -34,6 +36,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [theme, setThemeState] = useState('system');
+  const [colorTheme, setColorThemeState] = useState('blue');
   const [language, setLanguageState] = useState('english');
   const [primaryWalletId, setPrimaryWalletIdState] = useState<string | null>(null);
 
@@ -71,6 +74,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const storedTheme = localStorage.getItem('sim-theme') || 'system';
     setThemeState(storedTheme);
     
+    const storedColorTheme = localStorage.getItem('sim-color-theme') || 'blue';
+    setColorThemeState(storedColorTheme);
+    
     const storedLanguage = localStorage.getItem('sim-language') || 'english';
     setLanguageState(storedLanguage);
     
@@ -106,7 +112,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       root.classList.add(theme);
     }
   }, [theme]);
-
+  
+  useEffect(() => {
+    const root = window.document.documentElement;
+    root.setAttribute('data-theme', colorTheme);
+  }, [colorTheme]);
 
   const login = async (ucc: string, pin: string) => {
     setLoading(true);
@@ -195,6 +205,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     localStorage.setItem('sim-theme', newTheme);
     setThemeState(newTheme);
   };
+  
+  const setColorTheme = (newTheme: string) => {
+    localStorage.setItem('sim-color-theme', newTheme);
+    setColorThemeState(newTheme);
+  };
 
   const setLanguage = (newLanguage: string) => {
     setLanguageState(newLanguage);
@@ -209,7 +224,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const isRealMode = user?.ucc === 'REAL456'; 
 
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated: !!user, isRealMode, login, signInWithGoogle, signInWithApple, signInWithEmail, signInWithPhone, logout, loading, theme, setTheme: setTheme as any, language, setLanguage, primaryWalletId, setPrimaryWalletId }}>
+    <AuthContext.Provider value={{ user, isAuthenticated: !!user, isRealMode, login, signInWithGoogle, signInWithApple, signInWithEmail, signInWithPhone, logout, loading, theme, setTheme: setTheme as any, colorTheme, setColorTheme, language, setLanguage, primaryWalletId, setPrimaryWalletId }}>
       {children}
       <Toaster />
     </AuthContext.Provider>
