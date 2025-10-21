@@ -146,16 +146,16 @@ export function NoCodeAlgoPageContent({ onNavigate }: NoCodeAlgoPageContentProps
         <div className="w-full h-screen flex flex-col">
             <header className="p-2 border-b flex items-center justify-between bg-background">
                 <div className="flex items-center gap-2">
-                     <Button variant="ghost" size="icon" onClick={() => onNavigate('home')}>
-                        <ArrowLeft className="h-5 w-5" />
-                    </Button>
                     <Sheet>
                         <SheetTrigger asChild>
                             <Button variant="ghost" size="icon"><Menu className="h-5 w-5" /></Button>
                         </SheetTrigger>
                         <SheetContent side="left" className="w-[320px]">
-                            <SheetHeader>
+                            <SheetHeader className="flex flex-row items-center justify-between p-2 pr-6 border-b">
                                 <SheetTitle>Algo Builder</SheetTitle>
+                                <Button variant="ghost" size="icon" onClick={() => onNavigate('home')}>
+                                    <ArrowLeft className="h-5 w-5" />
+                                </Button>
                             </SheetHeader>
                             <Accordion type="multiple" defaultValue={['nodes', 'saved']} className="w-full mt-4">
                                 <AccordionItem value="nodes">
@@ -239,5 +239,3 @@ export function NoCodeAlgoPageContent({ onNavigate }: NoCodeAlgoPageContentProps
         </div>
     );
 }
-
-    
