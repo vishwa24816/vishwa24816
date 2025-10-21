@@ -18,7 +18,9 @@ import ReactFlow, {
 import 'reactflow/dist/style.css';
 
 import { Button } from '@/components/ui/button';
-import { Play, Zap } from 'lucide-react';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Play, Zap, Menu, Database, GitBranch, Terminal, Save } from 'lucide-react';
 import { InputNode, ConditionNode, OutputNode } from '@/components/nocode-algo/nodes';
 
 
@@ -26,25 +28,15 @@ const initialNodes: Node[] = [
   { 
     id: '1', 
     type: 'inputNode',
-    position: { x: 50, y: 100 }, 
-    data: { label: 'Market Data' } 
-  },
-  { 
-    id: '2', 
-    type: 'conditionNode',
-    position: { x: 300, y: 100 }, 
-    data: { label: 'Condition' } 
-  },
-  { 
-    id: '3', 
-    type: 'outputNode',
-    position: { x: 550, y: 100 }, 
-    data: { label: 'Execute Trade' } 
+    position: { x: 250, y: 150 }, 
+    data: { label: 'Start' } 
   },
 ];
 
 const initialEdges: Edge[] = [];
 
+let id = 2;
+const getId = () => `${id++}`;
 
 export function NoCodeAlgoPageContent() {
     const [nodes, setNodes] = useState<Node[]>(initialNodes);
@@ -68,13 +60,56 @@ export function NoCodeAlgoPageContent() {
         conditionNode: ConditionNode,
         outputNode: OutputNode,
     }), []);
+    
+    const addNode = (type: 'inputNode' | 'conditionNode' | 'outputNode') => {
+        const newNode: Node = {
+            id: getId(),
+            type,
+            position: {
+                x: Math.random() * 400 + 100,
+                y: Math.random() * 200 + 100,
+            },
+            data: { label: `${type.replace('Node', '')}` },
+        };
+        setNodes((nds) => nds.concat(newNode));
+    };
 
     return (
         <div className="w-full h-[calc(100vh-140px)] flex flex-col">
-            <header className="p-4 border-b flex items-center justify-between">
-                <h1 className="text-xl font-bold">No-Code Algo Builder</h1>
+            <header className="p-2 border-b flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                    <Button variant="outline"><Zap className="mr-2 h-4 w-4" /> Backtest</Button>
+                    <Sheet>
+                        <SheetTrigger asChild>
+                            <Button variant="ghost" size="icon"><Menu className="h-5 w-5" /></Button>
+                        </SheetTrigger>
+                        <SheetContent side="left" className="w-[280px]">
+                            <SheetHeader>
+                                <SheetTitle>Algo Builder</SheetTitle>
+                            </SheetHeader>
+                            <Accordion type="single" collapsible className="w-full mt-4">
+                                <AccordionItem value="nodes">
+                                    <AccordionTrigger>Nodes</AccordionTrigger>
+                                    <AccordionContent>
+                                        <ul className="space-y-1">
+                                            <li><Button variant="ghost" className="w-full justify-start" onClick={() => addNode('inputNode')}><Database className="mr-2 h-4 w-4"/>Start</Button></li>
+                                            <li><Button variant="ghost" className="w-full justify-start" onClick={() => addNode('conditionNode')}><GitBranch className="mr-2 h-4 w-4"/>Condition</Button></li>
+                                            <li><Button variant="ghost" className="w-full justify-start" onClick={() => addNode('outputNode')}><Terminal className="mr-2 h-4 w-4"/>Execute</Button></li>
+                                        </ul>
+                                    </AccordionContent>
+                                </AccordionItem>
+                                 <AccordionItem value="saved">
+                                    <AccordionTrigger>Saved Strategies</AccordionTrigger>
+                                    <AccordionContent>
+                                        <p className="text-sm text-muted-foreground p-2">No saved strategies yet.</p>
+                                    </AccordionContent>
+                                </AccordionItem>
+                            </Accordion>
+                        </SheetContent>
+                    </Sheet>
+                    <h1 className="text-lg font-bold hidden sm:block">No-Code Algo Builder</h1>
+                </div>
+                <div className="flex items-center gap-2">
+                    <Button variant="outline"><Save className="mr-2 h-4 w-4" /> Save Strategy</Button>
                     <Button><Play className="mr-2 h-4 w-4" /> Deploy Strategy</Button>
                 </div>
             </header>

@@ -34,7 +34,7 @@ const NodeWrapper: React.FC<React.PropsWithChildren<{ title: string; icon: React
 
 export const InputNode: React.FC<NodeProps> = ({ data }) => {
   return (
-    <NodeWrapper title="Market Data" icon={Database} type="input">
+    <NodeWrapper title="Start" icon={Database} type="input">
         <Handle type="source" position={Position.Right} className="w-2 h-2" />
         <div className="space-y-1">
             <Label>Asset</Label>
@@ -60,7 +60,7 @@ export const InputNode: React.FC<NodeProps> = ({ data }) => {
 
 export const ConditionNode: React.FC<NodeProps> = ({ data }) => {
     return (
-        <NodeWrapper title="Condition Logic" icon={GitBranch} type="default">
+        <NodeWrapper title="Condition" icon={GitBranch} type="default">
             <Handle type="target" position={Position.Left} className="w-2 h-2" />
             <Handle type="source" position={Position.Right} id="a" style={{ top: '33%' }} className="w-2 h-2" />
             <Handle type="source" position={Position.Right} id="b" style={{ top: '66%' }} className="w-2 h-2" />
@@ -106,7 +106,7 @@ export const ConditionNode: React.FC<NodeProps> = ({ data }) => {
 
 export const OutputNode: React.FC<NodeProps> = ({ data }) => {
   return (
-    <NodeWrapper title="Execute Trade" icon={Terminal} type="output">
+    <NodeWrapper title="Execute" icon={Terminal} type="output">
         <Handle type="target" position={Position.Left} className="w-2 h-2" />
         <div className="space-y-1">
             <Label>Action</Label>
