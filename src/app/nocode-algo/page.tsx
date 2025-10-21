@@ -151,11 +151,11 @@ export function NoCodeAlgoPageContent({ onNavigate }: NoCodeAlgoPageContentProps
                             <Button variant="ghost" size="icon"><Menu className="h-5 w-5" /></Button>
                         </SheetTrigger>
                         <SheetContent side="left" className="w-[320px]">
-                            <SheetHeader className="flex flex-row items-center justify-between p-2 pr-6 border-b">
-                                <SheetTitle>Algo Builder</SheetTitle>
+                            <SheetHeader className="flex flex-row items-center justify-start p-2 pr-6 border-b gap-2">
                                 <Button variant="ghost" size="icon" onClick={() => onNavigate('home')}>
                                     <ArrowLeft className="h-5 w-5" />
                                 </Button>
+                                <SheetTitle>Algo Builder</SheetTitle>
                             </SheetHeader>
                             <Accordion type="multiple" defaultValue={['nodes', 'saved']} className="w-full mt-4">
                                 <AccordionItem value="nodes">
