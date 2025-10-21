@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState } from 'react';
@@ -68,8 +67,8 @@ export const InputNode: React.FC<NodeProps> = ({ data, id }) => {
             type="source"
             position={Position.Right}
             style={{
-                width: '5px',
-                height: '5px',
+                width: '8px',
+                height: '8px',
                 background: '#555',
                 border: '2px solid white',
             }}
@@ -105,8 +104,8 @@ export const ConditionNode: React.FC<NodeProps> = ({ data, id }) => {
                 type="target"
                 position={Position.Left}
                 style={{
-                    width: '5px',
-                    height: '5px',
+                    width: '8px',
+                    height: '8px',
                     background: '#555',
                     border: '2px solid white',
                 }}
@@ -117,8 +116,8 @@ export const ConditionNode: React.FC<NodeProps> = ({ data, id }) => {
                 id="a"
                 style={{
                     top: '33%',
-                    width: '5px',
-                    height: '5px',
+                    width: '8px',
+                    height: '8px',
                     background: '#555',
                     border: '2px solid white',
                 }}
@@ -129,8 +128,8 @@ export const ConditionNode: React.FC<NodeProps> = ({ data, id }) => {
                 id="b"
                 style={{
                     top: '66%',
-                    width: '5px',
-                    height: '5px',
+                    width: '8px',
+                    height: '8px',
                     background: '#555',
                     border: '2px solid white',
                 }}
@@ -185,8 +184,8 @@ export const OutputNode: React.FC<NodeProps> = ({ data, id }) => {
             type="target"
             position={Position.Left}
             style={{
-                width: '5px',
-                height: '5px',
+                width: '8px',
+                height: '8px',
                 background: '#555',
                 border: '2px solid white',
             }}
