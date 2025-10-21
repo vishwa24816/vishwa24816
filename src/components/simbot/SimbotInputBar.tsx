@@ -36,7 +36,7 @@ export function SimbotInputBar({ onNavigateRequest, showSuggestions = false, isR
             if(result.navigationTarget === 'strategy-builder') {
                  // The 'legs' will be handled by the page calling this component
                  if(onNavigateRequest) {
-                     onNavigateRequest({} as Stock, { ...result.initialOrderDetails, legs: result.legs, navigationTarget: 'strategy-builder' });
+                     onNavigateRequest({} as Stock, { ...result.initialOrderDetails, legs: result.legs, navigationTarget: 'strategy_builder' });
                  }
             } else {
                 const assetSymbol = result.navigationTarget.split('/').pop();

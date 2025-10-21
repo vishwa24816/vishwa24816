@@ -14,7 +14,7 @@ import { ScreenerPageContent } from '@/components/screener/ScreenerPageContent';
 import { CommunityPageContent } from '@/components/community/CommunityPageContent';
 import { AnalyticsPageContent } from '@/components/analytics/AnalyticsPageContent';
 import { AppFooter } from '@/components/shared/AppFooter';
-import type { Stock } from '@/types';
+import type { Stock, SelectedOptionLeg } from '@/types';
 import { OrderPageDispatcher } from '@/components/order/OrderPageDispatcher';
 import { SimbotInputBar } from '@/components/simbot/SimbotInputBar';
 import { OrderPageFooter } from '@/components/shared/OrderPageFooter';
@@ -27,6 +27,7 @@ import { GiftPageContent } from './gift/page';
 import { SupportPageContent } from './support/page';
 import { DXBallGame } from '@/components/simball/DXBallGame';
 import { NoCodeAlgoPageContent } from '@/app/nocode-algo/page';
+import { StrategyBuilder } from '@/components/dashboard/StrategyBuilder';
 
 
 export type MainView = 'home' | 'orders' | 'simbot' | 'screener' | 'community' | 'asset_order' | 'analytics' | 'backtester' | 'simball' | 'taxy' | 'family' | 'gift' | 'support' | 'nocode_algo' | 'strategy_builder';
@@ -53,6 +54,8 @@ export default function DashboardRouterPage() {
   const [productTypeForOrder, setProductTypeForOrder] = useState('Delivery');
   
   const [activeSimballGame, setActiveSimballGame] = useState<number | null>(null);
+  const [strategyLegs, setStrategyLegs] = useState<SelectedOptionLeg[]>([]);
+
 
   const handleModeChange = (mode: 'Portfolio' | 'Fiat' | 'Wealth' | 'Crypto' | 'Web3') => {
       if (isRealMode && mode === 'Fiat') {
@@ -71,6 +74,9 @@ export default function DashboardRouterPage() {
         setSelectedAsset(null); // Reset selected asset when changing main view
         setInitialOrderDetails(null); // Reset order details
     }
+    if (view !== 'strategy_builder') {
+        setStrategyLegs([]);
+    }
   };
 
   const handleAssetClick = (asset: Stock, details?: InitialOrderDetails) => {
@@ -82,12 +88,8 @@ export default function DashboardRouterPage() {
         } else {
             handleModeChange('Fiat');
         }
-        
-        // This needs to be in a timeout to ensure the activeMode state updates before the strategy builder component tries to render
-        setTimeout(() => {
-            setInitialOrderDetails(details);
-            handleNavigate('strategy_builder');
-        }, 0);
+        setStrategyLegs(details.legs || []);
+        handleNavigate('strategy_builder');
         return;
     }
 
@@ -189,10 +191,14 @@ export default function DashboardRouterPage() {
       case 'support':
         return <SupportPageContent />;
       case 'strategy_builder':
-         return isRealMode ? (
-          <RealDashboard activeMode={activeMode} onAssetClick={handleAssetClick} />
-        ) : (
-          <DemoDashboard activeMode={activeMode} onModeChange={handleModeChange} onAssetClick={handleAssetClick}/>
+        return (
+            <main className="flex-grow p-4 sm:p-6 lg:p-8 space-y-8">
+                <StrategyBuilder
+                    legs={strategyLegs}
+                    setLegs={setStrategyLegs}
+                    onBack={() => handleNavigate('home')}
+                />
+            </main>
         );
       case 'asset_order':
         if (selectedAsset) {

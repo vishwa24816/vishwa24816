@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { Trash2, Edit, Copy, BarChart2 as PayoffIcon, BookOpen, Scaling } from 'lucide-react';
+import { Trash2, Edit, Copy, BarChart2 as PayoffIcon, BookOpen, Scaling, ArrowLeft } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { Card, CardContent } from '@/components/ui/card';
@@ -22,6 +22,7 @@ import { SwipeButton } from '@/components/ui/swipe-button';
 interface StrategyBuilderProps {
   legs: SelectedOptionLeg[];
   setLegs: React.Dispatch<React.SetStateAction<SelectedOptionLeg[]>>;
+  onBack?: () => void;
 }
 
 const formatCurrency = (value?: number) => {
@@ -66,7 +67,7 @@ const generatePayoffData = (legs: SelectedOptionLeg[]) => {
 };
 
 
-export function StrategyBuilder({ legs, setLegs }: StrategyBuilderProps) {
+export function StrategyBuilder({ legs, setLegs, onBack }: StrategyBuilderProps) {
     const { toast } = useToast();
     const [editingLegId, setEditingLegId] = useState<string | null>(null);
     const [strategyName, setStrategyName] = useState('');
@@ -113,8 +114,15 @@ export function StrategyBuilder({ legs, setLegs }: StrategyBuilderProps) {
     const totalPnl = legs.reduce((acc, leg) => acc + (leg.action === 'Buy' ? -leg.ltp : leg.ltp) * leg.quantity * lotSize, 0);
 
     return (
-        <div className="mt-6 border-t pt-6">
-            <h2 className="text-xl font-semibold mb-4 text-primary">Strategy Builder</h2>
+        <div className="mt-6 pt-6">
+            <div className="flex items-center mb-4">
+                 {onBack && (
+                    <Button variant="ghost" size="icon" className="mr-2" onClick={onBack}>
+                        <ArrowLeft className="h-5 w-5"/>
+                    </Button>
+                 )}
+                <h2 className="text-xl font-semibold text-primary">Strategy Builder</h2>
+            </div>
             {legs.length === 0 ? (
                 <div className="text-center py-10 text-muted-foreground bg-muted/50 rounded-lg">
                     <p>Click on an option in the chain above to start building your strategy.</p>
