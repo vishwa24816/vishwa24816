@@ -46,7 +46,7 @@ export function SideMenu({ onNavigate }: { onNavigate?: (view: MainView) => void
   };
   
   const handleThemeToggle = () => {
-      setTheme(theme === 'light' ? 'dark' : 'light');
+      setTheme(theme === 'light' || theme === 'system' ? 'dark' : 'light');
   }
   
   const handleNavigation = (view: MainView) => {
@@ -179,12 +179,12 @@ export function SideMenu({ onNavigate }: { onNavigate?: (view: MainView) => void
             className="justify-start text-base p-3 hover:bg-accent/10"
             onClick={handleThemeToggle}
           >
-            {theme === 'light' ? (
-              <Moon className="mr-3 h-5 w-5 text-primary" />
-            ) : (
+            {theme === 'dark' ? (
               <Sun className="mr-3 h-5 w-5 text-primary" />
+            ) : (
+              <Moon className="mr-3 h-5 w-5 text-primary" />
             )}
-            Switch to {theme === 'light' ? 'Dark' : 'Light'} Mode
+            Switch to {theme === 'dark' ? 'Light' : 'Dark'} Mode
           </Button>
         </nav>
         <div className="p-4 border-t">

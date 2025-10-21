@@ -33,7 +33,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const [theme, setThemeState] = useState('blue');
+  const [theme, setThemeState] = useState('system');
   const [language, setLanguageState] = useState('english');
   const [primaryWalletId, setPrimaryWalletIdState] = useState<string | null>(null);
 
@@ -68,11 +68,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
     });
 
-    // Other localStorage initializations
-    const storedTheme = localStorage.getItem('sim-theme') || 'blue';
+    const storedTheme = localStorage.getItem('sim-theme') || 'system';
     setThemeState(storedTheme);
-    document.documentElement.setAttribute('data-theme', storedTheme);
-
+    
     const storedLanguage = localStorage.getItem('sim-language') || 'english';
     setLanguageState(storedLanguage);
     
@@ -85,9 +83,30 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setPrimaryWalletIdState(storedPrimaryWallet);
     }
 
-
     return () => unsubscribe();
   }, [auth]);
+
+  useEffect(() => {
+    const root = window.document.documentElement;
+    root.classList.remove("light", "dark");
+
+    if (theme === "system") {
+      const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+      root.classList.add(systemTheme);
+
+      const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+      const handleChange = () => {
+        const newSystemTheme = mediaQuery.matches ? "dark" : "light";
+        root.classList.remove("light", "dark");
+        root.classList.add(newSystemTheme);
+      };
+      mediaQuery.addEventListener("change", handleChange);
+      return () => mediaQuery.removeEventListener("change", handleChange);
+    } else {
+      root.classList.add(theme);
+    }
+  }, [theme]);
+
 
   const login = async (ucc: string, pin: string) => {
     setLoading(true);
@@ -172,10 +191,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const setTheme = (newTheme: string) => {
-    setThemeState(newTheme);
+  const setTheme = (newTheme: 'light' | 'dark' | 'system') => {
     localStorage.setItem('sim-theme', newTheme);
-    document.documentElement.setAttribute('data-theme', newTheme);
+    setThemeState(newTheme);
   };
 
   const setLanguage = (newLanguage: string) => {
@@ -191,7 +209,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const isRealMode = user?.ucc === 'REAL456'; 
 
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated: !!user, isRealMode, login, signInWithGoogle, signInWithApple, signInWithEmail, signInWithPhone, logout, loading, theme, setTheme, language, setLanguage, primaryWalletId, setPrimaryWalletId }}>
+    <AuthContext.Provider value={{ user, isAuthenticated: !!user, isRealMode, login, signInWithGoogle, signInWithApple, signInWithEmail, signInWithPhone, logout, loading, theme, setTheme: setTheme as any, language, setLanguage, primaryWalletId, setPrimaryWalletId }}>
       {children}
       <Toaster />
     </AuthContext.Provider>
