@@ -61,6 +61,7 @@ import { mockUsStocks } from '@/lib/mockData/usStocks';
 import Image from 'next/image';
 import { useToast } from '@/hooks/use-toast';
 import { mockETFs } from '@/lib/mockData/etfs';
+import { mockWeb3NFTs } from '@/lib/mockData/web3NFTs';
 
 // Helper functions
 function getRelevantNewsForHoldings(holdings: PortfolioHolding[], allNews: NewsArticle[]): NewsArticle[] {
@@ -713,4 +714,3 @@ export function DemoDashboard({ activeMode, onModeChange, onAssetClick }: DemoDa
   );
 }
 
-    
