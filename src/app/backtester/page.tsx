@@ -82,6 +82,7 @@ export function BacktesterPageContent() {
 
     const handleRunBacktest = () => {
         setIsBacktesting(true);
+        setBacktestResult(null);
         // Simulate API call
         setTimeout(() => {
             setBacktestResult({
