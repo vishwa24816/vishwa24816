@@ -54,14 +54,13 @@ export function SimbotInputBar({ onNavigateRequest, showSuggestions = false, isR
     };
     
     const handleSuggestionClick = (suggestion: { message: string, symbol?: string, details?: InitialOrderDetails, action?: string }) => {
-        const asset = suggestion.symbol ? allAssets.find(a => a.symbol === suggestion.symbol) : undefined;
         
         if (suggestion.action === 'create_nifty_straddle') {
             const expiry = '25 JUL 2024';
             const atmStrike = 22000;
             const legs = [
-                { id: `leg1-${Date.now()}`, underlyingSymbol: 'NIFTY', instrumentName: `NIFTY ${expiry} ${atmStrike} CE`, expiryDate: expiry, strikePrice: atmStrike, optionType: 'Call', action: 'Sell', ltp: 150, quantity: 1 },
-                { id: `leg2-${Date.now()}`, underlyingSymbol: 'NIFTY', instrumentName: `NIFTY ${expiry} ${atmStrike} PE`, expiryDate: expiry, strikePrice: atmStrike, optionType: 'Put', action: 'Sell', ltp: 130, quantity: 1 },
+                { id: `leg1-${Date.now()}`, underlyingSymbol: 'NIFTY', instrumentName: `NIFTY ${expiry} ${atmStrike} CE`, expiryDate: expiry, strikePrice: atmStrike, optionType: 'Call' as const, action: 'Sell' as const, ltp: 150, quantity: 1 },
+                { id: `leg2-${Date.now()}`, underlyingSymbol: 'NIFTY', instrumentName: `NIFTY ${expiry} ${atmStrike} PE`, expiryDate: expiry, strikePrice: atmStrike, optionType: 'Put' as const, action: 'Sell' as const, ltp: 130, quantity: 1 },
             ];
              if(onNavigateRequest) {
                 onNavigateRequest({} as Stock, { navigationTarget: 'strategy_builder', targetView: 'Fiat', legs });
@@ -69,6 +68,7 @@ export function SimbotInputBar({ onNavigateRequest, showSuggestions = false, isR
             return;
         }
 
+        const asset = suggestion.symbol ? allAssets.find(a => a.symbol === suggestion.symbol) : undefined;
         if (asset && onNavigateRequest && suggestion.details) {
             onNavigateRequest(asset, suggestion.details);
         } else {

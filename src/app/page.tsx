@@ -74,22 +74,23 @@ export default function DashboardRouterPage() {
   };
 
   const handleAssetClick = (asset: Stock, details?: InitialOrderDetails) => {
-    if (details?.navigationTarget === 'strategy-builder' || details?.legs) {
-        setPreviousMainView(activeMainView);
+    setPreviousMainView(activeMainView);
+    
+    if (details?.navigationTarget === 'strategy_builder' || (details?.legs && details.legs.length > 0)) {
         if (details.targetView === 'Crypto') {
             handleModeChange('Crypto');
         } else {
             handleModeChange('Fiat');
         }
-        // A bit of a hack to ensure mode state updates before rendering the builder
+        
+        // This needs to be in a timeout to ensure the activeMode state updates before the strategy builder component tries to render
         setTimeout(() => {
-            handleNavigate('strategy_builder');
             setInitialOrderDetails(details);
+            handleNavigate('strategy_builder');
         }, 0);
         return;
     }
 
-    setPreviousMainView(activeMainView);
     setSelectedAsset(asset);
     setInitialOrderDetails(details || null);
     setActiveMainView('asset_order');
