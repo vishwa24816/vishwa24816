@@ -19,7 +19,7 @@ export const DXBallGame: React.FC<DXBallGameProps> = ({ brickCount, onGameEnd })
     paddleX: 0,
     ballX: 0,
     ballY: 0,
-    ballDX: 4, // Slower initial speed
+    ballDX: 4,
     ballDY: -4,
     rightPressed: false,
     leftPressed: false,
@@ -103,14 +103,14 @@ export const DXBallGame: React.FC<DXBallGameProps> = ({ brickCount, onGameEnd })
     const drawBall = () => {
       ctx.beginPath();
       ctx.arc(game.ballX, game.ballY, ballRadius, 0, Math.PI * 2);
-      ctx.fillStyle = "#0ea5e9"; // Use a direct color
+      ctx.fillStyle = "#0ea5e9";
       ctx.fill();
       ctx.closePath();
     }
     const drawPaddle = () => {
       ctx.beginPath();
       ctx.rect(game.paddleX, canvas.height - paddleHeight - 10, paddleWidth, paddleHeight);
-      ctx.fillStyle = "#f97316"; // Use a direct color
+      ctx.fillStyle = "#f97316";
       ctx.fill();
       ctx.closePath();
     }
@@ -140,7 +140,7 @@ export const DXBallGame: React.FC<DXBallGameProps> = ({ brickCount, onGameEnd })
               game.ballDY = -game.ballDY;
               b.status -= 1;
               
-              const speedMultiplier = 1.05; // Slightly less aggressive speed increase
+              const speedMultiplier = 1.20;
               if (Math.abs(game.ballDX) < 12) { // Cap the speed
                   game.ballDX *= speedMultiplier;
                   game.ballDY *= speedMultiplier;
