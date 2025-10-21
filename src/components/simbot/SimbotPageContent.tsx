@@ -96,11 +96,9 @@ export function SimbotPageContent({ onNavigateRequest }: { onNavigateRequest: (a
             </ScrollArea>
         </main>
         
-        <footer className="fixed bottom-16 left-0 right-0 bg-background/80 backdrop-blur-sm border-t z-10">
+        <footer className="fixed bottom-20 left-0 right-0 bg-background/80 backdrop-blur-sm border-t z-10">
           <SimbotInputBar onNavigateRequest={onNavigateRequest} showSuggestions={true} isRealMode={isRealMode} />
         </footer>
       </div>
   );
 }
-
-    
