@@ -206,7 +206,7 @@ export function NoCodeAlgoPageContent({ onNavigate }: NoCodeAlgoPageContentProps
                     nodeTypes={nodeTypes}
                     fitView
                 >
-                    <Controls style={{ bottom: 20 }} />
+                    <Controls style={{ top: 10, right: 10, left: 'auto', bottom: 'auto' }} />
                     <Background />
                 </ReactFlow>
             </div>
